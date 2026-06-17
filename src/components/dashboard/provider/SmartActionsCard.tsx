@@ -41,6 +41,7 @@ const ACTION_ICONS: Record<SmartActionType, React.ElementType> = {
 // ---------------------------------------------------------------------------
 
 function DeadlineBadge({ deadline }: Readonly<{ deadline: string }>) {
+  // eslint-disable-next-line react-hooks/purity -- server component; Date.now() is safe here
   const diffMs = new Date(deadline).getTime() - Date.now();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
@@ -75,10 +76,10 @@ function ActionRow({ action }: Readonly<{ action: SmartAction }>) {
   return (
     <Link
       href={action.href}
-      className="group flex items-start gap-3 rounded-lg p-3 transition-colors hover:bg-neutral-50"
+      className="group flex items-start gap-3 px-6 py-4 transition-colors hover:bg-surface"
     >
       {/* Icon */}
-      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-[#1B4D3E]/10 text-[#1B4D3E]">
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
         <Icon className="size-4" />
       </span>
 
@@ -103,8 +104,8 @@ function ActionRow({ action }: Readonly<{ action: SmartAction }>) {
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center gap-2 py-8 text-center">
-      <CheckCircle2 className="size-10 text-[#1B4D3E]/60" />
+    <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
+      <CheckCircle2 className="size-10 text-brand-primary/60" />
       <p className="text-sm font-medium text-neutral-700">All caught up!</p>
       <p className="text-xs text-neutral-500">No urgent actions right now.</p>
     </div>
@@ -121,15 +122,15 @@ type SmartActionsCardProps = Readonly<{
 
 export function SmartActionsCard({ actions }: SmartActionsCardProps) {
   return (
-    <Card className="border-neutral-200 shadow-sm">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-base font-semibold text-neutral-900">
-          <Sparkles className="size-4 text-[#1B4D3E]" />
+    <Card className="border-border shadow-sm">
+      <CardHeader className="border-b border-neutral-100 pb-4">
+        <CardTitle className="flex items-center gap-2 font-heading text-lg font-bold tracking-tight text-neutral-900">
+          <Sparkles className="size-4 text-brand-primary" />
           Suggested Actions
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="pt-0">
+      <CardContent className="p-0">
         {actions.length === 0 ? (
           <EmptyState />
         ) : (

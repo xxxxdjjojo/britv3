@@ -49,7 +49,7 @@ export function SaleDocumentsList({ progression }: Props) {
           return (
             <li
               key={`${doc.name}-${doc.stage}`}
-              className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface transition-colors"
             >
               <span
                 className={cn(
@@ -73,7 +73,7 @@ export function SaleDocumentsList({ progression }: Props) {
                     href={doc.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-[#1B4D3E] font-medium hover:underline"
+                    className="text-xs text-brand-primary font-medium hover:underline"
                   >
                     View
                   </a>

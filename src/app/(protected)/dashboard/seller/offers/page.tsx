@@ -38,7 +38,7 @@ export default function OffersReceivedPage() {
           <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Offers Received</h1>
           <p className="text-slate-500 mt-1">{activeOffers.length} active offer{activeOffers.length !== 1 ? "s" : ""}</p>
         </div>
-        <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
           {(["list", "compare"] as ViewMode[]).map((mode) => (
             <button
               key={mode}

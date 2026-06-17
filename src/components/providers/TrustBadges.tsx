@@ -25,11 +25,11 @@ type BadgeConfigEntry = {
 };
 
 const BADGE_CONFIG: Record<BadgeKey, BadgeConfigEntry> = {
-  britestate_verified: { label: "Britestate Verified", color: "bg-[#1B4D3E]", Icon: ShieldCheck },
+  britestate_verified: { label: "Britestate Verified", color: "bg-brand-primary", Icon: ShieldCheck },
   gas_safe: { label: "Gas Safe", color: "bg-orange-600", Icon: Flame },
   niceic: { label: "NICEIC", color: "bg-orange-500", Icon: Zap },
   fca: { label: "FCA Regulated", color: "bg-blue-800", Icon: BadgeCheck },
-  rics: { label: "RICS Member", color: "bg-[#1B4D3E]", Icon: Building2 },
+  rics: { label: "RICS Member", color: "bg-brand-primary", Icon: Building2 },
   sra: { label: "SRA Regulated", color: "bg-blue-700", Icon: Scale },
   clc: { label: "CLC Regulated", color: "bg-blue-600", Icon: Scale },
   insured: { label: "Insured", color: "bg-green-600", Icon: Shield },

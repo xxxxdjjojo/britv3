@@ -30,7 +30,7 @@ const STATUS_CONFIG: Record<LeadStatus, { label: string; color: string }> = {
   new: { label: "New", color: "bg-blue-50 text-blue-700 border-blue-200" },
   contacted: { label: "Contacted", color: "bg-amber-50 text-amber-700 border-amber-200" },
   qualified: { label: "Qualified", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  lost: { label: "Lost", color: "bg-neutral-50 text-neutral-500 border-neutral-200" },
+  lost: { label: "Lost", color: "bg-muted text-neutral-500 border-border" },
 };
 
 const MOCK_LEADS: Lead[] = [
@@ -139,7 +139,7 @@ export default function LeadsPage() {
     <div className="p-6 space-y-6 max-w-5xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Leads</h1>
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">Leads</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Manage incoming mortgage enquiries and convert them into clients.
         </p>
@@ -154,8 +154,8 @@ export default function LeadsPage() {
             onClick={() => setStatusFilter(status)}
             className={
               statusFilter === status
-                ? "rounded-full bg-[#1B4D3E] px-3 py-1.5 text-xs font-semibold text-white"
-                : "rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-600 hover:bg-neutral-50"
+                ? "rounded-full bg-brand-primary px-3 py-1.5 text-xs font-semibold text-white"
+                : "rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-neutral-600 hover:bg-muted"
             }
           >
             {status === "all" ? "All" : STATUS_CONFIG[status].label} ({counts[status]})
@@ -181,7 +181,7 @@ export default function LeadsPage() {
           return (
             <div
               key={lead.id}
-              className="bg-white rounded-xl shadow-sm border border-neutral-200 p-5 hover:shadow-md transition-shadow"
+              className="bg-white rounded-xl shadow-sm border border-border p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex-1 min-w-0">

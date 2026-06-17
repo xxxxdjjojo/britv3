@@ -45,7 +45,7 @@ export default function StarRatingBreakdown({ stats }: StarRatingBreakdownProps)
     <section className="space-y-6">
       {/* Large rating display */}
       <div className="flex items-center gap-4">
-        <span className="text-5xl font-bold text-[#1B4D3E]">{avg.toFixed(1)}</span>
+        <span className="text-5xl font-bold text-brand-primary">{avg.toFixed(1)}</span>
         <div className="space-y-1">
           <FilledStars rating={avg} />
           <p className="text-sm text-slate-500">({total} reviews)</p>
@@ -59,9 +59,9 @@ export default function StarRatingBreakdown({ stats }: StarRatingBreakdownProps)
           return (
             <div key={label} className="flex items-center gap-3">
               <span className="text-sm text-slate-600 w-6 shrink-0">{label}</span>
-              <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#1B4D3E] rounded-full"
+                  className="h-full bg-brand-primary rounded-full"
                   style={{ width: `${pct}%` }}
                 />
               </div>

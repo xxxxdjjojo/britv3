@@ -115,6 +115,7 @@ export default async function FraudDetectionPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Operations"
         title="Fraud Detection"
         description="Rule-based risk scoring for users showing suspicious signals."
       />

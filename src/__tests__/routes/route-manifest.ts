@@ -318,8 +318,9 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/broker/tenancy",
   "/dashboard/broker/viewings",
   "/dashboard/broker/viewings/book",
-  // Homebuyer — shared `[role]` tools not wired into the homebuyer nav.
-  "/dashboard/homebuyer/ai-match",
+  // Homebuyer — shared `[role]` pages not wired into the homebuyer nav.
+  // (ai-match/calculators/moving/offers moved INTO the homebuyer nav in the
+  //  fix/supabase-migration-version-collisions base, so they are no longer off-nav.)
   "/dashboard/homebuyer/applications",
   "/dashboard/homebuyer/billing",
   "/dashboard/homebuyer/billing/checkout/one-time",
@@ -330,11 +331,8 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/homebuyer/billing/payment-methods",
   "/dashboard/homebuyer/billing/refund",
   "/dashboard/homebuyer/billing/subscription",
-  "/dashboard/homebuyer/calculators",
   "/dashboard/homebuyer/listings",
   "/dashboard/homebuyer/listings/new",
-  "/dashboard/homebuyer/moving",
-  "/dashboard/homebuyer/offers",
   "/dashboard/homebuyer/referrals",
   "/dashboard/homebuyer/services",
   "/dashboard/homebuyer/tenancy",

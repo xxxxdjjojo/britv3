@@ -43,7 +43,7 @@ function buildCsp(nonce: string): string {
     `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com https://us-assets.i.posthog.com https://js.stripe.com`,
     "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com${localSupabase}`,
-    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com${localSupabase}`,
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com${localSupabase}`,
     "frame-src https://accounts.google.com https://appleid.apple.com https://js.stripe.com",
     "worker-src 'self' blob:",
     "form-action 'self'",

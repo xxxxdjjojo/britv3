@@ -374,7 +374,7 @@ export function FinancialEntryForm(
                 className="h-16 w-16 rounded border object-cover dark:border-gray-600"
               />
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded border bg-gray-50 text-xs text-gray-500 dark:border-gray-600 dark:bg-gray-800">
+              <div className="flex h-16 w-16 items-center justify-center rounded border bg-surface text-xs text-gray-500 dark:border-gray-600 dark:bg-gray-800">
                 PDF
               </div>
             )}

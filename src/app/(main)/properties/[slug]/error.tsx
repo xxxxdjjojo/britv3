@@ -12,7 +12,7 @@ export default function PropertyDetailError({
   reset: () => void;
 }>) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-50 px-4 py-12">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4 py-12">
       <div className="w-full max-w-lg space-y-8 rounded-2xl border border-brand-primary/10 bg-white p-8 shadow-sm">
         {/* Icon */}
         <div className="flex justify-center">

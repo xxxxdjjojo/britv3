@@ -115,7 +115,7 @@ export default function AddPropertyPage() {
         <div className="mb-8">
           <Link
             href="/dashboard/landlord/properties"
-            className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-[#1B4D3E]"
+            className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-brand-primary"
           >
             <ChevronLeft className="size-4" />
             Back to Properties
@@ -273,7 +273,7 @@ export default function AddPropertyPage() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white"
+              className="bg-brand-primary hover:bg-brand-primary/90 text-white"
             >
               {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
               Add Property

@@ -14,7 +14,7 @@ const STATUS_STYLES: Record<DisplayStatus, { bg: string; text: string; label: st
     label: "Ending Soon",
   },
   ended: {
-    bg: "bg-gray-100 dark:bg-gray-800/30",
+    bg: "bg-muted dark:bg-gray-800/30",
     text: "text-gray-600 dark:text-gray-400",
     label: "Ended",
   },

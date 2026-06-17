@@ -15,7 +15,7 @@ type Props = Readonly<{
 function ContactCard({ contact }: Readonly<{ contact: Contact }>) {
   if (!contact.name && !contact.email) return null;
   return (
-    <div className="bg-slate-50 rounded-xl p-4">
+    <div className="bg-surface rounded-xl p-4">
       <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
         {contact.role}
       </p>
@@ -26,7 +26,7 @@ function ContactCard({ contact }: Readonly<{ contact: Contact }>) {
         {contact.email && (
           <a
             href={`mailto:${contact.email}`}
-            className="flex items-center gap-2 text-xs text-[#1B4D3E] hover:underline"
+            className="flex items-center gap-2 text-xs text-brand-primary hover:underline"
           >
             <Mail size={12} />
             {contact.email}

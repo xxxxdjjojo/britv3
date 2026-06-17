@@ -70,7 +70,7 @@ export function IncomeExpenseReportClient({ monthlyData, categoryData }: Props) 
           {/* Legend */}
           <div className="mt-3 flex items-center justify-center gap-6 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <span className="block h-2 w-6 rounded-full bg-[#1B4D3E]/80" />
+              <span className="block h-2 w-6 rounded-full bg-brand-primary/80" />
               Income
             </span>
             <span className="flex items-center gap-1.5">

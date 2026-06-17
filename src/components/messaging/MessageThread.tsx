@@ -55,22 +55,22 @@ function ThreadHeader(
     .toUpperCase();
 
   return (
-    <div className="flex items-center justify-between border-b px-4 py-3">
+    <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
       <div className="flex items-center gap-3">
         <div className="relative">
           <Avatar>
-            <AvatarFallback className="bg-muted text-foreground text-sm font-medium">
+            <AvatarFallback className="bg-brand-primary-lighter text-brand-primary-dark text-sm font-semibold">
               {initials || "?"}
             </AvatarFallback>
           </Avatar>
         </div>
         <div>
-          <p className="text-sm font-semibold text-foreground">{displayName}</p>
+          <p className="font-heading text-sm font-semibold text-foreground">{displayName}</p>
           {propertyInfo && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground border rounded-lg px-2 py-1 bg-muted/30 mt-1">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground border border-border rounded-lg px-2 py-1 bg-muted/40 mt-1">
               <span className="font-medium truncate max-w-48">{propertyInfo.address}</span>
               {propertyInfo.price && (
-                <span className="text-primary font-semibold">{propertyInfo.price}</span>
+                <span className="text-brand-primary font-semibold">{propertyInfo.price}</span>
               )}
             </div>
           )}
@@ -93,15 +93,15 @@ function ThreadHeader(
 
 function DateSeparator(props: Readonly<{ label: string }>) {
   return (
-    <div className="flex items-center gap-3 py-4">
-      <div className="flex-1 h-px bg-border" />
-      <span className="text-xs text-muted-foreground">{props.label}</span>
-      <div className="flex-1 h-px bg-border" />
+    <div className="flex items-center justify-center py-3">
+      <span className="rounded-full bg-muted px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        {props.label}
+      </span>
     </div>
   );
 }
 
-function MessageBubble(
+export function MessageBubble(
   props: Readonly<{ message: Message; isOwn: boolean }>,
 ) {
   const { message, isOwn } = props;
@@ -125,7 +125,7 @@ function MessageBubble(
     >
       {!isOwn && (
         <Avatar className="h-8 w-8 shrink-0 mt-1">
-          <AvatarFallback className="bg-muted text-foreground text-xs font-medium">
+          <AvatarFallback className="bg-brand-primary-lighter text-brand-primary-dark text-xs font-semibold">
             {senderInitials}
           </AvatarFallback>
         </Avatar>
@@ -138,10 +138,10 @@ function MessageBubble(
       >
         <div
           className={cn(
-            "rounded-2xl px-4 py-2.5 text-sm",
+            "rounded-2xl px-4 py-2.5 text-sm shadow-sm",
             isOwn
-              ? "bg-primary text-primary-foreground rounded-br-none"
-              : "bg-card border rounded-bl-none",
+              ? "bg-brand-primary text-white rounded-br-md"
+              : "bg-muted text-foreground rounded-bl-md",
           )}
         >
           <p className="whitespace-pre-wrap break-words">{message.content}</p>
@@ -326,7 +326,7 @@ export default function MessageThread(
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-surface">
       <ThreadHeader participantName={participantName} propertyInfo={propertyInfo} />
 
       {/* Message feed */}

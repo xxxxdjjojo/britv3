@@ -118,7 +118,7 @@ export default function MessageComposer(
   const charCount = content.length;
 
   return (
-    <div className="border-t bg-background p-3 space-y-2">
+    <div className="border-t border-border bg-surface p-3 space-y-2">
       {/* Attachment preview */}
       {selectedFile && (
         <AttachmentPreview
@@ -208,7 +208,7 @@ export default function MessageComposer(
           disabled={
             sendMutation.isPending || isUploading || (!content.trim() && !selectedFile)
           }
-          className="shrink-0"
+          className="shrink-0 bg-brand-primary text-white hover:bg-brand-primary-dark"
         >
           {isUploading ? "Uploading..." : sendMutation.isPending ? "Sending..." : "Send"}
         </Button>

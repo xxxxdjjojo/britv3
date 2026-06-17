@@ -16,7 +16,7 @@ export default async function PaymentsPage() {
   if (process.env.FEATURE_STRIPE_CONNECT_ENABLED !== "true") {
     return (
       <div className="p-6 max-w-7xl">
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-neutral-50 py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-surface py-20 text-center">
           <CreditCard className="size-12 text-neutral-300" />
           <h2 className="mt-4 text-lg font-semibold text-neutral-700">
             Payments coming soon
@@ -61,10 +61,15 @@ export default async function PaymentsPage() {
   // ── Not connected — show onboarding banner ───────────────────────────────
   if (!isOnboarded) {
     return (
-      <div className="p-6 space-y-6 max-w-7xl">
+      <div className="p-6 space-y-8 max-w-7xl">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Payments</h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400 mb-1">
+            Financial Health
+          </p>
+          <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark">
+            Payments
+          </h1>
+          <p className="mt-1.5 text-sm text-neutral-500">
             Manage your earnings and payouts.
           </p>
         </div>
@@ -80,10 +85,15 @@ export default async function PaymentsPage() {
   ]);
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl">
+    <div className="p-6 space-y-8 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Payments</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400 mb-1">
+          Financial Health
+        </p>
+        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark">
+          Payments
+        </h1>
+        <p className="mt-1.5 text-sm text-neutral-500">
           Your earnings, balances, and payout history.
         </p>
       </div>

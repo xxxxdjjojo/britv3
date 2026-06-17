@@ -163,14 +163,14 @@ export default function PricingPage() {
         See the commission detail on the{" "}
         <Link
           href="/fee-transparency"
-          className="text-[#1B4D3E] underline-offset-4 hover:underline"
+          className="text-brand-primary underline-offset-4 hover:underline"
         >
           fee transparency
         </Link>{" "}
         page, or{" "}
         <Link
           href="/contact"
-          className="text-[#1B4D3E] underline-offset-4 hover:underline"
+          className="text-brand-primary underline-offset-4 hover:underline"
         >
           talk to sales
         </Link>

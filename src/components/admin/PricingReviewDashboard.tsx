@@ -66,10 +66,10 @@ export function PricingReviewDashboard({ snapshot }: Props) {
         <h2 className="font-heading text-xl font-bold text-neutral-900">
           MRR by segment
         </h2>
-        <div className="mt-4 overflow-x-auto rounded-xl border border-neutral-200">
+        <div className="mt-4 overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 text-neutral-600">
+              <tr className="border-b border-border text-neutral-600">
                 <th className="p-3">Segment</th>
                 <th className="p-3">MRR</th>
                 <th className="p-3">Share</th>
@@ -100,7 +100,7 @@ export function PricingReviewDashboard({ snapshot }: Props) {
           {scenarios.map((s) => (
             <div
               key={s.key}
-              className="rounded-xl border border-neutral-200 p-4"
+              className="rounded-xl border border-border p-4"
               data-scenario={s.key}
             >
               <p className="text-xs uppercase tracking-wide text-neutral-500">
@@ -127,7 +127,7 @@ export function PricingReviewDashboard({ snapshot }: Props) {
 
 function Stat({ label, value }: Readonly<{ label: string; value: string }>) {
   return (
-    <div className="rounded-xl border border-neutral-200 p-4">
+    <div className="rounded-xl border border-border p-4">
       <p className="text-xs uppercase tracking-wide text-neutral-500">{label}</p>
       <p className="mt-1 font-heading text-2xl font-bold text-neutral-900">{value}</p>
     </div>

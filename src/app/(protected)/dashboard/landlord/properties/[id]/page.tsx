@@ -57,7 +57,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
     <div className="space-y-6 p-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-sm text-slate-500">
-        <Link href="/dashboard/landlord/properties" className="hover:text-[#1B4D3E] hover:underline">
+        <Link href="/dashboard/landlord/properties" className="hover:text-brand-primary hover:underline">
           Properties
         </Link>
         <ChevronRight className="size-4" />
@@ -85,7 +85,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
           )}
           <Link
             href={`/dashboard/landlord/properties/${props.id}/listing`}
-            className="rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#1B4D3E]/90"
+            className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-primary/90"
           >
             Create Listing
           </Link>
@@ -196,7 +196,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
                     )}
                     <Link
                       href={`/dashboard/landlord/properties/${props.id}/tenancies`}
-                      className="mt-2 inline-flex text-sm font-bold text-[#1B4D3E] hover:underline"
+                      className="mt-2 inline-flex text-sm font-bold text-brand-primary hover:underline"
                     >
                       View all tenancies
                     </Link>
@@ -206,7 +206,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
                     <p>No active tenancy.</p>
                     <Link
                       href={`/dashboard/landlord/properties/${props.id}/tenancies`}
-                      className="mt-2 inline-flex font-bold text-[#1B4D3E] hover:underline"
+                      className="mt-2 inline-flex font-bold text-brand-primary hover:underline"
                     >
                       Add tenancy
                     </Link>
@@ -224,7 +224,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
               <h3 className="font-bold text-slate-900 dark:text-slate-100">Tenancy History ({tenancies.length})</h3>
               <Link
                 href={`/dashboard/landlord/properties/${props.id}/tenancies`}
-                className="text-sm font-bold text-[#1B4D3E] hover:underline"
+                className="text-sm font-bold text-brand-primary hover:underline"
               >
                 Manage tenancies
               </Link>
@@ -239,7 +239,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
                   <Link
                     key={tenancy.id}
                     href={`/dashboard/landlord/properties/${props.id}/tenancies/${tenancy.id}`}
-                    className="flex items-center justify-between p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
+                    className="flex items-center justify-between p-4 transition-colors hover:bg-surface dark:hover:bg-slate-800"
                   >
                     <div>
                       <p className="font-medium text-slate-900 dark:text-slate-100">{tenancy.tenant_name}</p>
@@ -271,7 +271,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
               <h3 className="font-bold text-slate-900 dark:text-slate-100">Documents ({documents.length})</h3>
               <Link
                 href={`/dashboard/landlord/properties/${props.id}/documents`}
-                className="text-sm font-bold text-[#1B4D3E] hover:underline"
+                className="text-sm font-bold text-brand-primary hover:underline"
               >
                 Manage documents
               </Link>
@@ -289,7 +289,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
               </h3>
               <Link
                 href={`/dashboard/landlord/properties/${props.id}/maintenance`}
-                className="text-sm font-bold text-[#1B4D3E] hover:underline"
+                className="text-sm font-bold text-brand-primary hover:underline"
               >
                 View all
               </Link>

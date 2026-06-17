@@ -165,7 +165,7 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
 
         {/* Page header */}
         <header>
-          <h1 className="text-4xl font-bold font-heading text-neutral-900 mb-2">
+          <h1 className="text-4xl font-bold font-heading text-brand-primary-dark mb-2">
             {city_data.name} Property Statistics
           </h1>
           <p className="text-neutral-500 text-lg">
@@ -192,8 +192,8 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
                   <div className={`h-9 w-9 rounded-full flex items-center justify-center mb-3 ${
                     isHighlight
                       ? isPositive
-                        ? "bg-emerald-50 text-emerald-600"
-                        : "bg-rose-50 text-rose-600"
+                        ? "bg-success/10 text-success"
+                        : "bg-error/10 text-error"
                       : "bg-primary/5 text-primary"
                   }`}>
                     <Icon className="size-4" />
@@ -202,8 +202,8 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
                   <p className={`text-2xl font-bold font-heading leading-none ${
                     isHighlight
                       ? isPositive
-                        ? "text-emerald-600"
-                        : "text-rose-600"
+                        ? "text-success"
+                        : "text-error"
                       : "text-neutral-900"
                   }`}>
                     {card.value}

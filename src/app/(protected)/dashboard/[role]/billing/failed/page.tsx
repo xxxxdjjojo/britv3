@@ -145,7 +145,7 @@ function PaymentFailedContent() {
                 <CreditCard size={16} className="mt-0.5 shrink-0 text-gray-400" />
                 <Link
                   href={`${basePath}/payment-methods`}
-                  className="underline hover:text-[#1B4D3E] dark:hover:text-emerald-400"
+                  className="underline hover:text-brand-primary dark:hover:text-emerald-400"
                 >
                   Manage your payment methods
                 </Link>
@@ -154,7 +154,7 @@ function PaymentFailedContent() {
                 <Phone size={16} className="mt-0.5 shrink-0 text-gray-400" />
                 <a
                   href="tel:+44"
-                  className="underline hover:text-[#1B4D3E] dark:hover:text-emerald-400"
+                  className="underline hover:text-brand-primary dark:hover:text-emerald-400"
                 >
                   Contact your bank to authorise the payment
                 </a>
@@ -165,7 +165,7 @@ function PaymentFailedContent() {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button
-            className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-2"
+            className="bg-brand-primary text-white hover:bg-brand-primary-light gap-2"
             asChild
           >
             <Link href={`${basePath}/checkout/subscription`}>

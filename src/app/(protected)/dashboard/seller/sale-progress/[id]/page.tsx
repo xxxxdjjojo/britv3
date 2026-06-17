@@ -64,7 +64,7 @@ export default async function SaleProgressionPage({ params }: Props) {
         </div>
         <button
           type="button"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-surface"
         >
           <Share2 size={16} />
           Share Progress

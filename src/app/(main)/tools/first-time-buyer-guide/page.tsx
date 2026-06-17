@@ -73,7 +73,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "Bonus is paid on completion, not exchange",
       "Property must be \u00a3250,000 or less (or \u00a3450,000 in London)",
     ],
-    color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+    color: "bg-brand-primary/10 text-brand-primary",
   },
   {
     icon: Landmark,
@@ -87,8 +87,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "You must have had the LISA open for at least 12 months before using it",
       "25% penalty for withdrawals not used for first home or retirement",
     ],
-    color:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    color: "bg-brand-primary/10 text-brand-primary",
   },
   {
     icon: Users,
@@ -102,8 +101,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "Household income must be \u00a380,000 or less (or \u00a390,000 in London)",
       "Available on new-build and some resale properties",
     ],
-    color:
-      "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+    color: "bg-brand-primary/10 text-brand-primary",
   },
   {
     icon: Key,
@@ -117,8 +115,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "Houses: 35% discount after 3 years, +1% per year up to 70%",
       "Flats: 50% discount after 3 years, +2% per year up to 70%",
     ],
-    color:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    color: "bg-brand-gold/20 text-brand-gold-foreground",
   },
 ];
 
@@ -189,7 +186,7 @@ function AffordabilityChecker() {
         </div>
 
         {/* Results */}
-        <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
+        <div className="rounded-xl border border-neutral-200 bg-muted p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Your Estimated Affordable Range
           </p>
@@ -377,18 +374,18 @@ export default function FirstTimeBuyerGuidePage() {
                 </div>
                 <h3 className="text-lg font-bold">Ready to Buy?</h3>
               </div>
-              <p className="mb-6 text-sm text-blue-100">
+              <p className="mb-6 text-sm text-brand-primary-lighter">
                 Speak to an FCA-regulated mortgage broker who specialises in
                 first-time buyers. Get expert advice on the best deals and
                 schemes for you.
               </p>
               <Link
                 href="/marketplace?category=mortgage-broker"
-                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-neutral-50"
+                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-muted"
               >
                 Find a Broker
               </Link>
-              <p className="mt-4 text-center text-[10px] text-blue-200">
+              <p className="mt-4 text-center text-[10px] text-brand-primary-lighter">
                 Free, no-obligation advice
               </p>
             </div>
@@ -401,7 +398,7 @@ export default function FirstTimeBuyerGuidePage() {
                 </h3>
                 <Link
                   href="/tools/mortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Calculator className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -413,7 +410,7 @@ export default function FirstTimeBuyerGuidePage() {
                 </Link>
                 <Link
                   href="/tools/stamp-duty-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Home className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -427,7 +424,7 @@ export default function FirstTimeBuyerGuidePage() {
                 </Link>
                 <Link
                   href="/tools/moving-cost-estimator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <PiggyBank className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -443,7 +440,7 @@ export default function FirstTimeBuyerGuidePage() {
             </Card>
 
             {/* Disclaimer */}
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-muted/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
               <div className="flex gap-3">
                 <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
                 <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">

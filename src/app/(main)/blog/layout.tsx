@@ -1,5 +1,5 @@
 export default function BlogLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <div className="min-h-screen bg-neutral-50">{children}</div>;
+  return <div className="min-h-screen bg-surface">{children}</div>;
 }

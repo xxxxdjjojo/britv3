@@ -88,7 +88,7 @@ export default function ReviewsPage() {
     <div className="p-6 space-y-6 max-w-4xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Reviews</h1>
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">Reviews</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Manage your client reviews and build your reputation.
         </p>
@@ -96,17 +96,17 @@ export default function ReviewsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 text-center">
+        <div className="bg-white rounded-xl shadow-sm border border-border p-6 text-center">
           <p className="text-4xl font-black text-neutral-900">{averageRating.toFixed(1)}</p>
           <StarRating rating={Math.round(averageRating)} />
           <p className="mt-1 text-xs text-neutral-500">{reviews.length} reviews</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 text-center">
-          <p className="text-4xl font-black text-[#1B4D3E]">{fiveStarCount}</p>
+        <div className="bg-white rounded-xl shadow-sm border border-border p-6 text-center">
+          <p className="text-4xl font-black text-brand-primary">{fiveStarCount}</p>
           <p className="text-sm font-medium text-neutral-600">5-Star Reviews</p>
           <p className="text-xs text-neutral-400">{Math.round((fiveStarCount / reviews.length) * 100)}% of total</p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 text-center">
+        <div className="bg-white rounded-xl shadow-sm border border-border p-6 text-center">
           <p className="text-4xl font-black text-neutral-900">
             {reviews.filter((r) => r.responded).length}
           </p>
@@ -122,7 +122,7 @@ export default function ReviewsPage() {
         {reviews.map((review) => (
           <div
             key={review.id}
-            className="bg-white rounded-xl shadow-sm border border-neutral-200 p-5"
+            className="bg-white rounded-xl shadow-sm border border-border p-5"
           >
             <div className="flex items-start justify-between mb-3">
               <div>

@@ -5,6 +5,8 @@ import { Mail } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import UnreadBadge from "@/components/messaging/UnreadBadge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { cn } from "@/lib/utils";
@@ -12,7 +14,16 @@ import { cn } from "@/lib/utils";
 export function ProtectedHeader() {
   const scrollDirection = useScrollDirection();
   const { isMobile, isTablet } = useBreakpoint();
+  const { user } = useAuth();
   const shouldAutoHide = (isMobile || isTablet) && scrollDirection === "down";
+
+  const displayName = user?.user_metadata?.display_name ?? user?.email ?? "User";
+  const initials = displayName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <header
@@ -37,6 +48,16 @@ export function ProtectedHeader() {
           </Link>
 
           <NotificationBell />
+
+          <Link
+            href="/settings"
+            aria-label="Account settings"
+            className="ml-1 flex items-center rounded-full transition hover:ring-2 hover:ring-brand-primary/30"
+          >
+            <Avatar size="sm">
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+          </Link>
         </div>
       </div>
     </header>

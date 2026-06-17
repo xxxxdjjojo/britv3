@@ -90,7 +90,7 @@ export function UserManagementClient({
             {page > 0 && (
               <a
                 href={buildPageHref(page - 1)}
-                className="rounded border border-neutral-300 px-3 py-1 hover:bg-neutral-50"
+                className="rounded border border-neutral-300 px-3 py-1 hover:bg-muted"
               >
                 Previous
               </a>
@@ -98,7 +98,7 @@ export function UserManagementClient({
             {page + 1 < totalPages && (
               <a
                 href={buildPageHref(page + 1)}
-                className="rounded border border-neutral-300 px-3 py-1 hover:bg-neutral-50"
+                className="rounded border border-neutral-300 px-3 py-1 hover:bg-muted"
               >
                 Next
               </a>

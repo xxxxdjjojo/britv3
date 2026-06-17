@@ -10,6 +10,7 @@ export default async function AdminSubscriptionsPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Growth"
         title="Subscription Management"
         description="View and manage user subscriptions."
       />

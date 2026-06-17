@@ -105,15 +105,15 @@ export function Step6Epc({ listing, listingId }: Props) {
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-colors ${
-              isDragActive ? "border-[#1B4D3E] bg-[#1B4D3E]/5" : "border-slate-200 hover:border-slate-300 bg-slate-50"
+              isDragActive ? "border-brand-primary bg-brand-primary/5" : "border-slate-200 hover:border-slate-300 bg-surface"
             }`}
           >
             <input {...getInputProps()} />
             <div className="flex flex-col items-center gap-3 text-slate-500">
               {uploading ? (
-                <div className="h-10 w-10 rounded-full border-2 border-[#1B4D3E]/30 border-t-[#1B4D3E] animate-spin" />
+                <div className="h-10 w-10 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin" />
               ) : (
-                <div className="h-14 w-14 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center">
                   <FileText size={28} className="text-slate-400" />
                 </div>
               )}

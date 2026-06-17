@@ -52,17 +52,17 @@ export function ConnectedAccountsCard({
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Link2 className="size-5 text-brand-primary" />
+    <Card className="rounded-xl border border-border">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 font-heading text-base font-semibold text-brand-primary-dark">
+          <Link2 className="size-4 text-brand-primary" />
           Connected Accounts
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm text-muted-foreground">
           Link or unlink third-party login providers.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-2">
         {loading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="size-4 animate-spin" />
@@ -76,55 +76,56 @@ export function ConnectedAccountsCard({
                 No connected accounts found.
               </p>
             ) : (
-              <div className="space-y-2">
-                {identities.map((identity) => (
-                  <div
-                    key={identity.identity_id}
-                    className="flex items-center gap-3 rounded-lg border p-3"
-                  >
-                    <Link2 className="size-5 text-muted-foreground" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium">
-                          {providerLabel(identity.provider)}
-                        </p>
-                        <Badge
-                          variant="secondary"
-                          className="bg-success/20 text-success text-xs"
-                        >
-                          Connected
-                        </Badge>
-                      </div>
-                      {identity.identity_data?.email && (
-                        <p className="text-xs text-muted-foreground truncate">
-                          {identity.identity_data.email as string}
-                        </p>
-                      )}
-                    </div>
-                    {identity.provider !== "email" && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onUnlink(identity.identity_id)}
-                        disabled={unlinkingId === identity.identity_id}
+              identities.map((identity) => (
+                <div
+                  key={identity.identity_id}
+                  className="flex items-center gap-3 rounded-lg border border-border p-4"
+                >
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <Link2 className="size-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium">
+                        {providerLabel(identity.provider)}
+                      </p>
+                      <Badge
+                        variant="secondary"
+                        className="bg-success/10 text-success border-0 text-xs"
                       >
-                        {unlinkingId === identity.identity_id ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <Unlink className="size-4" />
-                        )}
-                        <span className="sr-only">Disconnect</span>
-                      </Button>
+                        Connected
+                      </Badge>
+                    </div>
+                    {identity.identity_data?.email && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {identity.identity_data.email as string}
+                      </p>
                     )}
                   </div>
-                ))}
-              </div>
+                  {identity.provider !== "email" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onUnlink(identity.identity_id)}
+                      disabled={unlinkingId === identity.identity_id}
+                      className="shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive border-border"
+                    >
+                      {unlinkingId === identity.identity_id ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <Unlink className="size-4" />
+                      )}
+                      Disconnect
+                    </Button>
+                  )}
+                </div>
+              ))
             )}
 
             {/* Available providers to link */}
             {unlinkableProviders.length > 0 && (
               <div className="space-y-2 pt-2">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
                   Link another account
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -135,7 +136,7 @@ export function ConnectedAccountsCard({
                       size="sm"
                       onClick={() => onLink(provider)}
                     >
-                      <Link2 className="size-4 mr-1" />
+                      <Link2 className="size-4" />
                       {providerLabel(provider)}
                     </Button>
                   ))}

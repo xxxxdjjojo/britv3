@@ -102,7 +102,7 @@ export function Step2Details({ listing, listingId }: Props) {
               max={20}
               value={bedrooms}
               onChange={(e) => setBedrooms(e.target.value)}
-              className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+              className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
             />
           </div>
           <div>
@@ -113,7 +113,7 @@ export function Step2Details({ listing, listingId }: Props) {
               max={10}
               value={bathrooms}
               onChange={(e) => setBathrooms(e.target.value)}
-              className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+              className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
             />
           </div>
         </div>
@@ -129,7 +129,7 @@ export function Step2Details({ listing, listingId }: Props) {
                 className={cn(
                   "px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-150",
                   selectedFeatures.includes(f)
-                    ? "border-[#1B4D3E] bg-[#1B4D3E] text-white"
+                    ? "border-brand-primary bg-brand-primary text-white"
                     : "border-slate-200 text-slate-600 hover:border-slate-300",
                 )}
               >
@@ -152,7 +152,7 @@ export function Step2Details({ listing, listingId }: Props) {
                 className={cn(
                   "w-9 h-9 rounded-lg border-2 text-sm font-bold transition-all",
                   epcBand === b
-                    ? "border-[#1B4D3E] bg-[#1B4D3E] text-white"
+                    ? "border-brand-primary bg-brand-primary text-white"
                     : "border-slate-200 text-slate-600 hover:border-slate-300",
                 )}
               >
@@ -175,7 +175,7 @@ export function Step2Details({ listing, listingId }: Props) {
                 className={cn(
                   "w-9 h-9 rounded-lg border-2 text-sm font-bold transition-all",
                   councilTaxBand === b
-                    ? "border-[#1B4D3E] bg-[#1B4D3E] text-white"
+                    ? "border-brand-primary bg-brand-primary text-white"
                     : "border-slate-200 text-slate-600 hover:border-slate-300",
                 )}
               >
@@ -198,7 +198,7 @@ export function Step2Details({ listing, listingId }: Props) {
                 className={cn(
                   "px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-150",
                   planningStatus === opt.value
-                    ? "border-[#1B4D3E] bg-[#1B4D3E] text-white"
+                    ? "border-brand-primary bg-brand-primary text-white"
                     : "border-slate-200 text-slate-600 hover:border-slate-300",
                 )}
               >

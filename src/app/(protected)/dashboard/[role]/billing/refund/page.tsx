@@ -123,8 +123,8 @@ export default function RefundRequestPage() {
                     key={reason}
                     className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
                       selectedReason === reason
-                        ? "border-[#1B4D3E] bg-[#E8F5EE] dark:border-emerald-700 dark:bg-[#1B4D3E]/10"
-                        : "border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                        ? "border-brand-primary bg-brand-primary-lighter dark:border-emerald-700 dark:bg-brand-primary/10"
+                        : "border-border hover:bg-surface dark:border-gray-700 dark:hover:bg-gray-800"
                     }`}
                   >
                     <input
@@ -159,7 +159,7 @@ export default function RefundRequestPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting || !selectedReason}
-                className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F]"
+                className="bg-brand-primary text-white hover:bg-brand-primary-light"
               >
                 {isSubmitting ? (
                   <><Loader2 size={14} className="mr-2 animate-spin" />Submitting…</>

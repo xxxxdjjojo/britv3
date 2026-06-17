@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ProviderSidebar } from "@/components/dashboard/provider/ProviderSidebar";
 import { ProviderContextWrapper } from "@/components/dashboard/provider/ProviderContextWrapper";
-import { ProviderMainWrapper } from "@/components/dashboard/provider/ProviderMainWrapper";
 import { resolveProviderId } from "@/lib/provider/resolve-provider";
 
 export default async function ProviderLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -41,14 +39,11 @@ export default async function ProviderLayout({ children }: Readonly<{ children: 
     chargesEnabled: (stripeAccount?.charges_enabled as boolean | null) ?? false,
   };
 
+  // Parent dashboard/layout.tsx provides the shared Sidebar + main; keep the
+  // provider data context so provider pages still receive initialData.
   return (
-    <div className="flex min-h-screen">
-      <ProviderSidebar />
-      <ProviderMainWrapper>
-        <ProviderContextWrapper initialData={initialData}>
-          {children}
-        </ProviderContextWrapper>
-      </ProviderMainWrapper>
-    </div>
+    <ProviderContextWrapper initialData={initialData}>
+      {children}
+    </ProviderContextWrapper>
   );
 }

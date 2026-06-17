@@ -50,7 +50,7 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
     <article className="flex flex-col sm:flex-row gap-4 p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
       {/* Left: Avatar */}
       <div className="relative flex-shrink-0 self-start">
-        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-muted dark:bg-slate-800">
           {profiles.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -66,7 +66,7 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
         </div>
         {isVerified && (
           <span
-            className="absolute -bottom-1 -right-1 bg-[#1B4D3E] rounded-full p-0.5"
+            className="absolute -bottom-1 -right-1 bg-brand-primary rounded-full p-0.5"
             title="Britestate Verified"
           >
             <ShieldCheck className="w-4 h-4 text-white" />
@@ -95,7 +95,7 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
             </span>
           ))}
           {provider.city && (
-            <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium rounded-full">
+            <span className="px-2 py-0.5 bg-muted dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium rounded-full">
               {provider.city}
             </span>
           )}
@@ -122,7 +122,7 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
         {/* Trust badges (compact, max 3) */}
         <div className="flex flex-wrap gap-1.5 mb-2">
           {isVerified && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#1B4D3E] text-white text-xs font-bold rounded-full">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-primary text-white text-xs font-bold rounded-full">
               <ShieldCheck className="w-3 h-3" /> Verified
             </span>
           )}

@@ -1,0 +1,63 @@
+# Performance budget gate (REPORT-ONLY initially).
+# Builds a production bundle, serves it, and runs:
+#   1. e2e/perf route-status guard (critical routes return < 400)
+#   2. vitest bundle budget (Recharts code-split off the detail first load)
+#   3. Lighthouse CI against homepage + property detail (assertions are "warn")
+# Flip lighthouserc assertions warn -> error, and remove continue-on-error,
+# once the budgets are consistently green.
+name: Perf budget
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/perf-budget.yml"
+      - "src/**"
+      - "next.config.ts"
+      - "lighthouserc.json"
+      - "e2e/perf/**"
+  workflow_dispatch:
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    env:
+      SKIP_ENV_VALIDATION: "true"
+      NEXT_PUBLIC_SUPABASE_URL: "https://test.supabase.co"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key"
+      SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key"
+      STRIPE_SECRET_KEY: "sk_test_ci"
+      STRIPE_WEBHOOK_SECRET: "whsec_ci"
+      QUOTE_SIGNING_SECRET: "ci-quote-signing-secret"
+      NEXT_PUBLIC_ENABLE_SEARCH_LIVE_DATA: "false"
+      PERF_BASE_URL: "http://localhost:3004"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (production)
+        run: pnpm build
+
+      - name: Bundle budget (vitest)
+        run: pnpm exec vitest run src/perf --reporter=dot
+
+      - name: Start production server
+        run: |
+          PORT=3004 pnpm start &
+          npx --yes wait-on http://localhost:3004/ --timeout 60000
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Route-status guard (e2e/perf)
+        run: pnpm exec playwright test e2e/perf/critical-routes-status.spec.ts --project=chromium
+
+      - name: Lighthouse CI (report-only)
+        run: npx --yes @lhci/cli@0.14.x autorun
+        continue-on-error: true

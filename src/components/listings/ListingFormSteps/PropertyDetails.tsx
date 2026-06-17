@@ -1,6 +1,7 @@
 "use client";
 
 import type { UseFormReturn } from "react-hook-form";
+import { Home, MapPin, Building2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -44,30 +45,35 @@ export function PropertyDetails(
   } = props.form;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Listing Type */}
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-neutral-900">
+      <fieldset className="space-y-3">
+        <legend className="flex items-center gap-2 text-sm font-semibold text-brand-primary-dark">
+          <Home className="size-4 text-brand-primary" />
           Listing Type
         </legend>
-        <div className="flex gap-4">
-          <label className="flex items-center gap-2">
+        <div className="flex gap-3">
+          <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-xl border border-border px-4 py-3 transition-colors has-[:checked]:border-brand-primary has-[:checked]:bg-brand-primary-lighter">
             <input
               type="radio"
               value="sale"
               {...register("listing_type")}
-              className="size-4 accent-brand-accent"
+              className="size-4 accent-brand-primary"
             />
-            <span className="text-sm text-neutral-700">For Sale</span>
+            <span className="text-sm font-medium text-neutral-700">
+              For Sale
+            </span>
           </label>
-          <label className="flex items-center gap-2">
+          <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-xl border border-border px-4 py-3 transition-colors has-[:checked]:border-brand-primary has-[:checked]:bg-brand-primary-lighter">
             <input
               type="radio"
               value="rent"
               {...register("listing_type")}
-              className="size-4 accent-brand-accent"
+              className="size-4 accent-brand-primary"
             />
-            <span className="text-sm text-neutral-700">For Rent</span>
+            <span className="text-sm font-medium text-neutral-700">
+              For Rent
+            </span>
           </label>
         </div>
         {errors.listing_type && (
@@ -75,9 +81,12 @@ export function PropertyDetails(
         )}
       </fieldset>
 
-      {/* Address */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium text-neutral-900">Address</h3>
+      {/* Location Details */}
+      <div className="space-y-4 border-t border-border pt-6">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-brand-primary-dark">
+          <MapPin className="size-4 text-brand-primary" />
+          Location Details
+        </h3>
 
         <div className="space-y-2">
           <Label htmlFor="address_line1">Address Line 1</Label>
@@ -140,10 +149,11 @@ export function PropertyDetails(
         </div>
       </div>
 
-      {/* Property Details */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium text-neutral-900">
-          Property Details
+      {/* Property Classification */}
+      <div className="space-y-4 border-t border-border pt-6">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-brand-primary-dark">
+          <Building2 className="size-4 text-brand-primary" />
+          Property Classification
         </h3>
 
         <div className="space-y-2">

@@ -47,7 +47,7 @@ export default async function MyListingsPage({ searchParams }: Props) {
         </div>
         <Link
           href="/dashboard/seller/listings/create?step=1"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] active:scale-95 transition-all shadow-lg shadow-[#1B4D3E]/20"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light active:scale-95 transition-all shadow-lg shadow-brand-primary/20"
         >
           <Plus size={16} />
           Create New Listing
@@ -59,7 +59,7 @@ export default async function MyListingsPage({ searchParams }: Props) {
           <p className="text-slate-400 mb-4">No listings{status ? ` with status "${status}"` : ""}</p>
           <Link
             href="/dashboard/seller/listings/create?step=1"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-primary text-white text-sm font-semibold"
           >
             <Plus size={14} /> Create your first listing
           </Link>

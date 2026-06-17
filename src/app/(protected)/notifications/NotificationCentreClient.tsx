@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Star,
   RefreshCw,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -67,13 +68,13 @@ function getIconConfig(eventType: EventType): IconConfig {
     case "new_message":
       return {
         icon: MessageSquare,
-        bg: "bg-slate-100",
-        color: "text-slate-600",
+        bg: "bg-muted",
+        color: "text-muted-foreground",
       };
     case "review_posted":
       return { icon: Star, bg: "bg-amber-100", color: "text-amber-600" };
     default:
-      return { icon: Bell, bg: "bg-slate-100", color: "text-slate-600" };
+      return { icon: Bell, bg: "bg-muted", color: "text-muted-foreground" };
   }
 }
 
@@ -111,59 +112,71 @@ const SYSTEM_EVENT_TYPES: Set<EventType> = new Set([
 ]);
 
 // ---------------------------------------------------------------------------
-// NotificationCard sub-component
+// NotificationRow sub-component
 // ---------------------------------------------------------------------------
 
-type NotificationCardProps = Readonly<{
+type NotificationRowProps = Readonly<{
   notification: PlatformEvent;
   isUnread: boolean;
 }>;
 
-function NotificationCard({ notification, isUnread }: NotificationCardProps) {
+function NotificationRow({ notification, isUnread }: NotificationRowProps) {
   const iconConfig = getIconConfig(notification.event_type);
   const Icon = iconConfig.icon;
 
   return (
     <div
       className={cn(
-        "rounded-xl border bg-card p-4",
-        isUnread && "border-l-4 border-l-primary",
+        "flex items-start gap-4 rounded-xl border border-border px-4 py-4 transition-colors",
+        isUnread
+          ? "bg-brand-primary/5 border-l-4 border-l-brand-primary"
+          : "bg-white hover:bg-surface",
       )}
     >
-      <div className="flex items-start gap-3">
-        <div
+      {/* Icon */}
+      <div
+        className={cn(
+          "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+          iconConfig.bg,
+        )}
+      >
+        <Icon className={cn("h-5 w-5", iconConfig.color)} />
+      </div>
+
+      {/* Body */}
+      <div className="min-w-0 flex-1">
+        <p
           className={cn(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm",
-            iconConfig.bg,
+            "text-sm leading-snug",
+            isUnread
+              ? "font-semibold text-brand-primary-dark"
+              : "text-foreground",
           )}
         >
-          <Icon className={cn("h-5 w-5", iconConfig.color)} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className={cn("text-sm", isUnread && "font-semibold")}>
-            {getDescription(notification)}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {relativeTime(notification.created_at)}
-          </p>
-        </div>
-        {isUnread && (
-          <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
-        )}
+          {getDescription(notification)}
+        </p>
+        <p className="mt-1 text-xs text-neutral-400">
+          {relativeTime(notification.created_at)}
+        </p>
       </div>
+
+      {/* Unread dot */}
+      {isUnread && (
+        <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-primary" />
+      )}
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Pull-to-refresh constants
 // ---------------------------------------------------------------------------
 
 const PULL_THRESHOLD = 60;
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
 
 export default function NotificationCentreClient() {
   const [activeTab, setActiveTab] = useState<TabId>("all");
@@ -245,43 +258,56 @@ export default function NotificationCentreClient() {
   const showPullIndicator = pullOffset > 0 || isRefreshing;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Notification Centre</h1>
-          <p className="text-sm text-muted-foreground">{total} notifications</p>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleMarkAllRead}
-          disabled={isLoading || markAllRead.isPending}
-        >
-          Mark all as read
-        </Button>
+    <div className="mx-auto max-w-3xl px-4 py-8 md:py-10">
+      {/* ── Page header ─────────────────────────────────────────────────── */}
+      <div className="mb-8">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400 mb-1">
+          Activity &amp; Alerts
+        </p>
+        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark">
+          Notification Centre
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {total} notifications
+        </p>
       </div>
 
-      {/* Tabs */}
-      <div className="mb-4 flex gap-1 border-b">
-        {(["all", "unread", "system"] as const).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={cn(
-              "-mb-px border-b-2 px-4 py-2 text-sm font-medium capitalize transition-colors",
-              activeTab === tab
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {tab === "unread"
-              ? `Unread (${unreadCount})`
-              : tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+      {/* Tabs + Mark-all-read row */}
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <div className="flex gap-1 border-b border-border">
+          {(["all", "unread", "system"] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "-mb-px border-b-2 px-4 py-2 text-sm font-medium capitalize transition-colors",
+                activeTab === tab
+                  ? "border-brand-primary text-brand-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {tab === "unread"
+                ? `Unread (${unreadCount})`
+                : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={handleMarkAllRead}
+          disabled={isLoading || markAllRead.isPending}
+          className="shrink-0 text-[11px] font-bold uppercase tracking-[0.10em] text-brand-primary hover:text-brand-primary-dark disabled:opacity-50 transition-colors"
+        >
+          Mark all as read
+        </button>
       </div>
+
+      {/* Section eyebrow */}
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+        Recent Activity
+      </p>
 
       {/* Pull-to-refresh indicator */}
       {showPullIndicator && (
@@ -289,13 +315,14 @@ export default function NotificationCentreClient() {
           className="flex items-center justify-center py-2 text-muted-foreground text-sm gap-2 overflow-hidden transition-all"
           style={{ height: `${Math.min(pullOffset, PULL_THRESHOLD)}px` }}
           aria-live="polite"
-          aria-label={isRefreshing ? "Refreshing notifications" : "Pull to refresh"}
+          aria-label={
+            isRefreshing
+              ? "Refreshing notifications"
+              : "Pull to refresh"
+          }
         >
           <RefreshCw
-            className={cn(
-              "h-4 w-4",
-              isRefreshing && "animate-spin",
-            )}
+            className={cn("h-4 w-4", isRefreshing && "animate-spin")}
           />
           <span>{isRefreshing ? "Refreshing…" : "Release to refresh"}</span>
         </div>
@@ -309,13 +336,17 @@ export default function NotificationCentreClient() {
         onTouchEnd={handlePullTouchEnd}
         style={{
           transform: `translateY(${Math.min(pullOffset, PULL_THRESHOLD)}px)`,
-          transition: pullStartY.current === null ? "transform 0.2s ease" : "none",
+          transition:
+            pullStartY.current === null ? "transform 0.2s ease" : "none",
         }}
       >
         {isLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="animate-pulse rounded-xl border p-4">
+              <div
+                key={i}
+                className="animate-pulse rounded-xl border border-border p-4"
+              >
                 <div className="flex gap-3">
                   <div className="h-10 w-10 rounded-full bg-muted" />
                   <div className="flex-1 space-y-2">
@@ -333,7 +364,7 @@ export default function NotificationCentreClient() {
         ) : (
           <div className="space-y-3">
             {filteredNotifications.map((notification) => (
-              <NotificationCard
+              <NotificationRow
                 key={notification.id}
                 notification={notification}
                 isUnread={isUnread(notification)}
@@ -345,14 +376,16 @@ export default function NotificationCentreClient() {
 
       {/* Load more */}
       {nextCursor && (
-        <div className="mt-4 flex justify-center">
+        <div className="mt-6 flex flex-col items-center gap-1">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setCursor(nextCursor)}
             disabled={isLoading}
+            className="text-xs uppercase tracking-[0.10em] font-bold text-muted-foreground hover:text-foreground gap-1"
           >
             Load more
+            <ChevronDown className="h-3.5 w-3.5" />
           </Button>
         </div>
       )}

@@ -116,23 +116,23 @@ export function AvatarUploader({
   const isLoading = uploading || removing;
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-start gap-6">
       {/* Avatar circle with hover overlay */}
       <button
         type="button"
         onClick={handleClick}
         disabled={isLoading}
-        className="group relative h-20 w-20 shrink-0 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary disabled:cursor-not-allowed"
+        className="group relative h-24 w-24 shrink-0 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary disabled:cursor-not-allowed"
         aria-label="Change profile photo"
       >
         {avatarUrl ? (
           <img
             src={avatarUrl}
             alt="Profile photo"
-            className="h-20 w-20 rounded-full object-cover"
+            className="h-24 w-24 rounded-full object-cover"
           />
         ) : (
-          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 font-heading text-xl font-semibold text-brand-primary">
+          <span className="flex h-24 w-24 items-center justify-center rounded-full bg-brand-primary/10 font-heading text-2xl font-semibold text-brand-primary">
             {initials}
           </span>
         )}
@@ -142,7 +142,7 @@ export function AvatarUploader({
           {isLoading ? (
             <Loader2 className="size-6 animate-spin text-white" />
           ) : (
-            <Camera className="size-6 text-white" />
+            <Camera className="size-5 text-white" />
           )}
         </span>
       </button>
@@ -156,12 +156,26 @@ export function AvatarUploader({
         onChange={handleFileChange}
       />
 
-      {/* Remove button */}
-      <div className="flex flex-col gap-1">
-        <p className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+      {/* Actions */}
+      <div className="flex flex-col gap-2 pt-1">
+        <Button
+          type="button"
+          size="sm"
+          onClick={handleClick}
+          disabled={isLoading}
+          className="justify-start"
+        >
+          {uploading ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <Camera className="size-3.5" />
+          )}
+          Upload New Photo
+        </Button>
+        <p className="font-body text-xs text-neutral-500">
           Profile photo
         </p>
-        <p className="font-body text-xs text-neutral-500">
+        <p className="font-body text-xs text-neutral-400">
           JPEG or PNG, max 800 KB
         </p>
         {avatarUrl && (
@@ -171,7 +185,7 @@ export function AvatarUploader({
             size="sm"
             onClick={handleRemove}
             disabled={isLoading}
-            className="mt-1 h-auto justify-start px-0 text-xs text-error hover:bg-transparent hover:text-error/80"
+            className="h-auto justify-start px-0 text-xs text-error hover:bg-transparent hover:text-error/80"
           >
             <X className="size-3" />
             Remove photo

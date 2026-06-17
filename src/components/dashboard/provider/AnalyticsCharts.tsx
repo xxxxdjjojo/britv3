@@ -52,7 +52,7 @@ function EarningsTooltip({ active, payload, label }: EarningsTooltipProps) {
   return (
     <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2 shadow-md">
       <p className="text-xs text-neutral-500">{label}</p>
-      <p className="text-sm font-semibold text-[#1B4D3E]">{formatPounds(value)}</p>
+      <p className="text-sm font-semibold text-brand-primary">{formatPounds(value)}</p>
     </div>
   );
 }
@@ -69,7 +69,7 @@ function CategoriesBarTooltip({ active, payload, label }: CategoriesBarTooltipPr
   return (
     <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2 shadow-md">
       <p className="text-xs text-neutral-500">{label}</p>
-      <p className="text-sm font-semibold text-[#1B4D3E]">{value} bookings</p>
+      <p className="text-sm font-semibold text-brand-primary">{value} bookings</p>
     </div>
   );
 }
@@ -92,14 +92,14 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
           <h2 className="text-lg font-semibold text-neutral-900">Performance Overview</h2>
           <p className="text-xs text-neutral-500 mt-0.5">Stats updated daily at 02:00 UTC</p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-neutral-200 bg-neutral-50 p-1">
+        <div className="flex gap-1 rounded-lg border border-neutral-200 bg-surface p-1">
           {PERIODS.map((p) => (
             <button
               key={p}
               onClick={() => onPeriodChange(p)}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 period === p
-                  ? "bg-[#1B4D3E] text-white shadow-sm"
+                  ? "bg-brand-primary text-white shadow-sm"
                   : "text-neutral-600 hover:bg-neutral-100"
               }`}
             >
@@ -110,7 +110,7 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
       </div>
 
       {/* Earnings Trend */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-sm font-semibold text-neutral-700">Earnings Trend</h3>
         {earningsData.length === 0 ? (
           <div className="flex h-[280px] items-center justify-center text-sm text-neutral-400">
@@ -120,9 +120,9 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={earningsData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
-                <linearGradient id="earningsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1B4D3E" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#1B4D3E" stopOpacity={0} />
+                <linearGradient id="earningsGradientProv" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--color-brand-primary)" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="var(--color-brand-primary)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -143,11 +143,11 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
               <Area
                 type="monotone"
                 dataKey="earnings"
-                stroke="#1B4D3E"
+                stroke="var(--color-brand-primary)"
                 strokeWidth={2}
-                fill="url(#earningsGradient)"
+                fill="url(#earningsGradientProv)"
                 dot={false}
-                activeDot={{ r: 4, fill: "#1B4D3E", strokeWidth: 0 }}
+                activeDot={{ r: 4, strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -155,7 +155,7 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
       </div>
 
       {/* Top Categories */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-sm font-semibold text-neutral-700">Top Categories</h3>
         {categoriesData.length === 0 ? (
           <div className="flex h-[200px] items-center justify-center text-sm text-neutral-400">
@@ -184,7 +184,7 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
                 width={120}
               />
               <Tooltip content={<CategoriesBarTooltip />} />
-              <Bar dataKey="bookings" fill="#1B4D3E" radius={[0, 4, 4, 0]} barSize={20} />
+              <Bar dataKey="bookings" fill="var(--color-brand-primary)" radius={[0, 4, 4, 0]} barSize={20} />
             </BarChart>
           </ResponsiveContainer>
         )}

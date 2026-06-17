@@ -45,7 +45,7 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
   return (
     <article className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
       {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-slate-100 dark:bg-slate-800">
+      <div className="relative h-48 overflow-hidden bg-muted dark:bg-slate-800">
         {listing.cover_image_url ? (
           <Image
             src={listing.cover_image_url}
@@ -73,7 +73,7 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
       {/* Body */}
       <div className="p-4">
         {/* Sold price */}
-        <h3 className="text-xl font-bold text-[#1B4D3E] dark:text-emerald-400">
+        <h3 className="text-xl font-bold text-brand-primary dark:text-emerald-400">
           {statusLabel} for {formatPrice(listing.sold_price)}
         </h3>
         {/* Asking price (struck through if differs) */}

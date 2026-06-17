@@ -134,32 +134,42 @@ export default function BookViewingPage({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
+    <div className="mx-auto max-w-2xl space-y-8">
+      {/* Back nav */}
+      <div>
         <Link href={`/dashboard/${roleParam}/viewings`}>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" className="-ml-2">
             <ArrowLeft className="mr-2 size-4" />
             Back to Viewings
           </Button>
         </Link>
       </div>
 
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Book a Viewing</h1>
-        <p className="text-muted-foreground">Select an available time slot</p>
+      {/* Page heading */}
+      <div className="space-y-1">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Viewings Calendar
+        </p>
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+          Book a Viewing
+        </h1>
+        <p className="text-sm text-muted-foreground">Select an available time slot</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Available Slots</CardTitle>
+      {/* Slots card */}
+      <Card className="rounded-xl border-border shadow-sm">
+        <CardHeader className="border-b border-border pb-4">
+          <CardTitle className="font-heading text-lg font-bold text-neutral-900">
+            Available Slots
+          </CardTitle>
           <CardDescription>Choose a time that works for you</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-2 pt-4">
           {loadingSlots && (
             <>
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full rounded-lg" />
+              <Skeleton className="h-16 w-full rounded-lg" />
+              <Skeleton className="h-16 w-full rounded-lg" />
             </>
           )}
 
@@ -179,58 +189,88 @@ export default function BookViewingPage({
           )}
 
           {!loadingSlots &&
-            slots?.map((slot) => (
-              <button
-                key={slot.id}
-                type="button"
-                onClick={() => setSelectedSlotId(slot.id)}
-                className={[
-                  "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-colors",
-                  selectedSlotId === slot.id
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/40 hover:bg-muted/50",
-                ].join(" ")}
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Calendar className="size-4 text-muted-foreground" />
-                    {formatSlotTime(slot.start_time)}
+            slots?.map((slot) => {
+              const isSelected = selectedSlotId === slot.id;
+              return (
+                <button
+                  key={slot.id}
+                  type="button"
+                  onClick={() => setSelectedSlotId(slot.id)}
+                  className={[
+                    "flex w-full items-center gap-4 rounded-lg border p-4 text-left transition-colors",
+                    isSelected
+                      ? "border-brand-primary bg-brand-primary/6 shadow-sm"
+                      : "border-border hover:border-brand-primary/40 hover:bg-surface",
+                  ].join(" ")}
+                >
+                  {/* Time block indicator */}
+                  <div
+                    className={`flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-lg text-center ${
+                      isSelected
+                        ? "bg-brand-primary text-white"
+                        : "bg-brand-primary/8 text-brand-primary"
+                    }`}
+                  >
+                    <span className="block text-[10px] font-bold uppercase leading-none tracking-wide">
+                      {new Intl.DateTimeFormat("en-GB", { month: "short" }).format(
+                        new Date(slot.start_time),
+                      )}
+                    </span>
+                    <span className="block font-heading text-lg font-bold leading-none">
+                      {new Date(slot.start_time).getDate()}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Clock className="size-3" />
-                    {new Intl.DateTimeFormat("en-GB", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }).format(new Date(slot.start_time))}
-                    &nbsp;–&nbsp;
-                    {new Intl.DateTimeFormat("en-GB", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }).format(new Date(slot.end_time))}
+
+                  {/* Slot detail */}
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                      <Calendar className="size-3.5 shrink-0 text-muted-foreground" />
+                      {formatSlotTime(slot.start_time)}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Clock className="size-3 shrink-0" />
+                      {new Intl.DateTimeFormat("en-GB", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }).format(new Date(slot.start_time))}
+                      &nbsp;–&nbsp;
+                      {new Intl.DateTimeFormat("en-GB", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }).format(new Date(slot.end_time))}
+                    </div>
                   </div>
-                </div>
-                <Badge variant="outline">
-                  {slot.type === "virtual" ? (
-                    <>
-                      <Video className="mr-1 size-3" />
-                      Virtual
-                    </>
-                  ) : (
-                    <>
-                      <MapPin className="mr-1 size-3" />
-                      In Person
-                    </>
-                  )}
-                </Badge>
-              </button>
-            ))}
+
+                  {/* Type badge */}
+                  <Badge
+                    variant="outline"
+                    className={isSelected ? "border-brand-primary/30 text-brand-primary" : ""}
+                  >
+                    {slot.type === "virtual" ? (
+                      <>
+                        <Video className="mr-1 size-3" />
+                        Virtual
+                      </>
+                    ) : (
+                      <>
+                        <MapPin className="mr-1 size-3" />
+                        In Person
+                      </>
+                    )}
+                  </Badge>
+                </button>
+              );
+            })}
         </CardContent>
       </Card>
 
+      {/* Confirm action */}
       <div className="flex justify-end">
         <Button
           onClick={handleBook}
           disabled={!selectedSlotId || submitting || loadingSlots}
+          size="lg"
+          className="min-w-36"
         >
           {submitting ? "Booking…" : "Confirm Booking"}
         </Button>

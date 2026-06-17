@@ -77,7 +77,7 @@ export default async function BlogCategoryPage({ params }: Props) {
             <Link
               key={post.id}
               href={`/blog/${post.slug}`}
-              className="block rounded-xl border border-neutral-200 p-6 transition-colors hover:border-neutral-300 hover:bg-neutral-50"
+              className="block rounded-xl border border-neutral-200 p-6 transition-colors hover:border-neutral-300 hover:bg-muted"
             >
               <h2 className="font-heading text-lg font-semibold text-neutral-900">
                 {post.title}

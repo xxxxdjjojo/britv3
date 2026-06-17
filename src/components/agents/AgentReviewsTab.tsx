@@ -62,7 +62,7 @@ function ReviewerAvatar({
     : "?";
 
   return (
-    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+    <div className="w-10 h-10 rounded-full bg-muted dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
       <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
         {initials}
       </span>
@@ -76,7 +76,7 @@ function PropertyContextPill({
 }: Readonly<{ address: string; listingType?: "sale" | "let" | null }>) {
   return (
     <div className="flex items-center gap-2 mb-2">
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-muted dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">
         <Home className="w-3 h-3" />
         {address}
       </span>
@@ -169,7 +169,7 @@ export function AgentReviewsTab({
 
               {/* Agency response */}
               {review.provider_response && (
-                <div className="ml-8 mt-4 p-4 bg-[#1B4D3E]/5 dark:bg-[#1B4D3E]/10 rounded-lg border-l-4 border-[#1B4D3E]">
+                <div className="ml-8 mt-4 p-4 bg-brand-primary/5 dark:bg-brand-primary/10 rounded-lg border-l-4 border-brand-primary">
                   <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Response from {agencyName}:
                   </p>

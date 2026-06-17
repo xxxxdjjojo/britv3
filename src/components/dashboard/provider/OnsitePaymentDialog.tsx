@@ -138,7 +138,7 @@ function PaymentForm({ invoiceId, amountPence, onSuccess, onClose }: PaymentForm
           type="button"
           onClick={onClose}
           disabled={submitting}
-          className="px-4 py-2 text-sm rounded-md border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-800 disabled:opacity-50 transition-colors"
+          className="px-4 py-2 text-sm rounded-md border border-neutral-300 dark:border-neutral-600 hover:bg-surface dark:hover:bg-neutral-800 disabled:opacity-50 transition-colors"
         >
           Cancel
         </button>

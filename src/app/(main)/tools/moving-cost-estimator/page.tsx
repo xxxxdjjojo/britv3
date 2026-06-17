@@ -88,25 +88,25 @@ function getCostBreakdown(
       label: "Solicitor / Conveyancing",
       low: 1200,
       high: 1800,
-      color: "bg-blue-500",
+      color: "bg-brand-primary-dark",
     },
     {
       label: "Survey / Valuation",
       low: 300,
       high: 700,
-      color: "bg-amber-500",
+      color: "bg-brand-gold",
     },
     {
       label: "Removals",
       low: 500,
       high: 1500,
-      color: "bg-purple-500",
+      color: "bg-brand-primary-light",
     },
     {
       label: "EPC Certificate",
       low: 60,
       high: 120,
-      color: "bg-emerald-500",
+      color: "bg-brand-primary-lighter",
     },
   ];
 
@@ -264,7 +264,7 @@ export default function MovingCostEstimatorPage() {
                 })}
 
                 {/* Totals */}
-                <div className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
+                <div className="mt-6 rounded-xl border border-neutral-200 bg-muted p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
                   <div className="grid gap-4 sm:grid-cols-3 text-center">
                     <div>
                       <p className="text-xs text-muted-foreground">Low Estimate</p>
@@ -353,17 +353,17 @@ export default function MovingCostEstimatorPage() {
                 </div>
                 <h3 className="text-lg font-bold">Find a Solicitor</h3>
               </div>
-              <p className="mb-6 text-sm text-blue-100">
+              <p className="mb-6 text-sm text-brand-primary-lighter">
                 Get a competitive conveyancing quote from our panel of trusted
                 solicitors in minutes.
               </p>
               <Link
                 href="/marketplace?category=conveyancing"
-                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-neutral-50"
+                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-muted"
               >
                 Get Quotes
               </Link>
-              <p className="mt-4 text-center text-[10px] text-blue-200">
+              <p className="mt-4 text-center text-[10px] text-brand-primary-lighter">
                 Free, no-obligation quote
               </p>
             </div>
@@ -376,7 +376,7 @@ export default function MovingCostEstimatorPage() {
                 </h3>
                 <Link
                   href="/tools/stamp-duty-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Home className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -390,7 +390,7 @@ export default function MovingCostEstimatorPage() {
                 </Link>
                 <Link
                   href="/tools/mortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Calculator className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -406,7 +406,7 @@ export default function MovingCostEstimatorPage() {
             </Card>
 
             {/* Disclaimer */}
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-muted/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
               <div className="flex gap-3">
                 <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
                 <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">

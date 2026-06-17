@@ -16,14 +16,29 @@ import {
   Eye,
   Tag,
   Building,
+  Building2,
   Users,
   Briefcase,
   Star,
   PoundSterling,
+  BadgeCheck,
+  ShieldAlert,
+  TrendingUp,
+  MessageSquare,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import type { StatCardData } from "@/types/dashboard";
+
+// Optional status accent rendered as a left border (e.g. compliance tiles)
+type StatAccent = "success" | "warning" | "error";
+
+const ACCENT_BORDER: Record<StatAccent, string> = {
+  success: "border-l-4 border-l-success",
+  warning: "border-l-4 border-l-warning",
+  error: "border-l-4 border-l-error",
+};
 
 // ---------------------------------------------------------------------------
 // Icon registry
@@ -38,10 +53,15 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Eye,
   Tag,
   Building,
+  Building2,
   Users,
   Briefcase,
   Star,
   PoundSterling,
+  BadgeCheck,
+  ShieldAlert,
+  TrendingUp,
+  MessageSquare,
 };
 
 // ---------------------------------------------------------------------------
@@ -58,27 +78,46 @@ const TREND_CONFIG = {
 // StatCard
 // ---------------------------------------------------------------------------
 
-export function StatCard({ label, value, change, trend, icon }: Readonly<StatCardData>) {
+export function StatCard({
+  label,
+  value,
+  change,
+  trend,
+  icon,
+  accent,
+}: Readonly<
+  Pick<StatCardData, "label" | "value"> &
+    Partial<Pick<StatCardData, "change" | "trend" | "icon">> & {
+      accent?: StatAccent;
+    }
+>) {
   const IconComponent = icon ? ICON_MAP[icon] : null;
   const trendConfig = trend ? TREND_CONFIG[trend] : null;
   const TrendIcon = trendConfig?.icon;
 
   return (
-    <Card className="transition-shadow hover:shadow-md">
-      <CardContent className="flex items-start gap-4 p-4 md:p-6">
+    <Card
+      className={cn(
+        "rounded-xl border-border bg-card transition-shadow hover:shadow-sm",
+        accent && ACCENT_BORDER[accent],
+      )}
+    >
+      <CardContent className="flex items-start gap-4 p-4 md:p-5">
         {/* Icon */}
         {IconComponent && (
-          <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-lg">
+          <div className="bg-brand-primary/10 text-brand-primary flex size-10 shrink-0 items-center justify-center rounded-lg">
             <IconComponent className="size-5" />
           </div>
         )}
 
         {/* Content */}
         <div className="flex flex-1 flex-col gap-1">
-          <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+          <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.1em]">
             {label}
           </p>
-          <p className="text-2xl font-bold tracking-tight">{value}</p>
+          <p className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
+            {value}
+          </p>
 
           {/* Trend + change */}
           {trendConfig && (

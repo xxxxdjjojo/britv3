@@ -86,10 +86,10 @@ export function ReportedContentClient({ reports }: Props) {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-neutral-200 bg-neutral-50">
+            <tr className="border-b border-border bg-muted">
               <th className="px-4 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
                 Entity Type
               </th>

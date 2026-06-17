@@ -136,7 +136,7 @@ function AffordabilityCalculator() {
 
       {/* Results */}
       <div className="space-y-4">
-        <Card className="border-[#1B4D3E]/20">
+        <Card className="border-brand-primary/20">
           <CardContent className="p-6">
             <h3 className="mb-4 text-lg font-bold text-neutral-900">Borrowing Estimates</h3>
             <p className="mb-4 text-xs text-neutral-500">
@@ -149,12 +149,12 @@ function AffordabilityCalculator() {
                 { label: "Standard (4.5x)", loan: multiplier45, property: maxPropertyAt45 },
                 { label: "Maximum (5x)", loan: multiplier5, property: maxPropertyAt5 },
               ].map((tier) => (
-                <div key={tier.label} className="flex items-center justify-between rounded-lg border border-neutral-200 p-3">
+                <div key={tier.label} className="flex items-center justify-between rounded-lg border border-border p-3">
                   <div>
                     <p className="text-xs font-medium text-neutral-500">{tier.label}</p>
                     <p className="text-sm text-neutral-600">Loan: {formatCurrency(tier.loan)}</p>
                   </div>
-                  <p className="text-lg font-bold text-[#1B4D3E]">{formatCurrency(tier.property)}</p>
+                  <p className="text-lg font-bold text-brand-primary">{formatCurrency(tier.property)}</p>
                 </div>
               ))}
             </div>
@@ -167,7 +167,7 @@ function AffordabilityCalculator() {
             <p className="mb-3 text-xs text-neutral-500">
               At a {stressTestRate}% stress test rate over 25 years, based on affordable monthly payment of {formatCurrency(affordableMonthly)}.
             </p>
-            <div className="rounded-lg bg-neutral-50 border border-neutral-200 p-4 text-center">
+            <div className="rounded-lg bg-muted border border-border p-4 text-center">
               <p className="text-xs font-medium text-neutral-500 mb-1">Max Loan (Stress Tested)</p>
               <p className="text-2xl font-black text-neutral-900">{formatCurrency(maxLoanFromAffordability)}</p>
               <p className="text-xs text-neutral-400 mt-1">
@@ -186,7 +186,7 @@ export default function CalculatorsPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Calculator Tools</h1>
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">Calculator Tools</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Use these calculators to help clients understand their mortgage options and costs.
         </p>

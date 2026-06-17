@@ -47,6 +47,7 @@ export default async function TeamPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Team"
         title="Team Members"
         description="View and manage admin users. Invite new team members via email."
       />

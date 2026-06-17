@@ -66,3 +66,4 @@ supabase/.temp/
 # Codex local config (contains API keys — never commit)
 .codex/
 .schema-diff/
+.gstack/

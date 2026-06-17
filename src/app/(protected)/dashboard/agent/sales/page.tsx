@@ -44,10 +44,13 @@ export default async function SalesPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Progression
+        </p>
+        <h1 className="font-heading mt-1 text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
           Sale Progression
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-muted-foreground">
           Track all active sales through each stage of the conveyancing process.
         </p>
       </div>

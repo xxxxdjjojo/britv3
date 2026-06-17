@@ -36,7 +36,7 @@ function ExpectedDateBadge({
   const days = daysUntil(expectedDate);
   return (
     <>
-      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white border border-[#1B4D3E]/20 text-[#1B4D3E]">
+      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white border border-brand-primary/20 text-brand-primary">
         By{" "}
         {new Date(expectedDate).toLocaleDateString("en-GB", {
           day: "numeric",
@@ -67,9 +67,9 @@ export function SaleProgressionStepper({ progression }: Props) {
 
       <div className="relative">
         {/* Progress track */}
-        <div className="absolute top-5 left-5 right-5 h-1 bg-slate-100 rounded-full z-0">
+        <div className="absolute top-5 left-5 right-5 h-1 bg-muted rounded-full z-0">
           <div
-            className="h-full bg-[#1B4D3E] rounded-full transition-all duration-700"
+            className="h-full bg-brand-primary rounded-full transition-all duration-700"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -94,7 +94,7 @@ export function SaleProgressionStepper({ progression }: Props) {
                   className={cn(
                     "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300",
                     isCompleted && "bg-emerald-500",
-                    isCurrent && "bg-[#1B4D3E] ring-4 ring-[#1B4D3E]/20",
+                    isCurrent && "bg-brand-primary ring-4 ring-brand-primary/20",
                     isFuture && "bg-slate-200 opacity-40",
                   )}
                 >
@@ -113,7 +113,7 @@ export function SaleProgressionStepper({ progression }: Props) {
                   className={cn(
                     "text-center text-[10px] font-medium leading-tight max-w-[70px]",
                     isCompleted && "text-emerald-700",
-                    isCurrent && "text-[#1B4D3E] font-bold",
+                    isCurrent && "text-brand-primary font-bold",
                     isFuture && "text-slate-400",
                   )}
                 >
@@ -128,7 +128,7 @@ export function SaleProgressionStepper({ progression }: Props) {
                     })}
                   </p>
                 ) : expectedDate && isCurrent ? (
-                  <p className="text-[9px] text-[#1B4D3E]/70">
+                  <p className="text-[9px] text-brand-primary/70">
                     Est.{" "}
                     {new Date(expectedDate).toLocaleDateString("en-GB", {
                       day: "numeric",
@@ -143,13 +143,13 @@ export function SaleProgressionStepper({ progression }: Props) {
       </div>
 
       {/* Current stage detail card */}
-      <div className="mt-8 bg-[#1B4D3E]/5 border border-[#1B4D3E]/20 rounded-xl p-5">
+      <div className="mt-8 bg-brand-primary/5 border border-brand-primary/20 rounded-xl p-5">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs font-semibold text-[#1B4D3E]/60 uppercase tracking-wide">
+            <p className="text-xs font-semibold text-brand-primary/60 uppercase tracking-wide">
               Current Stage
             </p>
-            <h3 className="text-lg font-bold text-[#1B4D3E] mt-1">
+            <h3 className="text-lg font-bold text-brand-primary mt-1">
               {STAGE_LABELS[current]}
             </h3>
           </div>

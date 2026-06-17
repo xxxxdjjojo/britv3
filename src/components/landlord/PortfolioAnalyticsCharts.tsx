@@ -215,7 +215,7 @@ export default function PortfolioAnalyticsCharts({
             className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
               dateRange === range
                 ? "bg-green-700 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : "bg-muted text-gray-600 hover:bg-gray-200"
             }`}
           >
             {range === "year" ? "Year" : range === "quarter" ? "Quarter" : "All Time"}

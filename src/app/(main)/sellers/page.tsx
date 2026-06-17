@@ -15,10 +15,10 @@ export default function SellersLanding() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="text-center">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#1B4D3E]">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-brand-primary">
           For sellers
         </p>
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
+        <h1 className="font-heading text-4xl font-bold text-brand-primary-dark sm:text-5xl">
           List your home for less. Sell it for more.
         </h1>
         <p className="mx-auto mt-4 max-w-3xl text-lg text-neutral-600">
@@ -29,7 +29,7 @@ export default function SellersLanding() {
         <div className="mt-8 flex justify-center gap-3">
           <Button
             asChild
-            className="bg-[#1B4D3E] hover:bg-[#2D7A5F]"
+            className="bg-brand-primary hover:bg-brand-primary-light"
           >
             <Link href="/pricing?tab=sellers">View seller plans</Link>
           </Button>
@@ -55,7 +55,7 @@ export default function SellersLanding() {
         Don&apos;t want any upfront cost?{" "}
         <Link
           href="/pricing?tab=sellers"
-          className="text-[#1B4D3E] underline-offset-4 hover:underline"
+          className="text-brand-primary underline-offset-4 hover:underline"
         >
           Try No-Sale-No-Fee
         </Link>{" "}
@@ -72,7 +72,7 @@ function Card({
 }: Readonly<{ title: string; highlighted?: boolean; children: React.ReactNode }>) {
   return (
     <div
-      className={`rounded-xl border p-6 ${highlighted ? "border-[#1B4D3E] ring-2 ring-[#1B4D3E]/20" : "border-neutral-200"}`}
+      className={`rounded-xl border p-6 ${highlighted ? "border-brand-primary ring-2 ring-brand-primary/20" : "border-border"}`}
     >
       <h3 className="font-heading text-xl font-bold text-neutral-900">{title}</h3>
       <p className="mt-3 text-sm text-neutral-700">{children}</p>

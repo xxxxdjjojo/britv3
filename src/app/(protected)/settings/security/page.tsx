@@ -511,59 +511,60 @@ export default function SecuritySettingsPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="space-y-8">
+      {/* Page header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Security</h1>
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Account Settings
+        </p>
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+          Security
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Manage your password, two-factor authentication, connected accounts,
           and active sessions.
         </p>
       </div>
 
-      <PasswordChangeCard
-        currentPassword={currentPassword}
-        newPassword={newPassword}
-        confirmPassword={confirmPassword}
-        changingPassword={changingPassword}
-        hasPassword={hasPassword}
-        onCurrentPasswordChange={setCurrentPassword}
-        onNewPasswordChange={setNewPassword}
-        onConfirmPasswordChange={setConfirmPassword}
-        onSubmit={handlePasswordChange}
-        onReauthRequired={() => {
-          setPendingAction("password");
-          setReauthOpen(true);
-        }}
-      />
+      {/* Password + 2FA two-column grid */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <PasswordChangeCard
+          currentPassword={currentPassword}
+          newPassword={newPassword}
+          confirmPassword={confirmPassword}
+          changingPassword={changingPassword}
+          hasPassword={hasPassword}
+          onCurrentPasswordChange={setCurrentPassword}
+          onNewPasswordChange={setNewPassword}
+          onConfirmPasswordChange={setConfirmPassword}
+          onSubmit={handlePasswordChange}
+          onReauthRequired={() => {
+            setPendingAction("password");
+            setReauthOpen(true);
+          }}
+        />
 
-      <TotpEnrollmentCard
-        mfaState={mfaState}
-        mfaLoading={mfaLoading}
-        totpData={totpData}
-        totpCode={totpCode}
-        verifying={verifying}
-        enrolling={enrolling}
-        disabling={disabling}
-        backupCodes={backupCodes}
-        regenerating={regenerating}
-        copiedAll={copiedAll}
-        onTotpCodeChange={setTotpCode}
-        onStartEnroll={handleStartEnroll}
-        onVerify={handleVerify}
-        onDisable={handleDisable}
-        onRegenerateBackupCodes={handleRegenerateBackupCodes}
-        onCopyAll={handleCopyAll}
-        onDownload={handleDownload}
-        onDismissBackupCodes={() => setBackupCodes(null)}
-      />
-
-      <ConnectedAccountsCard
-        identities={identities}
-        loading={identitiesLoading}
-        unlinkingId={unlinkingId}
-        onUnlink={handleUnlinkIdentity}
-        onLink={handleLinkProvider}
-      />
+        <TotpEnrollmentCard
+          mfaState={mfaState}
+          mfaLoading={mfaLoading}
+          totpData={totpData}
+          totpCode={totpCode}
+          verifying={verifying}
+          enrolling={enrolling}
+          disabling={disabling}
+          backupCodes={backupCodes}
+          regenerating={regenerating}
+          copiedAll={copiedAll}
+          onTotpCodeChange={setTotpCode}
+          onStartEnroll={handleStartEnroll}
+          onVerify={handleVerify}
+          onDisable={handleDisable}
+          onRegenerateBackupCodes={handleRegenerateBackupCodes}
+          onCopyAll={handleCopyAll}
+          onDownload={handleDownload}
+          onDismissBackupCodes={() => setBackupCodes(null)}
+        />
+      </div>
 
       <ActiveSessionsList
         sessions={sessions}
@@ -572,6 +573,14 @@ export default function SecuritySettingsPage() {
         signingOutSession={signingOutSession}
         onSignOutAll={handleSignOutAll}
         onSignOutSession={handleSignOutSession}
+      />
+
+      <ConnectedAccountsCard
+        identities={identities}
+        loading={identitiesLoading}
+        unlinkingId={unlinkingId}
+        onUnlink={handleUnlinkIdentity}
+        onLink={handleLinkProvider}
       />
 
       <LoginHistoryTable

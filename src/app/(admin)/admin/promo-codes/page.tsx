@@ -17,6 +17,7 @@ export default async function AdminPromoCodesPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Growth"
         title="Promo Codes"
         description="Create and manage discount codes for your users."
       />

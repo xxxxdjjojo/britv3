@@ -16,6 +16,7 @@ export default async function AdminHelpPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Content"
         title="Help Articles"
         description="Create and manage help centre content."
       />

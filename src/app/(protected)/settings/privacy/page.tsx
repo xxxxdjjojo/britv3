@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Download, Eye, Ghost, Trash2, Users } from "lucide-react";
+import { CheckCircle2, Download, Eye, Ghost, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -57,6 +57,7 @@ const PRIVACY_MODES: {
   label: string;
   description: string;
   icon: typeof Eye;
+  visibilityValue: VisibilityValue;
   settings: Partial<PrivacySettings>;
 }[] = [
   {
@@ -64,6 +65,7 @@ const PRIVACY_MODES: {
     label: "Public",
     description: "Maximum visibility. Your profile and activity are visible to everyone.",
     icon: Eye,
+    visibilityValue: "public",
     settings: {
       visibility: "public",
       search_indexing: true,
@@ -76,6 +78,7 @@ const PRIVACY_MODES: {
     label: "Members Only",
     description: "Visible to registered Britestate users only. Hidden from search engines.",
     icon: Users,
+    visibilityValue: "registered_only",
     settings: {
       visibility: "registered_only",
       search_indexing: false,
@@ -88,6 +91,7 @@ const PRIVACY_MODES: {
     label: "Ghost",
     description: "Maximum privacy. Your profile is private and all tracking is off.",
     icon: Ghost,
+    visibilityValue: "private",
     settings: {
       visibility: "private",
       search_indexing: false,
@@ -226,39 +230,53 @@ export default function PrivacySettingsPage() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <div>
-          <h2 className="font-heading text-xl font-semibold text-neutral-900 dark:text-white">
-            Privacy & Data
-          </h2>
-          <p className="mt-1 font-body text-sm text-neutral-500">
+        {/* Editorial header skeleton */}
+        <header className="mb-10">
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Privacy &amp; Data
+          </p>
+          <h1 className="font-heading mt-3 text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+            Privacy &amp; Data
+          </h1>
+          <p className="mt-3 max-w-2xl font-body text-base text-neutral-500">
             Manage your privacy, consent preferences, and personal data
           </p>
-        </div>
-        <div className="h-64 animate-pulse rounded-lg bg-neutral-100" />
+        </header>
+        <div className="h-64 animate-pulse rounded-xl bg-neutral-100" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="font-heading text-xl font-semibold text-neutral-900 dark:text-white">
-          Privacy & Data
-        </h2>
-        <p className="mt-1 font-body text-sm text-neutral-500">
+    <div className="space-y-16">
+      {/* ── Editorial page header ── */}
+      <header>
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Privacy &amp; Data
+        </p>
+        <h1 className="font-heading mt-3 text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+          Privacy &amp; Data
+        </h1>
+        <p className="mt-3 max-w-2xl font-body text-base text-neutral-500">
           Manage your privacy, consent preferences, and personal data
         </p>
-      </div>
+      </header>
 
-      {/* Quick Privacy Mode */}
-      <section className="space-y-3">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Quick Privacy Mode
-        </h3>
-        <p className="font-body text-sm text-neutral-500">
-          Choose a preset to configure all privacy settings at once.
-        </p>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* ── Section 1: Profile Visibility (Quick Privacy Mode) ── */}
+      <section className="space-y-8">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark">
+            Profile Visibility
+          </h2>
+          {currentMode && (
+            <span className="rounded-full bg-brand-gold px-3 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-brand-gold-foreground">
+              Quick Privacy Mode
+            </span>
+          )}
+        </div>
+
+        {/* 3-card visibility grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {PRIVACY_MODES.map((mode) => {
             const Icon = mode.icon;
             const isActive = currentMode === mode.id;
@@ -268,259 +286,269 @@ export default function PrivacySettingsPage() {
                 type="button"
                 onClick={() => void applyPrivacyMode(mode.id)}
                 className={cn(
-                  "relative flex flex-col items-center gap-2 rounded-lg border-2 p-5 text-center transition-all",
+                  "relative flex flex-col items-start gap-4 rounded-xl border-2 p-8 text-left transition-all duration-200",
                   isActive
-                    ? "border-brand-primary bg-brand-primary/5 ring-1 ring-brand-primary/20"
-                    : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-700",
+                    ? "border-brand-primary bg-surface shadow-sm"
+                    : "border-border bg-white hover:border-brand-primary/40 hover:shadow-sm",
                 )}
               >
+                {/* Active indicator */}
                 {isActive && (
-                  <span className="absolute right-2 top-2 size-2 rounded-full bg-brand-primary" />
+                  <CheckCircle2 className="absolute right-4 top-4 size-5 text-brand-primary" />
                 )}
-                <Icon className={cn(
-                  "size-6",
-                  isActive ? "text-brand-primary" : "text-neutral-500",
-                )} />
-                <span className="font-heading text-sm font-semibold text-neutral-900 dark:text-white">
-                  {mode.label}
-                </span>
-                <span className="font-body text-xs text-neutral-500">
-                  {mode.description}
-                </span>
+
+                {/* Icon badge */}
+                <div
+                  className={cn(
+                    "flex size-12 items-center justify-center rounded-full transition-transform duration-200",
+                    isActive
+                      ? "bg-brand-primary/10 text-brand-primary"
+                      : "bg-neutral-100 text-neutral-500",
+                    "group-hover:scale-110",
+                  )}
+                >
+                  <Icon className="size-5" />
+                </div>
+
+                <div>
+                  <p className="font-heading text-sm font-bold text-brand-primary-dark">
+                    {mode.label}
+                  </p>
+                  <p className="mt-1 font-body text-xs leading-relaxed text-neutral-500">
+                    {mode.description}
+                  </p>
+                </div>
               </button>
             );
           })}
         </div>
-      </section>
 
-      {/* Section 1: Profile Visibility */}
-      <section className="rounded-lg border border-neutral-200 p-6">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Profile Visibility
-        </h3>
-        <p className="mt-1 font-body text-sm text-neutral-500">
-          Control who can see your profile on Britestate.
-        </p>
+        {/* Toggle panel */}
+        <div className="rounded-2xl bg-surface p-8 space-y-8">
+          {/* Search Engine Indexing */}
+          <div className="flex items-start justify-between gap-6">
+            <div className="max-w-md">
+              <p className="font-heading text-sm font-semibold text-brand-primary-dark">
+                Search Engine Indexing
+              </p>
+              <p className="mt-1 font-body text-sm leading-relaxed text-neutral-500">
+                Allow search engines to index your profile
+              </p>
+            </div>
+            <Switch
+              checked={settings.search_indexing}
+              onCheckedChange={(checked) =>
+                void updateSetting("search_indexing", checked)
+              }
+              aria-label="Search engine indexing"
+            />
+          </div>
 
-        <div className="mt-4">
+          <Separator />
+
+          {/* Data Sharing Preferences */}
+          <div className="flex items-start justify-between gap-6">
+            <div className="max-w-md">
+              <p className="font-heading text-sm font-semibold text-brand-primary-dark">
+                Data Sharing Preferences
+              </p>
+              <p className="mt-1 font-body text-sm leading-relaxed text-neutral-500">
+                Help us improve the platform with anonymised usage data
+              </p>
+            </div>
+            <Switch
+              checked={settings.anonymous_analytics}
+              onCheckedChange={(checked) =>
+                void updateSetting("anonymous_analytics", checked)
+              }
+              aria-label="Anonymous analytics"
+            />
+          </div>
+
+          <Separator />
+
+          {/* Third-party Marketing */}
+          <div className="flex items-start justify-between gap-6">
+            <div className="max-w-md">
+              <p className="font-heading text-sm font-semibold text-brand-primary-dark">
+                Third-party Marketing
+              </p>
+              <p className="mt-1 font-body text-sm leading-relaxed text-neutral-500">
+                Receive personalised offers from our partners
+              </p>
+            </div>
+            <Checkbox
+              id="third-party-marketing"
+              checked={settings.third_party_marketing}
+              onCheckedChange={(checked) =>
+                void updateSetting("third_party_marketing", checked === true)
+              }
+              aria-label="Third-party marketing"
+            />
+          </div>
+
+          <Separator />
+
+          {/* Active Status */}
+          <div className="flex items-start justify-between gap-6">
+            <div className="max-w-md">
+              <p className="font-heading text-sm font-semibold text-brand-primary-dark">
+                Active Status
+              </p>
+              <p className="mt-1 font-body text-sm leading-relaxed text-neutral-500">
+                Show when you were last active
+              </p>
+            </div>
+            <Switch
+              checked={settings.active_status}
+              onCheckedChange={(checked) =>
+                void updateSetting("active_status", checked)
+              }
+              aria-label="Active status"
+            />
+          </div>
+
+          <Separator />
+
+          {/* Last Viewed Properties */}
+          <div className="flex items-start justify-between gap-6">
+            <div className="max-w-md">
+              <p className="font-heading text-sm font-semibold text-brand-primary-dark">
+                Last Viewed Properties
+              </p>
+              <p className="mt-1 font-body text-sm leading-relaxed text-neutral-500">
+                Let agents see which properties you&apos;ve viewed
+              </p>
+            </div>
+            <Switch
+              checked={settings.last_viewed_visible}
+              onCheckedChange={(checked) =>
+                void updateSetting("last_viewed_visible", checked)
+              }
+              aria-label="Last viewed properties visibility"
+            />
+          </div>
+        </div>
+
+        {/* Hidden radio group preserved for a11y/form semantics — visually replaced by card buttons above */}
+        <div className="sr-only">
           <RadioGroup
             value={settings.visibility}
             onValueChange={(value) =>
               void updateSetting("visibility", value as VisibilityValue)
             }
-            className="space-y-3"
           >
-            <div className="flex items-start gap-3">
-              <RadioGroupItem value="public" id="visibility-public" />
-              <div className="-mt-0.5">
-                <Label
-                  htmlFor="visibility-public"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-                >
-                  Public
-                </Label>
-                <p className="font-body text-xs text-neutral-500">
-                  Anyone can view your profile
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <RadioGroupItem
-                value="registered_only"
-                id="visibility-registered"
-              />
-              <div className="-mt-0.5">
-                <Label
-                  htmlFor="visibility-registered"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-                >
-                  Registered Users Only
-                </Label>
-                <p className="font-body text-xs text-neutral-500">
-                  Only logged-in users can view your profile
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <RadioGroupItem value="private" id="visibility-private" />
-              <div className="-mt-0.5">
-                <Label
-                  htmlFor="visibility-private"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-                >
-                  Private
-                </Label>
-                <p className="font-body text-xs text-neutral-500">
-                  Only you can see your profile
-                </p>
-              </div>
-            </div>
+            <RadioGroupItem value="public" id="visibility-public" />
+            <Label htmlFor="visibility-public">Public</Label>
+            <RadioGroupItem value="registered_only" id="visibility-registered" />
+            <Label htmlFor="visibility-registered">Registered Users Only</Label>
+            <RadioGroupItem value="private" id="visibility-private" />
+            <Label htmlFor="visibility-private">Private</Label>
           </RadioGroup>
-        </div>
-
-        <Separator className="my-5" />
-
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="font-body text-sm font-medium text-neutral-900">
-              Search Engine Indexing
-            </p>
-            <p className="font-body text-xs text-neutral-500">
-              Allow search engines to index your profile
-            </p>
-          </div>
-          <Switch
-            checked={settings.search_indexing}
-            onCheckedChange={(checked) =>
-              void updateSetting("search_indexing", checked)
-            }
-            aria-label="Search engine indexing"
-          />
         </div>
       </section>
 
-      {/* 2-column grid: Data Sharing + Activity Visibility */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Section 2: Data Sharing */}
-        <section className="rounded-lg border border-neutral-200 p-6">
-          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-            Data Sharing
-          </h3>
-          <p className="mt-1 font-body text-sm text-neutral-500">
-            Choose how your data can be used beyond core platform functionality.
-          </p>
-
-          <div className="mt-4 space-y-4">
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="anonymous-analytics"
-                checked={settings.anonymous_analytics}
-                onCheckedChange={(checked) =>
-                  void updateSetting("anonymous_analytics", checked === true)
-                }
-                className="mt-0.5"
-              />
-              <div>
-                <Label
-                  htmlFor="anonymous-analytics"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-                >
-                  Anonymous Analytics
-                </Label>
-                <p className="font-body text-xs text-neutral-500">
-                  Help us improve the platform with anonymised usage data
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="third-party-marketing"
-                checked={settings.third_party_marketing}
-                onCheckedChange={(checked) =>
-                  void updateSetting("third_party_marketing", checked === true)
-                }
-                className="mt-0.5"
-              />
-              <div>
-                <Label
-                  htmlFor="third-party-marketing"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-                >
-                  Third-party Marketing
-                </Label>
-                <p className="font-body text-xs text-neutral-500">
-                  Receive personalised offers from our partners
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 3: Activity Visibility */}
-        <section className="rounded-lg border border-neutral-200 p-6">
-          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-            Activity Visibility
-          </h3>
-          <p className="mt-1 font-body text-sm text-neutral-500">
-            Control what others can see about your activity on the platform.
-          </p>
-
-          <div className="mt-4 space-y-5">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="font-body text-sm font-medium text-neutral-900">
-                  Active Status
-                </p>
-                <p className="font-body text-xs text-neutral-500">
-                  Show when you were last active
-                </p>
-              </div>
-              <Switch
-                checked={settings.active_status}
-                onCheckedChange={(checked) =>
-                  void updateSetting("active_status", checked)
-                }
-                aria-label="Active status"
-              />
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="font-body text-sm font-medium text-neutral-900">
-                  Last Viewed Properties
-                </p>
-                <p className="font-body text-xs text-neutral-500">
-                  Let agents see which properties you&apos;ve viewed
-                </p>
-              </div>
-              <Switch
-                checked={settings.last_viewed_visible}
-                onCheckedChange={(checked) =>
-                  void updateSetting("last_viewed_visible", checked)
-                }
-                aria-label="Last viewed properties visibility"
-              />
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* Section 4: Consent Preferences */}
-      <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+      {/* ── Section 2: Consent Preferences ── */}
+      <section className="space-y-6">
+        <h2 className="font-heading text-2xl font-bold text-brand-primary-dark">
           Consent Preferences
-        </h3>
+        </h2>
         <p className="font-body text-sm text-neutral-500">
           Choose what data you allow us to collect and how we use it.
         </p>
         <ConsentForm />
       </section>
 
-      {/* Section 5: Your Data */}
-      <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Your Data
-        </h3>
-        <div className="flex items-start justify-between gap-4 rounded-lg border border-neutral-200 p-4">
-          <div className="flex items-start gap-3">
-            <Download className="mt-0.5 size-5 text-brand-primary" />
-            <div>
-              <p className="font-body text-sm font-medium text-neutral-900">
-                Download your data
-              </p>
-              <p className="font-body text-xs text-neutral-500">
-                Download a copy of all data we hold about you in JSON format.
-              </p>
+      {/* ── Bottom split: Archive & Data | Danger Zone ── */}
+      <div className="border-t border-border pt-16">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+          {/* Archive & Data */}
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-bold text-brand-primary-dark">
+              Your Data
+            </h2>
+            <p className="font-body text-sm leading-relaxed text-neutral-500">
+              Download a copy of all data we hold about you in JSON format.
+            </p>
+            <div className="flex items-center gap-3 pt-1">
+              <Download className="size-4 text-brand-primary" />
+              <DataExportButton />
             </div>
-          </div>
-          <DataExportButton />
+          </section>
+
+          {/* Danger Zone */}
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-bold text-error">
+              Delete Account
+            </h2>
+            <p className="font-body text-sm leading-relaxed text-neutral-500">
+              Permanently delete your account
+            </p>
+            <ul className="space-y-1 font-body text-xs text-neutral-600">
+              <li>Your account will be scheduled for deletion in 30 days</li>
+              <li>You can cancel deletion by logging back in within the grace period</li>
+              <li>After 30 days, all your data will be permanently deleted</li>
+            </ul>
+
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 border-error text-error hover:bg-error/10"
+                  />
+                }
+              >
+                <Trash2 className="size-4" />
+                Delete My Account
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action will schedule your account for permanent
+                    deletion. All your data will be removed after a 30-day
+                    grace period.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-2 py-4">
+                  <Label htmlFor="delete-confirmation">
+                    Type <strong>DELETE</strong> to confirm
+                  </Label>
+                  <Input
+                    id="delete-confirmation"
+                    value={deleteConfirmation}
+                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                    placeholder="Type DELETE"
+                    className="font-mono"
+                  />
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setDialogOpen(false);
+                      setDeleteConfirmation("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => void handleDeleteAccount()}
+                    disabled={deleteConfirmation !== "DELETE" || deleting}
+                  >
+                    {deleting ? "Deleting..." : "Delete My Account"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </section>
         </div>
-      </section>
+      </div>
 
       <ReauthDialog
         open={deleteReauthOpen}
@@ -529,88 +557,6 @@ export default function PrivacySettingsPage() {
         title="Confirm account deletion"
         description="Enter your password to permanently delete your account."
       />
-
-      {/* Section 6: Delete Account */}
-      <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Delete Account
-        </h3>
-        <div className="rounded-lg border border-error/20 bg-error/5 p-4">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 size-5 text-error" />
-            <div className="space-y-2">
-              <p className="font-body text-sm font-medium text-neutral-900">
-                Permanently delete your account
-              </p>
-              <ul className="list-inside list-disc space-y-1 font-body text-xs text-neutral-600">
-                <li>
-                  Your account will be scheduled for deletion in 30 days
-                </li>
-                <li>
-                  You can cancel deletion by logging back in within the grace
-                  period
-                </li>
-                <li>
-                  After 30 days, all your data will be permanently deleted
-                </li>
-              </ul>
-
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger
-                  render={
-                    <Button variant="destructive" size="sm" className="mt-2" />
-                  }
-                >
-                  <Trash2 className="size-4" />
-                  Delete My Account
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                      This action will schedule your account for permanent
-                      deletion. All your data will be removed after a 30-day
-                      grace period.
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <div className="space-y-2 py-4">
-                    <Label htmlFor="delete-confirmation">
-                      Type <strong>DELETE</strong> to confirm
-                    </Label>
-                    <Input
-                      id="delete-confirmation"
-                      value={deleteConfirmation}
-                      onChange={(e) => setDeleteConfirmation(e.target.value)}
-                      placeholder="Type DELETE"
-                      className="font-mono"
-                    />
-                  </div>
-
-                  <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setDialogOpen(false);
-                        setDeleteConfirmation("");
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={() => void handleDeleteAccount()}
-                      disabled={deleteConfirmation !== "DELETE" || deleting}
-                    >
-                      {deleting ? "Deleting..." : "Delete My Account"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
