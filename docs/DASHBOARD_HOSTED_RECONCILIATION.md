@@ -92,9 +92,15 @@ FK is `listing_moderation_reviewed_by_fkey`. The F4 fix queries
 - Idempotent guard recommended (apply only `IF NOT EXISTS` / check `pg_constraint` first).
 
 **Recommendation:** **SAFE to apply to hosted, with user approval.** This is the only schema change the
-dashboard fixes actually require in production. Suggested application path: `supabase db push` of just
-this migration, or a guarded `ALTER TABLE … ADD CONSTRAINT … REFERENCES listings(id)`. **Do not apply
-without explicit confirmation.**
+dashboard fixes actually require in production.
+
+**✅ APPLIED TO HOSTED 2026-06-17** (with user approval). A guarded, transactional
+`ADD CONSTRAINT` + `CREATE INDEX IF NOT EXISTS` was run against `ynkqzzpcbpphjczmrfva` (re-verified
+0 rows / 0 orphans immediately before). Hosted now carries
+`listing_moderation_listing_id_fkey :: FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE`
+plus `idx_listing_moderation_listing_id` — byte-for-byte identical to the local definition from migration
+`20260617000000`. `/admin/moderation`'s PostgREST embed is now unblocked in production. Only this one
+constraint+index was applied; no other hosted change was made.
 
 ---
 
@@ -187,7 +193,7 @@ hardening, but call it out before any hosted push.
 |---|---|---|---|
 | Keep `251d34dd` edits as-is | — | none | ✅ no hosted change needed |
 | Keep F2/F3/F5/F6 query fixes | — | none | ✅ correct vs hosted |
-| Apply `listing_moderation→listings` FK | **hosted** | low (0 rows/0 orphans) | ⏳ **propose — needs user approval** |
+| Apply `listing_moderation→listings` FK | **hosted** | low (0 rows/0 orphans) | ✅ **applied to hosted 2026-06-17 (user-approved)** |
 | Add `mortgage_broker` to `user_role` enum (E1) | local on-disk migration | none (no-op on hosted) | ✅ Task 2 |
 | Cast `p_role::user_role` in `assign_role_atomic` (E2) | local on-disk migration | none (no-op on hosted) | ✅ Task 2 |
 | Full migration-baseline reconciliation of broader drift | both | medium | 📋 separate task — do not blind-apply |
