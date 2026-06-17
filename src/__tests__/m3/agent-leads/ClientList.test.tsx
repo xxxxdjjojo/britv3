@@ -135,12 +135,11 @@ describe("ClientList — add client dialog", () => {
   it("opens the add-client dialog showing the form", async () => {
     render(<ClientList clients={[]} />);
 
-    // FINDING: the DialogTrigger's `asChild` prop is dropped by the project's
-    // base-ui Dialog wrapper, so <DialogTrigger asChild><Button>Add Client…
-    // produces a NESTED button — two elements share the accessible name
-    // "Add Client". The OUTER (data-slot="dialog-trigger") is the real trigger.
+    // BUG F8/F7 (fixed): DialogTrigger now honors `asChild` by forwarding to
+    // base-ui's `render` prop, so <DialogTrigger asChild><Button>Add Client…
+    // renders a SINGLE button instead of a nested pair.
     const triggers = screen.getAllByRole("button", { name: /^add client$/i });
-    expect(triggers.length).toBe(2); // documents the nested-button defect
+    expect(triggers.length).toBe(1);
     fireEvent.click(triggers[0]);
 
     await waitFor(() => {
