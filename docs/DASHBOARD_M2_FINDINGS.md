@@ -126,3 +126,29 @@ that had documented these bugs were updated to assert the fixed behavior. Full s
 
 **Still needed:** stand up an isolated/ephemeral Supabase (unblocks F2–F6 and makes the M2 E2E smoke a
 reliable gate), and add Playwright component/browser tests to close the base-ui interaction `it.todo`s.
+
+## Milestone 5 — hosted-vs-local schema reconciliation (Task 1, delivered)
+
+Full read-only introspection of hosted `ynkqzzpcbpphjczmrfva` vs the clean local `db reset` baseline.
+**Report: [`DASHBOARD_HOSTED_RECONCILIATION.md`](./DASHBOARD_HOSTED_RECONCILIATION.md).** Headlines:
+
+- **Every `251d34dd` migration edit is SAFE and needs no hosted change** — each one aligned an on-disk
+  migration *to* hosted reality (verified column-by-column: hosted has `profiles.is_admin` not `role`,
+  `display_name` not `full_name`; no `properties.status/slug/address_line_1`; no `subscriptions.plan`;
+  `price/status` on `listings`; `audit_logs`/`agency_leads`/`agents`/`rental_listings` never existed).
+  Do not revert them.
+- **F2–F6 are app-query bugs, now fixed** (`79d41288`) against real hosted columns — verified correct.
+  F2 `email_campaigns.content` jsonb; F3 `profiles.display_name`; F5 `subscriptions.plan_name`;
+  F6 `properties.address_line1`. **F2/F3/F5/F6 resolved.**
+- **F4 needs one hosted change:** hosted has `listing_moderation.listing_id` but **no FK to `listings`**;
+  the corrected query embeds via PostgREST and requires it. Migration
+  `20260617000000_listing_moderation_listing_fk.sql` adds it; verified safe (hosted table is 0 rows /
+  0 orphans). **Propose to user; apply with approval only.** Until applied, `/admin/moderation` still
+  fails in production.
+- **Broader bidirectional drift** (11 hosted-only tables from other branches, 3 local-only tables,
+  column drift on shared tables incl. `deposit_registrations` diverging *both* ways, enum drift) is
+  pre-existing and out of scope — needs a deliberate migration-baseline reconciliation, not a
+  blind apply.
+- **Local seed gap (Task 2 blocker):** on-disk `user_role` enum lacks `mortgage_broker` (hosted has it),
+  so the seed's broker user fails the enum cast on a fresh local `db reset`. Fix on-disk with
+  `ALTER TYPE … ADD VALUE IF NOT EXISTS 'mortgage_broker'` (no-op on hosted). Addressed in Task 2.
