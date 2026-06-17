@@ -18,6 +18,7 @@ import {
   Share2,
   ReceiptText,
   Award,
+  Star,
   HeartHandshake,
 } from "lucide-react";
 
@@ -156,6 +157,12 @@ const categories: Category[] = [
         icon: Info,
         title: "Disclaimer",
         desc: "Limitations on the advice and information we provide.",
+      },
+      {
+        href: "/legal/review-policy",
+        icon: Star,
+        title: "Review Policy",
+        desc: "How reviews are moderated, verified, and managed on the platform.",
       },
     ],
   },

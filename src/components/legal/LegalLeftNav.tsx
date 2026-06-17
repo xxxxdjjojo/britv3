@@ -48,6 +48,7 @@ const NAV_CATEGORIES: NavCategory[] = [
       { href: "/legal/accessibility", label: "Accessibility Statement" },
       { href: "/legal/complaints", label: "Complaints Procedure" },
       { href: "/legal/disclaimer", label: "Disclaimer" },
+      { href: "/legal/review-policy", label: "Review Policy" },
     ],
   },
   {
