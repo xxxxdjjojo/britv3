@@ -103,7 +103,26 @@ DB) across all dashboard areas — `src/__tests__/m3/<area>/`. **726 passing, 4 
 - **happy-dom can't drive base-ui `Select`/`Slider`/`Checkbox`-in-`<label>`** → the 42 `it.todo`s are
   these interaction paths; they need a real-browser runner (Playwright component tests), not more unit work.
 
-## Next (M4)
+## Milestone 4 — bug fixes (in progress)
 
-Fix F1–F11 via TDD. Stand up an isolated/ephemeral Supabase so the M2 E2E smoke becomes a reliable
-gate, and add Playwright component/browser tests to close the base-ui interaction `it.todo`s.
+**Fixed via TDD (Class A — frontend/logic, deterministic, no DB):**
+| # | Fix | Commit |
+|---|---|---|
+| F1 | provider `layout.tsx` redirect → `/register/onboarding/provider` (real route); guarded by a route-manifest test | `b82258ae` |
+| F7 + F8 | `DialogTrigger`/`AlertDialogTrigger` now honor `asChild` via base-ui `render` prop → no more nested `<button>` **app-wide** (fixes `NegotiationThread`, `ClientList`, `ViewingCalendar`, …) | `79c12332` |
+| F9 | `ProviderProfileForm` pricing inputs use `setValueAs` (empty → `undefined`) so an otherwise-valid submit isn't silently blocked | `bbfeb4d0` |
+
+New regression tests added (dialog-trigger, provider-form-pricing, onboarding-redirect); the M3 tests
+that had documented these bugs were updated to assert the fixed behavior. Full sweep: 737 tests green.
+
+**Deferred (decision 2026-06-17):**
+- **F2–F6 (schema drift)** → a **dedicated schema-reconciliation pass against an isolated/ephemeral
+  Supabase**. Not fixed inline: the correct fix (query rename vs missing-migration) can't be
+  determined from code alone (migrations are internally inconsistent re `full_name` vs
+  `first_name/last_name`), and verifying requires a reliable DB — the hosted one is shared/churned,
+  the local one is broken. Do NOT guess column renames or write migrations to the shared DB.
+- **F10 (calculator extraction)** → bundle with a later code-quality pass (debt, not a runtime bug).
+- **F11 (missing provider components)** → feature work, not a bug fix; out of M4 scope.
+
+**Still needed:** stand up an isolated/ephemeral Supabase (unblocks F2–F6 and makes the M2 E2E smoke a
+reliable gate), and add Playwright component/browser tests to close the base-ui interaction `it.todo`s.
