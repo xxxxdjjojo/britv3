@@ -12,7 +12,9 @@
     ]
   },
   "scripts": {
+    "predev": "node scripts/dev-guard.mjs",
     "dev": "next dev",
+    "check:stale-branches": "bash scripts/check-stale-branches.sh",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",

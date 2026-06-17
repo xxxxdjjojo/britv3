@@ -2,6 +2,22 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Canonical clone (read first)
+
+**`britv3` is the single canonical working copy.** The dev server and any deploy
+must run from `britv3`. Extra working copies must be **git worktrees** of `britv3`
+(`git worktree add ../britv3-<task> <branch>`), not separate `git clone`s.
+
+Why: ad-hoc sibling clones (`britv3-secfix`, `britv3-market-map`, `britv3-qp0`, …)
+caused features to be built on a branch in one clone while `next dev` served a
+different clone that lacked them — "we built it but there's nowhere to see it."
+Guards now in place:
+- `pnpm dev` runs `scripts/dev-guard.mjs` (a `predev` hook) printing the serving
+  clone + branch and warning if it is not `britv3`.
+- `pnpm check:stale-branches` lists feature branches diverged from `main` and
+  unmerged, so work is not stranded on long-lived branches.
+- Merge feature branches into `main` promptly; do not let them accumulate.
+
 ## Project Overview
 
 Britestate is an all-in-one UK property portal serving 7 user roles (homebuyer, renter, seller, landlord, estate agent, service provider, admin). This is v3.0 — a ground-up rebuild using the v2.0 PRD as specification. The codebase has authentication, property search, property detail pages, area guides, marketplace (reviews & ratings), messaging, notifications, seller/landlord/agent/provider dashboards, admin back-office, and security hardening built. Development follows the epic-by-epic roadmap in `.planning/ROADMAP.md`.

@@ -23,7 +23,7 @@ export const BOROUGH_AREAS: Record<string, BoroughArea> = {
     label: "Wandsworth",
     district: "WANDSWORTH",
     outwardCodes: ["SW4", "SW8", "SW11", "SW12", "SW15", "SW16", "SW17", "SW18", "SW19"],
-    geojsonName: "wandsworth-postcode-districts.geojson",
+    geojsonName: "wandsworth-postcode-districts.json",
   },
 };
 
