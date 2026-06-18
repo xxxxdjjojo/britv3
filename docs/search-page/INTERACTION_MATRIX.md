@@ -30,7 +30,7 @@ No element is an unexplained dead control.
 | Beds/Baths/Sqft | Display | honest fallbacks: "Price on application", "Floor area unavailable", "Image unavailable" | Functional |
 | Verified badge | Renders only when `verified === true` | — | never fabricated |
 | Listing Agent → "View listing agents" | Open agents directory | `/agents` | Functional (honest — no fake names) |
-| Local Support chips (Plumber, Electrician) | Open filtered trades directory | `/services/tradespeople?category={enum}&postcode={postcode}` | Functional (Option A) |
+| Local Support chips (Plumber, Electrician) | Open filtered trades directory | `/marketplace?category={enum}&postcode={postcode}` | Functional (Option A) |
 
 ## Refine filters (right aside)
 | Element | Behaviour | Wired through | Status |
