@@ -237,6 +237,8 @@ export const NAV_ITEMS: NavItem[] = [
         links: [
           { label: "Area Guides", href: "/areas" },
           { label: "Market Trends", href: "/market-trends" },
+          { label: "Price Heatmap Map", href: "/search/map" },
+          { label: "Wandsworth Market Map", href: "/search/market-map/wandsworth" },
         ],
       },
     ],
