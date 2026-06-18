@@ -32,7 +32,9 @@ export async function POST(req: Request) {
         .insert({
           name: body.name.trim(),
           subject: body.subject.trim(),
-          content: body.content ?? "",
+          // content is a jsonb NOT NULL column — an empty string is invalid JSON
+          // and rejected by Postgres. Store the body as a JSON object.
+          content: { body: body.content ?? "" },
           target_roles: body.target_roles ?? [],
           scheduled_at: body.scheduled_at ?? null,
           status: "draft",

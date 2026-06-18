@@ -113,6 +113,12 @@ CREATE TRIGGER provider_services_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION set_updated_at();
 
+-- Anon public-read policy (relocated from 017_public_profiles.sql, which ran
+-- before this table existed — schema-drift / migration-ordering fix).
+CREATE POLICY "Anon can view provider services"
+  ON provider_services FOR SELECT TO anon
+  USING (TRUE);
+
 -- ============================================================
 -- SECTION 5: provider_references
 -- ============================================================

@@ -565,7 +565,7 @@ BEGIN
         AND start_time < date_trunc('week', NOW()) + INTERVAL '7 days')::BIGINT,
     (SELECT COUNT(*) FROM public.agent_offers WHERE agent_id = p_agent_id AND status = 'pending')::BIGINT,
     COALESCE(
-      (SELECT COUNT(*)::NUMERIC FILTER (WHERE stage = 'closed') / NULLIF(COUNT(*)::NUMERIC, 0)
+      (SELECT (COUNT(*) FILTER (WHERE stage = 'closed'))::NUMERIC / NULLIF(COUNT(*)::NUMERIC, 0)
        FROM public.agent_leads WHERE agent_id = p_agent_id),
       0
     );

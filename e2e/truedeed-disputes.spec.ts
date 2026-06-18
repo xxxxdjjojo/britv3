@@ -181,33 +181,26 @@ async function adminApproveCandidateForListing(
   adminRequest: APIRequestContext,
   listingAddress: string,
 ): Promise<void> {
-  // Candidate creation is synchronous on report, but the admin queue
-  // hydrates from a join that can lag by a beat under parallel test load.
-  // Poll for THIS run's candidate by listing address before approving.
-  let candidateId: string | null = null;
-  await expect(async () => {
-    const listRes = await adminRequest.get(
-      "/api/admin/truedeed/invoice-candidates",
-    );
-    expect(listRes.ok(), "admin GET candidates failed").toBe(true);
-    const json = (await listRes.json()) as {
-      candidates?: Array<{
-        candidateId: string;
-        introduction?: { listingAddress?: string };
-      }>;
-    };
-    const mine = (json.candidates ?? []).find((c) =>
-      c.introduction?.listingAddress?.includes(listingAddress),
-    );
-    expect(mine, "expected an approvable candidate for this run").toBeDefined();
-    candidateId = mine!.candidateId;
-  }).toPass({ timeout: 30_000, intervals: [2_000] });
+  const listRes = await adminRequest.get(
+    "/api/admin/truedeed/invoice-candidates",
+  );
+  expect(listRes.ok(), "admin GET candidates failed").toBe(true);
+  const json = (await listRes.json()) as {
+    candidates?: Array<{
+      candidateId: string;
+      introduction?: { listingAddress?: string };
+    }>;
+  };
+  const mine = (json.candidates ?? []).find((c) =>
+    c.introduction?.listingAddress?.includes(listingAddress),
+  );
+  expect(mine, "expected an approvable candidate for this run").toBeDefined();
 
   const decideRes = await adminRequest.post(
     "/api/admin/truedeed/invoice-candidates",
     {
       data: {
-        candidateId,
+        candidateId: mine!.candidateId,
         decision: "approved",
         note: null,
       },

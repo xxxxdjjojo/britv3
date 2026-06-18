@@ -3,9 +3,10 @@
 -- completing state transitions, payment_schedules table, and certificates table.
 
 -- ============================================================
--- 1. Add 'completing' to booking_status enum
+-- 1. 'completing' booking_status enum value is added in
+--    20260322000000_booking_status_completing_enum.sql (must be committed in a
+--    prior transaction before it can be referenced in seed data below).
 -- ============================================================
-ALTER TYPE booking_status ADD VALUE IF NOT EXISTS 'completing' AFTER 'in_progress';
 
 -- ============================================================
 -- 2. Add lat/lng columns to service_requests
@@ -20,7 +21,7 @@ CREATE INDEX IF NOT EXISTS idx_sr_lat_lng ON service_requests (lat, lng)
 -- ============================================================
 -- 3. Add completing transitions to booking_state_transitions
 -- ============================================================
-INSERT INTO booking_state_transitions (from_status, to_status, allowed_actors, requires_reason)
+INSERT INTO booking_state_transitions (from_status, to_status, allowed_by, requires_reason)
 VALUES
   ('in_progress', 'completing', '{"provider"}',  false),
   ('completing',  'completed',  '{"system"}',    false),
