@@ -54,11 +54,6 @@ export function PropertySearchCard({
           </span>
         )}
       </div>
-
-      {/* Favourite heart — DB-backed SaveButton */}
-      <div className="absolute right-4 top-4">
-        <SaveButton listingId={property.id} size="sm" />
-      </div>
     </div>
   );
 
@@ -72,7 +67,10 @@ export function PropertySearchCard({
         isSelected ? "border-brand-primary ring-1 ring-brand-primary" : "border-neutral-200",
       )}
     >
-      {/* Image half — links to the property when a slug exists, else static */}
+      {/* Image half — links to the property when a slug exists, else static.
+          The favourite heart is a SIBLING of the link (never nested inside the
+          anchor) so we don't render an invalid <a><button> and trigger a
+          hydration error. */}
       <div className="relative w-full md:w-1/2">
         {model.href ? (
           <Link href={model.href} className="block h-full" aria-label={model.title}>
@@ -81,6 +79,11 @@ export function PropertySearchCard({
         ) : (
           imageBlock
         )}
+
+        {/* Favourite heart — DB-backed SaveButton, outside the card link */}
+        <div className="absolute right-4 top-4 z-10">
+          <SaveButton listingId={property.id} size="sm" />
+        </div>
       </div>
 
       {/* Details half */}

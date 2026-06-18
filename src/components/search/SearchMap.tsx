@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
-import maplibregl from "maplibre-gl";
+import maplibregl, { type StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 // ---------------------------------------------------------------------------
@@ -60,6 +60,22 @@ const SATELLITE_STYLE = `https://api.maptiler.com/maps/satellite/style.json?key=
 const UK_CENTER: [number, number] = [-2, 54.5];
 const DEFAULT_ZOOM = 6;
 
+// Keyless raster fallback (same MapLibre renderer, no API key). Used when the
+// MapTiler key is absent or rejected (e.g. origin-restricted -> 403) so the map
+// area degrades to a real base map instead of a dead error box.
+const OSM_FALLBACK_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    osm: {
+      type: "raster",
+      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      attribution: "© OpenStreetMap contributors",
+    },
+  },
+  layers: [{ id: "osm", type: "raster", source: "osm" }],
+};
+
 const MARKER_DEFAULT = "#1B4D3E";
 const MARKER_SELECTED = "#fdcd74";
 const MARKER_PROVIDER = "#5d7d72";
@@ -117,10 +133,11 @@ function SearchMap({
   const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
   const isSatelliteRef = useRef(false);
   const styleBtnRef = useRef<HTMLButtonElement | null>(null);
+  // Guard so we only fall back to the keyless base map once (tile errors fire
+  // repeatedly otherwise).
+  const usedFallbackRef = useRef(false);
 
-  const [status, setStatus] = useState<MapStatus>(
-    MAPTILER_KEY ? "loading" : "error",
-  );
+  const [status, setStatus] = useState<MapStatus>("loading");
 
   // Stable callback refs to avoid stale closures in event listeners.
   // Kept in sync inside an effect (not during render) to satisfy react-hooks/refs.
@@ -143,13 +160,18 @@ function SearchMap({
   // Initialize map
   // -----------------------------------------------------------------------
   useEffect(() => {
-    if (!containerRef.current || mapRef.current || !MAPTILER_KEY) return;
+    if (!containerRef.current || mapRef.current) return;
+
+    const initialStyle: string | StyleSpecification = MAPTILER_KEY
+      ? STREETS_STYLE
+      : OSM_FALLBACK_STYLE;
+    if (!MAPTILER_KEY) usedFallbackRef.current = true;
 
     let map: maplibregl.Map;
     try {
       map = new maplibregl.Map({
         container: containerRef.current,
-        style: STREETS_STYLE,
+        style: initialStyle,
         center: UK_CENTER,
         zoom: DEFAULT_ZOOM,
       });
@@ -165,7 +187,22 @@ function SearchMap({
     );
 
     map.on("load", () => setStatus("loaded"));
-    map.on("error", () => setStatus("error"));
+    map.on("error", () => {
+      // First MapTiler failure (e.g. 403 origin restriction): switch once to
+      // the keyless OSM base map and keep the map usable. If the fallback also
+      // errors, surface the recoverable error state.
+      if (!usedFallbackRef.current) {
+        usedFallbackRef.current = true;
+        try {
+          map.setStyle(OSM_FALLBACK_STYLE);
+          setStatus("loaded");
+        } catch {
+          setStatus("error");
+        }
+      } else {
+        setStatus("error");
+      }
+    });
     map.on("moveend", () => {
       onBoundsChangeRef.current(extractBounds(map));
     });
@@ -285,21 +322,6 @@ function SearchMap({
     </>
   );
 
-  // Guard: show fallback if MapTiler API key is not configured.
-  if (!MAPTILER_KEY) {
-    return (
-      <div
-        data-testid="search-map"
-        className={`flex h-full items-center justify-center rounded-lg bg-muted ${className ?? ""}`}
-      >
-        {statusProbes}
-        <p className="text-sm text-muted-foreground">
-          Map unavailable — MapTiler API key not configured.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div
       data-testid="search-map"
@@ -318,7 +340,19 @@ function SearchMap({
           </p>
           <button
             type="button"
-            onClick={() => setStatus(MAPTILER_KEY ? "loading" : "error")}
+            onClick={() => {
+              const map = mapRef.current;
+              setStatus("loading");
+              if (map) {
+                usedFallbackRef.current = true;
+                try {
+                  map.setStyle(OSM_FALLBACK_STYLE);
+                  setStatus("loaded");
+                } catch {
+                  setStatus("error");
+                }
+              }
+            }}
             className="rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
           >
             Retry
