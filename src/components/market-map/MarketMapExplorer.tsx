@@ -247,13 +247,16 @@ export function MarketMapExplorer({
     }
   }
 
-  // Close dropdown on outside click
+  // Close dropdown on outside click.
+  // NOTE: the search bar is rendered for BOTH desktop and mobile layouts, so a
+  // single ref can only track one instance. Closing on "outside searchRef"
+  // therefore mis-fires when interacting with the other instance, dismissing
+  // the dropdown before the result's onClick lands. Match any search-bar root
+  // via a marker attribute instead so selection works in every layout.
   useEffect(() => {
     function onPointerDown(e: PointerEvent) {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(e.target as Node)
-      ) {
+      const target = e.target as Element | null;
+      if (!target?.closest("[data-market-search]")) {
         setShowResults(false);
       }
     }
@@ -300,7 +303,7 @@ export function MarketMapExplorer({
   // ---------------------------------------------------------------------------
 
   const searchBar = (
-    <div ref={searchRef} className="relative">
+    <div ref={searchRef} className="relative" data-market-search>
       <div
         className={cn(
           "flex items-center gap-2 rounded-[var(--radius-md)] border border-[#E2E2E8] bg-white px-3 py-2.5",

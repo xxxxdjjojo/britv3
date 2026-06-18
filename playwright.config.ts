@@ -10,6 +10,12 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
+    // Allow software WebGL so MapLibre GL mounts in headless / GPU-less CI.
+    // Without this, recent Chromium refuses a SwiftShader WebGL context and the
+    // map fails to initialise, breaking every map-dependent spec.
+    launchOptions: {
+      args: ["--enable-unsafe-swiftshader"],
+    },
   },
   projects: [
     {
