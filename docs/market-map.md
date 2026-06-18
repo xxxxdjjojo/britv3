@@ -168,6 +168,16 @@ Only areas with confidence ≥ Low (≥ 5 transactions) are included in the doma
 
 ---
 
+## Flat vs House Breakdown
+
+Clicking an area opens a detail panel that splits the area's sold prices into **flats / maisonettes** (PPD type `F`) and **houses** (detached `D` + semi-detached `S` + terraced `T`), each with its own median, transaction count, and confidence grade. This is fetched lazily, per clicked area, via `market_map_area_detail` (so the choropleth payload stays lean). A property type with fewer than the minimum registered sales shows "Insufficient registered sales for this property type" — never a fabricated £0.
+
+## Active Geography-Level Diagnostic
+
+The map renders a small pill (`data-testid="active-map-granularity"`) showing the geography level **actually served** for the current view (from the API response metadata, falling back to the zoom-derived level). It confirms that zooming changes the data layer — not just the camera — and gives E2E a deterministic hook that does not depend on map pixels.
+
+---
+
 ## How to Populate the Data
 
 Run the following steps in order from the project root. All commands assume Supabase is running (either hosted or local — see the local-DB caveat below).
@@ -213,6 +223,20 @@ pnpm ingest:land-registry
 ```
 
 This is the existing Land Registry Price Paid ingest script. It must have been run before the map will show any data. The market-map queries join against `ppd_transactions`.
+
+> A seventh migration, `20260616000007_market_map_area_detail.sql`, adds the
+> `market_map_area_detail` RPC used by the flat/house breakdown (see below).
+
+### Quick start — seed a deterministic fixture (no national ingest)
+
+To bring the whole map up end-to-end without the multi-GB national ingest (for local demo, E2E, and DB contract tests), apply the migrations then load the bundled fixture:
+
+```bash
+node scripts/seed-market-map-fixture.mjs          # seed (idempotent)
+node scripts/seed-market-map-fixture.mjs --clean  # remove fixture
+```
+
+It loads a small, clearly-fictional `ZZ`-postcode hierarchy over London (two local authorities → districts → sectors → MSOAs → LSOAs) with distinct flat and house medians and one deliberately insufficient area. It is **not** national data — replace it with the real ingest (Steps 2–4) for production.
 
 ### Local database caveat
 
@@ -321,6 +345,44 @@ Resolves a free-text query to candidate geographic areas for the search bar auto
 | Status | Body | Cause |
 |--------|------|-------|
 | 400 | `{ "error": "Invalid query parameters", "details": ... }` | Missing or empty `q` |
+
+---
+
+### GET `/api/market-map/area/[level]/[areaId]`
+
+Sold-price breakdown for a single area (overall / flats / houses) for the selected-area detail panel. Cached in Redis (TTL 300 s).
+
+#### Path + query parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `level` | path | Yes | `local_authority` \| `postcode_district` \| `postcode_sector` \| `msoa` \| `lsoa` \| `street` |
+| `areaId` | path | Yes | Area identifier at that level (e.g. LAD code, MSOA code, district string) |
+| `from_date` / `to_date` | query | No | ISO date window (defaults to last `months`) |
+| `months` | query | No | `12` \| `24` \| `36` \| `60` (default 36) |
+
+#### Response shape
+
+```jsonc
+{
+  "area_id": "E01000001",
+  "geography_level": "lsoa",
+  "date_from": "2023-06-18",
+  "date_to": "2026-06-18",
+  "overall": { "median": 450000, "p10": 257000, "p90": 643000, "transaction_count": 60, "confidence": "High", "latest_transaction_date": "2025-12-15" },
+  "flat":    { "median": 300000, "transaction_count": 30, "confidence": "High", "latest_transaction_date": "2025-12-15" },
+  "house":   { "median": 600000, "transaction_count": 30, "confidence": "High", "latest_transaction_date": "2025-12-15" }
+}
+```
+
+Prices are in **pounds**. A segment with no sales returns `median: null` (the UI shows an insufficient-data label, never £0). `house` = `D` + `S` + `T`; `flat` = `F`.
+
+#### Error responses
+
+| Status | Body | Cause |
+|--------|------|-------|
+| 400 | `{ "error": "Invalid geography level '...'" }` | Unsupported `level` |
+| 404 | `{ "error": "Area detail unavailable" }` | RPC returned no data |
 
 ---
 
