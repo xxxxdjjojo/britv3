@@ -149,7 +149,7 @@ export function DisputeQueue({ items, onDecide }: Props) {
             </div>
 
             <div className="flex flex-wrap gap-2 text-xs">
-              <Badge className="bg-slate-100 text-slate-700">
+              <Badge className="bg-muted text-muted-foreground">
                 Invoice state: {item.invoiceState}
               </Badge>
               <Badge
@@ -163,10 +163,10 @@ export function DisputeQueue({ items, onDecide }: Props) {
                   ? "Properly raised (clause 9.5)"
                   : "Late dispute — dunning clock did not pause"}
               </Badge>
-              <Badge className="bg-slate-100 text-slate-700">
+              <Badge className="bg-muted text-muted-foreground">
                 Issued {formatDate(item.issuedAt)}
               </Badge>
-              <Badge className="bg-slate-100 text-slate-700">
+              <Badge className="bg-muted text-muted-foreground">
                 Introduced {formatDate(item.occurredAt)}
               </Badge>
             </div>

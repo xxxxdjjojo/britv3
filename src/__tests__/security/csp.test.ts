@@ -72,7 +72,7 @@ describe("CSP Headers", () => {
   });
 
   it("allows Sentry ingest (incl. non-US regions) in connect-src", async () => {
-    const response = await middleware(createRequest("/"));
+    const response = await proxy(createRequest("/"));
     const csp = response.headers.get("Content-Security-Policy");
     // *.sentry.io covers any region host, e.g. oXXX.ingest.de.sentry.io, which
     // a bare *.ingest.sentry.io would NOT match (the wildcard stops at one label).
