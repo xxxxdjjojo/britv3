@@ -28,6 +28,7 @@ import dynamic from "next/dynamic";
 import { parseAsString, parseAsInteger, useQueryStates } from "nuqs";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { useMarketSearch } from "@/hooks/useMarketSearch";
+import { useMarketAreaDetail } from "@/hooks/useMarketAreaDetail";
 import { fitBoundsFor } from "@/lib/market-map/fit-bounds";
 import { cn } from "@/lib/utils";
 import { MarketMapFilters } from "./MarketMapFilters";
@@ -124,6 +125,13 @@ export function MarketMapExplorer({
   const [selectedArea, setSelectedArea] =
     useState<MarketMapFeatureProperties | null>(null);
   const [allFeatures, setAllFeatures] = useState<MarketMapFeatureProperties[]>([]);
+
+  // Flat/house breakdown for the selected area (lazy-loaded on selection).
+  const { detail: areaDetail } = useMarketAreaDetail(
+    selectedArea?.geography_level ?? null,
+    selectedArea?.area_id ?? null,
+    months,
+  );
 
   // Price range for legend (derived from features)
   const { loPrice, hiPrice } = (() => {
@@ -449,6 +457,7 @@ export function MarketMapExplorer({
             <MarketMapAreaDetail
               properties={selectedArea}
               scaleMode={scaleMode}
+              detail={areaDetail}
               onClose={() => handleAreaSelect(null)}
             />
           </div>
@@ -505,6 +514,7 @@ export function MarketMapExplorer({
                     <MarketMapAreaDetail
                       properties={selectedArea}
                       scaleMode={scaleMode}
+                      detail={areaDetail}
                       onClose={() => handleAreaSelect(null)}
                     />
                   </div>

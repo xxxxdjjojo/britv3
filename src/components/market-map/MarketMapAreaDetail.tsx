@@ -9,10 +9,13 @@ import { cn } from "@/lib/utils";
 import { MarketMapDisclaimer } from "./MarketMapDisclaimer";
 import type { MarketMapFeatureProperties } from "@/services/market-map/types";
 import type { MarketMapScaleMode } from "@/services/market-map/types";
+import type { AreaPriceDetail, AreaPriceSegment } from "@/services/market-map/types";
 
 type Props = Readonly<{
   properties: MarketMapFeatureProperties;
   scaleMode: MarketMapScaleMode;
+  /** Flat/house breakdown for this area (lazy-loaded on selection). */
+  detail?: AreaPriceDetail | null;
   onClose?: () => void;
   className?: string;
 }>;
@@ -59,9 +62,53 @@ function DetailRow({
   );
 }
 
+/**
+ * One row of the flat/house breakdown. Shows the segment median + transaction
+ * count + confidence, or an explicit insufficient-data label (never £0) when
+ * fewer than the minimum registered sales exist for that property type.
+ */
+function BreakdownSegment({
+  label,
+  segment,
+}: Readonly<{ label: string; segment: AreaPriceSegment }>) {
+  const insufficient =
+    segment.confidence === "Insufficient" || segment.median === null;
+  const confStyle =
+    CONFIDENCE_STYLES[segment.confidence] ?? CONFIDENCE_STYLES.Insufficient;
+
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className="flex items-center justify-between gap-3">
+        <span className="font-sans text-xs font-medium text-[#2E2E33]">{label}</span>
+        <span className="font-sans text-sm font-bold text-[#003629]">
+          {insufficient ? "—" : formatPrice(segment.median as number)}
+        </span>
+      </div>
+      {insufficient ? (
+        <span className="font-sans text-[11px] text-[#7A7A88]">
+          Insufficient registered sales for this property type
+        </span>
+      ) : (
+        <span className="flex items-center gap-1.5 font-sans text-[11px] text-[#7A7A88]">
+          {segment.transaction_count.toLocaleString("en-GB")} sales
+          <span aria-hidden="true">·</span>
+          <span className="flex items-center gap-1">
+            <span
+              className={cn("inline-block h-1.5 w-1.5 rounded-full", confStyle.dot)}
+              aria-hidden="true"
+            />
+            <span className={confStyle.text}>{segment.confidence}</span>
+          </span>
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function MarketMapAreaDetail({
   properties,
   scaleMode,
+  detail,
   onClose,
   className,
 }: Props) {
@@ -189,6 +236,18 @@ export function MarketMapAreaDetail({
             <span className="font-normal text-[#C4C4CE]">——</span>{" "}
             {formatPrice(p90_price)}
           </p>
+        </div>
+      )}
+
+      {/* Flat vs house breakdown */}
+      {detail && (
+        <div
+          className="flex flex-col gap-3 border-b border-[#E2E2E8] px-4 py-3"
+          data-testid="area-detail-breakdown"
+        >
+          <p className="font-sans text-xs text-[#7A7A88]">By property type</p>
+          <BreakdownSegment label="Flats / maisonettes" segment={detail.flat} />
+          <BreakdownSegment label="Houses" segment={detail.house} />
         </div>
       )}
 

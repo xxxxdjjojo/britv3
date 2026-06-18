@@ -62,6 +62,58 @@ export type MarketMapFeatureProperties = {
 };
 
 // ---------------------------------------------------------------------------
+// Area detail (flat vs house breakdown) — selected-area panel
+// ---------------------------------------------------------------------------
+
+/** One price segment (overall / flat / house) in POUNDS. */
+export type AreaPriceSegment = {
+  /** Median sold price in pounds, or null when there are no sales. */
+  median: number | null;
+  transaction_count: number;
+  confidence: ConfidenceLevel;
+  latest_transaction_date: string | null;
+};
+
+/**
+ * Per-area sold-price breakdown for the selected-area panel.
+ * Prices are in POUNDS. Flat = F; House = detached + semi-detached + terraced.
+ */
+export type AreaPriceDetail = {
+  area_id: string;
+  geography_level: string;
+  date_from: string;
+  date_to: string;
+  overall: AreaPriceSegment & {
+    /** P10 sold price in pounds, or null. */
+    p10: number | null;
+    /** P90 sold price in pounds, or null. */
+    p90: number | null;
+  };
+  flat: AreaPriceSegment;
+  house: AreaPriceSegment;
+};
+
+/** Raw segment as returned by the market_map_area_detail RPC (prices in pence). */
+export type RawAreaDetailSegment = {
+  median_pence: number | null;
+  count: number;
+  latest_date: string | null;
+  p10_pence?: number | null;
+  p90_pence?: number | null;
+};
+
+/** Raw jsonb payload from the market_map_area_detail RPC. */
+export type RawAreaDetail = {
+  area_id: string;
+  geography_level: string;
+  date_from: string;
+  date_to: string;
+  overall: RawAreaDetailSegment;
+  flat: RawAreaDetailSegment;
+  house: RawAreaDetailSegment;
+};
+
+// ---------------------------------------------------------------------------
 // Metadata (included in the FeatureCollection)
 // ---------------------------------------------------------------------------
 
