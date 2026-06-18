@@ -12,7 +12,9 @@ export function OTPInput(
   }>,
 ) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const digits = props.value.padEnd(6, "").slice(0, 6).split("");
+  // Always render 6 slots; empty slots are "". (padEnd with an empty pad string
+  // is a no-op, which previously rendered zero inputs for an empty value.)
+  const digits = Array.from({ length: 6 }, (_, i) => props.value[i] ?? "");
 
   function focusNext(index: number) {
     if (index < 5) inputRefs.current[index + 1]?.focus();
