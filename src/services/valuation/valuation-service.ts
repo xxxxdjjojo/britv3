@@ -12,8 +12,10 @@ import type { ValuationSubject, ValuationResult, ComparableSale } from "@/types/
 import {
   fetchComparables,
   fetchSubjectPriorSale,
+  fetchPostcodeCentroids,
   propertyFamily,
 } from "./comparables-repo";
+import { haversineMetres } from "@/lib/valuation/distance";
 
 /** Below this comparable count we widen the recency window before estimating. */
 const MIN_COMPARABLES = 6;
@@ -102,12 +104,22 @@ export async function calculateValuation(
     });
   }
 
-  // Apply the proximity proxy so local sales dominate the estimate.
+  // Distance weighting: prefer true postcode-centroid distance (open data); fall
+  // back to the postcode/street proximity proxy when centroids aren't loaded.
   const subjectStreet = normaliseAddressToken(subject.street);
-  comparables = comparables.map((c) => ({
-    ...c,
-    distanceMetres: proximityProxyMetres(c, normalisedPostcode, subjectStreet || null),
-  }));
+  const centroids = await fetchPostcodeCentroids([
+    normalisedPostcode,
+    ...comparables.map((c) => c.postcode),
+  ]);
+  const subjectCentroid = centroids.get(normalisedPostcode);
+  comparables = comparables.map((c) => {
+    const compCentroid = centroids.get(c.postcode);
+    const distanceMetres =
+      subjectCentroid && compCentroid
+        ? Math.round(haversineMetres(subjectCentroid, compCentroid))
+        : proximityProxyMetres(c, normalisedPostcode, subjectStreet || null);
+    return { ...c, distanceMetres };
+  });
 
   // Anchor on the subject's own prior registered sale, if we can match it.
   let exactPriorSale: ComparableSale | null = null;

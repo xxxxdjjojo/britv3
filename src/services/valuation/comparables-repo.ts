@@ -114,6 +114,28 @@ export async function fetchComparables(params: FetchComparablesParams): Promise<
   return rows.map(rowToComparable);
 }
 
+/** WGS84 centroids for a set of postcodes (empty if the table isn't populated). */
+export async function fetchPostcodeCentroids(
+  postcodes: readonly string[],
+): Promise<Map<string, { lat: number; lng: number }>> {
+  const map = new Map<string, { lat: number; lng: number }>();
+  const unique = [...new Set(postcodes.filter(Boolean))];
+  if (unique.length === 0) return map;
+  const sql = `SELECT postcode, latitude, longitude FROM public.postcode_centroids WHERE postcode = ANY($1::text[])`;
+  try {
+    const { rows } = await getPool().query<{ postcode: string; latitude: string; longitude: string }>(
+      sql,
+      [unique],
+    );
+    for (const r of rows) {
+      map.set(r.postcode, { lat: Number(r.latitude), lng: Number(r.longitude) });
+    }
+  } catch {
+    // table may not exist yet in some environments — fall back to proxy distance
+  }
+  return map;
+}
+
 export type AddressCandidate = Readonly<{
   paon: string | null;
   saon: string | null;
