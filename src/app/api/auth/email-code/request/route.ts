@@ -22,8 +22,11 @@ export async function POST(request: Request): Promise<NextResponse> {
   const email = parsed.data.email.toLowerCase();
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
-  // VMP_E2E_RATELIMIT_OFF is set ONLY by the local E2E harness, never in prod.
-  if (process.env.VMP_E2E_RATELIMIT_OFF !== "1") {
+  // VMP_E2E_RATELIMIT_OFF is set ONLY by the local E2E harness; it is ignored in
+  // production so a stray env var can never disable auth rate limiting live.
+  const bypassRateLimit =
+    process.env.NODE_ENV !== "production" && process.env.VMP_E2E_RATELIMIT_OFF === "1";
+  if (!bypassRateLimit) {
     const [emailOk, ipOk] = await Promise.all([
       emailLimiter.limit(`vmp:otp:email:${email}`),
       ipLimiter.limit(`vmp:otp:ip:${ip}`),

@@ -23,7 +23,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
   const email = parsed.data.email.toLowerCase();
 
-  if (process.env.VMP_E2E_RATELIMIT_OFF !== "1") {
+  const bypassRateLimit =
+    process.env.NODE_ENV !== "production" && process.env.VMP_E2E_RATELIMIT_OFF === "1";
+  if (!bypassRateLimit) {
     const limited = await verifyLimiter.limit(`vmp:otp:verify:${email}`);
     if (!limited.success) {
       return NextResponse.json({ error: "Too many attempts. Please request a new code." }, { status: 429 });

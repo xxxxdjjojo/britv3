@@ -96,7 +96,8 @@ export async function saveAddress(token: string, address: SelectedAddress): Prom
       address_label: address.label,
       updated_at: new Date().toISOString(),
     })
-    .eq("token_hash", hashSessionToken(token));
+    .eq("token_hash", hashSessionToken(token))
+    .gt("expires_at", new Date().toISOString());
   if (error) throw new Error(`saveAddress: ${error.message}`);
 }
 
@@ -105,7 +106,8 @@ export async function saveDetails(token: string, details: UserPropertyDetails): 
   const { error } = await supabase
     .from("valuation_sessions")
     .update({ property_details: details, updated_at: new Date().toISOString() })
-    .eq("token_hash", hashSessionToken(token));
+    .eq("token_hash", hashSessionToken(token))
+    .gt("expires_at", new Date().toISOString());
   if (error) throw new Error(`saveDetails: ${error.message}`);
 }
 
@@ -177,11 +179,16 @@ export async function claimSessionToUser(token: string, userId: string): Promise
   const session = await getSessionByToken(token);
   if (!session) return null;
 
-  await supabase
+  const { error: sErr } = await supabase
     .from("valuation_sessions")
     .update({ user_id: userId, status: "claimed", updated_at: new Date().toISOString() })
     .eq("id", session.id);
-  await supabase.from("valuation_results").update({ user_id: userId }).eq("session_id", session.id);
+  if (sErr) throw new Error(`claimSessionToUser session: ${sErr.message}`);
+  const { error: rErr } = await supabase
+    .from("valuation_results")
+    .update({ user_id: userId })
+    .eq("session_id", session.id);
+  if (rErr) throw new Error(`claimSessionToUser results: ${rErr.message}`);
   return session.latestResultId;
 }
 

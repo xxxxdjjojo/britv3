@@ -32,18 +32,23 @@ export async function POST(): Promise<NextResponse> {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // Own the result only if the session is unclaimed or already this user's —
+    // never attach another user's session data to the caller.
+    const ownerId =
+      user && (!session.userId || session.userId === user.id) ? user.id : null;
+
     const subject = buildSubject(session.address, session.details);
     const valuationDate = new Date().toISOString().slice(0, 10);
     const result = await calculateValuation({ subject, valuationDate });
-    const resultId = await saveResult(session.id, subject, result, user?.id ?? null);
+    const resultId = await saveResult(session.id, subject, result, ownerId);
 
     // Privacy-safe: evidence rating + fallback level only (never the figure here).
     return NextResponse.json({
       ready: true,
       evidenceQuality: result.evidenceQuality,
       fallbackLevel: result.fallbackLevel,
-      // Only returned to an already-authenticated owner (skip re-verification).
-      resultId: user ? resultId : null,
+      // Only returned to the authenticated owner (skip re-verification).
+      resultId: ownerId ? resultId : null,
     });
   } catch (err) {
     captureException(err, {

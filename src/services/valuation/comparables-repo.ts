@@ -127,7 +127,14 @@ const HPI_COLUMN: Readonly<Record<PpdPropertyType, string>> = {
 };
 const HPI_NATIONAL_FALLBACKS = ["united kingdom", "england", "england and wales"];
 
+const ALLOWED_HPI_COLUMNS = new Set<string>(Object.values(HPI_COLUMN));
+
 async function hpiRowsFor(region: string, typeColumn: string): Promise<HpiPoint[]> {
+  // typeColumn is interpolated into SQL — hard-fail anything not in the allowlist
+  // (defends against a future caller passing an unvalidated column name).
+  if (!ALLOWED_HPI_COLUMNS.has(typeColumn)) {
+    throw new Error(`hpiRowsFor: invalid index column "${typeColumn}"`);
+  }
   const sql = `
     SELECT month, COALESCE(${typeColumn}, index_all) AS idx
     FROM public.hpi_index
