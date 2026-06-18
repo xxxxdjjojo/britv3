@@ -31,6 +31,7 @@ export type RawComparable = Readonly<{
   paon: string | null;
   saon: string | null;
   street: string | null;
+  district?: string | null;
   distanceMetres: number | null;
   ppdCategory: "A" | "B";
   recordStatus: "A" | "C" | "D";

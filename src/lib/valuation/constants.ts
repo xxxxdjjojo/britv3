@@ -8,7 +8,7 @@
  */
 
 /** Semantic version of the comparable model. Stored on every result for traceability. */
-export const MODEL_VERSION = "vmp-comparables-1.0.0";
+export const MODEL_VERSION = "vmp-comparables-1.1.0";
 
 // --- Recency weighting -------------------------------------------------------
 /** Months after which a comparable's recency weight halves. ~1.5y reflects how

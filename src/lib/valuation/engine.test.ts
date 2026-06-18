@@ -55,7 +55,7 @@ describe("valuate", () => {
     expect(r.estimatedValue!).toBeLessThan(650_000);
     expect(r.estimatedLow!).toBeLessThan(r.estimatedValue!);
     expect(r.estimatedHigh!).toBeGreaterThan(r.estimatedValue!);
-    expect(r.modelVersion).toBe("vmp-comparables-1.0.0");
+    expect(r.modelVersion).toBe("vmp-comparables-1.1.0");
     expect(r.comparableSales.length).toBeGreaterThan(0);
   });
 

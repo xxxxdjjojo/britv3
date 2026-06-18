@@ -40,6 +40,7 @@ type PpdRow = {
   paon: string | null;
   saon: string | null;
   street: string | null;
+  district: string | null;
   ppd_category: string;
   record_status: string;
 };
@@ -59,6 +60,7 @@ function rowToComparable(r: PpdRow): RawComparable {
     paon: r.paon,
     saon: r.saon,
     street: r.street,
+    district: r.district ?? null,
     // No per-row geocode available without an address gazetteer join; distance is
     // neutral within an outward code. Documented in the data-quality audit.
     distanceMetres: null,
@@ -88,7 +90,7 @@ export async function fetchComparables(params: FetchComparablesParams): Promise<
   const sql = `
     SELECT transaction_id, price, date_of_transfer::date::text AS sale_date,
            postcode, outward_code, property_type, old_new, duration,
-           paon, saon, street, ppd_category, record_status
+           paon, saon, street, district, ppd_category, record_status
     FROM public.price_paid_data
     WHERE outward_code = $1
       AND property_type = ANY($2::text[])
@@ -112,6 +114,53 @@ export async function fetchComparables(params: FetchComparablesParams): Promise<
     limit,
   ]);
   return rows.map(rowToComparable);
+}
+
+import type { HpiPoint } from "@/lib/valuation/hpi";
+
+const HPI_COLUMN: Readonly<Record<PpdPropertyType, string>> = {
+  D: "index_detached",
+  S: "index_semi",
+  T: "index_terraced",
+  F: "index_flat",
+  O: "index_all",
+};
+const HPI_NATIONAL_FALLBACKS = ["united kingdom", "england", "england and wales"];
+
+async function hpiRowsFor(region: string, typeColumn: string): Promise<HpiPoint[]> {
+  const sql = `
+    SELECT month, COALESCE(${typeColumn}, index_all) AS idx
+    FROM public.hpi_index
+    WHERE lower(region_name) = lower($1) AND COALESCE(${typeColumn}, index_all) IS NOT NULL
+    ORDER BY month
+  `;
+  const { rows } = await getPool().query<{ month: string; idx: string }>(sql, [region]);
+  return rows.map((r) => ({ month: r.month, index: Number(r.idx) }));
+}
+
+/**
+ * Monthly HPI series for a district + property type, used to time-adjust
+ * comparables. Falls back to a national series, then to empty (engine then
+ * skips time-adjustment). Type column is validated against a fixed allow-list.
+ */
+export async function fetchHpiSeries(
+  districtName: string | null,
+  propertyType: PpdPropertyType,
+): Promise<HpiPoint[]> {
+  const typeColumn = HPI_COLUMN[propertyType] ?? "index_all";
+  try {
+    if (districtName) {
+      const local = await hpiRowsFor(districtName, typeColumn);
+      if (local.length >= 12) return local;
+    }
+    for (const national of HPI_NATIONAL_FALLBACKS) {
+      const series = await hpiRowsFor(national, typeColumn);
+      if (series.length >= 12) return series;
+    }
+  } catch {
+    // hpi_index may be empty/absent — engine then skips time-adjustment.
+  }
+  return [];
 }
 
 /** WGS84 centroids for a set of postcodes (empty if the table isn't populated). */

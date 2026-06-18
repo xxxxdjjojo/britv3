@@ -13,9 +13,27 @@ import {
   fetchComparables,
   fetchSubjectPriorSale,
   fetchPostcodeCentroids,
+  fetchHpiSeries,
   propertyFamily,
 } from "./comparables-repo";
 import { haversineMetres } from "@/lib/valuation/distance";
+
+/** Most frequent non-null district among comparables (for HPI region resolution). */
+function modalDistrict(comparables: ReadonlyArray<{ district?: string | null }>): string | null {
+  const counts = new Map<string, number>();
+  for (const c of comparables) {
+    if (c.district) counts.set(c.district, (counts.get(c.district) ?? 0) + 1);
+  }
+  let best: string | null = null;
+  let bestN = 0;
+  for (const [d, n] of counts) {
+    if (n > bestN) {
+      best = d;
+      bestN = n;
+    }
+  }
+  return best;
+}
 
 /** Below this comparable count we widen the recency window before estimating. */
 const MIN_COMPARABLES = 6;
@@ -152,5 +170,9 @@ export async function calculateValuation(
     }
   }
 
-  return valuate(subject, comparables, { ...opts, exactPriorSale });
+  // Real time-adjustment: HPI series by district + property type (national fallback).
+  const hpiSeries =
+    input.hpiSeries ?? (await fetchHpiSeries(modalDistrict(comparables), subject.propertyType));
+
+  return valuate(subject, comparables, { ...opts, hpiSeries, exactPriorSale });
 }

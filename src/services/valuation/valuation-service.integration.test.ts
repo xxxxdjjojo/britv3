@@ -33,7 +33,7 @@ describe.runIf(ENABLED)("calculateValuation (real Land Registry data)", () => {
 
     const result = await calculateValuation({ subject, valuationDate, dataCutoffDate: valuationDate });
 
-    expect(result.modelVersion).toBe("vmp-comparables-1.0.0");
+    expect(result.modelVersion).toBe("vmp-comparables-1.1.0");
     expect(result.comparableCount).toBeGreaterThan(0);
     expect(result.estimatedValue).not.toBeNull();
     // London terraced houses: sane, non-fabricated bounds.
