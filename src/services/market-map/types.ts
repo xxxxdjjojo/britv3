@@ -126,6 +126,8 @@ export type MarketMapMetadata = {
   currency: "GBP";
   /** Floor-area (£/m²) data is not available — always false. */
   sqm_available: false;
+  /** The geography level actually served for this response (zoom-derived). */
+  geography_level: GeographyLevel;
   scale_mode: MarketMapScaleMode;
   source: "HM Land Registry Price Paid Data joined to postcode geography";
   /** Minimum transactions required for a non-grey bucket (confidence >= Low). */

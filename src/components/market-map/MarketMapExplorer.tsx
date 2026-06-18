@@ -29,6 +29,7 @@ import { parseAsString, parseAsInteger, useQueryStates } from "nuqs";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { useMarketSearch } from "@/hooks/useMarketSearch";
 import { useMarketAreaDetail } from "@/hooks/useMarketAreaDetail";
+import { geographyLevelForZoom, type GeographyLevel } from "@/lib/market-map/geography";
 import { fitBoundsFor } from "@/lib/market-map/fit-bounds";
 import { cn } from "@/lib/utils";
 import { MarketMapFilters } from "./MarketMapFilters";
@@ -72,6 +73,15 @@ const MAP_PARAM_PARSERS = {
   scale_mode: parseAsString.withDefault("national"),
   area_id: parseAsString,
   q: parseAsString,
+};
+
+/** Human-readable label for each geography level, shown in the granularity pill. */
+const GRANULARITY_LABELS: Record<GeographyLevel, string> = {
+  local_authority: "Local authorities",
+  postcode_district: "Postcode districts",
+  msoa: "Neighbourhoods (MSOA)",
+  lsoa: "Local areas (LSOA)",
+  street: "Streets / micro-areas",
 };
 
 // ---------------------------------------------------------------------------
@@ -132,6 +142,15 @@ export function MarketMapExplorer({
     selectedArea?.area_id ?? null,
     months,
   );
+
+  // Current map zoom (drives the active-granularity diagnostic). Initialised to
+  // a national-view default so the first paint reads "local_authority".
+  const [currentZoom, setCurrentZoom] = useState<number>(5);
+
+  // Active geography level: prefer the level the API actually served, falling
+  // back to the zoom-derived level before the first response arrives.
+  const activeGranularity: GeographyLevel =
+    metadata?.geography_level ?? geographyLevelForZoom(currentZoom);
 
   // Price range for legend (derived from features)
   const { loPrice, hiPrice } = (() => {
@@ -438,11 +457,22 @@ export function MarketMapExplorer({
           months={months}
           scaleMode={scaleMode}
           fitTo={fitTo}
+          onViewportChange={(v) => setCurrentZoom(v.zoom)}
           onFeatures={handleFeatures}
           onAreaSelect={handleAreaSelect}
           onMetadata={handleMetadata}
           className="h-full w-full"
         />
+
+        {/* Active geography-level diagnostic — reflects the layer actually shown,
+            not just the camera. Also a reliable hook for E2E zoom assertions. */}
+        <div
+          data-testid="active-map-granularity"
+          data-granularity={activeGranularity}
+          className="pointer-events-none absolute left-4 top-4 z-30 rounded-full bg-white/90 px-3 py-1.5 font-sans text-[11px] font-medium text-[#1B4D3E] shadow-[var(--shadow-sm)] backdrop-blur"
+        >
+          {GRANULARITY_LABELS[activeGranularity]}
+        </div>
 
         {/* Legend — centred top, z-30 */}
         <div className="pointer-events-none absolute inset-x-0 top-6 z-30 flex justify-center px-4">

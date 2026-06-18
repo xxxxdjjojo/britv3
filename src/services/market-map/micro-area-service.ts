@@ -72,6 +72,7 @@ function buildMicroAreaMetadata(filters: MarketMapFilters): MicroAreaMetadata {
     metric: "median_sold_price",
     currency: "GBP",
     sqm_available: false,
+    geography_level: "street",
     scale_mode: filters.scaleMode,
     source: "HM Land Registry Price Paid Data joined to postcode geography",
     minimum_transactions: 5,
