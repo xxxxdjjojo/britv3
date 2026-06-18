@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 
-const PRODUCTION_URL = process.env.PRODUCTION_URL ?? "https://britestate.co.uk";
+const PRODUCTION_URL = process.env.PRODUCTION_URL ?? "https://truedeed.co.uk";
 const SCREENSHOT_DIR = "test-results/production-smoke";
 
 test.describe("Production smoke — site is live and renders correctly", () => {
