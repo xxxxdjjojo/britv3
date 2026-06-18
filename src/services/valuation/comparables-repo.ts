@@ -114,6 +114,42 @@ export async function fetchComparables(params: FetchComparablesParams): Promise<
   return rows.map(rowToComparable);
 }
 
+export type AddressCandidate = Readonly<{
+  paon: string | null;
+  saon: string | null;
+  street: string | null;
+  label: string;
+}>;
+
+function addressLabel(paon: string | null, saon: string | null, street: string | null): string {
+  return [saon, paon, street].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Candidate addresses for a full postcode, derived from previously-registered
+ * sales. Not exhaustive (only addresses that have transacted) — the UI offers a
+ * manual-entry fallback. A future OS address gazetteer can supersede this.
+ */
+export async function fetchAddressCandidates(postcode: string): Promise<AddressCandidate[]> {
+  const sql = `
+    SELECT DISTINCT paon, saon, street
+    FROM public.price_paid_data
+    WHERE postcode = $1 AND record_status <> 'D'
+    ORDER BY street NULLS LAST, paon, saon NULLS FIRST
+    LIMIT 250
+  `;
+  const { rows } = await getPool().query<{ paon: string | null; saon: string | null; street: string | null }>(
+    sql,
+    [postcode],
+  );
+  return rows.map((r) => ({
+    paon: r.paon,
+    saon: r.saon,
+    street: r.street,
+    label: addressLabel(r.paon, r.saon, r.street),
+  }));
+}
+
 export type FetchBacktestTargetsParams = Readonly<{
   outwardCodes: readonly string[];
   fromDate: string; // inclusive

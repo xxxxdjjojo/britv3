@@ -51,6 +51,40 @@ export type ComparableSale = Readonly<{
   weight: number; // similarity weight assigned by the engine
 }>;
 
+/** House subtype options shown to the user (maps to a PPD property type). */
+export type HouseSubtype =
+  | "detached"
+  | "semi_detached"
+  | "terraced"
+  | "end_terrace"
+  | "bungalow"
+  | "flat"
+  | "other";
+
+/** Property characteristics as captured from the user in the details step. */
+export type UserPropertyDetails = Readonly<{
+  subtype: HouseSubtype;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  floorAreaSqm: number | null;
+  tenure: UserTenure;
+  newBuild: boolean;
+  condition: Condition | null;
+  hasExtensionOrLoft: boolean;
+  parking: boolean;
+  garden: boolean;
+}>;
+
+/** Address chosen in the address step. */
+export type SelectedAddress = Readonly<{
+  postcode: string;
+  outwardCode: string;
+  paon: string | null;
+  saon: string | null;
+  street: string | null;
+  label: string;
+}>;
+
 /** Subject property characteristics the engine reasons over. */
 export type ValuationSubject = Readonly<{
   postcode: string;
