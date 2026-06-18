@@ -42,7 +42,7 @@ function formatSaleDate(iso: string): string {
 }
 
 export function ResultView({ valuation }: { valuation: StoredValuation }) {
-  const { result, subject } = valuation;
+  const { result, subject, id } = valuation;
   const ev = EVIDENCE[result.evidenceQuality];
   const address = [subject.saon, subject.paon, subject.street].filter(Boolean).join(" ");
   const noEstimate = result.estimatedValue === null;
@@ -193,10 +193,8 @@ export function ResultView({ valuation }: { valuation: StoredValuation }) {
           <Pencil className="size-4" aria-hidden="true" />
           Correct details & recalculate
         </Link>
-        {/* TODO(next): dedicated consent-gated agent handoff at /result/[id]/expert.
-            Until then this links to the existing local-agents directory. */}
         <Link
-          href="/agents"
+          href={`/value-my-property/result/${id}/expert`}
           className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-brand-primary-light"
         >
           <TrendingUp className="size-4" aria-hidden="true" />
