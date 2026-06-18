@@ -15,9 +15,9 @@ before inviting early users. Generated alongside the BRIT-S0xx remediation
 
 | Migration | What it does | Verify after apply |
 |---|---|---|
-| `20260616000000_restrict_profile_fk_cascades.sql` | Marketplace FKs to `profiles(id)` → `ON DELETE RESTRICT`; adds `gdpr_purge_log` + `purge_user()` | `SELECT conname, confdeltype FROM pg_constraint WHERE confrelid='public.profiles'::regclass;` → all marketplace FKs show `r` (restrict). A direct `DELETE FROM profiles WHERE id=<test>` with marketplace rows must now **error**, not cascade. |
-| `20260616000001_storage_bucket_policies.sql` | `avatars` public-read/owner-write, `landlord-documents` private/owner-scoped | Reconcile with existing console policies **before** apply (DROP POLICY IF EXISTS guards re-runs). Then test cross-user access is denied. |
-| `20260616000002_activity_log_partition_maintenance.sql` | `ensure_activity_log_partitions()` + backfill | `SELECT public.ensure_activity_log_partitions(12);` returns ≥0; confirm partitions exist past 2027-02. Confirm Inngest cron `activity-log-partitions` is registered/firing. |
+| `20260616180000_restrict_profile_fk_cascades.sql` | Marketplace FKs to `profiles(id)` → `ON DELETE RESTRICT`; adds `gdpr_purge_log` + `purge_user()` | `SELECT conname, confdeltype FROM pg_constraint WHERE confrelid='public.profiles'::regclass;` → all marketplace FKs show `r` (restrict). A direct `DELETE FROM profiles WHERE id=<test>` with marketplace rows must now **error**, not cascade. |
+| `20260616180001_storage_bucket_policies.sql` | `avatars` public-read/owner-write, `landlord-documents` private/owner-scoped | Reconcile with existing console policies **before** apply (DROP POLICY IF EXISTS guards re-runs). Then test cross-user access is denied. |
+| `20260616180002_activity_log_partition_maintenance.sql` | `ensure_activity_log_partitions()` + backfill | `SELECT public.ensure_activity_log_partitions(12);` returns ≥0; confirm partitions exist past 2027-02. Confirm Inngest cron `activity-log-partitions` is registered/firing. |
 
 ## 2. Supabase Storage policies (BRIT-S014)
 
