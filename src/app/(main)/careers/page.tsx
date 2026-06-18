@@ -77,7 +77,7 @@ export default function CareersPage() {
             <Link
               key={role.title}
               href="/contact"
-              className="block rounded-xl border border-neutral-200 p-5 transition-colors hover:border-neutral-300 hover:bg-neutral-50"
+              className="block rounded-xl border border-neutral-200 p-5 transition-colors hover:border-neutral-300 hover:bg-muted"
             >
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>

@@ -4,7 +4,9 @@
   "packageManager": "pnpm@10.18.3",
   "private": true,
   "scripts": {
+    "predev": "node scripts/dev-guard.mjs",
     "dev": "next dev",
+    "check:stale-branches": "bash scripts/check-stale-branches.sh",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
@@ -101,6 +103,7 @@
     "@types/canvas-confetti": "^1.9.0",
     "@types/geojson": "^7946.0.16",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/web-push": "^3.6.4",

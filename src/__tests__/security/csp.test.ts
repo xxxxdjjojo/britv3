@@ -71,6 +71,14 @@ describe("CSP Headers", () => {
     expect(csp).toMatch(/connect-src[^;]*wss:\/\/\*\.supabase\.co/);
   });
 
+  it("allows Sentry ingest (incl. non-US regions) in connect-src", async () => {
+    const response = await middleware(createRequest("/"));
+    const csp = response.headers.get("Content-Security-Policy");
+    // *.sentry.io covers any region host, e.g. oXXX.ingest.de.sentry.io, which
+    // a bare *.ingest.sentry.io would NOT match (the wildcard stops at one label).
+    expect(csp).toMatch(/connect-src[^;]*https:\/\/\*\.sentry\.io/);
+  });
+
   it("allows Google and Apple OAuth in frame-src", async () => {
     const response = await proxy(createRequest("/"));
     const csp = response.headers.get("Content-Security-Policy");

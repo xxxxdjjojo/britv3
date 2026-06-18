@@ -14,6 +14,12 @@ import {
   Info,
   Coins,
   BrainCircuit,
+  Landmark,
+  Share2,
+  ReceiptText,
+  Award,
+  Star,
+  HeartHandshake,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -99,6 +105,18 @@ const categories: Category[] = [
         title: "Modern Slavery Statement",
         desc: "Our commitment under the Modern Slavery Act 2015.",
       },
+      {
+        href: "/legal/regulatory",
+        icon: Landmark,
+        title: "Regulatory Information",
+        desc: "Our company identity, regulatory bodies, redress routes, and AML supervision.",
+      },
+      {
+        href: "/legal/third-party-services",
+        icon: Share2,
+        title: "Third-Party Services Disclosure",
+        desc: "The processors that power Britestate and how we vet them.",
+      },
     ],
   },
   {
@@ -109,6 +127,12 @@ const categories: Category[] = [
         icon: Coins,
         title: "Fee Transparency",
         desc: "Clear breakdown of platform fees, commissions, and payment terms.",
+      },
+      {
+        href: "/legal/refunds",
+        icon: ReceiptText,
+        title: "Refund & Cancellation Policy",
+        desc: "How refunds, cancellations, and your cooling-off rights work.",
       },
       {
         href: "/legal/ai-transparency",
@@ -133,6 +157,29 @@ const categories: Category[] = [
         icon: Info,
         title: "Disclaimer",
         desc: "Limitations on the advice and information we provide.",
+      },
+      {
+        href: "/legal/review-policy",
+        icon: Star,
+        title: "Review Policy",
+        desc: "How reviews are moderated, verified, and managed on the platform.",
+      },
+    ],
+  },
+  {
+    heading: "Standards & Fairness",
+    docs: [
+      {
+        href: "/legal/professional-standards",
+        icon: Award,
+        title: "Professional Standards",
+        desc: "Conduct, ethics, and service-quality standards we expect on the platform.",
+      },
+      {
+        href: "/legal/fair-housing",
+        icon: HeartHandshake,
+        title: "Fair Housing Policy",
+        desc: "Our commitment to equal access to housing and a discrimination-free service.",
       },
     ],
   },

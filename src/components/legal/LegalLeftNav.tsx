@@ -35,16 +35,27 @@ const NAV_CATEGORIES: NavCategory[] = [
     items: [
       { href: "/legal/aml-policy", label: "AML Policy" },
       { href: "/legal/modern-slavery", label: "Modern Slavery Statement" },
+      { href: "/legal/regulatory", label: "Regulatory Information" },
+      { href: "/legal/third-party-services", label: "Third-Party Services" },
     ],
   },
   {
     heading: "Platform",
     items: [
       { href: "/legal/fee-transparency", label: "Fee Transparency" },
+      { href: "/legal/refunds", label: "Refund & Cancellation" },
       { href: "/legal/ai-transparency", label: "AI Transparency Notice" },
       { href: "/legal/accessibility", label: "Accessibility Statement" },
       { href: "/legal/complaints", label: "Complaints Procedure" },
       { href: "/legal/disclaimer", label: "Disclaimer" },
+      { href: "/legal/review-policy", label: "Review Policy" },
+    ],
+  },
+  {
+    heading: "Standards & Fairness",
+    items: [
+      { href: "/legal/professional-standards", label: "Professional Standards" },
+      { href: "/legal/fair-housing", label: "Fair Housing Policy" },
     ],
   },
 ];

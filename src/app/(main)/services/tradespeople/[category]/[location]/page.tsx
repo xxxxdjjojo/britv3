@@ -126,17 +126,17 @@ function FaqSection({
   ];
 
   return (
-    <section className="mt-12 bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-8">
-      <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
+    <section className="mt-12 bg-surface dark:bg-slate-900/50 rounded-2xl p-8">
+      <h2 className="text-xl font-bold text-foreground dark:text-white mb-6">
         Frequently Asked Questions
       </h2>
       <div className="space-y-6">
         {faqs.map((faq) => (
           <div key={faq.q}>
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
+            <h3 className="font-semibold text-foreground dark:text-white mb-1">
               {faq.q}
             </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-sm text-muted-foreground dark:text-slate-400 leading-relaxed">
               {faq.a}
             </p>
           </div>
@@ -161,11 +161,11 @@ function Breadcrumb({
 }>) {
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
-      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground dark:text-slate-400">
         <li>
           <Link
             href="/"
-            className="hover:text-[#2563EB] transition-colors"
+            className="hover:text-brand-primary transition-colors"
           >
             Home
           </Link>
@@ -174,7 +174,7 @@ function Breadcrumb({
         <li>
           <Link
             href="/services/tradespeople"
-            className="hover:text-[#2563EB] transition-colors"
+            className="hover:text-brand-primary transition-colors"
           >
             Services
           </Link>
@@ -183,14 +183,14 @@ function Breadcrumb({
         <li>
           <Link
             href={`/services/tradespeople?category=${categorySlug}`}
-            className="hover:text-[#2563EB] transition-colors"
+            className="hover:text-brand-primary transition-colors"
           >
             {categoryDisplay}
           </Link>
         </li>
         <li aria-hidden="true">/</li>
         <li
-          className="text-slate-900 dark:text-white font-medium"
+          className="text-foreground dark:text-white font-medium"
           aria-current="page"
         >
           {locationDisplay}
@@ -233,12 +233,12 @@ export default async function CategoryLocationPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Page header */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-12 px-4">
+      <div className="bg-gradient-to-br from-brand-primary-dark to-brand-primary py-12 px-4">
         <div className="mx-auto max-w-5xl">
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="font-heading text-3xl font-bold text-white mb-2">
             {categoryDisplay} in {locationDisplay}
           </h1>
-          <p className="text-slate-300 text-sm max-w-2xl">
+          <p className="text-white/70 text-sm max-w-2xl">
             Find trusted, verified {categoryDisplay.toLowerCase()} in{" "}
             {locationDisplay}. Compare reviews and prices, then get free quotes.
           </p>
@@ -262,7 +262,7 @@ export default async function CategoryLocationPage({ params }: PageProps) {
               Try{" "}
               <Link
                 href="/services/tradespeople"
-                className="text-[#2563EB] hover:underline"
+                className="text-brand-primary hover:underline"
               >
                 searching all tradespeople
               </Link>{" "}

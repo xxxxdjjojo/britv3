@@ -1,0 +1,44 @@
+name: Mobility scores backfill
+
+# Daily backfill of walk/transit/bike scores into the mobility_scores table.
+# Scores only the properties that are missing them (idempotent), so coverage
+# completes over time and new listings get scored — resilient to the public
+# Overpass API's intermittent rate-limiting (skipped properties retry next run).
+# Run scripts/ingest-mobility-scores.ts --force manually to recompute everything.
+
+on:
+  schedule:
+    - cron: "30 3 * * *" # 03:30 UTC daily — off-peak for the EU-hosted Overpass API
+  workflow_dispatch: {}
+
+# Never let two backfills overlap (they would compete for the shared Overpass API).
+concurrency:
+  group: mobility-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22 # >= 22.6 for `node --experimental-strip-types`
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Backfill mobility scores
+        env:
+          # Supabase pooler connection string (postgres). Add via:
+          #   gh secret set SUPABASE_DB_URL
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: node --experimental-strip-types scripts/ingest-mobility-scores.ts --commit

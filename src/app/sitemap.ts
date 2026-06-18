@@ -24,7 +24,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const legalSlugs = [
     "terms", "privacy", "cookies", "accessibility", "complaints",
     "gdpr-rights", "aml-policy", "modern-slavery", "data-processing",
-    "disclaimer", "acceptable-use",
+    "disclaimer", "acceptable-use", "ai-transparency", "fee-transparency",
+    "review-policy",
+    "fair-housing", "refunds", "third-party-services", "regulatory",
+    "professional-standards",
   ];
   const legalPages: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/legal`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },

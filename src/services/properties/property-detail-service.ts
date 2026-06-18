@@ -31,6 +31,9 @@ export type PropertyDetail = {
     priceQualifier: string | null;
     listedDate: string;
     viewCount: number;
+    serviceChargeAnnual: number | null;
+    groundRentAnnual: number | null;
+    availableFrom: string | null;
   };
   property: {
     id: string;
@@ -55,6 +58,7 @@ export type PropertyDetail = {
     planningPermissionStatus: string | null;
     yearBuilt: number | null;
     newBuild: boolean;
+    isHmo: boolean;
     coordinates: { lat: number; lng: number } | null;
   };
   media: {
@@ -140,6 +144,8 @@ type MockSearchProperty = {
   lng: number;
   epc_rating: string | null;
   tenure: string | null;
+  /** Optional room-captioned gallery to exercise the by-room grouping path. */
+  gallery?: ReadonlyArray<{ url: string; caption: string }>;
 };
 
 const MOCK_PROPERTIES: MockSearchProperty[] = [
@@ -147,7 +153,14 @@ const MOCK_PROPERTIES: MockSearchProperty[] = [
   { id: "10", slug: "4-bed-period-terrace-hackney-london-sale", image: "/images/properties/property-2.jpg", price: 850000, address: "Hackney", city: "London", postcode: "E8 1DY", beds: 4, baths: 1, sqft: 1480, type: "terraced", listing_type: "sale", lat: 51.545, lng: -0.0553, epc_rating: "C", tenure: "freehold" },
   { id: "11", slug: "cotswold-stone-cottage-burford-oxfordshire-sale", image: "/images/properties/property-3.jpg", price: 375000, address: "Burford", city: "Oxfordshire", postcode: "OX18 4QA", beds: 3, baths: 2, sqft: 1120, type: "cottage", listing_type: "sale", lat: 51.8071, lng: -1.6369, epc_rating: "D", tenure: "freehold" },
   { id: "12", slug: "5-bed-family-home-hampstead-london-sale", image: "/images/properties/property-4.jpg", price: 1200000, address: "Hampstead", city: "London", postcode: "NW3 6TR", beds: 5, baths: 3, sqft: 2250, type: "detached", listing_type: "sale", lat: 51.5566, lng: -0.178, epc_rating: "B", tenure: "freehold" },
-  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794, epc_rating: "C", tenure: "freehold" },
+  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794, epc_rating: "C", tenure: "freehold", gallery: [
+    { url: "/images/properties/property-1.jpg", caption: "Front exterior" },
+    { url: "/images/properties/property-2.jpg", caption: "Kitchen / diner" },
+    { url: "/images/properties/property-3.jpg", caption: "Living room" },
+    { url: "/images/properties/property-4.jpg", caption: "Master bedroom" },
+    { url: "/images/properties/property-1.jpg", caption: "Family bathroom" },
+    { url: "/images/properties/property-2.jpg", caption: "Rear garden" },
+  ] },
   { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "semi_detached", listing_type: "sale", lat: 51.5392, lng: -0.1547, epc_rating: "B", tenure: "leasehold" },
   { id: "3", slug: "45-bermondsey-street-london-rent", image: "/images/properties/property-3.jpg", price: 1850, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "flat", listing_type: "rent", lat: 51.4998, lng: -0.0821, epc_rating: "D", tenure: "leasehold" },
   { id: "4", slug: "3-highbury-park-london-sale", image: "/images/properties/property-1.jpg", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "detached", listing_type: "sale", lat: 51.5555, lng: -0.0984, epc_rating: "A", tenure: "freehold" },
@@ -156,6 +169,23 @@ const MOCK_PROPERTIES: MockSearchProperty[] = [
   { id: "7", slug: "15-notting-hill-gate-london-commercial", image: "/images/properties/property-1.jpg", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "detached", listing_type: "sale", lat: 51.5095, lng: -0.1963, epc_rating: "C", tenure: null },
   { id: "8", slug: "31-borough-market-close-london-sale", image: "/images/properties/property-2.jpg", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "flat", listing_type: "sale", lat: 51.5055, lng: -0.091, epc_rating: "F", tenure: "leasehold" },
 ];
+
+function buildMockMedia(mock: MockSearchProperty): PropertyDetail["media"] {
+  const source =
+    mock.gallery ??
+    (mock.image
+      ? [{ url: mock.image, caption: `${mock.address} exterior` }]
+      : []);
+  return source.map((item, i) => ({
+    id: `mock-media-${mock.id}-${i}`,
+    mediaType: "image" as const,
+    url: item.url,
+    thumbnailUrl: item.url,
+    caption: item.caption,
+    altText: `${item.caption} — ${mock.address}, ${mock.city}`,
+    sortOrder: i,
+  }));
+}
 
 function getMockPropertyBySlug(slug: string): PropertyDetail | null {
   const mock = MOCK_PROPERTIES.find((p) => p.slug === slug);
@@ -172,6 +202,9 @@ function getMockPropertyBySlug(slug: string): PropertyDetail | null {
       priceQualifier: null,
       listedDate: "2026-01-15",
       viewCount: Math.floor(Math.random() * 500) + 50,
+      serviceChargeAnnual: mock.tenure === "leasehold" ? 1800 : null,
+      groundRentAnnual: mock.tenure === "leasehold" ? 250 : null,
+      availableFrom: mock.listing_type === "rent" ? "2026-02-01" : null,
     },
     property: {
       id: `mock-property-${mock.id}`,
@@ -196,21 +229,10 @@ function getMockPropertyBySlug(slug: string): PropertyDetail | null {
       planningPermissionStatus: null,
       yearBuilt: 2000 + Number(mock.id),
       newBuild: false,
+      isHmo: false,
       coordinates: { lat: mock.lat, lng: mock.lng },
     },
-    media: mock.image
-      ? [
-          {
-            id: `mock-media-${mock.id}`,
-            mediaType: "image" as const,
-            url: mock.image,
-            thumbnailUrl: mock.image,
-            caption: `${mock.address} exterior`,
-            altText: `${mock.address}, ${mock.city}`,
-            sortOrder: 0,
-          },
-        ]
-      : [],
+    media: buildMockMedia(mock),
     agent: {
       id: "mock-agent-1",
       displayName: "Sarah Thompson",
@@ -256,6 +278,9 @@ export async function getPropertyBySlug(
       price_qualifier,
       listed_date,
       view_count,
+      service_charge_annual,
+      ground_rent_annual,
+      available_from,
       user_id,
       property_id,
       properties (
@@ -281,6 +306,7 @@ export async function getPropertyBySlug(
         planning_permission_status,
         year_built,
         new_build,
+        is_hmo,
         coordinates
       )
     `,
@@ -362,6 +388,11 @@ export async function getPropertyBySlug(
       priceQualifier: (listingRow.price_qualifier as string | null) ?? null,
       listedDate: listingRow.listed_date as string,
       viewCount: (listingRow.view_count as number) ?? 0,
+      serviceChargeAnnual:
+        (listingRow.service_charge_annual as number | null) ?? null,
+      groundRentAnnual:
+        (listingRow.ground_rent_annual as number | null) ?? null,
+      availableFrom: (listingRow.available_from as string | null) ?? null,
     },
     property: {
       id: property.id as string,
@@ -389,6 +420,7 @@ export async function getPropertyBySlug(
         (property.planning_permission_status as string | null) ?? null,
       yearBuilt: (property.year_built as number | null) ?? null,
       newBuild: (property.new_build as boolean) ?? false,
+      isHmo: (property.is_hmo as boolean) ?? false,
       coordinates: parseCoordinates(property.coordinates),
     },
     media,

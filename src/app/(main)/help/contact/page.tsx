@@ -105,9 +105,9 @@ export default function HelpContactPage() {
 
       {/* Success state */}
       {status === "success" && (
-        <div className="mt-10 rounded-xl border border-green-200 bg-green-50 p-6 text-center">
-          <p className="font-medium text-green-800">Message sent!</p>
-          <p className="mt-1 text-sm text-green-700">
+        <div className="mt-10 rounded-xl border border-success/20 bg-success/10 p-6 text-center">
+          <p className="font-medium text-success">Message sent!</p>
+          <p className="mt-1 text-sm text-success">
             Thanks for reaching out. Our support team will respond shortly.
           </p>
           <Button

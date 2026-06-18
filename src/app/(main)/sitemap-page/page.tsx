@@ -76,6 +76,12 @@ const sections = [
       { label: "Privacy Policy", href: "/legal/privacy" },
       { label: "Cookie Policy", href: "/legal/cookies" },
       { label: "Accessibility", href: "/legal/accessibility" },
+      { label: "Refund & Cancellation Policy", href: "/legal/refunds" },
+      { label: "Third-Party Services Disclosure", href: "/legal/third-party-services" },
+      { label: "Regulatory Information", href: "/legal/regulatory" },
+      { label: "Professional Standards", href: "/legal/professional-standards" },
+      { label: "Fair Housing Policy", href: "/legal/fair-housing" },
+      { label: "Review Policy", href: "/legal/review-policy" },
     ],
   },
 ];
