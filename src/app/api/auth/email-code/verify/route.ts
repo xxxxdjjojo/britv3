@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createAuthRateLimiter } from "@/lib/cache/redis";
 import { claimSessionToUser } from "@/services/valuation/session-repo";
 import { VALUATION_SESSION_COOKIE } from "@/lib/valuation/session-token";
+import { captureException } from "@/lib/observability/capture-exception";
 
 const verifyLimiter = createAuthRateLimiter(8, "10 m");
 
@@ -48,9 +49,19 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   // Attach the anonymous pending valuation to the now-verified user.
-  const cookieStore = await cookies();
-  const vmpToken = cookieStore.get(VALUATION_SESSION_COOKIE)?.value;
-  const resultId = vmpToken ? await claimSessionToUser(vmpToken, user.id) : null;
-
-  return NextResponse.json({ ok: true, resultId });
+  try {
+    const cookieStore = await cookies();
+    const vmpToken = cookieStore.get(VALUATION_SESSION_COOKIE)?.value;
+    const resultId = vmpToken ? await claimSessionToUser(vmpToken, user.id) : null;
+    return NextResponse.json({ ok: true, resultId });
+  } catch (err) {
+    captureException(err, {
+      module: "valuation",
+      feature: "otp-claim",
+      route: "/api/auth/email-code/verify",
+      operation: "claimSessionToUser",
+    });
+    // The account is verified; surface success without a result link.
+    return NextResponse.json({ ok: true, resultId: null });
+  }
 }

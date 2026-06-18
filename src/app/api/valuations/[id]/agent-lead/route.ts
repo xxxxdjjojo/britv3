@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAgentLead } from "@/services/valuation/agent-lead-service";
+import { captureException } from "@/lib/observability/capture-exception";
 
 export const AGENT_NOTICE_VERSION = "vmp-agent-share-2026-06-18"; // TODO(legal): counsel review
 
@@ -50,6 +51,14 @@ export async function POST(
   });
 
   if ("error" in outcome) {
+    if (outcome.error === "failed") {
+      captureException(new Error("agent lead insert failed"), {
+        module: "valuation",
+        feature: "agent-lead",
+        route: "/api/valuations/[id]/agent-lead",
+        operation: "createAgentLead",
+      });
+    }
     const status = outcome.error === "not_found" ? 404 : 500;
     return NextResponse.json({ error: "Could not submit your request." }, { status });
   }

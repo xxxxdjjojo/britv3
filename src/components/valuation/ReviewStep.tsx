@@ -19,12 +19,15 @@ export function ReviewStep({ summary }: { summary: Summary }) {
     setLoading(true);
     try {
       const res = await fetch("/api/valuations/calculate", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json();
         setError(data.error ?? "Couldn't calculate your estimate.");
         return;
       }
-      trackEvent("calculation_completed", {});
+      trackEvent("calculation_completed", {
+        evidence_quality: data.evidenceQuality ?? null,
+        fallback_level: data.fallbackLevel ?? null,
+      });
       setReady(true);
     } catch {
       setError("Something went wrong. Please try again.");

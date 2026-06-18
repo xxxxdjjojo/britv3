@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MapPin, Home, ClipboardList, Mail, ArrowRight, ShieldCheck } from "lucide-react";
+import { TrackedLink } from "@/components/valuation/TrackedLink";
 
 export const metadata: Metadata = {
   title: "Value my property | Britestate",
@@ -68,13 +69,15 @@ export default function ValueMyPropertyIntroPage() {
         </div>
 
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <Link
+          <TrackedLink
             href="/value-my-property/address"
+            event="valuation_cta_clicked"
+            properties={{ source: "intro" }}
             className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-brand-primary px-8 text-base font-semibold text-white shadow-lg transition-colors hover:bg-brand-primary-light"
           >
             Start my valuation
             <ArrowRight className="size-5" aria-hidden="true" />
-          </Link>
+          </TrackedLink>
           <Link
             href="/sold-prices"
             className="inline-flex h-14 items-center justify-center rounded-xl border-2 border-brand-primary px-8 text-base font-semibold text-brand-primary transition-colors hover:bg-brand-primary/10"

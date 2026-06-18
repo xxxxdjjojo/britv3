@@ -25,6 +25,7 @@ export function AddressStep({ initialPostcode }: { initialPostcode?: string }) {
 
   useEffect(() => {
     void fetch("/api/valuations/session", { method: "POST" });
+    trackEvent("valuation_started", {});
   }, []);
 
   async function findAddresses(e: React.FormEvent) {

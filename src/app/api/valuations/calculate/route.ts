@@ -4,6 +4,7 @@ import { getSessionByToken, saveResult } from "@/services/valuation/session-repo
 import { calculateValuation } from "@/services/valuation/valuation-service";
 import { buildSubject } from "@/lib/valuation/subject";
 import { VALUATION_SESSION_COOKIE } from "@/lib/valuation/session-token";
+import { captureException } from "@/lib/observability/capture-exception";
 
 /**
  * Calculate and persist the valuation server-side. The figure is NOT returned
@@ -21,10 +22,25 @@ export async function POST(): Promise<NextResponse> {
     return NextResponse.json({ error: "Address and details are required first" }, { status: 400 });
   }
 
-  const subject = buildSubject(session.address, session.details);
-  const valuationDate = new Date().toISOString().slice(0, 10);
-  const result = await calculateValuation({ subject, valuationDate });
-  await saveResult(session.id, subject, result);
+  try {
+    const subject = buildSubject(session.address, session.details);
+    const valuationDate = new Date().toISOString().slice(0, 10);
+    const result = await calculateValuation({ subject, valuationDate });
+    await saveResult(session.id, subject, result);
 
-  return NextResponse.json({ ready: true });
+    // Privacy-safe: evidence rating + fallback level only (never the figure here).
+    return NextResponse.json({
+      ready: true,
+      evidenceQuality: result.evidenceQuality,
+      fallbackLevel: result.fallbackLevel,
+    });
+  } catch (err) {
+    captureException(err, {
+      module: "valuation",
+      feature: "calculate",
+      route: "/api/valuations/calculate",
+      operation: "calculateValuation",
+    });
+    return NextResponse.json({ error: "Could not calculate your estimate." }, { status: 500 });
+  }
 }

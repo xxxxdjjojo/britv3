@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getResultForUser } from "@/services/valuation/session-repo";
 import { ResultView } from "@/components/valuation/ResultView";
+import { TrackOnMount } from "@/components/valuation/TrackOnMount";
 
 export const metadata: Metadata = {
   title: "Your property estimate | Britestate",
@@ -30,5 +31,16 @@ export default async function ResultPage({
     notFound(); // not owned / does not exist — no enumeration signal
   }
 
-  return <ResultView valuation={valuation} />;
+  return (
+    <>
+      <TrackOnMount
+        event="valuation_viewed"
+        properties={{
+          evidence_quality: valuation.result.evidenceQuality,
+          fallback_level: valuation.result.fallbackLevel,
+        }}
+      />
+      <ResultView valuation={valuation} />
+    </>
+  );
 }

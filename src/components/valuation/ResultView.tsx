@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Home, TrendingUp, Info, MapPin, Pencil } from "lucide-react";
+import { TrackedLink } from "@/components/valuation/TrackedLink";
 import type { StoredValuation } from "@/services/valuation/session-repo";
 import type { EvidenceQuality } from "@/types/valuation";
 
@@ -186,20 +186,22 @@ export function ResultView({ valuation }: { valuation: StoredValuation }) {
 
       {/* Actions */}
       <section className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <Link
+        <TrackedLink
           href="/value-my-property/details"
+          event="details_corrected"
           className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border-2 border-brand-primary px-6 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-primary/10"
         >
           <Pencil className="size-4" aria-hidden="true" />
           Correct details & recalculate
-        </Link>
-        <Link
+        </TrackedLink>
+        <TrackedLink
           href={`/value-my-property/result/${id}/expert`}
+          event="agent_cta_clicked"
           className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-brand-primary-light"
         >
           <TrendingUp className="size-4" aria-hidden="true" />
           Get a local expert valuation
-        </Link>
+        </TrackedLink>
       </section>
     </div>
   );
