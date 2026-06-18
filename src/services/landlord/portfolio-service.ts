@@ -245,17 +245,21 @@ export async function getPropertyDetail(
     throw new Error("Authentication required");
   }
 
+  // Address/city/bedrooms/etc. live on `properties` (real column is
+  // `address_line1`), not on `listings`. Pull them through the properties FK.
   const { data: listing, error } = await supabase
     .from("listings")
     .select(`
       id,
-      address_line_1,
-      address_line_2,
-      city,
-      postcode,
-      property_type,
-      bedrooms,
-      bathrooms,
+      properties (
+        address_line1,
+        address_line2,
+        city,
+        postcode,
+        property_type,
+        bedrooms,
+        bathrooms
+      ),
       tenancies!tenancies_property_id_fkey (
         id,
         tenant_name,
@@ -321,15 +325,29 @@ export async function getPropertyDetail(
     return expiry >= now && expiry <= thirtyDaysFromNow;
   }).length;
 
+  const property = (Array.isArray(listing.properties)
+    ? listing.properties[0]
+    : listing.properties) as
+    | {
+        address_line1: string;
+        address_line2: string | null;
+        city: string;
+        postcode: string;
+        property_type: string | null;
+        bedrooms: number | null;
+        bathrooms: number | null;
+      }
+    | null;
+
   return {
     id: listing.id as string,
-    address_line_1: listing.address_line_1 as string,
-    address_line_2: listing.address_line_2 as string | null,
-    city: listing.city as string,
-    postcode: listing.postcode as string,
-    property_type: listing.property_type as string | null,
-    bedrooms: listing.bedrooms as number | null,
-    bathrooms: listing.bathrooms as number | null,
+    address_line_1: property?.address_line1 ?? "",
+    address_line_2: property?.address_line2 ?? null,
+    city: property?.city ?? "",
+    postcode: property?.postcode ?? "",
+    property_type: property?.property_type ?? null,
+    bedrooms: property?.bedrooms ?? null,
+    bathrooms: property?.bathrooms ?? null,
     listing_id: listing.id as string,
     active_tenancy: activeTenancy
       ? {

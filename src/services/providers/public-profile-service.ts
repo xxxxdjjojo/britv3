@@ -45,9 +45,8 @@ export async function fetchProviderBySlug(
       profiles (
         id,
         avatar_url,
-        full_name,
-        provider_verification_status,
-        email
+        full_name:display_name,
+        provider_verification_status
       ),
       provider_rating_stats (
         provider_id,
@@ -99,7 +98,7 @@ export async function fetchProviderReviews(
       `
       *,
       profiles (
-        full_name,
+        full_name:display_name,
         avatar_url
       )
     `,
@@ -195,8 +194,7 @@ export async function fetchAgentBySlug(
       profiles (
         id,
         avatar_url,
-        full_name,
-        email
+        full_name:display_name
       )
     `,
     )
@@ -327,7 +325,7 @@ export async function fetchAgentTeam(
       id,
       user_id,
       profiles (
-        full_name,
+        full_name:display_name,
         avatar_url
       ),
       role,

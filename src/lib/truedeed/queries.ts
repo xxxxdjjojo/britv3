@@ -17,6 +17,25 @@ import type {
   PendingRebuttal,
 } from "@/types/truedeed";
 
+export type OpenInvoiceDispute = {
+  disputeId: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  invoiceState: string;
+  grossPence: number;
+  issuedAt: string;
+  dueAt: string;
+  raisedAt: string;
+  properlyRaised: boolean;
+  grounds: string;
+  evidenceUrls: string[];
+  branchName: string;
+  agentName: string;
+  applicantName: string;
+  propertyAddress: string;
+  occurredAt: string | null;
+};
+
 const SIGNED_URL_TTL_SECONDS = 60 * 60; // 1 hour
 
 export type AgentIntroductionRow = AgentIntroduction & {
@@ -195,6 +214,110 @@ export async function getPendingRebuttals(): Promise<PendingRebuttal[]> {
         evidenceUrls: signed.filter((url): url is string => Boolean(url)),
         submittedAt: row.submitted_at,
         branchName: row.introductions?.agent_branches?.name ?? "Unknown branch",
+      };
+    }),
+  );
+}
+
+type OpenDisputeQueryRow = {
+  id: string;
+  invoice_id: string;
+  grounds: string;
+  evidence_storage_paths: string[];
+  raised_at: string;
+  properly_raised: boolean;
+  raised_by: string;
+  invoices: {
+    invoice_number: string;
+    state: string;
+    gross_pence: number;
+    issued_at: string;
+    due_at: string;
+    introduction_id: string | null;
+    introductions: {
+      applicant_name: string;
+      occurred_at: string;
+      listings: { id: string; properties: PropertyAddress } | null;
+      agent_branches: { name: string | null } | null;
+    } | null;
+  } | null;
+};
+
+/**
+ * Open (status='open') invoice_disputes with 1-hour signed evidence URLs,
+ * for the admin workbench. Each row joins through invoices →
+ * introductions → listings/properties + branch.
+ */
+export async function getOpenDisputes(): Promise<OpenInvoiceDispute[]> {
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase
+    .from("invoice_disputes")
+    .select(
+      `id, invoice_id, grounds, evidence_storage_paths, raised_at,
+       properly_raised, raised_by,
+       invoices (
+         invoice_number, state, gross_pence, issued_at, due_at, introduction_id,
+         introductions (
+           applicant_name, occurred_at,
+           listings ( id, properties ( address_line1, city, postcode ) ),
+           agent_branches ( name )
+         )
+       )`,
+    )
+    .eq("status", "open")
+    .order("raised_at", { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to load open disputes: ${error.message}`);
+  }
+
+  const rows = (data ?? []) as unknown as OpenDisputeQueryRow[];
+
+  return Promise.all(
+    rows.map(async (row) => {
+      const signed = await Promise.all(
+        (row.evidence_storage_paths ?? []).map(async (path) => {
+          const { data: url } = await supabase.storage
+            .from("rebuttal-evidence")
+            .createSignedUrl(path, SIGNED_URL_TTL_SECONDS);
+          return url?.signedUrl ?? null;
+        }),
+      );
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name, full_name")
+        .eq("id", row.raised_by)
+        .maybeSingle();
+      const profileRow = profile as {
+        display_name: string | null;
+        full_name: string | null;
+      } | null;
+      const agentName =
+        profileRow?.full_name ?? profileRow?.display_name ?? "Unknown agent";
+
+      return {
+        disputeId: row.id,
+        invoiceId: row.invoice_id,
+        invoiceNumber: row.invoices?.invoice_number ?? "—",
+        invoiceState: row.invoices?.state ?? "unknown",
+        grossPence: row.invoices?.gross_pence ?? 0,
+        issuedAt: row.invoices?.issued_at ?? row.raised_at,
+        dueAt: row.invoices?.due_at ?? row.raised_at,
+        raisedAt: row.raised_at,
+        properlyRaised: row.properly_raised,
+        grounds: row.grounds,
+        evidenceUrls: signed.filter((url): url is string => Boolean(url)),
+        branchName:
+          row.invoices?.introductions?.agent_branches?.name ?? "Unknown branch",
+        agentName,
+        applicantName:
+          row.invoices?.introductions?.applicant_name ?? "Unknown applicant",
+        propertyAddress: formatAddress(
+          row.invoices?.introductions?.listings?.properties ?? null,
+        ),
+        occurredAt: row.invoices?.introductions?.occurred_at ?? null,
       };
     }),
   );
