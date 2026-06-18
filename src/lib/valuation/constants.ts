@@ -36,8 +36,10 @@ export const TENURE_MISMATCH_WEIGHT = 0.5;
 export const NEW_BUILD_MISMATCH_WEIGHT = 0.4;
 
 // --- Robust estimator --------------------------------------------------------
-/** Fraction of total weight trimmed from EACH tail before the trimmed mean. */
-export const TRIM_FRACTION = 0.2;
+/** Fraction of total weight trimmed from EACH tail before the trimmed mean.
+ *  0.25 (a 25% trimmed mean) keeps a single extreme sale from leaking in even
+ *  when it carries high recency/proximity weight — see engine anomaly test. */
+export const TRIM_FRACTION = 0.25;
 /** Blend of weighted median vs weighted trimmed mean in the central estimate. */
 export const MEDIAN_BLEND = 0.5;
 
