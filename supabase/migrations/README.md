@@ -42,3 +42,31 @@ never collide.
 if any two files share a leading version token. It runs in CI
 (`.github/workflows/app-ci.yml`) on every PR that touches `supabase/migrations/`,
 so a collision is caught **before merge**.
+
+## Applying migrations to prod (manual flow)
+
+The auto-apply `Supabase Migrations` workflow (`.github/workflows/migrate.yml`)
+was retired on 2026-06-18 because the prod `schema_migrations` ledger has
+diverged from main:
+
+- The baseline-squash work (PR #39, `chore/supabase-baseline-squash`) was
+  merged into `codex/link-render-qa`, not main. Prod's ledger was reconciled
+  to match the squashed state (17 historical tokens + `00000000000000`
+  baseline marked applied), but main's tree still carries the un-squashed
+  short-token historical files.
+- Several historical files were also edited after they were applied to prod
+  (violating the append-only rule above), which `supabase db push` flags as
+  drift between file statements and stored ledger rows.
+
+Until that history is reconciled (re-running the baseline-squash on main is
+the canonical fix; see PR #39 for the recipe), apply new migrations manually:
+
+1. Merge the PR introducing the new migration.
+2. Pull main locally.
+3. Execute the migration's SQL directly against prod (Supabase SQL editor or
+   `psql "$SUPABASE_DB_URL" -f supabase/migrations/<file>.sql`).
+4. Record it in the ledger:
+   `supabase migration repair --db-url "$SUPABASE_DB_URL" --status applied <version-token>`
+5. Verify with `supabase migration list --db-url "$SUPABASE_DB_URL"`.
+
+Phase 5 (PR #46, `bd4999f0`) shipped this way and is the working precedent.
