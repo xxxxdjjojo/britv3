@@ -44,6 +44,8 @@ export default defineConfig({
       NEXT_PUBLIC_SUPABASE_URL: localUrl,
       NEXT_PUBLIC_SUPABASE_ANON_KEY: localAnon,
       SUPABASE_SERVICE_ROLE_KEY: localService,
+      // E2E-only: bypass app rate limits so the OTP-heavy suite isn't throttled.
+      VMP_E2E_RATELIMIT_OFF: "1",
     },
   },
 });

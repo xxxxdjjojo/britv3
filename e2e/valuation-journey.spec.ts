@@ -156,7 +156,7 @@ test.describe("Valuation journey", () => {
       await calculateToReady(page);
       await verifyEmail(page, email);
       await expect(page).toHaveURL(/\/result\//, { timeout: 30_000 });
-      await expect(page.getByText(/estimated range/i)).toBeVisible();
+      await expect(page.getByText(/estimated range/i).first()).toBeVisible();
       await expect(page.getByText(/evidence:/i)).toBeVisible();
       await expect(page.getByText(/comparable registered sales/i)).toBeVisible();
     } finally {
@@ -210,10 +210,9 @@ test.describe("Valuation journey", () => {
       await page.getByLabel("Bedrooms").fill("4");
       await page.getByRole("button", { name: "Continue" }).click();
       await calculateToReady(page);
-      // Already authenticated -> result reachable; a new version exists.
-      await verifyEmail(page, email).catch(async () => {
-        // If already authed the verify step may be skipped; navigate via session.
-      });
+      // Already authenticated -> the new versioned result is owned immediately,
+      // so the ready step links straight to it (no re-verification).
+      await page.getByRole("button", { name: /view my estimate/i }).click();
       await expect(page).toHaveURL(/\/result\//, { timeout: 30_000 });
       expect(page.url()).not.toBe(firstUrl);
     } finally {

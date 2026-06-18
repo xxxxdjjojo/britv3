@@ -11,6 +11,7 @@ type Summary = { rows: ReadonlyArray<{ label: string; value: string }> };
 export function ReviewStep({ summary }: { summary: Summary }) {
   const router = useRouter();
   const [ready, setReady] = useState(false);
+  const [ownedResultId, setOwnedResultId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -28,6 +29,7 @@ export function ReviewStep({ summary }: { summary: Summary }) {
         evidence_quality: data.evidenceQuality ?? null,
         fallback_level: data.fallbackLevel ?? null,
       });
+      setOwnedResultId(data.resultId ?? null);
       setReady(true);
     } catch {
       setError("Something went wrong. Please try again.");
@@ -42,12 +44,22 @@ export function ReviewStep({ summary }: { summary: Summary }) {
         <CheckCircle2 className="mx-auto mb-3 size-12 text-brand-primary" aria-hidden="true" />
         <h2 className="font-heading text-xl font-bold text-neutral-900">Your estimate is ready</h2>
         <p className="mx-auto mt-2 max-w-md text-sm text-neutral-600">
-          Verify your email to view your indicative estimate and save it to a free account. We&apos;ll
-          send a one-time code — no password, and no marketing unless you ask for it.
+          {ownedResultId
+            ? "Your updated estimate has been saved to your account."
+            : "Verify your email to view your indicative estimate and save it to a free account. We'll send a one-time code — no password, and no marketing unless you ask for it."}
         </p>
-        <Button onClick={() => router.push("/value-my-property/verify-email")} className="mt-5">
+        <Button
+          onClick={() =>
+            router.push(
+              ownedResultId
+                ? `/value-my-property/result/${ownedResultId}`
+                : "/value-my-property/verify-email",
+            )
+          }
+          className="mt-5"
+        >
           <Mail className="mr-2 size-4" aria-hidden="true" />
-          Verify email & view estimate
+          {ownedResultId ? "View my estimate" : "Verify email & view estimate"}
         </Button>
       </div>
     );

@@ -22,15 +22,18 @@ export async function POST(request: Request): Promise<NextResponse> {
   const email = parsed.data.email.toLowerCase();
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
-  const [emailOk, ipOk] = await Promise.all([
-    emailLimiter.limit(`vmp:otp:email:${email}`),
-    ipLimiter.limit(`vmp:otp:ip:${ip}`),
-  ]);
-  if (!emailOk.success || !ipOk.success) {
-    return NextResponse.json(
-      { error: "Too many requests. Please wait a few minutes and try again." },
-      { status: 429 },
-    );
+  // VMP_E2E_RATELIMIT_OFF is set ONLY by the local E2E harness, never in prod.
+  if (process.env.VMP_E2E_RATELIMIT_OFF !== "1") {
+    const [emailOk, ipOk] = await Promise.all([
+      emailLimiter.limit(`vmp:otp:email:${email}`),
+      ipLimiter.limit(`vmp:otp:ip:${ip}`),
+    ]);
+    if (!emailOk.success || !ipOk.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait a few minutes and try again." },
+        { status: 429 },
+      );
+    }
   }
 
   const supabase = await createClient();

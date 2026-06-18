@@ -114,12 +114,14 @@ export async function saveResult(
   sessionId: string,
   subject: ValuationSubject,
   result: ValuationResult,
+  userId?: string | null,
 ): Promise<string> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("valuation_results")
     .insert({
       session_id: sessionId,
+      user_id: userId ?? null,
       model_version: result.modelVersion,
       estimated_value: result.estimatedValue,
       estimated_low: result.estimatedLow,

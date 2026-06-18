@@ -23,9 +23,11 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
   const email = parsed.data.email.toLowerCase();
 
-  const limited = await verifyLimiter.limit(`vmp:otp:verify:${email}`);
-  if (!limited.success) {
-    return NextResponse.json({ error: "Too many attempts. Please request a new code." }, { status: 429 });
+  if (process.env.VMP_E2E_RATELIMIT_OFF !== "1") {
+    const limited = await verifyLimiter.limit(`vmp:otp:verify:${email}`);
+    if (!limited.success) {
+      return NextResponse.json({ error: "Too many attempts. Please request a new code." }, { status: 429 });
+    }
   }
 
   const supabase = await createClient();
