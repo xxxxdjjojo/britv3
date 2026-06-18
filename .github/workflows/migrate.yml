@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@e2e6ee4cdb44cac40bb3d913cf1b5a3de5a5b61f # v1.4.0
+        uses: supabase/setup-cli@fe52e8551e5e65c2c6a20121b1c0998d6c5e3e1f # v1.4.0
 
       - name: Run database migrations
         run: supabase db push --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
