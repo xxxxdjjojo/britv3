@@ -76,9 +76,9 @@ export function SaveButton({ listingId, size = "default" }: SaveButtonProps) {
     return (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger>
-            {button}
-          </TooltipTrigger>
+          {/* Base UI uses a `render` prop (not Radix `asChild`): render the
+              existing button AS the trigger so we don't nest <button><button>. */}
+          <TooltipTrigger render={button} />
           <TooltipContent side="bottom">
             Sign in to save properties
           </TooltipContent>

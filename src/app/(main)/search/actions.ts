@@ -25,6 +25,8 @@ export type SearchProperty = {
   lng: number;
   epc_rating: string | null;
   tenure: string | null;
+  /** True only when the listing is genuinely verified. Never fabricated. */
+  verified?: boolean;
 };
 
 export type SearchFilters = {
@@ -34,6 +36,8 @@ export type SearchFilters = {
   beds?: string;
   propertyType?: string[];
   mustHaves?: string[];
+  minSqft?: string;
+  maxSqft?: string;
   sort?: string;
   q?: string;
 };
@@ -59,8 +63,8 @@ const PROPERTY_TYPE_REVERSE: Record<string, string> = Object.fromEntries(
 // ---------------------------------------------------------------------------
 
 const MOCK_PROPERTIES: SearchProperty[] = [
-  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794, epc_rating: "C", tenure: "freehold" },
-  { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale", lat: 51.5392, lng: -0.1547, epc_rating: "B", tenure: "leasehold" },
+  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794, epc_rating: "C", tenure: "freehold", verified: true },
+  { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale", lat: 51.5392, lng: -0.1547, epc_rating: "B", tenure: "leasehold", verified: false },
   { id: "3", slug: "45-bermondsey-street-london-rent", image: "/images/properties/property-3.jpg", price: 1850, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat", listing_type: "rent", lat: 51.4998, lng: -0.0821, epc_rating: "D", tenure: "leasehold" },
   { id: "4", slug: "3-highbury-park-london-sale", image: "/images/properties/property-1.jpg", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached", listing_type: "sale", lat: 51.5555, lng: -0.0984, epc_rating: "A", tenure: "freehold" },
   { id: "5", slug: "22-canary-wharf-way-london-rent", image: "/images/properties/property-2.jpg", price: 2200, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat", listing_type: "rent", lat: 51.5054, lng: -0.0235, epc_rating: null, tenure: "leasehold" },
@@ -114,11 +118,26 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
     results = results.filter((p) => filters.propertyType!.includes(p.type));
   }
 
-  // Sort
+  // Living area (sqft)
+  if (filters.minSqft) {
+    const min = Number(filters.minSqft);
+    if (!isNaN(min)) results = results.filter((p) => p.sqft >= min);
+  }
+  if (filters.maxSqft) {
+    const max = Number(filters.maxSqft);
+    if (!isNaN(max)) results = results.filter((p) => p.sqft <= max);
+  }
+
+  // Sort — every option deterministically reorders mock results (ids are
+  // numeric, standing in for the recency/popularity the mock set lacks).
   if (filters.sort === "price_asc") {
     results.sort((a, b) => a.price - b.price);
   } else if (filters.sort === "price_desc") {
     results.sort((a, b) => b.price - a.price);
+  } else if (filters.sort === "most_recent") {
+    results.sort((a, b) => Number(b.id) - Number(a.id));
+  } else if (filters.sort === "most_popular") {
+    results.sort((a, b) => Number(a.id) - Number(b.id));
   }
 
   return results;
@@ -170,6 +189,16 @@ export async function searchProperties(
     if (filters.beds && filters.beds !== "Any") {
       const minBeds = filters.beds === "5+" ? 5 : Number(filters.beds);
       if (!isNaN(minBeds)) query = query.gte("bedrooms", minBeds);
+    }
+
+    // Living area (sqft)
+    if (filters.minSqft) {
+      const min = Number(filters.minSqft);
+      if (!isNaN(min)) query = query.gte("square_footage", min);
+    }
+    if (filters.maxSqft) {
+      const max = Number(filters.maxSqft);
+      if (!isNaN(max)) query = query.lte("square_footage", max);
     }
 
     // Property type (cast enum to text for .in() filter)

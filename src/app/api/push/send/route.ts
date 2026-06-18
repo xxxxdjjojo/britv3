@@ -1,31 +1,54 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { sendPushNotification } from "@/lib/push";
-import type { PushSubscriptionData } from "@/lib/push";
+import { inngest } from "@/inngest/client";
+import { createRateLimiter } from "@/lib/cache/redis";
+import {
+  PUSH_SIGNATURE_HEADER,
+  PUSH_TIMESTAMP_HEADER,
+  verifyPushSignature,
+} from "@/lib/push/push-auth";
+import {
+  PUSH_NOTIFICATION_TYPES,
+  buildPushNotification,
+} from "@/lib/push/push-notifications";
 
+// No free-text title/body: the message is built server-side from `type`.
 const sendSchema = z.object({
   userId: z.string().uuid(),
-  title: z.string().min(1),
-  body: z.string().min(1),
-  url: z.string().optional(),
-  icon: z.string().optional(),
+  type: z.enum(PUSH_NOTIFICATION_TYPES),
+  data: z
+    .object({
+      label: z.string().max(200).optional(),
+      url: z.string().max(500).optional(),
+    })
+    .optional(),
 });
 
+// 10 dispatches per minute per recipient — caps blast radius if a signed
+// request is replayed within the skew window.
+const limiter = createRateLimiter(10, "1 m");
+
 export async function POST(request: Request) {
-  const pushSecret = process.env.PUSH_SECRET;
-  if (!pushSecret) {
+  if (!process.env.PUSH_SECRET) {
     return NextResponse.json({ error: "Push service not configured" }, { status: 503 });
   }
 
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader || authHeader !== `Bearer ${pushSecret}`) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // Verify the HMAC over the raw body + timestamp before parsing.
+  const rawBody = await request.text();
+  const signature = request.headers.get(PUSH_SIGNATURE_HEADER);
+  const timestamp = request.headers.get(PUSH_TIMESTAMP_HEADER);
+  if (!verifyPushSignature(timestamp, rawBody, signature)) {
+    return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
   }
 
-  const body = await request.json().catch(() => null);
-  const parsed = sendSchema.safeParse(body);
+  let json: unknown;
+  try {
+    json = JSON.parse(rawBody);
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
 
+  const parsed = sendSchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Invalid request data", details: parsed.error.issues },
@@ -33,55 +56,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const { userId, title, body: notifBody, url, icon } = parsed.data;
+  const { userId, type, data } = parsed.data;
 
-  const admin = createAdminClient();
-  const { data: subscriptions, error } = await admin
-    .from("push_subscriptions")
-    .select("endpoint, p256dh, auth")
-    .eq("user_id", userId);
-
-  if (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch subscriptions" },
-      { status: 500 },
-    );
+  const { success } = await limiter.limit(`push:${userId}`);
+  if (!success) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
-  if (!subscriptions || subscriptions.length === 0) {
-    return NextResponse.json({ sent: 0, failed: 0 });
-  }
+  const notification = buildPushNotification(type, data);
 
-  let sent = 0;
-  let failed = 0;
+  // Dispatch via Inngest (platform-signed) rather than sending inline.
+  await inngest.send({
+    name: "notifications/push.send",
+    data: { userId, notification },
+  });
 
-  await Promise.all(
-    subscriptions.map(async (sub) => {
-      const subscription: PushSubscriptionData = {
-        endpoint: sub.endpoint as string,
-        keys: {
-          p256dh: sub.p256dh as string,
-          auth: sub.auth as string,
-        },
-      };
-
-      try {
-        const result = await sendPushNotification(subscription, {
-          title,
-          body: notifBody,
-          url,
-          icon,
-        });
-        if (result.success) {
-          sent++;
-        } else {
-          failed++;
-        }
-      } catch {
-        failed++;
-      }
-    }),
-  );
-
-  return NextResponse.json({ sent, failed });
+  return NextResponse.json({ queued: true }, { status: 202 });
 }
