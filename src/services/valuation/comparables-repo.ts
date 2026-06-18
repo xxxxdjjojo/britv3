@@ -75,6 +75,10 @@ export type FetchComparablesParams = Readonly<{
   outwardCode: string;
   types: readonly PpdPropertyType[];
   sinceDate: string; // ISO YYYY-MM-DD lower bound
+  /** Exclusive upper bound — used by the backtest to prevent future-data leakage. */
+  beforeDate?: string;
+  /** Exclude a specific transaction — prevents a target being its own comparable. */
+  excludeTransactionId?: string;
   limit?: number;
 }>;
 
@@ -91,14 +95,18 @@ export async function fetchComparables(params: FetchComparablesParams): Promise<
       AND ppd_category = 'A'
       AND record_status <> 'D'
       AND date_of_transfer >= $3::date
-      AND price BETWEEN $4 AND $5
+      AND ($4::date IS NULL OR date_of_transfer < $4::date)
+      AND ($5::text IS NULL OR transaction_id <> $5)
+      AND price BETWEEN $6 AND $7
     ORDER BY date_of_transfer DESC
-    LIMIT $6
+    LIMIT $8
   `;
   const { rows } = await getPool().query<PpdRow>(sql, [
     params.outwardCode,
     params.types,
     params.sinceDate,
+    params.beforeDate ?? null,
+    params.excludeTransactionId ?? null,
     MIN_VALID_PRICE,
     MAX_VALID_PRICE,
     limit,
@@ -106,11 +114,60 @@ export async function fetchComparables(params: FetchComparablesParams): Promise<
   return rows.map(rowToComparable);
 }
 
-/** The subject property's own most recent registered sale, if matchable. */
+export type FetchBacktestTargetsParams = Readonly<{
+  outwardCodes: readonly string[];
+  fromDate: string; // inclusive
+  toDate: string; // exclusive
+  perOutward: number;
+}>;
+
+/**
+ * Deterministic sample of recent eligible sales used as backtest targets. Each
+ * target is later valued "as of" its own sale date, excluding itself, so the
+ * estimate can be compared to the price that actually transacted.
+ */
+export async function fetchBacktestTargets(
+  params: FetchBacktestTargetsParams,
+): Promise<RawComparable[]> {
+  const sql = `
+    SELECT transaction_id, price, sale_date, postcode, outward_code, property_type,
+           old_new, duration, paon, saon, street, ppd_category, record_status
+    FROM (
+      SELECT transaction_id, price, date_of_transfer::date::text AS sale_date,
+             postcode, outward_code, property_type, old_new, duration,
+             paon, saon, street, ppd_category, record_status,
+             row_number() OVER (PARTITION BY outward_code ORDER BY transaction_id) AS rn
+      FROM public.price_paid_data
+      WHERE outward_code = ANY($1::text[])
+        AND date_of_transfer >= $2::date
+        AND date_of_transfer < $3::date
+        AND ppd_category = 'A'
+        AND record_status <> 'D'
+        AND price BETWEEN $4 AND $5
+    ) ranked
+    WHERE rn <= $6
+    ORDER BY outward_code, transaction_id
+  `;
+  const { rows } = await getPool().query<PpdRow>(sql, [
+    params.outwardCodes,
+    params.fromDate,
+    params.toDate,
+    MIN_VALID_PRICE,
+    MAX_VALID_PRICE,
+    params.perOutward,
+  ]);
+  return rows.map(rowToComparable);
+}
+
+/** The subject property's own most recent registered sale, if matchable.
+ *  beforeDate/excludeTransactionId prevent backtest leakage (a property's own
+ *  future or same-day sale must not anchor its historical valuation). */
 export async function fetchSubjectPriorSale(
   postcode: string,
   paon: string,
   saon: string | null,
+  beforeDate?: string,
+  excludeTransactionId?: string,
 ): Promise<RawComparable | null> {
   const sql = `
     SELECT transaction_id, price, date_of_transfer::date::text AS sale_date,
@@ -121,9 +178,17 @@ export async function fetchSubjectPriorSale(
       AND upper(paon) = upper($2)
       AND (($3::text IS NULL AND saon IS NULL) OR upper(saon) = upper($3))
       AND record_status <> 'D'
+      AND ($4::date IS NULL OR date_of_transfer < $4::date)
+      AND ($5::text IS NULL OR transaction_id <> $5)
     ORDER BY date_of_transfer DESC
     LIMIT 1
   `;
-  const { rows } = await getPool().query<PpdRow>(sql, [postcode, paon, saon]);
+  const { rows } = await getPool().query<PpdRow>(sql, [
+    postcode,
+    paon,
+    saon,
+    beforeDate ?? null,
+    excludeTransactionId ?? null,
+  ]);
   return rows.length ? rowToComparable(rows[0]) : null;
 }

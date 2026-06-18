@@ -49,6 +49,10 @@ export type CalculateValuationInput = Readonly<{
   valuationDate: string; // ISO YYYY-MM-DD
   dataCutoffDate?: string | null;
   hpiSeries?: readonly HpiPoint[];
+  /** Backtest: only use sales strictly before this date (no future leakage). */
+  asOfDate?: string;
+  /** Backtest: exclude this transaction so a target can't be its own comparable. */
+  excludeTransactionId?: string;
 }>;
 
 /**
@@ -77,18 +81,24 @@ export async function calculateValuation(
   }
 
   const types = propertyFamily(subject.propertyType);
+  const beforeDate = input.asOfDate;
+  const excludeTransactionId = input.excludeTransactionId;
 
   // Adaptive window: prefer the recent window, widen only if data is thin.
   let comparables = await fetchComparables({
     outwardCode: outward,
     types,
     sinceDate: monthsBefore(valuationDate, PREFERRED_WINDOW_MONTHS),
+    beforeDate,
+    excludeTransactionId,
   });
   if (comparables.length < MIN_COMPARABLES) {
     comparables = await fetchComparables({
       outwardCode: outward,
       types,
       sinceDate: monthsBefore(valuationDate, MAX_WINDOW_MONTHS),
+      beforeDate,
+      excludeTransactionId,
     });
   }
 
@@ -102,7 +112,13 @@ export async function calculateValuation(
   // Anchor on the subject's own prior registered sale, if we can match it.
   let exactPriorSale: ComparableSale | null = null;
   if (subject.paon && normalisedPostcode) {
-    const prior = await fetchSubjectPriorSale(normalisedPostcode, subject.paon, subject.saon);
+    const prior = await fetchSubjectPriorSale(
+      normalisedPostcode,
+      subject.paon,
+      subject.saon,
+      beforeDate,
+      excludeTransactionId,
+    );
     if (prior) {
       exactPriorSale = {
         transactionId: prior.transactionId,
