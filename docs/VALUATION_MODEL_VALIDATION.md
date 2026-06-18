@@ -17,53 +17,53 @@
 | Targets evaluated | 150 |
 | Produced an estimate | 150 |
 | No-estimate rate | 0.0% |
-| Median absolute % error (MdAPE) | 18.6% |
-| Mean absolute % error (MAPE) | 29.0% |
-| Mean absolute error (MAE) | £95,365 |
-| Log-price RMSE | 0.339 |
-| Within 5% | 16.7% |
-| Within 10% | 29.3% |
-| Within 20% | 52.0% |
-| Range coverage (actual inside range) | 74.0% |
+| Median absolute % error (MdAPE) | 17.3% |
+| Mean absolute % error (MAPE) | 26.6% |
+| Mean absolute error (MAE) | £89,098 |
+| Log-price RMSE | 0.317 |
+| Within 5% | 17.3% |
+| Within 10% | 32.0% |
+| Within 20% | 56.7% |
+| Range coverage (actual inside range) | 72.7% |
 | Median range width | 70% of estimate |
 
 ## By property type
 | Segment | n | est. | median APE | within 10% | within 20% | range cover |
 |---|---|---|---|---|---|---|
-| Detached | 1 | 1 | 34.1% | 0% | 0% | 0% |
-| Flat | 103 | 103 | 22.7% | 27% | 47% | 71% |
-| Semi | 15 | 15 | 13.1% | 47% | 67% | 80% |
-| Terraced | 31 | 31 | 14.3% | 29% | 65% | 84% |
+| Detached | 1 | 1 | 26.0% | 0% | 0% | 0% |
+| Flat | 103 | 103 | 19.2% | 28% | 52% | 68% |
+| Semi | 15 | 15 | 10.3% | 47% | 67% | 80% |
+| Terraced | 31 | 31 | 13.8% | 39% | 68% | 87% |
 
 ## By price band
 | Segment | n | est. | median APE | within 10% | within 20% | range cover |
 |---|---|---|---|---|---|---|
-| <£250k | 68 | 68 | 21.7% | 29% | 49% | 74% |
-| £250k–£500k | 41 | 41 | 16.4% | 34% | 59% | 78% |
-| £500k–£1m | 30 | 30 | 18.3% | 20% | 53% | 73% |
-| ≥£1m | 11 | 11 | 21.5% | 36% | 45% | 64% |
+| <£250k | 68 | 68 | 18.3% | 28% | 53% | 71% |
+| £250k–£500k | 41 | 41 | 15.6% | 39% | 68% | 78% |
+| £500k–£1m | 30 | 30 | 18.5% | 27% | 53% | 70% |
+| ≥£1m | 11 | 11 | 21.7% | 45% | 45% | 73% |
 
 ## By evidence quality
 | Segment | n | est. | median APE | within 10% | within 20% | range cover |
 |---|---|---|---|---|---|---|
-| high | 117 | 117 | 17.8% | 28% | 52% | 76% |
-| medium | 33 | 33 | 19.5% | 33% | 52% | 67% |
+| high | 129 | 129 | 18.2% | 30% | 56% | 72% |
+| medium | 21 | 21 | 12.0% | 43% | 62% | 76% |
 
 ## By region (outward code)
 | Segment | n | est. | median APE | within 10% | within 20% | range cover |
 |---|---|---|---|---|---|---|
-| B1 | 25 | 25 | 35.5% | 8% | 24% | 56% |
-| CF10 | 25 | 25 | 12.8% | 40% | 72% | 84% |
-| LS6 | 25 | 25 | 9.1% | 52% | 68% | 76% |
-| M4 | 25 | 25 | 21.7% | 20% | 44% | 80% |
-| SW17 | 25 | 25 | 14.5% | 24% | 60% | 84% |
-| SW18 | 25 | 25 | 25.4% | 32% | 44% | 64% |
+| B1 | 25 | 25 | 33.3% | 16% | 36% | 56% |
+| CF10 | 25 | 25 | 12.8% | 40% | 76% | 84% |
+| LS6 | 25 | 25 | 11.5% | 44% | 68% | 76% |
+| M4 | 25 | 25 | 18.6% | 24% | 56% | 72% |
+| SW17 | 25 | 25 | 14.8% | 32% | 64% | 88% |
+| SW18 | 25 | 25 | 25.2% | 36% | 40% | 60% |
 
 ## With vs without a matched prior sale
 | Segment | n | est. | median APE | within 10% | within 20% | range cover |
 |---|---|---|---|---|---|---|
-| has prior sale | 136 | 136 | 18.6% | 29% | 52% | 74% |
-| no prior sale | 14 | 14 | 26.3% | 29% | 50% | 79% |
+| has prior sale | 136 | 136 | 17.3% | 32% | 57% | 74% |
+| no prior sale | 14 | 14 | 18.7% | 29% | 50% | 64% |
 
 ## Known weak segments & honest reading
 
