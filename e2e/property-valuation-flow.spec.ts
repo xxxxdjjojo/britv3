@@ -41,7 +41,7 @@ test.describe("Scenario 1 — Value my property CTA routing", () => {
   test("the sold-prices area 'thinking of selling' CTA enters the journey", async ({
     page,
   }) => {
-    await page.goto("/sold-prices/london/sw18");
+    await page.goto("/sold-prices/london/14-south-street-tw7-7bg");
     const cta = page.getByRole("link", { name: /value my property|thinking of selling|get a valuation/i });
     await expect(cta.first()).toBeVisible();
     await expect(cta.first()).toHaveAttribute("href", /\/value-my-property/);

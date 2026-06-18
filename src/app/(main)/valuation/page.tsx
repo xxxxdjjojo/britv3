@@ -49,7 +49,7 @@ export default function ValuationPage() {
       {/* CTA */}
       <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
         <Link
-          href="/search"
+          href="/value-my-property"
           className="inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-8 text-base font-semibold text-white shadow-lg transition-colors hover:bg-brand-primary-light"
         >
           Value My Property

@@ -209,6 +209,7 @@ export const NAV_ITEMS: NavItem[] = [
       {
         heading: "Valuations",
         links: [
+          { label: "Value My Property", href: "/value-my-property" },
           { label: "Free Instant Valuation", href: "/valuation" },
         ],
       },
