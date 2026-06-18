@@ -1,5 +1,9 @@
 import { test, expect } from "@playwright/test";
 
+// Search page smoke tests — updated for the Stitch "Hemnet right-filters"
+// layout. The full structural contract lives in property-search-page.spec.ts;
+// these keep the original intent (page loads, results/empty, filters, sort).
+
 test.describe("Search Page", () => {
   test("loads search page", async ({ page }) => {
     await page.goto("/search");
@@ -8,67 +12,65 @@ test.describe("Search Page", () => {
 
   test("shows search results or empty state", async ({ page }) => {
     await page.goto("/search");
-    const hasResults = await page.getByText(/properties/i).first().isVisible().catch(() => false);
-    const hasEmpty = await page.getByText(/No properties match/i).isVisible().catch(() => false);
+    const hasResults = await page
+      .getByTestId("property-search-card")
+      .first()
+      .isVisible()
+      .catch(() => false);
+    const hasEmpty = await page
+      .getByText(/No properties match/i)
+      .isVisible()
+      .catch(() => false);
     expect(hasResults || hasEmpty).toBe(true);
   });
 
-  test("listing type pills are visible", async ({ page }) => {
+  test("refine filter aside has location, price, property type and bedrooms", async ({
+    page,
+  }) => {
     await page.goto("/search");
-    await expect(page.getByRole("button", { name: "All Properties" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "For Sale" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "To Rent" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "New Builds" })).toBeVisible();
-  });
-
-  test("clicking a listing type pill filters results", async ({ page }) => {
-    await page.goto("/search");
-    // Click "To Rent" pill to filter
-    await page.getByRole("button", { name: "To Rent" }).click();
-    // After clicking, the pill should have the active style (bg-brand-primary)
-    const rentButton = page.getByRole("button", { name: "To Rent" });
-    await expect(rentButton).toHaveClass(/bg-brand-primary/);
-  });
-
-  test("grid/list/map view toggles are visible", async ({ page }) => {
-    await page.goto("/search");
-    await expect(page.getByRole("button", { name: "Grid view" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "List view" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Map view" })).toBeVisible();
-  });
-
-  test("filter sidebar has price range, property type, bedrooms inputs", async ({ page }) => {
-    await page.goto("/search");
+    const aside = page.getByTestId("refine-filters");
+    await expect(aside).toBeVisible();
+    // Location search input
+    await expect(page.getByPlaceholder(/Search area, city or street/i)).toBeVisible();
     // Price range inputs
-    await expect(page.getByPlaceholder("No min")).toBeVisible();
-    await expect(page.getByPlaceholder("No max")).toBeVisible();
-    // Property type checkboxes
-    await expect(page.getByText("Detached")).toBeVisible();
-    await expect(page.getByText("Semi-detached")).toBeVisible();
-    await expect(page.getByText("Flat")).toBeVisible();
-    // Bedrooms filter section
-    await expect(page.getByText("Bedrooms")).toBeVisible();
+    await expect(page.getByLabel("Minimum price")).toBeVisible();
+    await expect(page.getByLabel("Maximum price")).toBeVisible();
+    // Property type chips
+    await expect(aside.getByRole("button", { name: "Detached" })).toBeVisible();
+    await expect(aside.getByRole("button", { name: "Flat" })).toBeVisible();
+    // Min bedrooms select
+    await expect(page.getByLabel("Min Bedrooms")).toBeVisible();
+  });
+
+  test("selecting a property type chip toggles its pressed state", async ({
+    page,
+  }) => {
+    await page.goto("/search");
+    const detached = page
+      .getByTestId("refine-filters")
+      .getByRole("button", { name: "Detached" });
+    await detached.click();
+    await expect(detached).toHaveAttribute("aria-pressed", "true");
   });
 
   test("sort dropdown works", async ({ page }) => {
     await page.goto("/search");
-    const sortSelect = page.locator("select").first();
+    const sortSelect = page.getByLabel("Sort results");
     await expect(sortSelect).toBeVisible();
-    // Verify options are present
-    await expect(sortSelect.locator("option", { hasText: "Most Recent" })).toBeAttached();
-    await expect(sortSelect.locator("option", { hasText: /Price Low/i })).toBeAttached();
-    await expect(sortSelect.locator("option", { hasText: /Price High/i })).toBeAttached();
-    await expect(sortSelect.locator("option", { hasText: "Most Popular" })).toBeAttached();
-    // Select a different sort option
+    await expect(
+      sortSelect.locator("option", { hasText: "Newest" }),
+    ).toBeAttached();
+    await expect(
+      sortSelect.locator("option", { hasText: /Price: low/i }),
+    ).toBeAttached();
     await sortSelect.selectOption("price_asc");
     await expect(sortSelect).toHaveValue("price_asc");
   });
 
-  test("zero results empty state shows when filters are restrictive", async ({ page }) => {
+  test("Search button commits filters to the URL", async ({ page }) => {
     await page.goto("/search");
-    // Click "Auctions" pill — no mock properties have listing_type "auction"
-    await page.getByRole("button", { name: "Auctions" }).click();
-    await expect(page.getByText("No properties match your filters")).toBeVisible();
-    await expect(page.getByText("Try widening your search area")).toBeVisible();
+    await page.getByPlaceholder(/Search area, city or street/i).fill("Oxford");
+    await page.getByRole("button", { name: /^Search$/ }).click();
+    await expect(page).toHaveURL(/q=Oxford/);
   });
 });

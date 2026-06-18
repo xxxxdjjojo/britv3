@@ -70,42 +70,47 @@ type PropertyCardProps = Readonly<{
 }>;
 
 export function PropertyCard({ listing, priority }: PropertyCardProps) {
-  const href = listing.slug ? `/properties/${listing.slug}` : "#";
+  // Render a non-link wrapper when there is no slug — never a dead "#" href.
+  const href = listing.slug ? `/properties/${listing.slug}` : null;
+
+  const thumbnail = (
+    <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+      {listing.thumbnail_url ? (
+        <Image
+          src={listing.thumbnail_url}
+          alt={listing.title || "Property image"}
+          fill
+          priority={priority}
+          className="object-cover transition-transform group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
+      ) : (
+        <div className="flex h-full items-center justify-center text-muted-foreground">
+          <EyeIcon className="size-8" />
+        </div>
+      )}
+
+      {/* Listing type badge */}
+      <Badge variant="default" className="absolute left-2 top-2">
+        {listing.listing_type === "rent" ? "To Rent" : "For Sale"}
+      </Badge>
+
+      {/* Save button */}
+      <div className="absolute right-2 top-2" onClick={(e) => e.preventDefault()}>
+        <SaveButton listingId={listing.listing_id} size="sm" />
+      </div>
+    </div>
+  );
 
   return (
     <Card className="group overflow-hidden transition-shadow hover:shadow-lg">
-      <Link href={href} className="block">
-        {/* Thumbnail */}
-        <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-          {listing.thumbnail_url ? (
-            <Image
-              src={listing.thumbnail_url}
-              alt={listing.title || "Property image"}
-              fill
-              priority={priority}
-              className="object-cover transition-transform group-hover:scale-105"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              <EyeIcon className="size-8" />
-            </div>
-          )}
-
-          {/* Listing type badge */}
-          <Badge
-            variant="default"
-            className="absolute left-2 top-2"
-          >
-            {listing.listing_type === "rent" ? "To Rent" : "For Sale"}
-          </Badge>
-
-          {/* Save button */}
-          <div className="absolute right-2 top-2" onClick={(e) => e.preventDefault()}>
-            <SaveButton listingId={listing.listing_id} size="sm" />
-          </div>
-        </div>
-      </Link>
+      {href ? (
+        <Link href={href} className="block">
+          {thumbnail}
+        </Link>
+      ) : (
+        <div className="block">{thumbnail}</div>
+      )}
 
       <CardContent className="flex flex-col gap-1.5 pt-3">
         {/* Price */}
