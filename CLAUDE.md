@@ -109,6 +109,15 @@ pnpm test:e2e              # E2E tests (Playwright)
 - Stripe provisioning: `scripts/stripe-setup/create-pricing-v2.ts` (idempotent) + `verify-pricing-v2.ts`.
 - See `docs/architecture/ADR-007-pricing-v2-pivot.md`, `docs/pricing-v2/README.md`, `docs/api/billing-v2.md`.
 
+**Property-detail Local Area data layers (added 2026-06):**
+The property page's "Local area" section (`src/components/properties/detail/LocalAreaSection.tsx`, rendered from `app/(main)/properties/[slug]/page.tsx`) composes independent, source-attributed data layers. Each layer self-gates: its widget renders only when real data exists, so the section degrades gracefully. Two layers call live APIs at render (Redis-cached); three are DB-backed (read from tables populated by ingest scripts).
+- **Schools + Crime** — live APIs: GIAS/Ofsted (`src/services/properties/ofsted-service.ts`) and data.police.uk (`crime-service.ts`). OGL v3.0.
+- **Transport** — `transport_stops` (PostGIS, stations only: rail/tube/tram/ferry) + `get_nearby_transport_stops` RPC; `transport-service.ts` → `TransportWidget`. Ingest: `scripts/ingest-naptan.mjs` (NaPTAN, OGL).
+- **Broadband** — `broadband_coverage` keyed by postcode (availability % per tier); `broadband-service.ts` → `BroadbandWidget`. Ingest: `scripts/ingest-ofcom-broadband.mjs` (Ofcom Connected Nations, OGL).
+- **Flood risk** — live WMS GetFeatureInfo on EA NaFRA2 `rofrs_4band`; `flood-service.ts` → `FloodRiskWidget` (bands Very Low/Low/Medium/High). OGL.
+- **Mobility (walk/transit/bike)** — `mobility_scores` keyed by `property_id`, precomputed (Overpass is unreliable live); scoring in `src/lib/properties/mobility-scoring.ts`, served via `mobility-service.ts` → `MobilityScoresWidget`. Ingest: `scripts/ingest-mobility-scores.ts` (OSM/Overpass ODbL + transport_stops). Independent estimate, not Walk Score®.
+- All three DB tables are public-read RLS; ingest scripts connect via `SUPABASE_DB_URL` and verify TLS against the pinned `scripts/certs/supabase-prod-ca-2021.crt`. The mobility backfill runs daily via `.github/workflows/mobility-backfill.yml` (idempotent; needs the `SUPABASE_DB_URL` Actions secret).
+
 ## Coding Conventions
 
 ### TypeScript
@@ -187,6 +196,7 @@ Planning docs in `.planning/`:
 
 - Supabase PostgreSQL with 266 tables across 7 domains (Users, Properties, Marketplace, Transactions, Communication, Analytics, Admin)
 - Migrations in `supabase/migrations/`
+- Local-area reference tables (public-read RLS, populated by ingest scripts): `transport_stops` (PostGIS), `broadband_coverage` (by postcode), `mobility_scores` (by property). See the Local Area data layers note above.
 - RLS policies on every table
 - pgvector extension for AI embeddings
 
