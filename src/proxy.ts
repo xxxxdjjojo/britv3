@@ -61,6 +61,10 @@ function setSecurityHeaders(response: NextResponse, nonce: string): void {
   response.headers.set("x-nonce", nonce);
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set(
+    "Strict-Transport-Security",
+    "max-age=31536000; includeSubDomains; preload",
+  );
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set(
     "Permissions-Policy",
@@ -108,7 +112,7 @@ function redirectWithHeaders(
   return response;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const nonce = generateNonce();
   const correlationId = getCorrelationId(request.headers);
   const requestHeaders = new Headers(request.headers);

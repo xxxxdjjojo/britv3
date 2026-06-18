@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import {
   getOffers,
   submitOffer,
   isServiceError,
 } from "@/services/offers/offers-service";
+
+const offerSchema = z.object({
+  listingId: z.string().uuid(),
+  amountGBP: z.number().int().positive().max(50_000_000),
+  agentId: z.string().uuid(),
+  aipDocumentId: z.string().uuid().optional(),
+});
 import {
   recordIntroduction,
   recordIntroductionEvent,
@@ -54,25 +62,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    const { listingId, amountGBP, agentId, aipDocumentId } = body as {
-      listingId?: unknown;
-      amountGBP?: unknown;
-      agentId?: unknown;
-      aipDocumentId?: unknown;
-    };
-
-    if (!listingId || typeof listingId !== "string") {
-      return NextResponse.json({ error: "listingId is required" }, { status: 400 });
-    }
-    if (amountGBP === undefined || typeof amountGBP !== "number" || amountGBP <= 0) {
+    const parsed = offerSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "amountGBP must be a positive number" },
+        { error: "Invalid request body", details: parsed.error.flatten() },
         { status: 400 },
       );
     }
-    if (!agentId || typeof agentId !== "string") {
-      return NextResponse.json({ error: "agentId is required" }, { status: 400 });
-    }
+    const { listingId, amountGBP, agentId, aipDocumentId } = parsed.data;
 
     // Require AIP document for offers above £250,000
     const AIP_THRESHOLD_GBP = 250000;
@@ -89,7 +86,7 @@ export async function POST(request: NextRequest) {
       listingId,
       amountGBP,
       agentId,
-      typeof aipDocumentId === "string" ? aipDocumentId : undefined,
+      aipDocumentId,
     );
 
     if (isServiceError(result)) {

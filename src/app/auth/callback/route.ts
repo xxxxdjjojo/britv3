@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendWelcome } from "@/services/email/email-service";
+import { resolveSafeNext } from "@/lib/auth/safe-redirect";
 import type { UserRole } from "@/types/auth";
 
 // Professional roles that can be set via the OAuth intent cookie
@@ -15,8 +16,7 @@ const VALID_PROFESSIONAL_ROLES: Record<string, UserRole> = {
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
-  const rawNext = searchParams.get("next");
-  const next = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
+  const next = resolveSafeNext(searchParams.get("next"));
 
   if (!code) {
     return NextResponse.redirect(`${origin}/login?error=auth_callback_error`);

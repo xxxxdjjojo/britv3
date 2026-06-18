@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -53,15 +53,40 @@ type MortgageCalculatorProps = Readonly<{
 export function MortgageCalculator({ initialPrice }: MortgageCalculatorProps = {}) {
   const { saveParams, hasParams } = useMortgageParams();
 
-  const [propertyPrice, setPropertyPrice] = useState(() => initialPrice ?? getUrlParam("price", 300000));
-  const [deposit, setDeposit] = useState(() => getUrlParam("deposit", 30000));
-  const [interestRate, setInterestRate] = useState(() => getUrlParam("rate", 4.5));
-  const [termYears, setTermYears] = useState(() => getUrlParam("term", 25));
-  const [interestOnly, setInterestOnly] = useState(() => getUrlBool("io", false));
+  // Initialise from SSR-safe values only — reading window.location in these
+  // initialisers made the first client render diverge from the server HTML
+  // whenever the URL carried params, firing a hydration mismatch (BRIT-S016).
+  // URL params are applied after mount in the hydration effect below.
+  const [propertyPrice, setPropertyPrice] = useState(initialPrice ?? 300000);
+  const [deposit, setDeposit] = useState(30000);
+  const [interestRate, setInterestRate] = useState(4.5);
+  const [termYears, setTermYears] = useState(25);
+  const [interestOnly, setInterestOnly] = useState(false);
+
+  // True once the post-mount URL hydration has run; gates the URL-sync effect
+  // so it doesn't clear the query string with default values on first commit.
+  const hasHydratedRef = useRef(false);
+
+  // Hydrate state from the URL after mount. Runs once; deliberately not in the
+  // initialisers so SSR markup and the first client render are identical.
+  useEffect(() => {
+    if (initialPrice == null) setPropertyPrice(getUrlParam("price", 300000));
+    setDeposit(getUrlParam("deposit", 30000));
+    setInterestRate(getUrlParam("rate", 4.5));
+    setTermYears(getUrlParam("term", 25));
+    setInterestOnly(getUrlBool("io", false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only URL hydration
+  }, []);
 
   // Sync state to URL (disabled when embedded with initialPrice to avoid overwriting page URL)
   useEffect(() => {
     if (initialPrice != null) return;
+    if (!hasHydratedRef.current) {
+      // Skip the first run: state still holds defaults, writing now would wipe
+      // the very params the hydration effect is about to read.
+      hasHydratedRef.current = true;
+      return;
+    }
     const params = new URLSearchParams();
     if (propertyPrice !== 300000) params.set("price", String(propertyPrice));
     if (deposit !== 30000) params.set("deposit", String(deposit));

@@ -72,12 +72,14 @@ export async function POST(
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  // Verify the slot belongs to this property (prevents IDOR)
+  // Verify the slot belongs to this property (prevents IDOR).
+  // viewing_slots keys the property via `listing_id` (a listing IS the property here);
+  // there is no `property_id` column on this table.
   const { data: slotRow, error: slotLookupError } = await supabase
     .from("viewing_slots")
-    .select("id, property_id, status")
+    .select("id, listing_id, status")
     .eq("id", slotId)
-    .eq("property_id", propertyId)
+    .eq("listing_id", propertyId)
     .single();
 
   if (slotLookupError || !slotRow) {

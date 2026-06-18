@@ -23,13 +23,16 @@ export async function GET(
 
   const supabase = await createClient();
 
+  // viewing_slots columns are start_time/end_time/listing_id (see
+  // 20260313100000_v3_1_buyer_dashboard_foundation.sql). Alias back to the
+  // starts_at/ends_at shape the BookViewingModal consumer expects.
   const { data, error } = await supabase
     .from("viewing_slots")
-    .select("id, starts_at, ends_at")
-    .eq("property_id", propertyId)
+    .select("id, starts_at:start_time, ends_at:end_time")
+    .eq("listing_id", propertyId)
     .eq("status", "available")
-    .gte("starts_at", new Date().toISOString())
-    .order("starts_at", { ascending: true });
+    .gte("start_time", new Date().toISOString())
+    .order("start_time", { ascending: true });
 
   if (error) {
     console.error("[viewing-slots] DB error:", error.message);

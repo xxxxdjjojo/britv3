@@ -7,6 +7,8 @@ import { jwtHookMonitor } from "@/inngest/functions/jwt-hook-monitor";
 import { chainRiskMonitor } from "@/inngest/functions/chain-risk-monitor";
 import { quoteAcceptedToBooking } from "@/inngest/functions/quote-accepted-to-booking";
 import { gdprUserPurge } from "@/inngest/functions/gdpr-user-purge";
+import { pushDispatch } from "@/inngest/functions/push-dispatch";
+import { activityLogPartitions } from "@/inngest/functions/activity-log-partitions";
 import { truedeedNotifyIntroduction } from "@/inngest/functions/truedeed-notify-introduction";
 import { truedeedHashAnchor } from "@/inngest/functions/truedeed-hash-anchor";
 import { truedeedExpireIntroductions } from "@/inngest/functions/truedeed-expire-introductions";
@@ -46,6 +48,8 @@ export const { GET, POST, PUT } = serve({
     chainRiskMonitor,
     quoteAcceptedToBooking,
     gdprUserPurge,
+    pushDispatch,
+    activityLogPartitions,
     truedeedNotifyIntroduction,
     truedeedHashAnchor,
     truedeedExpireIntroductions,
