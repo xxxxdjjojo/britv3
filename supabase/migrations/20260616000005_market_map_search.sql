@@ -91,10 +91,9 @@ begin
     where pg.postcode_normalised = v_normalised
     limit 1;
 
-    -- If postcode not found, fall through to name-search.
-    if not found then
-      goto name_search;
-    end if;
+    -- If the postcode was found, return its containing areas and finish.
+    -- Otherwise fall through to the name search below.
+    if found then
 
     -- Return postcode_district row
     if v_district is not null then
@@ -173,6 +172,7 @@ begin
     end if;
 
     return;  -- done with postcode branch
+    end if;
   end if;
 
   -- -------------------------------------------------------------------------
@@ -180,8 +180,6 @@ begin
   --   Prefer: exact match, then prefix match, then substring match.
   --   Level priority: local_authority, msoa, postcode_district, others.
   -- -------------------------------------------------------------------------
-  <<name_search>>
-
   return query
     select
       b.area_id::text as id,
