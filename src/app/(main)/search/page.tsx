@@ -17,7 +17,7 @@ import { useState, useCallback, useEffect, useRef, useMemo, Suspense } from "rea
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Map as MapIcon, Maximize2, Mail } from "lucide-react";
+import { Map as MapIcon, Maximize2, Minimize2, List, Mail } from "lucide-react";
 import { EmptyState } from "@/components/search/EmptyState";
 import MapPropertyCard from "@/components/search/MapPropertyCard";
 import MapProviderPin from "@/components/search/MapProviderPin";
@@ -114,16 +114,30 @@ function SearchPageInner() {
   const [mapProviders, setMapProviders] = useState<MapProvider[]>([]);
 
   const fetchSeq = useRef(0);
+  const providerSeq = useRef(0);
+  const providerAbort = useRef<AbortController | null>(null);
 
   // Fetch listings whenever the committed (URL) state changes.
   useEffect(() => {
     const seq = ++fetchSeq.current;
     setIsLoading(true);
-    searchProperties(toSearchFilters(committedState)).then((result) => {
-      if (seq !== fetchSeq.current) return; // stale response guard
-      setProperties(result.data);
-      setIsLoading(false);
-    });
+    searchProperties(toSearchFilters(committedState))
+      .then((result) => {
+        if (seq !== fetchSeq.current) return; // stale response guard
+        setProperties(result.data);
+        setIsLoading(false);
+        // A new result set invalidates any prior marker/card selection.
+        setSelectedId(null);
+        setSelectedProperty(null);
+        setSelectedProvider(null);
+      })
+      .catch(() => {
+        // The action catches its own errors and returns {data,error}, but guard
+        // against an unexpected throw so the spinner never hangs forever.
+        if (seq !== fetchSeq.current) return;
+        setProperties([]);
+        setIsLoading(false);
+      });
   }, [committedState]);
 
   // Commit the draft to the URL (the effect above then re-fetches).
@@ -164,18 +178,28 @@ function SearchPageInner() {
   );
 
   const handleBoundsChange = useCallback((bounds: MapBounds) => {
+    // Panning fires moveend rapidly; cancel the prior request and drop stale
+    // responses so a slow earlier fetch can't overwrite newer providers.
+    const seq = ++providerSeq.current;
+    providerAbort.current?.abort();
+    const ctrl = new AbortController();
+    providerAbort.current = ctrl;
     const params = new URLSearchParams({
       sw_lat: String(bounds.sw.lat),
       sw_lng: String(bounds.sw.lng),
       ne_lat: String(bounds.ne.lat),
       ne_lng: String(bounds.ne.lng),
     });
-    fetch(`/api/providers/nearby?${params}`)
+    fetch(`/api/providers/nearby?${params}`, { signal: ctrl.signal })
       .then((res) => res.json())
       .then((data: { providers: MapProvider[] }) => {
-        setMapProviders(data.providers ?? []);
+        if (seq === providerSeq.current) setMapProviders(data.providers ?? []);
       })
-      .catch(() => setMapProviders([]));
+      .catch((err) => {
+        if (err?.name !== "AbortError" && seq === providerSeq.current) {
+          setMapProviders([]);
+        }
+      });
   }, []);
 
   const handlePropertyClick = useCallback((property: MapProperty) => {
@@ -197,18 +221,24 @@ function SearchPageInner() {
   const areaLabel = committedState.q || "your area";
   const showEmpty = !isLoading && resultCount === 0;
 
-  // Build a ?view=map href that preserves the current filters.
-  const mapViewHref = useMemo(() => {
-    const qs = serializeSearchState({ ...committedState, view: "map" });
-    return `/search?${qs}`;
-  }, [committedState]);
+  // The map view is a real state: when active the map expands to a tall pane.
+  // The Expand / Full Map View controls toggle between list and map, preserving
+  // all current filters — so they perform a visible action, not just a URL write.
+  const isMapView = committedState.view === "map";
+  const toggleViewHref = useMemo(() => {
+    const qs = serializeSearchState({
+      ...committedState,
+      view: isMapView ? "list" : "map",
+    });
+    return qs ? `/search?${qs}` : "/search";
+  }, [committedState, isMapView]);
 
   // -----------------------------------------------------------------------
   // Map block (reused at the top of the left column)
   // -----------------------------------------------------------------------
   const mapBlock = (
     <div className="relative overflow-hidden rounded-xl border border-neutral-200">
-      <div className="aspect-[21/9] w-full">
+      <div className={isMapView ? "h-[72vh] w-full" : "aspect-[21/9] w-full"}>
         <SearchMap
           properties={mapProperties}
           providers={mapProviders}
@@ -229,14 +259,19 @@ function SearchPageInner() {
         </div>
       </div>
 
-      {/* Expand Map Area — links to the real ?view=map state */}
+      {/* Expand / collapse the map — a real layout change, filters preserved */}
       <div className="absolute inset-x-4 bottom-4 z-10 flex justify-center">
         <Link
-          href={mapViewHref}
+          href={toggleViewHref}
+          scroll={false}
           className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-6 py-2.5 text-sm font-bold text-neutral-800 shadow-xl transition-colors hover:bg-muted"
         >
-          <Maximize2 className="size-4" aria-hidden="true" />
-          Expand Map Area
+          {isMapView ? (
+            <Minimize2 className="size-4" aria-hidden="true" />
+          ) : (
+            <Maximize2 className="size-4" aria-hidden="true" />
+          )}
+          {isMapView ? "Collapse Map" : "Expand Map Area"}
         </Link>
       </div>
     </div>
@@ -314,7 +349,11 @@ function SearchPageInner() {
               <h1 className="font-heading text-2xl font-extrabold tracking-tight text-neutral-900">
                 Properties in {areaLabel}
               </h1>
-              <p className="mt-1 text-sm text-neutral-500">
+              <p
+                className="mt-1 text-sm text-neutral-500"
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 {isLoading
                   ? "Searching…"
                   : `Found ${resultCount} matching ${resultCount === 1 ? "result" : "results"}`}
@@ -367,13 +406,18 @@ function SearchPageInner() {
         </aside>
       </div>
 
-      {/* Floating Full Map View — links to a real ?view=map state */}
+      {/* Floating toggle — expands the map to a full pane, or back to the list */}
       <Link
-        href={mapViewHref}
+        href={toggleViewHref}
+        scroll={false}
         className="fixed bottom-8 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-full bg-brand-primary px-8 py-3.5 font-bold text-white shadow-2xl transition-transform hover:scale-105 active:scale-95"
       >
-        <MapIcon className="size-5" aria-hidden="true" />
-        Full Map View
+        {isMapView ? (
+          <List className="size-5" aria-hidden="true" />
+        ) : (
+          <MapIcon className="size-5" aria-hidden="true" />
+        )}
+        {isMapView ? "Show List" : "Full Map View"}
       </Link>
     </div>
   );

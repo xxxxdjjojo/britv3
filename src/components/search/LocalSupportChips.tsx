@@ -60,6 +60,7 @@ export function LocalSupportChips({
       <div className="flex flex-wrap gap-3">
         {categories.map((category) => {
           const meta = CATEGORY_META[category];
+          if (!meta) return null; // ignore any unknown category instead of crashing
           const Icon = meta.Icon;
           return (
             <Link

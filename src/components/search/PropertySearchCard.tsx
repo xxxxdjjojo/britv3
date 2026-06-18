@@ -62,6 +62,7 @@ export function PropertySearchCard({
       data-testid="property-search-card"
       data-selected={isSelected ? "true" : undefined}
       onMouseEnter={onSelect ? () => onSelect(property.id) : undefined}
+      onFocus={onSelect ? () => onSelect(property.id) : undefined}
       className={cn(
         "group flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition-shadow hover:shadow-md md:flex-row",
         isSelected ? "border-brand-primary ring-1 ring-brand-primary" : "border-neutral-200",

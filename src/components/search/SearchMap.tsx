@@ -132,12 +132,16 @@ function SearchMap({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
   const isSatelliteRef = useRef(false);
-  const styleBtnRef = useRef<HTMLButtonElement | null>(null);
   // Guard so we only fall back to the keyless base map once (tile errors fire
   // repeatedly otherwise).
   const usedFallbackRef = useRef(false);
 
   const [status, setStatus] = useState<MapStatus>("loading");
+  const [styleLabel, setStyleLabel] = useState<"Satellite" | "Standard">("Satellite");
+  // True once we're on the keyless OSM base (no MapTiler key, or it was
+  // rejected). The MapTiler-only Satellite style would just 403 again and blank
+  // a working fallback map, so we hide that toggle while on OSM.
+  const [onFallback, setOnFallback] = useState(!MAPTILER_KEY);
 
   // Stable callback refs to avoid stale closures in event listeners.
   // Kept in sync inside an effect (not during render) to satisfy react-hooks/refs.
@@ -195,6 +199,9 @@ function SearchMap({
         usedFallbackRef.current = true;
         try {
           map.setStyle(OSM_FALLBACK_STYLE);
+          setOnFallback(true);
+          isSatelliteRef.current = false;
+          setStyleLabel("Satellite");
           setStatus("loaded");
         } catch {
           setStatus("error");
@@ -285,10 +292,7 @@ function SearchMap({
     const next = !isSatelliteRef.current;
     isSatelliteRef.current = next;
     map.setStyle(next ? SATELLITE_STYLE : STREETS_STYLE);
-
-    if (styleBtnRef.current) {
-      styleBtnRef.current.textContent = next ? "Standard" : "Satellite";
-    }
+    setStyleLabel(next ? "Standard" : "Satellite");
   }, []);
 
   // -----------------------------------------------------------------------
@@ -329,8 +333,14 @@ function SearchMap({
     >
       {statusProbes}
 
-      {/* Map container */}
-      <div ref={containerRef} className="w-full h-full" />
+      {/* Map container — focusable so MapLibre's keyboard pan/zoom is reachable */}
+      <div
+        ref={containerRef}
+        tabIndex={0}
+        role="application"
+        aria-label="Interactive map of property locations"
+        className="w-full h-full"
+      />
 
       {/* Recoverable error overlay */}
       {reportedStatus === "error" && (
@@ -347,6 +357,7 @@ function SearchMap({
                 usedFallbackRef.current = true;
                 try {
                   map.setStyle(OSM_FALLBACK_STYLE);
+                  setOnFallback(true);
                   setStatus("loaded");
                 } catch {
                   setStatus("error");
@@ -360,19 +371,23 @@ function SearchMap({
         </div>
       )}
 
-      {/* Control buttons — top-right */}
+      {/* Control buttons — top-right. The base-style toggle is hidden on the
+          keyless OSM fallback (a MapTiler satellite swap would just 403). */}
       <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
-        <button
-          ref={styleBtnRef}
-          type="button"
-          onClick={handleStyleToggle}
-          className="bg-white text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg shadow-md hover:bg-gray-50 transition-colors border border-gray-200"
-        >
-          Satellite
-        </button>
+        {!onFallback && (
+          <button
+            type="button"
+            onClick={handleStyleToggle}
+            aria-label={`Switch to ${styleLabel === "Satellite" ? "satellite" : "standard"} map`}
+            className="bg-white text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg shadow-md hover:bg-gray-50 transition-colors border border-gray-200"
+          >
+            {styleLabel}
+          </button>
+        )}
         <button
           type="button"
           onClick={handleFullscreenToggle}
+          aria-label="Toggle fullscreen map"
           className="bg-white text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg shadow-md hover:bg-gray-50 transition-colors border border-gray-200"
         >
           Fullscreen

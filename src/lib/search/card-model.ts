@@ -32,18 +32,25 @@ export function toCardModel(property: SearchProperty): PropertyCardModel {
   const sqft = property.sqft;
   const hasSqft = typeof sqft === "number" && sqft > 0;
 
+  // DB columns can be null even though the type says string — never render the
+  // literal "null"/"undefined".
+  const city = property.city ?? "";
+  const postcode = property.postcode ?? "";
+  const address = property.address ?? "";
+
   return {
     id: property.id,
     href: property.slug ? `/properties/${property.slug}` : null,
-    title: property.address,
+    title: address || "Property",
     priceLabel: formatPrice(property.price, property.listing_type),
-    locationLabel: `${property.city}, ${property.postcode}`,
+    locationLabel:
+      [city, postcode].filter(Boolean).join(", ") || "Location unavailable",
     beds: property.beds,
     baths: property.baths,
     sqftLabel: hasSqft ? `${sqft.toLocaleString("en-GB")} sqft` : null,
     image: property.image,
     hasImage: Boolean(property.image),
     isVerified: property.verified === true,
-    postcode: property.postcode,
+    postcode,
   };
 }

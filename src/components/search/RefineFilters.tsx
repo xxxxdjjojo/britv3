@@ -18,8 +18,6 @@ export const PROPERTY_TYPE_OPTIONS = [
   "Bungalow",
 ] as const;
 
-export const MUST_HAVE_OPTIONS = ["Garden", "Parking", "Garage", "Chain Free"] as const;
-
 const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"] as const;
 
 type RefineFiltersProps = Readonly<{
@@ -184,35 +182,10 @@ export function RefineFilters({
         </select>
       </div>
 
-      {/* Amenities / must-haves */}
-      <fieldset className="space-y-3">
-        <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
-          Must-haves
-        </legend>
-        <div className="flex flex-wrap gap-2">
-          {MUST_HAVE_OPTIONS.map((amenity) => {
-            const active = state.mustHaves.includes(amenity);
-            return (
-              <button
-                key={amenity}
-                type="button"
-                aria-pressed={active}
-                onClick={() =>
-                  onChange({ mustHaves: toggle(state.mustHaves, amenity) })
-                }
-                className={cn(
-                  "rounded-full border px-4 py-2 text-xs font-bold transition-all",
-                  active
-                    ? "border-brand-primary bg-brand-primary text-white"
-                    : "border-neutral-200 bg-white text-neutral-600 hover:border-brand-primary hover:text-brand-primary",
-                )}
-              >
-                {amenity}
-              </button>
-            );
-          })}
-        </div>
-      </fieldset>
+      {/* NOTE: a "Must-haves" (Garden/Parking/…) control intentionally omitted —
+          there is no end-to-end predicate for it yet (no query/mock filter), and
+          we do not ship a filter that silently does nothing. Re-add it together
+          with its query predicate + test. */}
 
       {/* Actions */}
       <div className="space-y-4 pt-2">

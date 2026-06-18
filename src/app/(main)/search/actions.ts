@@ -128,11 +128,16 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
     if (!isNaN(max)) results = results.filter((p) => p.sqft <= max);
   }
 
-  // Sort
+  // Sort — every option deterministically reorders mock results (ids are
+  // numeric, standing in for the recency/popularity the mock set lacks).
   if (filters.sort === "price_asc") {
     results.sort((a, b) => a.price - b.price);
   } else if (filters.sort === "price_desc") {
     results.sort((a, b) => b.price - a.price);
+  } else if (filters.sort === "most_recent") {
+    results.sort((a, b) => Number(b.id) - Number(a.id));
+  } else if (filters.sort === "most_popular") {
+    results.sort((a, b) => Number(a.id) - Number(b.id));
   }
 
   return results;
