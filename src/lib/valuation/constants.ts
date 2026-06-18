@@ -52,6 +52,12 @@ export const MAX_VALID_PRICE = 100_000_000;
 /** Round the headline estimate to the nearest £5,000 to avoid false precision. */
 export const ESTIMATE_ROUNDING = 5_000;
 
+// --- Proximity proxy (until an address gazetteer provides true distances) ----
+/** Proxy distance when a comparable shares the subject's full postcode. */
+export const PROXIMITY_SAME_POSTCODE_M = 50;
+/** Proxy distance when a comparable shares the subject's street (same outward). */
+export const PROXIMITY_SAME_STREET_M = 300;
+
 // --- Comparable search windows ----------------------------------------------
 /** Preferred recency window (months) before widening. */
 export const PREFERRED_WINDOW_MONTHS = 24;
