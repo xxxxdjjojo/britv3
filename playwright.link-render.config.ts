@@ -9,6 +9,7 @@ export default defineConfig({
     /checklist-link-render\.spec\.ts/,
     /configured-navigation-render\.spec\.ts/,
     /homepage-link-audit\.spec\.ts/,
+    /property-valuation-flow\.spec\.ts/,
     /public-page-screenshots\.spec\.ts/,
   ],
   fullyParallel: false,
