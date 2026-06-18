@@ -137,9 +137,16 @@ export function MarketMapExplorer({
   const [allFeatures, setAllFeatures] = useState<MarketMapFeatureProperties[]>([]);
 
   // Flat/house breakdown for the selected area (lazy-loaded on selection).
+  // The street layer uses H3 micro-area cells whose ids are not aggregatable by
+  // property type (market_map_area_detail groups streets by street_key, not H3),
+  // so the breakdown is only fetched for the polygon levels.
+  const detailLevel =
+    selectedArea && selectedArea.geography_level !== "street"
+      ? selectedArea.geography_level
+      : null;
   const { detail: areaDetail } = useMarketAreaDetail(
-    selectedArea?.geography_level ?? null,
-    selectedArea?.area_id ?? null,
+    detailLevel,
+    detailLevel ? selectedArea?.area_id ?? null : null,
     months,
   );
 
