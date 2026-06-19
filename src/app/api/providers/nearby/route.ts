@@ -22,18 +22,15 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient();
 
-    // Try to query providers whose lat/lng fall within the bounding box.
-    // If latitude/longitude columns don't exist on the table, this will
-    // throw and we fall through to the catch returning an empty array.
-    // TODO: Confirm column names once provider geolocation is added to the schema
-    const { data, error } = await supabase
-      .from("service_provider_details")
-      .select("id, slug, business_name, category, average_rating, latitude, longitude")
-      .gte("latitude", swLat)
-      .lte("latitude", neLat)
-      .gte("longitude", swLng)
-      .lte("longitude", neLng)
-      .limit(50);
+    // service_provider_details stores location as a PostGIS geography point
+    // (base_location), not flat lat/lng columns, so the bbox query must run in
+    // the database. providers_in_bounds returns the flat shape we render.
+    const { data, error } = await supabase.rpc("providers_in_bounds", {
+      sw_lat: swLat,
+      sw_lng: swLng,
+      ne_lat: neLat,
+      ne_lng: neLng,
+    });
 
     if (error) {
       // Non-critical — return empty rather than 500
@@ -41,14 +38,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ providers: [] });
     }
 
-    const providers = (data ?? []).map((row) => ({
-      id: row.id as string,
-      slug: (row.slug ?? row.id) as string,
-      name: (row.business_name ?? "Unknown") as string,
-      category: (row.category ?? "General") as string,
-      rating: row.average_rating as number | null,
-      lat: row.latitude as number,
-      lng: row.longitude as number,
+    const rows = (data ?? []) as Array<{
+      id: string;
+      slug: string | null;
+      business_name: string | null;
+      category: string | null;
+      average_rating: number | null;
+      lat: number;
+      lng: number;
+    }>;
+
+    const providers = rows.map((row) => ({
+      id: row.id,
+      slug: row.slug ?? row.id,
+      name: row.business_name ?? "Unknown",
+      category: row.category ?? "General",
+      rating: row.average_rating,
+      lat: row.lat,
+      lng: row.lng,
     }));
 
     return NextResponse.json({ providers });

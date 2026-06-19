@@ -25,12 +25,15 @@ export async function GET(request: Request) {
   const { ids } = parsed.data;
   const supabase = await createClient();
 
+  // service_provider_details is keyed by `user_id` (no `id` column). Alias it
+  // back to `id` so the response shape stays stable for the client. There is no
+  // `city` column on this table, so it is supplied as null in the mapping below.
   const { data, error } = await supabase
     .from("service_provider_details")
     .select(
-      "id, slug, business_name, services, city, service_postcodes, accreditations, response_time_hours, pricing, profiles(avatar_url, full_name:display_name, provider_verification_status), provider_rating_stats(average_rating, total_reviews)",
+      "id:user_id, slug, business_name, services, service_postcodes, accreditations, response_time_hours, pricing, profiles(avatar_url, full_name:display_name, provider_verification_status), provider_rating_stats(average_rating, total_reviews)",
     )
-    .in("id", ids);
+    .in("user_id", ids);
 
   if (error) {
     return NextResponse.json(
@@ -44,6 +47,8 @@ export async function GET(request: Request) {
     .filter((row) => row !== null)
     .map((row) => ({
       ...row,
+      // No `city` column on service_provider_details; the compare UI guards on it.
+      city: null,
       profiles: Array.isArray(row.profiles) ? row.profiles[0] : row.profiles,
       provider_rating_stats: Array.isArray(row.provider_rating_stats)
         ? row.provider_rating_stats[0] ?? null
