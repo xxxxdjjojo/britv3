@@ -48,3 +48,29 @@ describe("RefineFilters — bedrooms min/max", () => {
     expect(clampCall).toBeDefined();
   });
 });
+
+describe("RefineFilters — soldWithin", () => {
+  it("renders all four sold-within options with 'Show all' selected by default", () => {
+    render(<RefineFilters {...baseProps()} />);
+    expect(screen.getByLabelText("3 months")).toBeInTheDocument();
+    expect(screen.getByLabelText("6 months")).toBeInTheDocument();
+    expect(screen.getByLabelText("12 months")).toBeInTheDocument();
+    const showAll = screen.getByLabelText("Show all") as HTMLInputElement;
+    expect(showAll.checked).toBe(true);
+  });
+
+  it("emits soldWithin on selection", () => {
+    const props = baseProps();
+    render(<RefineFilters {...props} />);
+    fireEvent.click(screen.getByLabelText("6 months"));
+    expect(props.onChange).toHaveBeenCalledWith({ soldWithin: "6m" });
+  });
+
+  it("renders sold-within section before Price Range", () => {
+    render(<RefineFilters {...baseProps()} />);
+    const sold = screen.getByText(/sold within the last few/i);
+    const price = screen.getByText(/^Price Range/i);
+    const cmp = sold.compareDocumentPosition(price);
+    expect(cmp & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+});

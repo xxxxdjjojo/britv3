@@ -8,7 +8,7 @@
 
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { BedroomOption, SearchState } from "@/lib/search/url-state";
+import type { BedroomOption, SearchState, SoldWithin } from "@/lib/search/url-state";
 import { BEDROOM_OPTIONS } from "@/lib/search/url-state";
 
 export const PROPERTY_TYPE_OPTIONS = [
@@ -18,6 +18,13 @@ export const PROPERTY_TYPE_OPTIONS = [
   "Flat",
   "Bungalow",
 ] as const;
+
+const SOLD_WITHIN_OPTIONS: ReadonlyArray<{ value: SoldWithin; label: string }> = [
+  { value: "3m", label: "3 months" },
+  { value: "6m", label: "6 months" },
+  { value: "12m", label: "12 months" },
+  { value: "all", label: "Show all" },
+];
 
 type RefineFiltersProps = Readonly<{
   state: SearchState;
@@ -123,6 +130,39 @@ export function RefineFilters({
               >
                 {type}
               </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      {/* Sold within the last few — Land Registry */}
+      <fieldset className="space-y-3">
+        <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+          Sold within the last few
+        </legend>
+        <div className="grid grid-cols-2 gap-2">
+          {SOLD_WITHIN_OPTIONS.map(({ value, label }) => {
+            const active = state.soldWithin === value;
+            return (
+              <label
+                key={value}
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold transition-colors",
+                  active
+                    ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300",
+                )}
+              >
+                <input
+                  type="radio"
+                  name="refine-sold-within"
+                  value={value}
+                  checked={active}
+                  onChange={() => onChange({ soldWithin: value })}
+                  className="size-4 accent-brand-primary"
+                />
+                <span>{label}</span>
+              </label>
             );
           })}
         </div>
