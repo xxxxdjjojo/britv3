@@ -33,7 +33,7 @@ vi.stubGlobal("crypto", {
   randomUUID: vi.fn(() => "test-uuid-1234-5678-9012"),
 });
 
-import { middleware, config } from "@/middleware";
+import { proxy, config } from "@/proxy";
 
 function createRequest(path: string): NextRequest {
   return new NextRequest(new URL(`http://localhost:3000${path}`));
@@ -57,44 +57,44 @@ describe("Middleware - Unauthenticated users", () => {
   });
 
   it("redirects unauthenticated user from /dashboard to /login", async () => {
-    const response = await middleware(createRequest("/dashboard"));
+    const response = await proxy(createRequest("/dashboard"));
     expect(response.status).toBe(307);
     const location = response.headers.get("Location");
     expect(location).toContain("/login");
   });
 
   it("redirects unauthenticated user from /dashboard/homebuyer to /login", async () => {
-    const response = await middleware(createRequest("/dashboard/homebuyer"));
+    const response = await proxy(createRequest("/dashboard/homebuyer"));
     expect(response.status).toBe(307);
     const location = response.headers.get("Location");
     expect(location).toContain("/login");
   });
 
   it("redirects unauthenticated user from /settings to /login", async () => {
-    const response = await middleware(createRequest("/settings"));
+    const response = await proxy(createRequest("/settings"));
     expect(response.status).toBe(307);
     const location = response.headers.get("Location");
     expect(location).toContain("/login");
   });
 
   it("allows unauthenticated user to access / (public)", async () => {
-    const response = await middleware(createRequest("/"));
+    const response = await proxy(createRequest("/"));
     // Should NOT redirect
     expect(response.status).not.toBe(307);
   });
 
   it("allows unauthenticated user to access /about (public)", async () => {
-    const response = await middleware(createRequest("/about"));
+    const response = await proxy(createRequest("/about"));
     expect(response.status).not.toBe(307);
   });
 
   it("allows unauthenticated user to access /login (auth route)", async () => {
-    const response = await middleware(createRequest("/login"));
+    const response = await proxy(createRequest("/login"));
     expect(response.status).not.toBe(307);
   });
 
   it("allows unauthenticated user to access /register (auth route)", async () => {
-    const response = await middleware(createRequest("/register"));
+    const response = await proxy(createRequest("/register"));
     expect(response.status).not.toBe(307);
   });
 });
@@ -109,26 +109,26 @@ describe("Middleware - Authenticated users", () => {
   });
 
   it("redirects authenticated user from /login to /dashboard", async () => {
-    const response = await middleware(createRequest("/login"));
+    const response = await proxy(createRequest("/login"));
     expect(response.status).toBe(307);
     const location = response.headers.get("Location");
     expect(location).toContain("/dashboard");
   });
 
   it("redirects authenticated user from /register to /dashboard", async () => {
-    const response = await middleware(createRequest("/register"));
+    const response = await proxy(createRequest("/register"));
     expect(response.status).toBe(307);
     const location = response.headers.get("Location");
     expect(location).toContain("/dashboard");
   });
 
   it("allows authenticated user to access /dashboard", async () => {
-    const response = await middleware(createRequest("/dashboard"));
+    const response = await proxy(createRequest("/dashboard"));
     expect(response.status).not.toBe(307);
   });
 
   it("allows authenticated user to access / (public)", async () => {
-    const response = await middleware(createRequest("/"));
+    const response = await proxy(createRequest("/"));
     expect(response.status).not.toBe(307);
   });
 });

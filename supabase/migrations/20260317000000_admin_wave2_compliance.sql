@@ -23,7 +23,7 @@ CREATE POLICY "cms_articles_published_public" ON cms_articles
   FOR SELECT USING (status = 'published');
 CREATE POLICY "cms_articles_admin" ON cms_articles
   FOR ALL USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
 -- 2. Email campaigns
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS email_campaigns (
 ALTER TABLE email_campaigns ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "email_campaigns_admin" ON email_campaigns
   FOR ALL USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
 -- 3. Promo codes
@@ -63,5 +63,5 @@ CREATE TABLE IF NOT EXISTS promo_codes (
 ALTER TABLE promo_codes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "promo_codes_admin" ON promo_codes
   FOR ALL USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );

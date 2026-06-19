@@ -1,0 +1,14 @@
+-- Add 'mortgage_broker' to the user_role enum so the on-disk schema matches hosted.
+--
+-- The hosted project (ynkqzzpcbpphjczmrfva) already has this enum value (it was
+-- added out-of-band; no committed migration introduced it). The on-disk
+-- 001_foundation.sql enum has only the original 6 values, so a fresh
+-- `supabase db reset` produced a 6-value user_role enum. The all-roles E2E seed
+-- (supabase/seed/seed-test-users.ts) assigns a `mortgage_broker` test user via
+-- assign_role_atomic, which writes user_role-typed columns (user_roles.role,
+-- profiles.active_role) and therefore failed the enum cast on a local baseline,
+-- breaking the seed and the broker E2E routes.
+--
+-- IF NOT EXISTS makes this a no-op against hosted (value already present), so it
+-- is safe in both environments. See docs/DASHBOARD_HOSTED_RECONCILIATION.md (Part E).
+ALTER TYPE public.user_role ADD VALUE IF NOT EXISTS 'mortgage_broker';

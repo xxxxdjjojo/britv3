@@ -216,6 +216,8 @@ BEGIN
                           AND att.attnum = ANY(con.conkey)
     WHERE con.contype = 'f'
       AND con.confdeltype = 'c'   -- CASCADE
+      AND con.conislocal      -- skip partition-inherited copies; they cannot be
+                              -- dropped on the child, only on the parent (42P16)
       AND ns.nspname = 'public'
       AND (
         (refnsp.nspname = 'auth'   AND refrel.relname = 'users')

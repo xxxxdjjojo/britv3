@@ -30,7 +30,7 @@ ALTER TABLE admin_audit_log ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "admin_audit_log_select" ON admin_audit_log
   FOR SELECT USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
 CREATE POLICY "admin_audit_log_insert" ON admin_audit_log
@@ -62,10 +62,10 @@ CREATE POLICY "feature_flags_select" ON feature_flags
 CREATE POLICY "feature_flags_write" ON feature_flags
   FOR ALL
   USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   )
   WITH CHECK (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
 -- 4. GDPR requests
@@ -98,10 +98,10 @@ CREATE POLICY "gdpr_requests_own" ON gdpr_requests
 CREATE POLICY "gdpr_requests_admin" ON gdpr_requests
   FOR ALL
   USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   )
   WITH CHECK (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
 -- 5. GIN index for user search performance
@@ -109,6 +109,6 @@ CREATE INDEX IF NOT EXISTS profiles_search_idx
   ON profiles
   USING gin(
     to_tsvector('english',
-      coalesce(full_name, '') || ' ' || coalesce(email, '')
+      coalesce(display_name, '')
     )
   );

@@ -7,6 +7,8 @@ import { jwtHookMonitor } from "@/inngest/functions/jwt-hook-monitor";
 import { chainRiskMonitor } from "@/inngest/functions/chain-risk-monitor";
 import { quoteAcceptedToBooking } from "@/inngest/functions/quote-accepted-to-booking";
 import { gdprUserPurge } from "@/inngest/functions/gdpr-user-purge";
+import { pushDispatch } from "@/inngest/functions/push-dispatch";
+import { activityLogPartitions } from "@/inngest/functions/activity-log-partitions";
 import { truedeedNotifyIntroduction } from "@/inngest/functions/truedeed-notify-introduction";
 import { truedeedHashAnchor } from "@/inngest/functions/truedeed-hash-anchor";
 import { truedeedExpireIntroductions } from "@/inngest/functions/truedeed-expire-introductions";
@@ -30,6 +32,11 @@ import {
   truedeedDunningTick,
   truedeedInvoiceCandidateApproved,
 } from "@/inngest/functions/truedeed-dunning-tick";
+import {
+  truedeedDisputeRaised,
+  truedeedDisputeResolved,
+  truedeedInvoiceChargedBack,
+} from "@/inngest/functions/truedeed-dispute-emails";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -41,6 +48,8 @@ export const { GET, POST, PUT } = serve({
     chainRiskMonitor,
     quoteAcceptedToBooking,
     gdprUserPurge,
+    pushDispatch,
+    activityLogPartitions,
     truedeedNotifyIntroduction,
     truedeedHashAnchor,
     truedeedExpireIntroductions,
@@ -58,5 +67,8 @@ export const { GET, POST, PUT } = serve({
     truedeedMandateBroken,
     truedeedDunningTick,
     truedeedInvoiceCandidateApproved,
+    truedeedDisputeRaised,
+    truedeedDisputeResolved,
+    truedeedInvoiceChargedBack,
   ],
 });

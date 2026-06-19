@@ -167,8 +167,8 @@ describe("middleware: subscription gate", () => {
     createServerClientMock.mockReturnValue(supabase);
 
     // Act
-    const { middleware } = await import("../middleware");
-    const response = await middleware(makeRequest("/dashboard/agent/leads"));
+    const { proxy } = await import("../proxy");
+    const response = await proxy(makeRequest("/dashboard/agent/leads"));
 
     // Assert
     expect(response.status).toBe(307); // NextResponse.redirect → 307
@@ -188,8 +188,8 @@ describe("middleware: subscription gate", () => {
     createServerClientMock.mockReturnValue(supabase);
 
     // Act
-    const { middleware } = await import("../middleware");
-    const response = await middleware(
+    const { proxy } = await import("../proxy");
+    const response = await proxy(
       makeRequest("/dashboard/agent/billing/checkout/subscription"),
     );
 
@@ -209,8 +209,8 @@ describe("middleware: subscription gate", () => {
     createServerClientMock.mockReturnValue(supabase);
 
     // Act
-    const { middleware } = await import("../middleware");
-    const response = await middleware(makeRequest("/dashboard/agent/referrals"));
+    const { proxy } = await import("../proxy");
+    const response = await proxy(makeRequest("/dashboard/agent/referrals"));
 
     // Assert
     expect(response.status).toBe(200);
@@ -246,8 +246,8 @@ describe("middleware: subscription gate", () => {
     createServerClientMock.mockReturnValue(supabase);
 
     // Act
-    const { middleware } = await import("../middleware");
-    const response = await middleware(makeRequest("/dashboard/agent/leads"));
+    const { proxy } = await import("../proxy");
+    const response = await proxy(makeRequest("/dashboard/agent/leads"));
 
     // Assert — fail-open: request passes through with 200.
     expect(response.status).toBe(200);

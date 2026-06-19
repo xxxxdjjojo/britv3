@@ -24,10 +24,16 @@ export async function aggregateUserData(userId: string): Promise<GdprExportData>
     { data: reports },
   ] = await Promise.all([
     admin.from("profiles").select("*").eq("id", userId).single(),
-    admin.from("properties").select("id, title, status, created_at").eq("owner_id", userId),
+    // Properties are owned via listings (properties has no owner_id/status;
+    // ownership + status live on listings). Pull the property title through the FK.
+    admin
+      .from("listings")
+      .select("id, status, created_at, properties(title)")
+      .eq("user_id", userId),
     admin.from("messages").select("id", { count: "exact", head: true }).eq("sender_id", userId),
     admin.from("reviews").select("id, rating, content, created_at").eq("reviewer_id", userId),
-    admin.from("subscriptions").select("id, plan, status, created_at").eq("user_id", userId),
+    // Real column is `plan_name`, not `plan`.
+    admin.from("subscriptions").select("id, plan_name, status, created_at").eq("user_id", userId),
     admin.from("gdpr_requests").select("id, request_type, status, created_at").eq("user_id", userId),
     admin.from("content_reports").select("id, entity_type, reason, created_at").eq("reporter_id", userId),
   ]);

@@ -24,7 +24,7 @@ vi.stubGlobal("crypto", {
   randomUUID: vi.fn(() => "test-uuid-1234"),
 });
 
-import { middleware } from "@/middleware";
+import { proxy } from "@/proxy";
 import { isFeatureEnabled } from "@/lib/features";
 
 const mockIsFeatureEnabled = isFeatureEnabled as unknown as ReturnType<typeof vi.fn>;
@@ -64,7 +64,7 @@ describe("Middleware — JWT claims path", () => {
       },
     });
 
-    const response = await middleware(createRequest("/admin/dashboard"));
+    const response = await proxy(createRequest("/admin/dashboard"));
 
     expect(mockFrom).not.toHaveBeenCalledWith("profiles");
     expect(response.status).not.toBe(307);
@@ -83,7 +83,7 @@ describe("Middleware — JWT claims path", () => {
       })),
     });
 
-    const response = await middleware(createRequest("/admin/dashboard"));
+    const response = await proxy(createRequest("/admin/dashboard"));
 
     expect(mockFrom).toHaveBeenCalledWith("profiles");
   });
@@ -101,7 +101,7 @@ describe("Middleware — JWT claims path", () => {
       })),
     });
 
-    const response = await middleware(createRequest("/admin/dashboard"));
+    const response = await proxy(createRequest("/admin/dashboard"));
 
     expect(mockFrom).toHaveBeenCalledWith("profiles");
   });
@@ -117,7 +117,7 @@ describe("Middleware — JWT claims path", () => {
       },
     });
 
-    const response = await middleware(createRequest("/admin/dashboard"));
+    const response = await proxy(createRequest("/admin/dashboard"));
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toContain("/forbidden");
   });
@@ -126,7 +126,7 @@ describe("Middleware — JWT claims path", () => {
     mockIsFeatureEnabled.mockReturnValue(true);
     mockGetUser.mockRejectedValue(new Error("JWT decode failed"));
 
-    const response = await middleware(createRequest("/admin/dashboard"));
+    const response = await proxy(createRequest("/admin/dashboard"));
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toContain("/login");
   });
@@ -142,7 +142,7 @@ describe("Middleware — JWT claims path", () => {
       },
     });
 
-    const response = await middleware(createRequest("/dashboard/agent/listings"));
+    const response = await proxy(createRequest("/dashboard/agent/listings"));
 
     // Should not query subscriptions table
     expect(mockFrom).not.toHaveBeenCalledWith("subscriptions");
@@ -161,7 +161,7 @@ describe("Middleware — JWT claims path", () => {
       },
     });
 
-    const response = await middleware(createRequest("/dashboard/agent/listings"));
+    const response = await proxy(createRequest("/dashboard/agent/listings"));
 
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toContain("/billing/checkout/subscription");
@@ -178,7 +178,7 @@ describe("Middleware — JWT claims path", () => {
       },
     });
 
-    const response = await middleware(createRequest("/dashboard/homebuyer"));
+    const response = await proxy(createRequest("/dashboard/homebuyer"));
 
     // Should not query profiles table for role check
     expect(mockFrom).not.toHaveBeenCalledWith("profiles");
@@ -204,7 +204,7 @@ describe("Middleware — JWT claims path", () => {
       })),
     });
 
-    const response = await middleware(createRequest("/dashboard/homebuyer"));
+    const response = await proxy(createRequest("/dashboard/homebuyer"));
 
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toContain("/register/role-select");

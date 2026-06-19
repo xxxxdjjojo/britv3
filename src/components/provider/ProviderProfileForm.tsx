@@ -261,7 +261,9 @@ export function ProviderProfileForm({
               min={0}
               step="0.01"
               placeholder="0.00"
-              {...register("pricing.call_out_fee", { valueAsNumber: true })}
+              {...register("pricing.call_out_fee", {
+                setValueAs: (v) => (v === "" ? undefined : Number(v)),
+              })}
             />
           </div>
           <div className="space-y-1">
@@ -272,7 +274,9 @@ export function ProviderProfileForm({
               min={0}
               step="0.01"
               placeholder="0.00"
-              {...register("pricing.hourly_rate", { valueAsNumber: true })}
+              {...register("pricing.hourly_rate", {
+                setValueAs: (v) => (v === "" ? undefined : Number(v)),
+              })}
             />
           </div>
           <div className="space-y-1">
@@ -283,7 +287,9 @@ export function ProviderProfileForm({
               min={0}
               step="0.01"
               placeholder="0.00"
-              {...register("pricing.day_rate", { valueAsNumber: true })}
+              {...register("pricing.day_rate", {
+                setValueAs: (v) => (v === "" ? undefined : Number(v)),
+              })}
             />
           </div>
         </div>
