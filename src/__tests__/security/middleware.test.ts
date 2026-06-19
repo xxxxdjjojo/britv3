@@ -146,4 +146,15 @@ describe("Middleware - Matcher config", () => {
     const matcherStr = JSON.stringify(matchers);
     expect(matcherStr).toContain("_next");
   });
+
+  it("matcher does NOT run the proxy for crawler metadata routes", () => {
+    // Regression: /sitemap.xml and /robots.txt were being redirected to /login,
+    // so crawlers indexed nothing. They must be excluded from the proxy matcher.
+    const pattern = new RegExp(`^${config.matcher[0]}$`);
+    expect(pattern.test("/sitemap.xml")).toBe(false);
+    expect(pattern.test("/robots.txt")).toBe(false);
+    // Sanity: real app routes still go through the proxy.
+    expect(pattern.test("/dashboard")).toBe(true);
+    expect(pattern.test("/properties/some-slug")).toBe(true);
+  });
 });
