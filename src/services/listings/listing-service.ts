@@ -146,8 +146,8 @@ export async function createListing(
     .insert({
       property_id: property.id,
       user_id: userId,
-      status: "draft",
       ...listingData,
+      status: "draft",
     })
     .select()
     .single();
