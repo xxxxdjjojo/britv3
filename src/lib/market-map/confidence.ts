@@ -1,20 +1,23 @@
-import { CONFIDENCE_THRESHOLDS, type Confidence } from "./constants";
+/**
+ * Confidence classification for choropleth areas.
+ * Thresholds from DESIGN.md §6.
+ */
+
+export type ConfidenceLevel = "High" | "Medium" | "Low" | "Insufficient";
 
 /**
- * Classify the confidence of an area's median based on its transaction count.
- *   High        >= 30
- *   Medium      >= 10
- *   Low         >= 5
- *   Insufficient < 5
+ * Classifies the confidence level of a price estimate based on how many
+ * registered transactions contributed to it.
+ *
+ * Thresholds (DESIGN.md §6):
+ *   ≥ 30  → High
+ *   ≥ 10  → Medium
+ *   ≥  5  → Low
+ *   <  5  → Insufficient
  */
-export function classifyConfidence(transactionCount: number): Confidence {
-  if (transactionCount >= CONFIDENCE_THRESHOLDS.high) return "High";
-  if (transactionCount >= CONFIDENCE_THRESHOLDS.medium) return "Medium";
-  if (transactionCount >= CONFIDENCE_THRESHOLDS.low) return "Low";
+export function confidenceFor(transactionCount: number): ConfidenceLevel {
+  if (transactionCount >= 30) return "High";
+  if (transactionCount >= 10) return "Medium";
+  if (transactionCount >= 5) return "Low";
   return "Insufficient";
-}
-
-/** Whether an area has enough transactions to be coloured (>= Low threshold). */
-export function hasSufficientData(transactionCount: number): boolean {
-  return transactionCount >= CONFIDENCE_THRESHOLDS.low;
 }

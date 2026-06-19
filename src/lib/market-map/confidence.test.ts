@@ -1,31 +1,59 @@
 import { describe, it, expect } from "vitest";
-import { classifyConfidence, hasSufficientData } from "./confidence";
+import { confidenceFor } from "./confidence";
+import type { ConfidenceLevel } from "./confidence";
 
-describe("classifyConfidence", () => {
-  it("classifies High at >= 30", () => {
-    expect(classifyConfidence(30)).toBe("High");
-    expect(classifyConfidence(42)).toBe("High");
+describe("confidenceFor", () => {
+  // Exact boundary values per DESIGN.md §6
+  it("returns 'High' when count is exactly 30", () => {
+    const result: ConfidenceLevel = confidenceFor(30);
+    expect(result).toBe("High");
   });
-  it("classifies Medium at >= 10 and < 30", () => {
-    expect(classifyConfidence(10)).toBe("Medium");
-    expect(classifyConfidence(29)).toBe("Medium");
-  });
-  it("classifies Low at >= 5 and < 10", () => {
-    expect(classifyConfidence(5)).toBe("Low");
-    expect(classifyConfidence(9)).toBe("Low");
-  });
-  it("classifies Insufficient below 5", () => {
-    expect(classifyConfidence(4)).toBe("Insufficient");
-    expect(classifyConfidence(0)).toBe("Insufficient");
-  });
-});
 
-describe("hasSufficientData", () => {
-  it("is true at the Low threshold and above", () => {
-    expect(hasSufficientData(5)).toBe(true);
-    expect(hasSufficientData(100)).toBe(true);
+  it("returns 'High' when count is above 30", () => {
+    expect(confidenceFor(31)).toBe("High");
+    expect(confidenceFor(1000)).toBe("High");
   });
-  it("is false below the Low threshold", () => {
-    expect(hasSufficientData(4)).toBe(false);
+
+  it("returns 'Medium' when count is exactly 29 (boundary below High)", () => {
+    expect(confidenceFor(29)).toBe("Medium");
+  });
+
+  it("returns 'Medium' when count is exactly 10", () => {
+    expect(confidenceFor(10)).toBe("Medium");
+  });
+
+  it("returns 'Medium' when count is between 10 and 29 inclusive", () => {
+    expect(confidenceFor(15)).toBe("Medium");
+    expect(confidenceFor(20)).toBe("Medium");
+  });
+
+  it("returns 'Low' when count is exactly 9 (boundary below Medium)", () => {
+    expect(confidenceFor(9)).toBe("Low");
+  });
+
+  it("returns 'Low' when count is exactly 5", () => {
+    expect(confidenceFor(5)).toBe("Low");
+  });
+
+  it("returns 'Low' when count is between 5 and 9 inclusive", () => {
+    expect(confidenceFor(6)).toBe("Low");
+    expect(confidenceFor(7)).toBe("Low");
+    expect(confidenceFor(8)).toBe("Low");
+  });
+
+  it("returns 'Insufficient' when count is exactly 4 (boundary below Low)", () => {
+    expect(confidenceFor(4)).toBe("Insufficient");
+  });
+
+  it("returns 'Insufficient' when count is 0", () => {
+    expect(confidenceFor(0)).toBe("Insufficient");
+  });
+
+  it("returns 'Insufficient' when count is 1", () => {
+    expect(confidenceFor(1)).toBe("Insufficient");
+  });
+
+  it("returns 'Insufficient' when count is 3", () => {
+    expect(confidenceFor(3)).toBe("Insufficient");
   });
 });
