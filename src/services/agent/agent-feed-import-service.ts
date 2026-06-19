@@ -45,7 +45,8 @@ type ReapitFixtureListing = {
 };
 
 export type NormalizedFeedListing = {
-  source: "reapit";
+  /** Provider key set by the connector that produced this listing (e.g. "reapit"). */
+  source: string;
   external_id: string;
   external_branch_id: string;
   status: "available" | "withdrawn";
@@ -74,7 +75,8 @@ export type NormalizedFeedListing = {
     caption: string | null;
     sort_order: number;
   }>;
-  raw_payload: ReapitFixtureListing;
+  /** Raw source payload stored as-is in jsonb — shape varies by connector. */
+  raw_payload: unknown;
 };
 
 export type FeedImportRunSummary = {
@@ -357,12 +359,19 @@ async function getIntegrationOrganisationId(
   return orgId == null ? null : String(orgId);
 }
 
-export async function createDeterministicReapitImportRun(
+/**
+ * Source-agnostic import run builder. Resolves the organisation, computes the
+ * source fingerprint, applies the idempotency short-circuit, then upserts the
+ * `feed_import_runs` and `feed_import_items` rows. The provider key and
+ * normalized listings come from the caller (a SourceConnector or a wrapper).
+ */
+export async function createImportRunFromListings(
   supabase: SupabaseClient,
   agentId: string,
   integrationId: string,
+  providerKey: string,
+  listings: ReadonlyArray<NormalizedFeedListing>,
 ): Promise<FeedImportRunSummary> {
-  const listings = normalizeReapitFixture();
   const organisationId = await getIntegrationOrganisationId(supabase, integrationId);
   const sourceFingerprint = sha256(listings.map((listing) => listing.raw_payload));
   const eligibleItems = listings.filter(isPublishEligible).length;
@@ -402,7 +411,7 @@ export async function createDeterministicReapitImportRun(
         integration_id: integrationId,
         agent_id: agentId,
         organisation_id: organisationId,
-        provider: "reapit",
+        provider: providerKey,
         source_fingerprint: sourceFingerprint,
         status: "needs_review",
         total_items: listings.length,
@@ -455,6 +464,20 @@ export async function createDeterministicReapitImportRun(
     error_items: errorItems,
     withdrawn_items: withdrawnItems,
   };
+}
+
+/**
+ * Backward-compatible wrapper: produces the Reapit fixture listings then
+ * delegates to the source-agnostic `createImportRunFromListings`.
+ * Existing API-route callers and tests continue to work unchanged.
+ */
+export async function createDeterministicReapitImportRun(
+  supabase: SupabaseClient,
+  agentId: string,
+  integrationId: string,
+): Promise<FeedImportRunSummary> {
+  const listings = normalizeReapitFixture();
+  return createImportRunFromListings(supabase, agentId, integrationId, "reapit", listings);
 }
 
 export async function approveFeedImportItem(
