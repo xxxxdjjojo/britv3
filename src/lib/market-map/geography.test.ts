@@ -91,13 +91,26 @@ describe("geographyLevelForZoom", () => {
     expect(geographyLevelForZoom(15.99)).toBe<GeographyLevel>("lsoa");
   });
 
-  // Band: zoom ≥ 16 → street
-  it("zoom=16 (band boundary) → street", () => {
-    expect(geographyLevelForZoom(16)).toBe<GeographyLevel>("street");
+  // Band: zoom ≥ 16 → lsoa (finest level with data).
+  //
+  // The "street" / micro-area regime is deliberately NOT returned: the street
+  // service returns 0 features and the vector tiles cap geometry at LSOA, so
+  // resolving "street" at high zoom blanked the choropleth (no colour, empty
+  // area list, "NO DATA" legend) and broke hover lookups (H3 ids vs LSOA ids).
+  // Capping at lsoa keeps the finest real data visible; MapLibre overzooms the
+  // z16 LSOA tile beyond zoom 16 so colour persists as the user zooms further.
+  it("zoom=16 (band boundary) → lsoa (street regime has no data)", () => {
+    expect(geographyLevelForZoom(16)).toBe<GeographyLevel>("lsoa");
   });
 
-  it("zoom=20 → street", () => {
-    expect(geographyLevelForZoom(20)).toBe<GeographyLevel>("street");
+  it("zoom=20 (very deep) → lsoa", () => {
+    expect(geographyLevelForZoom(20)).toBe<GeographyLevel>("lsoa");
+  });
+
+  it("never returns 'street' at any zoom (dead regime)", () => {
+    for (let z = -2; z <= 24; z += 0.5) {
+      expect(geographyLevelForZoom(z)).not.toBe("street");
+    }
   });
 
   // Negative zoom: clamp to local_authority

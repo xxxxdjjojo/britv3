@@ -5,15 +5,15 @@
  * latest transaction date, confidence badge, scale, and the mandatory disclaimer.
  */
 
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { humanizeAreaName, areaHref } from "@/lib/market-map/labels";
 import { MarketMapDisclaimer } from "./MarketMapDisclaimer";
 import type { MarketMapFeatureProperties } from "@/services/market-map/types";
-import type { MarketMapScaleMode } from "@/services/market-map/types";
 import type { AreaPriceDetail, AreaPriceSegment } from "@/services/market-map/types";
 
 type Props = Readonly<{
   properties: MarketMapFeatureProperties;
-  scaleMode: MarketMapScaleMode;
   /** Flat/house breakdown for this area (lazy-loaded on selection). */
   detail?: AreaPriceDetail | null;
   onClose?: () => void;
@@ -107,7 +107,6 @@ function BreakdownSegment({
 
 export function MarketMapAreaDetail({
   properties,
-  scaleMode,
   detail,
   onClose,
   className,
@@ -127,6 +126,7 @@ export function MarketMapAreaDetail({
 
   const confStyle = CONFIDENCE_STYLES[confidence] ?? CONFIDENCE_STYLES.Insufficient;
   const isInsufficient = confidence === "Insufficient";
+  const displayName = humanizeAreaName(area_name, properties.geography_level);
 
   // Property type mix — sort desc, show top 4
   const mixEntries = Object.entries(property_type_mix ?? {})
@@ -143,12 +143,12 @@ export function MarketMapAreaDetail({
         className,
       )}
       role="region"
-      aria-label={`Area detail: ${area_name ?? properties.area_id}`}
+      aria-label={`Area detail: ${displayName}`}
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-2 border-b border-[#E2E2E8] px-4 py-3">
         <p className="font-heading text-sm font-bold text-[#003629]">
-          {area_name ?? properties.area_id}
+          {displayName}
         </p>
         {onClose && (
           <button
@@ -200,10 +200,6 @@ export function MarketMapAreaDetail({
               ? `${formatDate(date_from)} – ${formatDate(date_to)}`
               : "—"
           }
-        />
-        <DetailRow
-          label="Scale"
-          value={scaleMode === "national" ? "National" : "Local"}
         />
         <DetailRow
           label="Confidence"
@@ -272,8 +268,24 @@ export function MarketMapAreaDetail({
         </div>
       )}
 
-      {/* Disclaimer */}
+      {/* Full report link */}
       <div className="px-4 py-3">
+        <a
+          href={areaHref(properties.area_id)}
+          className={cn(
+            "flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[#1B4D3E] px-4 py-2.5",
+            "font-sans text-sm font-semibold text-white",
+            "transition-colors hover:bg-[#163f33]",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-2",
+          )}
+        >
+          View full price report
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </a>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="px-4 pb-3">
         <p className="mb-1 font-sans text-[10px] font-bold text-[#7A7A88]">
           ⓘ
         </p>
