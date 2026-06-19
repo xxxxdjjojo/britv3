@@ -47,7 +47,12 @@ declare
   v_levels  text[] := array['local_authority','postcode_district','msoa','lsoa'];
   v_windows int[]  := array[12,24,36,60];
 begin
-  truncate public.market_map_area_stats;
+  -- DELETE (not TRUNCATE): the table now serves live card/tile reads. TRUNCATE
+  -- takes ACCESS EXCLUSIVE and would block every reader for the full ~17-min
+  -- rebuild. DELETE takes only ROW EXCLUSIVE, so concurrent SELECTs keep seeing
+  -- the prior rows via MVCC and flip atomically to the new set at commit — reads
+  -- never block and there is no empty window.
+  delete from public.market_map_area_stats;
 
   foreach v_level in array v_levels loop
     foreach v_window in array v_windows loop
