@@ -22,6 +22,114 @@ const BASE_CTX = { integrationId: "int-test", organisationId: "org-test" } as co
 // Reusable XML/JSON payloads (inline, no file I/O in test body)
 // ---------------------------------------------------------------------------
 
+/** XML with multiple <feature> children — tests I1 (XML feature extraction). */
+const XML_WITH_FEATURES = `<?xml version="1.0" encoding="UTF-8"?>
+<listings>
+  <listing id="FT-001" branchId="branch-ft">
+    <status>forSale</status>
+    <listingType>sale</listingType>
+    <price>300000</price>
+    <address>
+      <line1>1 Feature Road</line1>
+      <city>London</city>
+      <postcode>SW1A 2AA</postcode>
+    </address>
+    <property>
+      <type>flat</type>
+      <bedrooms>2</bedrooms>
+      <bathrooms>1</bathrooms>
+      <tenure>leasehold</tenure>
+      <planningPermissionStatus>none_known</planningPermissionStatus>
+    </property>
+    <marketing>
+      <title>Flat with features</title>
+      <description>A flat.</description>
+      <features>
+        <feature>South-facing garden</feature>
+        <feature>Off-street parking</feature>
+        <feature>Newly fitted kitchen</feature>
+      </features>
+    </marketing>
+    <media/>
+  </listing>
+</listings>`;
+
+/** XML with an unknown listingType on a row whose status is valid — tests I2. */
+const UNKNOWN_LISTING_TYPE_XML = `<?xml version="1.0" encoding="UTF-8"?>
+<listings>
+  <listing id="LT-OK" branchId="branch-lt">
+    <status>forSale</status>
+    <listingType>sale</listingType>
+    <price>200000</price>
+    <address>
+      <line1>1 Good Street</line1>
+      <city>Bristol</city>
+      <postcode>BS1 1AA</postcode>
+    </address>
+    <property>
+      <type>flat</type>
+      <bedrooms>1</bedrooms>
+      <bathrooms>1</bathrooms>
+      <tenure>leasehold</tenure>
+      <planningPermissionStatus>none_known</planningPermissionStatus>
+    </property>
+    <marketing>
+      <title>Good listing</title>
+      <description>A good listing.</description>
+    </marketing>
+    <media/>
+  </listing>
+  <listing id="LT-BAD" branchId="branch-lt">
+    <status>withdrawn</status>
+    <listingType>unknown_kind</listingType>
+    <price>150000</price>
+    <address>
+      <line1>2 Bad Street</line1>
+      <city>Leeds</city>
+      <postcode>LS1 1AA</postcode>
+    </address>
+    <property>
+      <type>flat</type>
+      <bedrooms>1</bedrooms>
+      <bathrooms>1</bathrooms>
+      <tenure>leasehold</tenure>
+      <planningPermissionStatus>none_known</planningPermissionStatus>
+    </property>
+    <marketing>
+      <title>Bad listingType listing</title>
+      <description>Should produce unknown_listing_type error.</description>
+    </marketing>
+    <media/>
+  </listing>
+</listings>`;
+
+/** XML with a withdrawn to-let listing — tests M4 (explicit listingType honoured). */
+const XML_WITHDRAWN_TOLET = `<?xml version="1.0" encoding="UTF-8"?>
+<listings>
+  <listing id="WR-001" branchId="branch-wr">
+    <status>withdrawn</status>
+    <listingType>rent</listingType>
+    <price>0</price>
+    <address>
+      <line1>5 Withdrawn Mews</line1>
+      <city>Leeds</city>
+      <postcode>LS1 2AB</postcode>
+    </address>
+    <property>
+      <type>flat</type>
+      <bedrooms>1</bedrooms>
+      <bathrooms>1</bathrooms>
+      <tenure>leasehold</tenure>
+      <planningPermissionStatus>none_known</planningPermissionStatus>
+    </property>
+    <marketing>
+      <title>Withdrawn rental</title>
+      <description>Previously to-let, now withdrawn.</description>
+    </marketing>
+    <media/>
+  </listing>
+</listings>`;
+
 /** A minimal valid XML listing (BLM-inspired shape). */
 const VALID_XML_SINGLE = `<?xml version="1.0" encoding="UTF-8"?>
 <listings>
@@ -438,5 +546,57 @@ describe("generic_feed connector", () => {
     const r1 = await genericFeedConnector.fetchListings({ ...BASE_CTX, payload: VALID_XML_SINGLE });
     const r2 = await genericFeedConnector.fetchListings({ ...BASE_CTX, payload: VALID_XML_SINGLE });
     expect(r1.sourceFingerprint).toBe(r2.sourceFingerprint);
+  });
+
+  // I1 — XML features must not be silently dropped
+  it("I1 (XML features): multiple <feature> children parsed into feed_features string array", async () => {
+    const result = await genericFeedConnector.fetchListings({ ...BASE_CTX, payload: XML_WITH_FEATURES });
+    expect(result.transport.ok).toBe(true);
+    expect(result.listings).toHaveLength(1);
+    const features = (result.listings[0].features["feed_features"] ?? []) as string[];
+    expect(features.length).toBeGreaterThan(0);
+    expect(features).toContain("South-facing garden");
+    expect(features).toContain("Off-street parking");
+    expect(features).toContain("Newly fitted kitchen");
+  });
+
+  // I1 — sandbox fixture SB-001 has features that must survive
+  it("I1 (sandbox XML): SB-001 feed_features are non-empty", async () => {
+    const result = await sandboxConnector.fetchListings(BASE_CTX);
+    const sb001 = result.listings.find((l) => l.external_id === "SB-001");
+    expect(sb001).toBeDefined();
+    const features = (sb001!.features["feed_features"] ?? []) as string[];
+    expect(features.length).toBeGreaterThan(0);
+    expect(features).toContain("South-facing garden");
+  });
+
+  // I2 — unknown listingType must produce code:"unknown_listing_type" (not "unknown_status")
+  it("I2 (unknown listingType): RowError has code 'unknown_listing_type'", async () => {
+    const result = await genericFeedConnector.fetchListings({ ...BASE_CTX, payload: UNKNOWN_LISTING_TYPE_XML });
+    expect(result.listings).toHaveLength(1);
+    expect(result.listings[0].external_id).toBe("LT-OK");
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0].row).toBe("LT-BAD");
+    expect(result.errors[0].code).toBe("unknown_listing_type");
+    expect(result.errors[0].field).toBe("listingType");
+  });
+
+  // M1 — BOM-prefixed JSON payload must parse correctly
+  it("M1 (BOM): BOM-prefixed JSON payload parses as JSON, not XML", async () => {
+    const bom = "﻿";
+    const result = await genericFeedConnector.fetchListings({ ...BASE_CTX, payload: bom + VALID_JSON_SINGLE });
+    expect(result.transport.ok).toBe(true);
+    expect(result.listings).toHaveLength(1);
+    expect(result.listings[0].external_id).toBe("GF-J01");
+  });
+
+  // M4 — withdrawn to-let row must keep listing_type:"rent"
+  it("M4 (withdrawn to-let): explicit listingType:rent is honoured even for withdrawn status", async () => {
+    const result = await genericFeedConnector.fetchListings({ ...BASE_CTX, payload: XML_WITHDRAWN_TOLET });
+    expect(result.transport.ok).toBe(true);
+    expect(result.listings).toHaveLength(1);
+    const listing = result.listings[0];
+    expect(listing.status).toBe("withdrawn");
+    expect(listing.listing_type).toBe("rent");
   });
 });

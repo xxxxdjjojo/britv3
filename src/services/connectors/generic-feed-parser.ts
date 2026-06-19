@@ -100,6 +100,31 @@ function normalizeRentFreq(raw: string): RentFrequency {
   return "monthly";
 }
 
+/**
+ * Normalise the `features` field from both XML and JSON shapes.
+ *
+ * JSON: features is already a string array → use it directly.
+ * XML (via fast-xml-parser with isArray:"feature"):
+ *   <features><feature>A</feature><feature>B</feature></features>
+ *   → { feature: ["A", "B"] }  — object with a "feature" array key
+ * XML single item (without isArray guard):
+ *   → { feature: "A" }  — object with a "feature" string key
+ * Absent → []
+ */
+function normalizeFeatures(raw: unknown): string[] {
+  if (!raw) return [];
+  // JSON array of strings
+  if (Array.isArray(raw)) return raw.map(String);
+  // XML object shape: { feature: string[] | string }
+  if (typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+    const inner = obj["feature"];
+    if (Array.isArray(inner)) return inner.map(String);
+    if (inner != null) return [String(inner)];
+  }
+  return [];
+}
+
 function extractMedia(raw: unknown): NormalizedFeedListing["media"] {
   if (!raw || typeof raw !== "object") return [];
   // XML: media.item (array or single object); JSON: media (array)
@@ -164,13 +189,13 @@ function normalizeRow(
     listingType = rawListingType as ListingType;
   } else if (rawStatus === "tolet") {
     listingType = "rent";
-  } else if (rawStatus === "forsale" || rawStatus === "withdrawn") {
+  } else if (rawStatus === "forsale") {
     listingType = "sale";
   } else {
     return {
       error: {
         row: rowKey,
-        code: "unknown_status",
+        code: "unknown_listing_type",
         message: `Unrecognised listingType value. Row id: ${rawId || rowIndex}`,
         field: "listingType",
       },
@@ -204,7 +229,7 @@ function normalizeRow(
     square_footage: prop["floorAreaSqFt"] != null ? num(prop["floorAreaSqFt"]) : null,
     title: str(marketing["title"]),
     description: str(marketing["description"]),
-    features: { feed_features: Array.isArray(marketing["features"]) ? marketing["features"] : [] },
+    features: { feed_features: normalizeFeatures(marketing["features"]) },
     tenure: normalizeTenure(str(prop["tenure"])),
     planning_permission_status: normalizePlanning(str(prop["planningPermissionStatus"] ?? prop["planning_permission_status"])),
     media: extractMedia(row["media"]),
@@ -231,6 +256,15 @@ export type ParseOptions = {
 };
 
 // ---------------------------------------------------------------------------
+// BOM stripping
+// ---------------------------------------------------------------------------
+
+/** Strip a leading UTF-8 BOM (U+FEFF) so XML/JSON detection works correctly. */
+function stripBom(s: string): string {
+  return s.charCodeAt(0) === 0xfeff ? s.slice(1) : s;
+}
+
+// ---------------------------------------------------------------------------
 // XML detection + parsing
 // ---------------------------------------------------------------------------
 
@@ -242,7 +276,7 @@ const XML_PARSER = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "",
   parseAttributeValue: true,
-  isArray: (name) => ["listing", "item"].includes(name),
+  isArray: (name) => ["listing", "item", "feature"].includes(name),
 });
 
 function parseXmlRows(payload: string): RawRow[] | { parseError: string } {
@@ -302,11 +336,12 @@ export function parseFeedPayload(
   payload: string,
   opts: ParseOptions,
 ): ParseResult & { ok: boolean; parseError?: string } {
-  const fingerprint = sha256(payload);
+  const cleaned = stripBom(payload);
+  const fingerprint = sha256(cleaned);
 
-  const rowsResult = looksLikeXml(payload)
-    ? parseXmlRows(payload)
-    : parseJsonRows(payload);
+  const rowsResult = looksLikeXml(cleaned)
+    ? parseXmlRows(cleaned)
+    : parseJsonRows(cleaned);
 
   if ("parseError" in rowsResult) {
     return {
