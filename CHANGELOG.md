@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0.0] - 2026-06-18 — Value my property: indicative AVM journey
+
+Dedicated "Value my property" valuation journey, fixing the CTA that previously
+opened general search. Anonymous flow: postcode → exact address → confirm/correct
+details → review → "estimate ready" → passwordless email-OTP account → saved
+result → optional agent handoff. Server-persisted sessions (no localStorage for
+sensitive state); RLS-scoped tables (`valuation_sessions/results/comparables/
+model_versions/model_metrics/agent_leads/consent_events`).
+
+Explainable comparable-sales AVM (model `vmp-comparables-1.1.0`) over real HM Land
+Registry `price_paid_data` (~31M rows): category-A filtering, robust weighted
+median/trimmed mean, similarity weighting (recency, true postcode-centroid
+distance, type, tenure, new-build), real UK HPI time-adjustment, and an A–E
+evidence/fallback hierarchy that declines rather than fabricating a number
+(e.g. Scotland, which is absent from the data). Open data ingested with no
+third-party API: UK HPI (150,705 rows) + 1,746,976 Code-Point Open postcode
+centroids (GeoPackage → WGS84).
+
+Measured out-of-time backtest (150 targets): MdAPE 17.3%, within-20% 56.7%,
+range coverage 72.7% — no accuracy claimed beyond what is measured.
+
+Email-OTP is Supabase passwordless (rate-limited, generic responses, no
+enumeration); a valuation is attached only to the verified owner; agent sharing
+requires explicit consent and never implies marketing. Privacy/legal copy flagged
+for counsel review. Analytics funnel + Sentry failure capture wired. Coverage:
+54 unit, 20 db-tests, integration (real data + OTP/claim + agent-lead), and a
+13-scenario E2E + accessibility suite (local Supabase + Mailpit).
+
 ## [0.2.0.0] - 2026-06-15 — Wandsworth median sold-price maps
 
 Median registered sold price by postcode district, visualised as a colour-coded

@@ -252,9 +252,12 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
                   <span className="font-bold text-success">{areaGrowth}%</span> in the last 12 months
                 </p>
               </div>
-              <button className="w-full bg-white text-primary font-bold py-3 rounded-lg hover:bg-neutral-100 transition-all flex items-center justify-center gap-2">
-                <TrendingUp className="size-4" /> Get a free valuation
-              </button>
+              <Link
+                href="/value-my-property"
+                className="w-full bg-white text-primary font-bold py-3 rounded-lg hover:bg-neutral-100 transition-all flex items-center justify-center gap-2"
+              >
+                <TrendingUp className="size-4" /> Value my property
+              </Link>
               <p className="text-center text-xs text-white/60 mt-4">Trusted by 10,000+ homeowners</p>
             </div>
           </div>
