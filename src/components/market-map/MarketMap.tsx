@@ -194,22 +194,34 @@ export function MarketMap({
   }, [featureCollection, onMetadata, onFeatures]);
 
   // ---------------------------------------------------------------------------
-  // fitTo: fly/fit when prop changes
+  // fitTo: fly/fit when prop changes — and re-apply on load, since the map may
+  // mount with fitTo already set (e.g. /area-prices flies to a postcode the
+  // moment the result renders), where the camera move would otherwise fire
+  // before the style finishes loading and be lost.
   // ---------------------------------------------------------------------------
 
+  const fitToRef = useRef<FitBoundsParams | null>(fitTo ?? null);
   useEffect(() => {
-    if (!fitTo || !mapRef.current) return;
+    fitToRef.current = fitTo ?? null;
+  }, [fitTo]);
+
+  const applyFit = useCallback((params: FitBoundsParams) => {
     const map = mapRef.current;
+    if (!map) return;
     const reducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    map.fitBounds(fitTo.bounds, {
+    map.fitBounds(params.bounds, {
       padding: 40,
       duration: reducedMotion ? 0 : 800,
-      maxZoom: fitTo.zoom,
+      maxZoom: params.zoom,
     });
-  }, [fitTo]);
+  }, []);
+
+  useEffect(() => {
+    if (fitTo) applyFit(fitTo);
+  }, [fitTo, applyFit]);
 
   // ---------------------------------------------------------------------------
   // Viewport callbacks
@@ -227,7 +239,8 @@ export function MarketMap({
     [onViewportChange],
   );
 
-  // Capture initial bbox once the map loads
+  // Capture initial bbox once the map loads, and apply any fitTo that was set
+  // before the style finished loading.
   const handleLoad = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -235,7 +248,8 @@ export function MarketMap({
     const bbox = extractBbox(map);
     setViewport({ zoom, bbox });
     onViewportChange?.({ zoom, bbox });
-  }, [onViewportChange]);
+    if (fitToRef.current) applyFit(fitToRef.current);
+  }, [onViewportChange, applyFit]);
 
   // ---------------------------------------------------------------------------
   // Mouse interaction on the fill layer (tile features)
