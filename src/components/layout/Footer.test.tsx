@@ -11,7 +11,7 @@ vi.mock("next/link", () => ({
 
 // Mock Logo
 vi.mock("@/components/shared/Logo", () => ({
-  Logo: () => <span>Britestate</span>,
+  Logo: () => <span>TrueDeed</span>,
 }));
 
 // Mock CookiePreferencesButton (client island)
@@ -90,15 +90,15 @@ describe("Footer", () => {
     const externalLinks = container.querySelectorAll('a[target="_blank"]');
     expect(externalLinks.length).toBe(4);
     const hrefs = Array.from(externalLinks).map((el) => el.getAttribute("href"));
-    expect(hrefs).toContain("https://twitter.com/britestate");
-    expect(hrefs).toContain("https://linkedin.com/company/britestate");
-    expect(hrefs).toContain("https://instagram.com/britestate");
-    expect(hrefs).toContain("https://facebook.com/britestate");
+    expect(hrefs).toContain("https://twitter.com/truedeed");
+    expect(hrefs).toContain("https://linkedin.com/company/truedeed");
+    expect(hrefs).toContain("https://instagram.com/truedeed");
+    expect(hrefs).toContain("https://facebook.com/truedeed");
   });
 
   it("renders copyright text", () => {
     render(<Footer />);
-    expect(screen.getByText(/2026 Britestate Ltd/)).toBeInTheDocument();
+    expect(screen.getByText(/2026 TrueDeed/)).toBeInTheDocument();
   });
 
   it("renders Cookie Preferences button", () => {

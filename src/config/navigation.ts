@@ -43,6 +43,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ROUTES, dashboardPathForRole } from "@/lib/routes";
 import type { UserRole } from "@/types/auth";
+import { brandConfig } from "@/config/brand";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -311,10 +312,10 @@ export const FOOTER_LINKS: FooterColumn[] = [
     heading: "Brand",
     tagline: "The smarter way to find your home.",
     socialLinks: [
-      { label: "Twitter", href: "https://twitter.com/britestate" },
-      { label: "LinkedIn", href: "https://linkedin.com/company/britestate" },
-      { label: "Instagram", href: "https://instagram.com/britestate" },
-      { label: "Facebook", href: "https://facebook.com/britestate" },
+      { label: "Twitter", href: brandConfig.social.x },
+      { label: "LinkedIn", href: brandConfig.social.linkedIn },
+      { label: "Instagram", href: brandConfig.social.instagram },
+      { label: "Facebook", href: brandConfig.social.facebook },
     ],
   },
   {
