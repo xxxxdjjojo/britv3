@@ -67,8 +67,10 @@ const emptyToNull = (value: string): string | null =>
  * Split one CSV line into raw field values, honouring double-quoted fields
  * (commas inside quotes do not split; `""` is an escaped quote).
  * Returns null when quoting is unterminated.
+ *
+ * Exported so CSV-connector and other callers can reuse the tested tokenizer.
  */
-const splitCsvFields = (line: string): string[] | null => {
+export const splitCsvFields = (line: string): string[] | null => {
   const fields: string[] = [];
   let current = "";
   let inQuotes = false;
