@@ -31,10 +31,32 @@
 | PR22 | Organisations/branches/memberships model | `SPEC.md` §6 | post-migration RLS tests | **planned** |
 | PR23 | Reuse `createListing`/media-service on publish | `CURRENT_LISTING_DATA_FLOW.md` §10 | publish-searchable test | **planned** |
 | PR24 | Async processing (Inngest) mirroring PPD ingest | `CONNECTOR_ARCHITECTURE.md` §4 | — | **planned** |
-| PR25 | Seeded agent for E2E + screenshots | `TDD_PLAN.md` §5,§6 | E1–E13 enablement | **planned** (missing `e2e/.auth/agent.json`) |
+| PR25 | Seeded agent for E2E + screenshots | `TDD_PLAN.md` §5,§6 | E1–E13 enablement | **done** (C1: `scripts/seed-onboarding-fixture.mjs` seeds org+membership+integration; `test-agent@britestate.test` authenticates against local API — proven; `e2e-onboarding-local.sh` is the reset-free onboarding gate runner) |
 
 ## Notes
 - **done** rows are limited to what is verifiably present in this worktree.
 - Several rows are **partial**: Codex's MVP built the *spine* (ledger, validation, RLS,
   review/approve, draft publish) but the connector abstraction, searchable/mapped publish,
   dedup, empty-feed guard, Vault, SSRF, and denial tests are not yet built.
+
+## C1 — Reset-free local harness (2026-06-20)
+
+**Why a separate runner:** The local DB has a pre-existing migration-history drift
+(`schema_migrations` contains ~89 legacy short-prefix versions such as `"017"` that
+pre-date the 14-digit `YYYYMMDDHHMMSS` convention). Running `supabase db reset`
+replays the full history and fails at `017_service_provider_details(id)`, leaving
+the dev DB broken. See `docs/PARTNER_INGESTION_NEXT_SESSION_PROMPT.md §4` for detail.
+
+**Approach (C1):**
+- `scripts/seed-onboarding-fixture.mjs`: idempotent seed (org + membership + integration
+  for `test-agent@britestate.test`); asserts `SUPABASE_URL` contains `127.0.0.1` or
+  `localhost` before doing anything; exits non-zero if that assertion fails.
+- `scripts/e2e-onboarding-local.sh`: reset-free variant of `e2e-local.sh`. Runs
+  `supabase start` (idempotent, no reset), exports local env from `supabase status`,
+  nudges PostgREST schema cache, ensures `set_property_coordinates` exists locally,
+  seeds users then the onboarding fixture, then runs Playwright with `CI=1`.
+
+**The §6 gate's `bash scripts/e2e-local.sh` reference is superseded for onboarding
+E2E by `bash scripts/e2e-onboarding-local.sh`** (the reset-free runner). The
+canonical `e2e-local.sh` remains the gate for the dashboard smoke suite (where reset
+is safe because those migrations don't hit the drift).
