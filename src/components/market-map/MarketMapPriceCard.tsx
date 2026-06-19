@@ -17,6 +17,8 @@ type Props = Readonly<{
   card: MarketAreaCard | undefined;
   areaName: string;
   isLoading?: boolean;
+  /** Optional per-band caption, e.g. "Based on 42 sales in this postcode district". */
+  subtitles?: Readonly<{ flat?: string | null; house?: string | null }>;
 }>;
 
 const CONFIDENCE_DOTS: Record<MarketCardSeries["confidence"], number> = {
@@ -62,10 +64,12 @@ function PriceBand({
   label,
   series,
   testId,
+  subtitle,
 }: Readonly<{
   label: string;
   series: MarketCardSeries;
   testId: string;
+  subtitle?: string | null;
 }>) {
   const filledDots = CONFIDENCE_DOTS[series.confidence] ?? 0;
 
@@ -95,6 +99,11 @@ function PriceBand({
               {formatPrice(series.p10)}–{formatPrice(series.p90)}
             </span>
           )}
+          {subtitle && (
+            <span className="font-sans text-[11px] leading-snug text-muted-foreground">
+              {subtitle}
+            </span>
+          )}
         </>
       )}
     </div>
@@ -114,7 +123,7 @@ function Skeleton() {
   );
 }
 
-export function MarketMapPriceCard({ card, areaName, isLoading }: Props) {
+export function MarketMapPriceCard({ card, areaName, isLoading, subtitles }: Props) {
   return (
     <div
       className="flex w-full max-w-xs flex-col gap-2 rounded-[var(--radius-lg)] bg-white p-3 shadow-[var(--shadow-lg)]"
@@ -129,8 +138,18 @@ export function MarketMapPriceCard({ card, areaName, isLoading }: Props) {
         <Skeleton />
       ) : (
         <>
-          <PriceBand label="Flats" series={card.flat} testId="price-card-band-flat" />
-          <PriceBand label="Houses" series={card.house} testId="price-card-band-house" />
+          <PriceBand
+            label="Flats"
+            series={card.flat}
+            testId="price-card-band-flat"
+            subtitle={subtitles?.flat}
+          />
+          <PriceBand
+            label="Houses"
+            series={card.house}
+            testId="price-card-band-house"
+            subtitle={subtitles?.house}
+          />
         </>
       )}
     </div>
