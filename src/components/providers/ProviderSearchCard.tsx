@@ -36,10 +36,17 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export function ProviderSearchCard({ provider, category, latestReview }: Props) {
-  const { profiles, provider_rating_stats, business_name, slug } = provider;
-  const isVerified = profiles.provider_verification_status === "verified";
+  const { provider_rating_stats, slug } = provider;
+  // Guard the nested JOIN shape: search results come from the flat
+  // search_providers RPC where `profiles`/`provider_rating_stats` may be
+  // absent. A missing field must degrade the card, never 500 the page.
+  const profiles = provider.profiles;
+  const isVerified = profiles?.provider_verification_status === "verified";
+  const avatarUrl = profiles?.avatar_url ?? null;
   const avgRating = provider_rating_stats?.average_rating ?? 0;
   const totalReviews = provider_rating_stats?.total_reviews ?? 0;
+  const services = provider.services ?? [];
+  const displayName = provider.business_name ?? "Provider";
 
   const truncatedReview =
     latestReview && latestReview.length > 120
@@ -51,16 +58,16 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
       {/* Left: Avatar */}
       <div className="relative flex-shrink-0 self-start">
         <div className="relative w-20 h-20 rounded-full overflow-hidden bg-muted dark:bg-slate-800">
-          {profiles.avatar_url ? (
+          {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={profiles.avatar_url}
-              alt={business_name}
+              src={avatarUrl}
+              alt={displayName}
               className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-slate-400">
-              {business_name.charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </div>
           )}
         </div>
@@ -79,14 +86,14 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
         {/* Name + Compare */}
         <div className="flex flex-wrap items-start gap-2 mb-1">
           <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
-            {business_name}
+            {displayName}
           </h3>
-          <CompareButton providerId={provider.id} providerName={business_name} />
+          <CompareButton providerId={provider.id} providerName={displayName} />
         </div>
 
         {/* Trade category + location pills */}
         <div className="flex flex-wrap gap-2 mb-2">
-          {provider.services.slice(0, 3).map((svc) => (
+          {services.slice(0, 3).map((svc) => (
             <span
               key={svc}
               className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full capitalize"

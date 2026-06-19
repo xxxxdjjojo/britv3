@@ -199,7 +199,15 @@ describe("provider-service", () => {
         })
       );
 
-      expect(result.data).toEqual(providers);
+      // Flat RPC rows are adapted to the nested ServiceProviderPublicProfile
+      // shape the cards consume (additive — original fields are preserved).
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0]).toMatchObject({
+        business_name: "Provider 1",
+        slug: "provider-1",
+        profiles: { provider_verification_status: null },
+        provider_rating_stats: { average_rating: 0, total_reviews: 0 },
+      });
       expect(result.count).toBe(1);
     });
 
