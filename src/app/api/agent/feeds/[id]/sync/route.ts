@@ -25,8 +25,20 @@ export async function POST(request: Request, { params }: RouteContext) {
     if (typeof body.payload === "string") {
       payload = body.payload;
     }
-    if (body.fieldMapping != null && typeof body.fieldMapping === "object") {
-      fieldMapping = body.fieldMapping as Record<string, string>;
+    if (
+      body.fieldMapping != null &&
+      typeof body.fieldMapping === "object" &&
+      !Array.isArray(body.fieldMapping)
+    ) {
+      // Coerce to string→string: drop entries where the value is not a string.
+      const raw = body.fieldMapping as Record<string, unknown>;
+      const coerced: Record<string, string> = {};
+      for (const [k, v] of Object.entries(raw)) {
+        if (typeof v === "string") {
+          coerced[k] = v;
+        }
+      }
+      fieldMapping = coerced;
     }
   } catch {
     // No body or non-JSON body — fine for reapit/sandbox which need neither.

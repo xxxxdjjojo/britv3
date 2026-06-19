@@ -190,6 +190,56 @@ describe("POST /api/agent/feeds/[id]/sync", () => {
     expect(mocks.setFeedIntegrationSyncStatus).not.toHaveBeenCalled();
   });
 
+  it("ignores fieldMapping when it is an array (I1 guard)", async () => {
+    mocks.requireAgent.mockResolvedValue(AGENT_AUTH);
+    mocks.runConnectorImport.mockResolvedValue({
+      summary: MOCK_SUMMARY,
+      errors: [],
+    });
+    mocks.getFeedImportRunReview.mockResolvedValue(MOCK_REVIEW);
+    mocks.setFeedIntegrationSyncStatus.mockResolvedValue(MOCK_INTEGRATION);
+
+    const { POST } = await import("./route");
+    const res = await POST(
+      jsonRequest({ fieldMapping: ["external_id", "price"] }),
+      ROUTE_CONTEXT,
+    );
+
+    expect(res.status).toBe(200);
+    // fieldMapping must NOT be forwarded when it is an array
+    expect(mocks.runConnectorImport).toHaveBeenCalledWith(
+      ADMIN_CLIENT,
+      "agent-1",
+      "int-1",
+      expect.objectContaining({ fieldMapping: undefined }),
+    );
+  });
+
+  it("drops non-string values from fieldMapping and keeps string entries (I1 guard)", async () => {
+    mocks.requireAgent.mockResolvedValue(AGENT_AUTH);
+    mocks.runConnectorImport.mockResolvedValue({
+      summary: MOCK_SUMMARY,
+      errors: [],
+    });
+    mocks.getFeedImportRunReview.mockResolvedValue(MOCK_REVIEW);
+    mocks.setFeedIntegrationSyncStatus.mockResolvedValue(MOCK_INTEGRATION);
+
+    const { POST } = await import("./route");
+    const res = await POST(
+      jsonRequest({ fieldMapping: { price: "price", bedrooms: 3, title: "title" } }),
+      ROUTE_CONTEXT,
+    );
+
+    expect(res.status).toBe(200);
+    // Only string-valued entries survive; numeric value dropped
+    expect(mocks.runConnectorImport).toHaveBeenCalledWith(
+      ADMIN_CLIENT,
+      "agent-1",
+      "int-1",
+      expect.objectContaining({ fieldMapping: { price: "price", title: "title" } }),
+    );
+  });
+
   it("returns 500 when runConnectorImport throws (e.g. alto has no connector)", async () => {
     mocks.requireAgent.mockResolvedValue(AGENT_AUTH);
     mocks.runConnectorImport.mockRejectedValue(new Error("Unknown connector provider: alto"));

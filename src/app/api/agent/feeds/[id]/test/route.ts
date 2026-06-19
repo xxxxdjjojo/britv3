@@ -4,7 +4,7 @@ import { requireAgent } from "@/lib/api/require-agent";
 import { createAdminClient } from "@/lib/supabase/admin";
 // Barrel import registers all connectors as a side-effect.
 import { getConnector } from "@/services/connectors";
-import type { ConnectorContext } from "@/services/connectors/source-connector";
+import type { ConnectorContext, SourceConnector } from "@/services/connectors/source-connector";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -45,7 +45,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const row = data as Record<string, unknown>;
     const provider = String(row.provider ?? "");
 
-    let connector;
+    let connector: SourceConnector;
     try {
       connector = getConnector(provider);
     } catch {

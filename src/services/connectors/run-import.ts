@@ -81,8 +81,12 @@ async function getPreviouslyPublishedCount(
     .select("id", { count: "exact", head: true })
     .eq("integration_id", integrationId);
 
-  // Non-fatal: if we cannot count, be conservative and treat as 0.
-  return error ? 0 : (count ?? 0);
+  if (error) {
+    // Throw so the caller can treat this as an unsafe state.
+    throw new Error(`feed_listing_links count query failed: ${error.message}`);
+  }
+
+  return count ?? 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -124,10 +128,26 @@ export async function runConnectorImport(
   // a previously-published portfolio must NOT silently withdraw that portfolio.
   // Block for manual approval instead.
   if (result.listings.length === 0 && !connector.capabilities.has("tombstones")) {
-    const previouslyPublishedCount = await getPreviouslyPublishedCount(supabase, integrationId);
-    const safety = assessFeedSafety({ incomingItemCount: 0, previouslyPublishedCount });
+    let previouslyPublishedCount: number;
+    let countError: string | null = null;
 
-    if (!safety.safe) {
+    try {
+      previouslyPublishedCount = await getPreviouslyPublishedCount(supabase, integrationId);
+    } catch (err) {
+      countError = err instanceof Error ? err.message : "Unknown count error";
+      previouslyPublishedCount = 0; // unused — we block regardless
+    }
+
+    // If the count query failed we cannot verify the portfolio is empty,
+    // so we must BLOCK (fail-safe). Otherwise consult assessFeedSafety.
+    const blockReason = countError
+      ? "Could not verify the existing published portfolio; blocking an empty feed for manual review."
+      : (() => {
+          const safety = assessFeedSafety({ incomingItemCount: 0, previouslyPublishedCount });
+          return safety.safe ? null : safety.reason;
+        })();
+
+    if (blockReason !== null) {
       // Record the block in the integration error log so the UI can surface it.
       await supabase
         .from("agent_feed_integrations")
@@ -136,7 +156,7 @@ export async function runConnectorImport(
           error_log: [
             {
               code: "empty_feed_blocked",
-              message: safety.reason,
+              message: blockReason,
               blocked_at: new Date().toISOString(),
             },
           ],
@@ -155,7 +175,7 @@ export async function runConnectorImport(
       return {
         summary: blockedSummary,
         errors: result.errors,
-        blocked: { reason: safety.reason ?? "Empty feed blocked" },
+        blocked: { reason: blockReason },
       };
     }
   }

@@ -269,10 +269,21 @@ describe("runConnectorImport", () => {
       "Refusing to process an empty feed: 5 previously published listing(s) would be withdrawn. Manual approval required.";
     mocks.assessFeedSafety.mockReturnValue({ safe: false, reason: blockedReason });
 
-    const { supabase } = makeSupabase({
-      integrationRow: { provider: "csv", field_mapping: null, organisation_id: "org-1" },
-      publishedCount: 5,
+    // Hoist the update spy so we can assert it was called with sync_status=error.
+    const updateSpy = vi.fn().mockReturnValue(makeChain({ data: null }));
+    const integrationChain = makeChain({
+      data: { provider: "csv", field_mapping: null, organisation_id: "org-1" },
     });
+    const linkChain = makeChain({ count: 5 });
+    const supabase = {
+      from: vi.fn((table: string) => {
+        if (table === "agent_feed_integrations") {
+          return { ...integrationChain, update: updateSpy };
+        }
+        if (table === "feed_listing_links") return linkChain;
+        throw new Error(`Unexpected table: ${table}`);
+      }),
+    } as never;
 
     const result = await runConnectorImport(supabase, "agent-1", "int-csv3", {
       payload: "external_id,price\n",
@@ -284,6 +295,56 @@ describe("runConnectorImport", () => {
     expect(result.blocked).toBeDefined();
     expect(result.blocked?.reason).toBe(blockedReason);
     expect(result.summary.run_id).toBe("");
+    // The blocked path must stamp sync_status=error on agent_feed_integrations
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ sync_status: "error" }),
+    );
+  });
+
+  it("(c3) empty-feed guard BLOCKS with fail-safe reason when count query returns an error", async () => {
+    const { runConnectorImport } = await import("./run-import");
+
+    const fetchResult = makeFetchResult({ listings: [] });
+    const csvConnector = {
+      provider: "csv",
+      capabilities: new Set(["full_snapshot"]),
+      fetchListings: vi.fn().mockResolvedValue(fetchResult),
+      testConnection: vi.fn(),
+      discoverBranches: vi.fn(),
+    };
+    mocks.getConnector.mockReturnValue(csvConnector);
+
+    // Count query returns an error — simulate feed_listing_links being unreachable.
+    const linkChain = makeChain({ error: { message: "relation does not exist" }, count: null });
+    const updateSpy = vi.fn().mockReturnValue(makeChain({ data: null }));
+    const integrationChain = makeChain({
+      data: { provider: "csv", field_mapping: null, organisation_id: "org-1" },
+    });
+    const supabase = {
+      from: vi.fn((table: string) => {
+        if (table === "agent_feed_integrations") {
+          return { ...integrationChain, update: updateSpy };
+        }
+        if (table === "feed_listing_links") return linkChain;
+        throw new Error(`Unexpected table: ${table}`);
+      }),
+    } as never;
+
+    const result = await runConnectorImport(supabase, "agent-1", "int-csv-count-err", {
+      payload: "external_id,price\n",
+    });
+
+    // Must be blocked — NOT forwarded to createImportRunFromListings
+    expect(mocks.createImportRunFromListings).not.toHaveBeenCalled();
+    expect(result.blocked).toBeDefined();
+    expect(result.blocked?.reason).toContain("Could not verify the existing published portfolio");
+    expect(result.summary.run_id).toBe("");
+    // Must stamp sync_status=error on agent_feed_integrations
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ sync_status: "error" }),
+    );
+    // assessFeedSafety must NOT have been consulted (we blocked before reaching it)
+    expect(mocks.assessFeedSafety).not.toHaveBeenCalled();
   });
 
   it("(c2) empty-feed does NOT block when connector has tombstones capability", async () => {
