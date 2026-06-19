@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
-import { generateUniqueSlug } from "@/services/marketplace/provider-service";
+import { generateUniqueSlug } from "@/lib/marketplace/provider-slug";
 import { buildProviderRow } from "./tradesperson-onboarding-mapping";
 import { cn } from "@/lib/utils";
 

@@ -17,52 +17,7 @@ import type {
 import { providerProfileSchema } from "@/lib/validators/marketplace-schemas";
 import { validateFile, sanitizeBuffer } from "@/lib/marketplace/file-validator";
 import { geocodePostcode } from "@/services/geocoding/postcodes-io";
-
-// -- Slug generation ---------------------------------------------------------
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-export async function generateUniqueSlug(
-  supabase: SupabaseClient,
-  businessName: string
-): Promise<string> {
-  const base = slugify(businessName);
-
-  // Check if base slug exists
-  const { data: existing } = await supabase
-    .from("service_provider_details")
-    .select("slug")
-    .eq("slug", base)
-    .maybeSingle();
-
-  if (!existing) {
-    return base;
-  }
-
-  // Append incrementing suffix until unique
-  let suffix = 2;
-  let candidate = `${base}-${suffix}`;
-
-  while (true) {
-    const { data: check } = await supabase
-      .from("service_provider_details")
-      .select("slug")
-      .eq("slug", candidate)
-      .maybeSingle();
-
-    if (!check) {
-      return candidate;
-    }
-
-    suffix++;
-    candidate = `${base}-${suffix}`;
-  }
-}
+import { generateUniqueSlug } from "@/lib/marketplace/provider-slug";
 
 // -- Provider profile CRUD ---------------------------------------------------
 
