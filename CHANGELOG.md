@@ -30,6 +30,33 @@ for counsel review. Analytics funnel + Sentry failure capture wired. Coverage:
 54 unit, 20 db-tests, integration (real data + OTP/claim + agent-lead), and a
 13-scenario E2E + accessibility suite (local Supabase + Mailpit).
 
+## [0.2.1.0] - 2026-06-17 — Property-detail Local Area data layers
+
+Real, source-attributed local-area data on every property page, each layer
+self-gating so a widget only shows when it has real data. Buyers see what's
+nearby — schools, crime, stations, broadband, flood risk, and how walkable,
+transit-served, and bikeable the location is.
+
+### Added
+
+- **Transport** — nearby rail/tube/tram/ferry stations from NaPTAN, stored in a
+  `transport_stops` PostGIS table with a `get_nearby_transport_stops` RPC
+  (dedupes multi-entrance stations to the nearest). Ingest:
+  `scripts/ingest-naptan.mjs`.
+- **Broadband** — Ofcom Connected Nations availability by postcode
+  (`broadband_coverage`), shown as Superfast/Ultrafast/Gigabit tiers (no
+  fabricated Mbps — Ofcom's open data is availability %). Ingest:
+  `scripts/ingest-ofcom-broadband.mjs`.
+- **Flood risk** — Environment Agency NaFRA2 band (Very Low → High) via a live
+  WMS point query, Redis-cached. `flood-service.ts`.
+- **Mobility scores** — independent walk/transit/bike scores (0–100),
+  precomputed into `mobility_scores` from OpenStreetMap (Overpass) plus our
+  transport data. Not affiliated with Walk Score®. Ingest:
+  `scripts/ingest-mobility-scores.ts`, with a daily backfill workflow
+  (`.github/workflows/mobility-backfill.yml`).
+- All ingest scripts verify TLS against a pinned Supabase root CA
+  (`scripts/certs/supabase-prod-ca-2021.crt`).
+
 ## [0.2.0.0] - 2026-06-15 — Wandsworth median sold-price maps
 
 Median registered sold price by postcode district, visualised as a colour-coded
