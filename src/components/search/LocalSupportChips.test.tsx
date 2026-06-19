@@ -9,14 +9,14 @@ describe("LocalSupportChips", () => {
     expect(screen.getByRole("link", { name: /electrician/i })).toBeInTheDocument();
   });
 
-  it("points every chip at the working marketplace directory with a category query", () => {
+  it("points every chip at the tradespeople directory with a category query", () => {
     render(<LocalSupportChips />);
     const links = screen.getAllByRole("link");
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) {
       const href = link.getAttribute("href");
       expect(href).toBeTruthy();
-      expect(href).toMatch(/^\/marketplace\?category=/);
+      expect(href).toMatch(/^\/services\/tradespeople\?category=/);
     }
   });
 

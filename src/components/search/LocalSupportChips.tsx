@@ -43,15 +43,13 @@ type LocalSupportChipsProps = Readonly<{
 }>;
 
 function buildHref(category: ServiceCategorySlug, postcode?: string): string {
-  // The category-filtered trades directory (/services/tradespeople) is the
-  // natural target, but it currently 500s in production (a pre-existing,
-  // app-wide bug — the main nav and marketplace tiles hit it too). Until that
-  // route is fixed, link to the working /marketplace trades hub so the chip
-  // always resolves to a live page. category + postcode are carried for when
-  // the filtered directory is restored.
+  // Link to the category-filtered trades directory. The route previously 500'd
+  // app-wide (flat RPC row vs nested card shape), so chips were temporarily
+  // pointed at /marketplace (#53); that 500 is now fixed (#55), so they point
+  // back at the filtered directory. postcode is carried so it pre-filters by area.
   const params = new URLSearchParams({ category });
   if (postcode) params.set("postcode", postcode);
-  return `/marketplace?${params.toString()}`;
+  return `/services/tradespeople?${params.toString()}`;
 }
 
 export function LocalSupportChips({
