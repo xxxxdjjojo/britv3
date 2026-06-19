@@ -78,7 +78,7 @@ export function ProviderAssignment(
 
       <div className="mt-3 flex flex-wrap gap-2">
         <Link
-          href="/marketplace/search?category=maintenance"
+          href="/services/tradespeople"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-surface dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"

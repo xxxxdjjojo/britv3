@@ -34,12 +34,20 @@ export default async function MaintenanceRequestPage({
 
   if (request.assigned_provider_id) {
     const { data: providerData } = await supabase
-      .from("service_provider_profiles")
-      .select("id, business_name, category, average_rating, city")
-      .eq("id", request.assigned_provider_id)
+      .from("service_provider_details")
+      .select("user_id, business_name, services, trust_score, base_location")
+      .eq("user_id", request.assigned_provider_id)
       .maybeSingle();
 
-    assignedProvider = providerData ?? null;
+    assignedProvider = providerData
+      ? {
+          id: providerData.user_id,
+          business_name: providerData.business_name,
+          category: providerData.services?.[0] ?? null,
+          average_rating: providerData.trust_score ?? null,
+          city: providerData.base_location ?? null,
+        }
+      : null;
   }
 
   // Generate signed URLs for photos
