@@ -14,6 +14,9 @@ export type SortOption = "most_recent" | "price_asc" | "price_desc" | "most_popu
 export type ViewMode = "list" | "map";
 export type SoldWithin = "3m" | "6m" | "12m" | "all";
 
+export const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"] as const;
+export type BedroomOption = (typeof BEDROOM_OPTIONS)[number];
+
 export type SearchState = {
   listingType: ListingType;
   q: string;
@@ -23,15 +26,13 @@ export type SearchState = {
   maxPrice: string;
   minSqft: string;
   maxSqft: string;
-  bedsMin: string;
-  bedsMax: string;
+  bedsMin: BedroomOption;
+  bedsMax: BedroomOption;
   soldWithin: SoldWithin;
   sort: SortOption;
   view: ViewMode;
   page: number;
 };
-
-export const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"] as const;
 
 export const DEFAULT_SEARCH_STATE: SearchState = {
   listingType: "all",
@@ -59,10 +60,14 @@ const VALID_SORTS: ReadonlySet<SortOption> = new Set([
 
 const VALID_VIEWS: ReadonlySet<ViewMode> = new Set(["list", "map"]);
 
-const VALID_BEDS: ReadonlySet<string> = new Set(BEDROOM_OPTIONS);
+const VALID_BEDS: ReadonlySet<BedroomOption> = new Set(BEDROOM_OPTIONS);
 
 const VALID_SOLD_WITHIN: ReadonlySet<SoldWithin> = new Set(["3m", "6m", "12m", "all"]);
 
+/**
+ * Serialize search state into a URLSearchParams query string.
+ * Default values are omitted so an untouched search produces an empty string.
+ */
 export function serializeSearchState(state: SearchState): string {
   const params = new URLSearchParams();
 
@@ -92,6 +97,7 @@ export function serializeSearchState(state: SearchState): string {
   return params.toString();
 }
 
+/** Resolve the listing type from the raw `type` query param (handles legacy aliases). */
 function parseListingType(raw: string | null): ListingType {
   if (raw === "rent") return "rent";
   if (raw === "buy" || raw === "sale") return "sale";
@@ -103,8 +109,8 @@ function parseList(raw: string | null): string[] {
   return raw?.split(",").map((s) => s.trim()).filter(Boolean) ?? [];
 }
 
-function parseBeds(raw: string | null, fallback: string): string {
-  return raw && VALID_BEDS.has(raw) ? raw : fallback;
+function parseBeds(raw: string | null, fallback: BedroomOption): BedroomOption {
+  return raw && VALID_BEDS.has(raw as BedroomOption) ? (raw as BedroomOption) : fallback;
 }
 
 function parseSoldWithin(raw: string | null): SoldWithin {
@@ -113,6 +119,10 @@ function parseSoldWithin(raw: string | null): SoldWithin {
     : DEFAULT_SEARCH_STATE.soldWithin;
 }
 
+/**
+ * Parse URLSearchParams into a fully-populated SearchState, falling back to
+ * defaults for anything missing or invalid.
+ */
 export function parseSearchState(params: URLSearchParams): SearchState {
   const sortRaw = params.get("sort") as SortOption | null;
   const viewRaw = params.get("view") as ViewMode | null;
