@@ -6,6 +6,7 @@
 
 import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { brandConfig, emailFromHeader } from "@/config/brand";
 import type {
   AgentTeamMember,
   AgentBranch,
@@ -73,11 +74,12 @@ export async function inviteTeamMember(
   // Send invite email — fire-and-forget, fail silently
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
+    const brandName = brandConfig.displayName;
     await resend.emails.send({
-      from: "Britestate <noreply@britestate.co.uk>",
+      from: emailFromHeader(),
       to: input.email,
-      subject: "You have been invited to join a team on Britestate",
-      html: `<p>Hi ${input.name},</p><p>You have been invited to join an estate agent team on Britestate with the role of <strong>${input.role}</strong>.</p><p>Please log in to Britestate to accept your invitation.</p>`,
+      subject: `You have been invited to join a team on ${brandName}`,
+      html: `<p>Hi ${input.name},</p><p>You have been invited to join an estate agent team on ${brandName} with the role of <strong>${input.role}</strong>.</p><p>Please log in to ${brandName} to accept your invitation.</p>`,
     });
   } catch {
     // Email send failure should not block the invite

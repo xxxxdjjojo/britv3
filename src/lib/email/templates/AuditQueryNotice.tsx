@@ -16,6 +16,7 @@ import {
   Button,
   Section,
 } from "@react-email/components";
+import { appUrl, brandConfig } from "@/config/brand";
 
 type AuditQueryNoticeProps = Readonly<{
   ppdAddress: string;
@@ -33,9 +34,11 @@ export default function AuditQueryNotice({
   pricePaid = "",
   applicantName = "An applicant",
   firstContactDate = "",
-  dashboardUrl = "https://britestate.co.uk/dashboard/agent/introductions",
+  dashboardUrl = appUrl("/dashboard/agent/introductions"),
   matchId = "",
 }: AuditQueryNoticeProps) {
+  const brandName = brandConfig.displayName;
+
   return (
     <Html>
       <Head />
@@ -43,7 +46,7 @@ export default function AuditQueryNotice({
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logoText}>Britestate</Heading>
+            <Heading style={logoText}>{brandName}</Heading>
           </Section>
           <Section style={content}>
             <Heading as="h2" style={title}>

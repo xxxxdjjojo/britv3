@@ -108,7 +108,7 @@ export function PaymentFailedEmail({
           </Text>
         )}
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

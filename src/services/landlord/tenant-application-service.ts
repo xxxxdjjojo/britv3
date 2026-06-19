@@ -6,6 +6,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { brandConfig, emailFromHeader } from "@/config/brand";
 import type { TenantApplication, TenantApplicationStatus } from "@/types/landlord";
 import { escapeHtml } from "@/lib/escape-html";
 
@@ -31,7 +32,7 @@ function getResend(): Resend | null {
   return new Resend(apiKey);
 }
 
-const FROM_ADDRESS = "Britestate <notifications@britestate.com>";
+const FROM_ADDRESS = emailFromHeader();
 
 // -- Service functions -------------------------------------------------------
 
@@ -281,7 +282,7 @@ export async function acceptApplication(
       await resend.emails.send({
         from: FROM_ADDRESS,
         to: application.applicant_email,
-        subject: "Your rental application has been approved — Britestate",
+        subject: `Your rental application has been approved - ${brandConfig.displayName}`,
         html: renderAcceptanceEmail(application.applicant_name),
       });
     } catch (err) {
@@ -307,7 +308,7 @@ export async function rejectApplication(
       await resend.emails.send({
         from: FROM_ADDRESS,
         to: application.applicant_email,
-        subject: "Update on your rental application — Britestate",
+        subject: `Update on your rental application - ${brandConfig.displayName}`,
         html: renderRejectionEmail(application.applicant_name),
       });
     } catch (err) {
@@ -326,12 +327,12 @@ function renderAcceptanceEmail(name: string): string {
 <body style="font-family:-apple-system,sans-serif;margin:0;padding:0;background:#f8f9fa;">
 <div style="max-width:600px;margin:0 auto;padding:20px;">
   <div style="background:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
-    <h1 style="color:#fff;margin:0;font-size:20px;">Britestate</h1>
+    <h1 style="color:#fff;margin:0;font-size:20px;">${brandConfig.displayName}</h1>
   </div>
   <div style="background:#fff;padding:32px;border-radius:0 0 8px 8px;">
     <p style="font-size:16px;color:#333;">Dear ${safeName},</p>
     <p style="font-size:15px;color:#555;">Congratulations! Your rental application has been approved. The landlord will be in touch shortly with next steps.</p>
-    <p style="font-size:14px;color:#999;margin-top:32px;">The Britestate Team</p>
+    <p style="font-size:14px;color:#999;margin-top:32px;">The ${brandConfig.displayName} Team</p>
   </div>
 </div>
 </body>
@@ -346,12 +347,12 @@ function renderRejectionEmail(name: string): string {
 <body style="font-family:-apple-system,sans-serif;margin:0;padding:0;background:#f8f9fa;">
 <div style="max-width:600px;margin:0 auto;padding:20px;">
   <div style="background:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
-    <h1 style="color:#fff;margin:0;font-size:20px;">Britestate</h1>
+    <h1 style="color:#fff;margin:0;font-size:20px;">${brandConfig.displayName}</h1>
   </div>
   <div style="background:#fff;padding:32px;border-radius:0 0 8px 8px;">
     <p style="font-size:16px;color:#333;">Dear ${safeName},</p>
-    <p style="font-size:15px;color:#555;">Thank you for your interest. Unfortunately, your rental application was not successful on this occasion. We encourage you to continue searching for your ideal property on Britestate.</p>
-    <p style="font-size:14px;color:#999;margin-top:32px;">The Britestate Team</p>
+    <p style="font-size:15px;color:#555;">Thank you for your interest. Unfortunately, your rental application was not successful on this occasion. We encourage you to continue searching for your ideal property on ${brandConfig.displayName}.</p>
+    <p style="font-size:14px;color:#999;margin-top:32px;">The ${brandConfig.displayName} Team</p>
   </div>
 </div>
 </body>

@@ -18,7 +18,7 @@ export function AccountDeletionEmail({
   });
 
   return (
-    <EmailWrapper previewText="Your Britestate account has been deleted">
+    <EmailWrapper previewText="Your TrueDeed account has been deleted">
       <EmailHeader />
       <Section style={{ padding: "32px" }}>
         <Text
@@ -40,7 +40,7 @@ export function AccountDeletionEmail({
             lineHeight: "1.6",
           }}
         >
-          Hi {firstName}, your Britestate account has been successfully deleted on{" "}
+          Hi {firstName}, your TrueDeed account has been successfully deleted on{" "}
           <strong style={{ color: "#0A0A0B" }}>{formattedDate}</strong>.
         </Text>
 
@@ -90,7 +90,7 @@ export function AccountDeletionEmail({
           </Text>
         )}
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

@@ -41,7 +41,7 @@ export function ReferralTierUpgradeEmail({
           View Your Tier
         </EmailButton>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

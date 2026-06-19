@@ -111,7 +111,7 @@ export function PropertyAlertEmail({
           </EmailButton>
         </div>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

@@ -3,6 +3,7 @@ import type { FlagOutcomeEmailProps } from "@/types/email";
 import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
+import { brandConfig } from "@/config/brand";
 
 export function FlagOutcomeEmail({
   recipientFirstName,
@@ -71,15 +72,15 @@ export function FlagOutcomeEmail({
         >
           If you have any further concerns, please contact our support team at{" "}
           <a
-            href="mailto:support@britestate.co.uk"
+            href={`mailto:${brandConfig.supportEmail}`}
             style={{ color: "#1B4D3E", textDecoration: "underline" }}
           >
-            support@britestate.co.uk
+            {brandConfig.supportEmail}
           </a>
           .
         </Text>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

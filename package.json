@@ -12,6 +12,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit --incremental false",
     "check:migrations": "node scripts/check-migration-versions.mjs",
+    "check:brand": "node --no-warnings scripts/check-legacy-brand-references.ts",
     "test": "vitest",
     "test:db": "RUN_DB_TESTS=1 vitest run --config vitest.db.config.ts db-tests --testTimeout=120000",
     "test:e2e": "playwright test",

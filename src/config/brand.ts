@@ -25,3 +25,24 @@ export const brandConfig = {
 export function appBaseUrl(): string {
   return process.env.NEXT_PUBLIC_APP_URL ?? brandConfig.canonicalUrl;
 }
+
+function joinUrl(baseUrl: string, path = ""): string {
+  if (!path) return baseUrl;
+  if (/^https?:\/\//.test(path)) return path;
+
+  const cleanBase = baseUrl.replace(/\/+$/, "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${cleanBase}${cleanPath}`;
+}
+
+export function brandUrl(path = ""): string {
+  return joinUrl(brandConfig.canonicalUrl, path);
+}
+
+export function appUrl(path = ""): string {
+  return joinUrl(appBaseUrl(), path);
+}
+
+export function emailFromHeader(): string {
+  return `${brandConfig.displayName} <${brandConfig.fromEmail}>`;
+}

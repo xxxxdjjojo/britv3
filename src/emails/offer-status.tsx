@@ -97,7 +97,7 @@ export function OfferStatusEmail({
           </EmailButton>
         )}
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

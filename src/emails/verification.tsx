@@ -35,7 +35,7 @@ export function VerificationEmail({
             lineHeight: "1.6",
           }}
         >
-          Hi {firstName}, thank you for joining Britestate. To verify your account, click the
+          Hi {firstName}, thank you for joining TrueDeed. To verify your account, click the
           button below.
         </Text>
 
@@ -51,7 +51,7 @@ export function VerificationEmail({
             lineHeight: "1.6",
           }}
         >
-          This link will expire in {hours} hours. If you did not create a Britestate account, you
+          This link will expire in {hours} hours. If you did not create a TrueDeed account, you
           can safely ignore this email.
         </Text>
 
@@ -77,7 +77,7 @@ export function VerificationEmail({
           {verificationUrl}
         </Link>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }
