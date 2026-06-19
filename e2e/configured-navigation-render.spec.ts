@@ -51,6 +51,23 @@ async function collectPublicConfiguredHrefs(): Promise<string[]> {
 }
 
 test.describe("configured public navigation render", () => {
+  test("configured blog category links render filtered category content", async ({
+    page,
+  }) => {
+    const response = await page.goto("/blog?category=buying", {
+      waitUntil: "domcontentloaded",
+    });
+
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page.getByRole("heading").first()).toBeVisible();
+    await expect(
+      page.getByText(/First-Time Buyer's Complete Guide/i),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Renters' Rights Bill Explained/i),
+    ).not.toBeVisible();
+  });
+
   test("public configured destinations render non-error pages with screenshots", async ({
     page,
   }, testInfo) => {

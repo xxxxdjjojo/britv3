@@ -41,7 +41,18 @@ export function TradespersonOnboarding(
   const [coverageAreas, setCoverageAreas] = useState<string[]>([]);
   const [qualifications, setQualifications] = useState("");
   const [insuranceNumber, setInsuranceNumber] = useState("");
+  const [companyNumber, setCompanyNumber] = useState("");
   const [accreditations, setAccreditations] = useState<string[]>([]);
+
+  // Companies House verification (only when a limited-company number is provided;
+  // sole traders leave it blank and are not gated).
+  const [verifying, setVerifying] = useState(false);
+  const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
+  const [companyVerification, setCompanyVerification] = useState<{
+    status: string | null;
+    incorporationDate: string | null;
+    pendingReview: boolean;
+  } | null>(null);
   const [availableDays, setAvailableDays] = useState<string[]>(["Mon", "Tue", "Wed", "Thu", "Fri"]);
   const [responseTime, setResponseTime] = useState("24h");
 
@@ -50,6 +61,66 @@ export function TradespersonOnboarding(
   }
 
   const requiresGasSafe = tradeCategories.includes("Gas Engineer");
+
+  const VERIFY_REASONS: Record<string, string> = {
+    company_under_two_years:
+      "Companies must be registered with Companies House for at least 2 years to onboard.",
+    company_not_found:
+      "We couldn't find that company number on Companies House. Please check and try again.",
+    company_not_active:
+      "This company is not listed as active on Companies House.",
+  };
+
+  /** Advance from the Credentials step, verifying the company number first if one was entered. */
+  async function handleCredentialsContinue() {
+    setVerifyMessage(null);
+    const number = companyNumber.trim();
+
+    // Sole traders (no company number) proceed without a Companies House check.
+    if (!number) {
+      setCompanyVerification(null);
+      setStep(3);
+      return;
+    }
+
+    setVerifying(true);
+    try {
+      const res = await fetch("/api/verification/company", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ companyNumber: number }),
+      });
+      const data = await res.json();
+
+      if (data.eligible) {
+        setCompanyVerification({
+          status: data.companyStatus ?? null,
+          incorporationDate: data.incorporationDate ?? null,
+          pendingReview: false,
+        });
+        setStep(3);
+        return;
+      }
+      if (data.serviceError) {
+        setCompanyVerification({
+          status: data.companyStatus ?? null,
+          incorporationDate: data.incorporationDate ?? null,
+          pendingReview: true,
+        });
+        setStep(3);
+        return;
+      }
+      setVerifyMessage(
+        VERIFY_REASONS[data.reason as string] ??
+          "This company could not be verified for onboarding.",
+      );
+    } catch {
+      setCompanyVerification({ status: null, incorporationDate: null, pendingReview: true });
+      setStep(3);
+    } finally {
+      setVerifying(false);
+    }
+  }
 
   // Auto-select Gas Safe when Gas Engineer trade is chosen
   useEffect(() => {
@@ -64,6 +135,7 @@ export function TradespersonOnboarding(
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        const trimmedCompanyNumber = companyNumber.trim();
         await supabase.from("service_provider_profiles").upsert(
           {
             user_id: user.id,
@@ -73,6 +145,17 @@ export function TradespersonOnboarding(
             accreditations,
             available_days: availableDays,
             response_time: responseTime,
+            // Companies House fields — only set when a limited-company number was given.
+            ...(trimmedCompanyNumber
+              ? {
+                  company_number: sanitize(trimmedCompanyNumber),
+                  companies_house_status: companyVerification?.pendingReview
+                    ? "pending_review"
+                    : "verified",
+                  companies_house_verified_at: new Date().toISOString(),
+                  incorporation_date: companyVerification?.incorporationDate ?? null,
+                }
+              : {}),
           },
           { onConflict: "user_id" },
         );
@@ -141,6 +224,14 @@ export function TradespersonOnboarding(
             <Input placeholder="e.g. POL-12345678" value={insuranceNumber} onChange={(e) => setInsuranceNumber(e.target.value)} className="h-11" />
           </div>
           <div className="space-y-2">
+            <Label>Companies House number <span className="text-neutral-400 text-xs">(limited companies only)</span></Label>
+            <Input placeholder="e.g. 09876543" value={companyNumber} onChange={(e) => { setCompanyNumber(e.target.value); setVerifyMessage(null); }} className="h-11" />
+            <p className="text-xs text-neutral-400">Limited companies must be registered for at least 2 years. Sole traders can leave this blank.</p>
+            {verifyMessage && (
+              <p className="text-xs text-red-600">{verifyMessage}</p>
+            )}
+          </div>
+          <div className="space-y-2">
             <Label>Accreditations</Label>
             <div className="flex flex-wrap gap-1.5">
               {ACCREDITATIONS.map((acc) => {
@@ -175,11 +266,11 @@ export function TradespersonOnboarding(
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setStep(1)} className="flex-1">Back</Button>
             <Button
-              onClick={() => setStep(3)}
+              onClick={handleCredentialsContinue}
               className="flex-1"
-              disabled={requiresGasSafe && !accreditations.includes("Gas Safe")}
+              disabled={(requiresGasSafe && !accreditations.includes("Gas Safe")) || verifying}
             >
-              Continue
+              {verifying ? "Verifying…" : "Continue"}
             </Button>
           </div>
           <SkipLink />

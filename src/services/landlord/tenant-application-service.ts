@@ -261,6 +261,19 @@ export async function updateApplicationStatus(
     );
   }
 
+  // Kick off referencing when an application enters the referencing stage.
+  // Best-effort: a referencing failure must not roll back the status change.
+  if (newStatus === "referencing") {
+    try {
+      const { startReferencing } = await import(
+        "@/services/referencing/referencing-service"
+      );
+      await startReferencing(supabase, applicationId);
+    } catch (err) {
+      console.error("[tenant-application-service] startReferencing failed:", err);
+    }
+  }
+
   return data as TenantApplication;
 }
 
