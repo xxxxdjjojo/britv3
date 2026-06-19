@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   approveFeedImportItem,
+  archiveWithdrawnFeedListings,
+  assessFeedSafety,
   createDeterministicReapitImportRun,
   isPublishEligible,
   normalizeReapitFixture,
@@ -19,6 +21,33 @@ function createMutationChain(result: unknown) {
   };
 
   return chain;
+}
+
+type FlexibleResult = { data?: unknown; error?: unknown };
+
+/**
+ * Awaitable Supabase query-chain stub: every builder method returns the chain,
+ * the chain is thenable (so `await from().update().eq()` resolves), and
+ * single()/maybeSingle() resolve the configured result.
+ */
+function createFlexibleChain(result: FlexibleResult = { data: null, error: null }) {
+  const resolved = { data: null, error: null, ...result };
+  const chain: Record<string, unknown> = {};
+  const self = () => chain as never;
+  Object.assign(chain, {
+    insert: vi.fn(self),
+    upsert: vi.fn(self),
+    update: vi.fn(self),
+    delete: vi.fn(self),
+    select: vi.fn(self),
+    eq: vi.fn(self),
+    order: vi.fn(self),
+    single: vi.fn().mockResolvedValue(resolved),
+    maybeSingle: vi.fn().mockResolvedValue(resolved),
+    then: (resolve: (value: FlexibleResult) => unknown) =>
+      Promise.resolve(resolved).then(resolve),
+  });
+  return chain as Record<string, ReturnType<typeof vi.fn>> & FlexibleResult;
 }
 
 describe("agent-feed-import-service", () => {
@@ -118,44 +147,31 @@ describe("agent-feed-import-service", () => {
     expect(chain.eq).toHaveBeenCalledWith("id", "item-1");
   });
 
-  it("publishes approved items into canonical draft listing tables", async () => {
+  function buildPublishSupabase(options: {
+    existingLink: { listing_id: string; property_id: string } | null;
+  }) {
     const validListing = normalizeReapitFixture()[0];
-    const itemFetchChain = {
-      select: vi.fn(() => itemFetchChain),
-      eq: vi.fn(() => itemFetchChain),
-      single: vi.fn().mockResolvedValue({
-        data: {
-          id: "item-1",
-          integration_id: "integration-1",
-          agent_id: "agent-1",
-          external_id: validListing.external_id,
-          status: "approved",
-          normalized_payload: validListing,
-        },
-        error: null,
-      }),
-    };
-    const itemUpdateChain = createMutationChain({
+    const itemFetchChain = createFlexibleChain({
+      data: {
+        id: "item-1",
+        integration_id: "integration-1",
+        agent_id: "agent-1",
+        external_id: validListing.external_id,
+        status: "approved",
+        normalized_payload: validListing,
+      },
+    });
+    const itemUpdateChain = createFlexibleChain({
       data: { id: "item-1", status: "published" },
-      error: null,
     });
-    const propertyChain = createMutationChain({
-      data: { id: "property-1" },
-      error: null,
+    const propertyChain = createFlexibleChain({ data: { id: "property-1" } });
+    const listingChain = createFlexibleChain({
+      data: { id: "listing-1", status: "active" },
     });
-    const listingChain = createMutationChain({
-      data: { id: "listing-1", status: "draft" },
-      error: null,
-    });
-    const mediaChain = {
-      insert: vi.fn().mockResolvedValue({ data: [], error: null }),
-    };
-    const listingLinkChain = {
-      upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-    };
-    const mediaLinkChain = {
-      upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
-    };
+    const mediaChain = createFlexibleChain({ data: [] });
+    const listingLinkChain = createFlexibleChain({ data: options.existingLink });
+    const mediaLinkChain = createFlexibleChain({ data: null });
+
     let itemCallCount = 0;
     const supabase = {
       from: vi.fn((table: string) => {
@@ -170,39 +186,114 @@ describe("agent-feed-import-service", () => {
         if (table === "feed_media_links") return mediaLinkChain;
         throw new Error(`Unexpected table ${table}`);
       }),
-      rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+      rpc: vi.fn(() => ({
+        then: (resolve: (value: { data: null; error: null }) => unknown) =>
+          Promise.resolve({ data: null, error: null }).then(resolve),
+      })),
     };
 
-    const result = await publishApprovedImportItem(
-      supabase as never,
-      "agent-1",
-      "item-1",
-    );
+    return { supabase, validListing, propertyChain, listingChain, listingLinkChain, itemUpdateChain };
+  }
 
-    expect(result).toMatchObject({ listing_id: "listing-1", property_id: "property-1" });
+  it("publishes approved items into canonical ACTIVE listings (searchable + mappable)", async () => {
+    const { supabase, validListing, propertyChain, listingChain } = buildPublishSupabase({
+      existingLink: null,
+    });
+
+    const result = await publishApprovedImportItem(supabase as never, "agent-1", "item-1");
+
+    expect(result).toMatchObject({
+      listing_id: "listing-1",
+      property_id: "property-1",
+      updated: false,
+    });
     expect(propertyChain.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         address_line1: validListing.address_line1,
         planning_permission_status: "none_known",
       }),
     );
+    // Published as PUBLIC, not draft — the three-action "Publish" makes it live.
     expect(listingChain.insert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        property_id: "property-1",
-        user_id: "agent-1",
-        status: "draft",
+      expect.objectContaining({ user_id: "agent-1", status: "active" }),
+    );
+    // Coordinates set (map) + search index refreshed.
+    expect(supabase.rpc).toHaveBeenCalledWith(
+      "set_property_coordinates",
+      expect.objectContaining({ p_property_id: "property-1" }),
+    );
+    expect(supabase.rpc).toHaveBeenCalledWith("refresh_search_listings");
+  });
+
+  it("re-publishing an external listing UPDATES the existing listing (no duplicate)", async () => {
+    const { supabase, listingChain, propertyChain } = buildPublishSupabase({
+      existingLink: { listing_id: "listing-existing", property_id: "property-existing" },
+    });
+
+    const result = await publishApprovedImportItem(supabase as never, "agent-1", "item-1");
+
+    expect(result).toMatchObject({
+      listing_id: "listing-existing",
+      property_id: "property-existing",
+      updated: true,
+    });
+    // The update path must NOT insert a new property or listing.
+    expect(propertyChain.insert).not.toHaveBeenCalled();
+    expect(listingChain.insert).not.toHaveBeenCalled();
+    expect(listingChain.update).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "active" }),
+    );
+  });
+
+  it("blocks an empty full feed from withdrawing a published portfolio", () => {
+    expect(assessFeedSafety({ incomingItemCount: 0, previouslyPublishedCount: 12 })).toEqual({
+      safe: false,
+      reason: expect.stringContaining("12"),
+    });
+    expect(assessFeedSafety({ incomingItemCount: 0, previouslyPublishedCount: 0 })).toEqual({
+      safe: true,
+      reason: null,
+    });
+    expect(assessFeedSafety({ incomingItemCount: 3, previouslyPublishedCount: 12 })).toEqual({
+      safe: true,
+      reason: null,
+    });
+  });
+
+  it("archives canonical listings for withdrawn source records (never deletes)", async () => {
+    const runChain = createFlexibleChain({
+      data: { id: "run-1", integration_id: "integration-1" },
+    });
+    const itemsChain = createFlexibleChain({
+      data: [{ external_id: "RPT-1003", status: "withdrawn" }],
+    });
+    const linkChain = createFlexibleChain({
+      data: { listing_id: "listing-3", property_id: "property-3" },
+    });
+    const listingChain = createFlexibleChain({ data: null });
+
+    let itemCallCount = 0;
+    const supabase = {
+      from: vi.fn((table: string) => {
+        if (table === "feed_import_runs") return runChain;
+        if (table === "feed_import_items") {
+          itemCallCount += 1;
+          return itemsChain;
+        }
+        if (table === "feed_listing_links") return linkChain;
+        if (table === "listings") return listingChain;
+        throw new Error(`Unexpected table ${table}`);
       }),
-    );
-    expect(listingLinkChain.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        integration_id: "integration-1",
-        external_listing_id: "RPT-1001",
-        listing_id: "listing-1",
-      }),
-      { onConflict: "integration_id,external_listing_id" },
-    );
-    expect(itemUpdateChain.update).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "published", canonical_listing_id: "listing-1" }),
-    );
+      rpc: vi.fn(() => ({
+        then: (resolve: (value: { data: null; error: null }) => unknown) =>
+          Promise.resolve({ data: null, error: null }).then(resolve),
+      })),
+    };
+
+    const result = await archiveWithdrawnFeedListings(supabase as never, "agent-1", "run-1");
+
+    expect(result).toEqual({ archived_count: 1 });
+    expect(listingChain.update).toHaveBeenCalledWith({ status: "archived" });
+    expect(listingChain.delete).not.toHaveBeenCalled();
   });
 });

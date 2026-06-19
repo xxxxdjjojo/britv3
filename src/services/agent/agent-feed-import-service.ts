@@ -19,6 +19,8 @@ type ReapitFixtureListing = {
     line2?: string;
     city?: string;
     postcode?: string;
+    latitude?: number;
+    longitude?: number;
   };
   property: {
     type?: PropertyType;
@@ -54,6 +56,8 @@ export type NormalizedFeedListing = {
   address_line2: string | null;
   city: string;
   postcode: string;
+  latitude: number | null;
+  longitude: number | null;
   property_type: PropertyType;
   bedrooms: number;
   bathrooms: number;
@@ -113,6 +117,8 @@ const REAPIT_FIXTURE: ReapitFixtureListing[] = [
       line1: "12 Queen Street",
       city: "London",
       postcode: "SW1A 1AA",
+      latitude: 51.4998,
+      longitude: -0.134,
     },
     property: {
       type: "flat",
@@ -147,6 +153,8 @@ const REAPIT_FIXTURE: ReapitFixtureListing[] = [
       line1: "44 Market Road",
       city: "London",
       postcode: "N1 9AB",
+      latitude: 51.5416,
+      longitude: -0.114,
     },
     property: {
       type: "terraced",
@@ -173,6 +181,8 @@ const REAPIT_FIXTURE: ReapitFixtureListing[] = [
       line1: "8 Removed Close",
       city: "London",
       postcode: "E1 1AA",
+      latitude: 51.5155,
+      longitude: -0.072,
     },
     property: {
       type: "flat",
@@ -226,6 +236,8 @@ function normalizeReapitListing(listing: ReapitFixtureListing): NormalizedFeedLi
     address_line2: listing.address.line2 ?? null,
     city: listing.address.city ?? "",
     postcode: listing.address.postcode ?? "",
+    latitude: listing.address.latitude ?? null,
+    longitude: listing.address.longitude ?? null,
     property_type: listing.property.type ?? "other",
     bedrooms: listing.property.bedrooms ?? 0,
     bathrooms: listing.property.bathrooms ?? 0,
@@ -294,6 +306,32 @@ export function validateNormalizedListing(listing: NormalizedFeedListing): strin
 
 export function isPublishEligible(listing: NormalizedFeedListing): boolean {
   return listing.status === "available" && validateNormalizedListing(listing).length === 0;
+}
+
+export type FeedSafetyAssessment = {
+  safe: boolean;
+  reason: string | null;
+};
+
+/**
+ * Empty-feed safety rule. A full sync that returns zero source records must NOT
+ * be allowed to silently withdraw an entire previously-published portfolio.
+ * When that happens the run is blocked for explicit human approval instead.
+ */
+export function assessFeedSafety(input: {
+  incomingItemCount: number;
+  previouslyPublishedCount: number;
+}): FeedSafetyAssessment {
+  if (input.incomingItemCount === 0 && input.previouslyPublishedCount > 0) {
+    return {
+      safe: false,
+      reason:
+        `Refusing to process an empty feed: ${input.previouslyPublishedCount} ` +
+        "previously published listing(s) would be withdrawn. Manual approval required.",
+    };
+  }
+
+  return { safe: true, reason: null };
 }
 
 export async function createDeterministicReapitImportRun(
@@ -471,11 +509,76 @@ type FeedImportItemRow = {
   normalized_payload: NormalizedFeedListing;
 };
 
+type ExistingListingLink = {
+  listing_id: string | null;
+  property_id: string | null;
+};
+
+/**
+ * Resolve a prior canonical listing for this feed record, so re-publishing an
+ * already-imported external listing UPDATES it instead of creating a duplicate.
+ * Keyed on (integration_id, external_listing_id) — the feed's stable identity.
+ */
+async function findExistingListingLink(
+  supabase: SupabaseClient,
+  agentId: string,
+  integrationId: string,
+  externalListingId: string,
+): Promise<ExistingListingLink | null> {
+  const { data, error } = await supabase
+    .from("feed_listing_links")
+    .select("listing_id, property_id")
+    .eq("integration_id", integrationId)
+    .eq("external_listing_id", externalListingId)
+    .eq("agent_id", agentId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to resolve existing feed listing link: ${error.message}`);
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const row = data as Record<string, unknown>;
+  return {
+    listing_id: row.listing_id == null ? null : String(row.listing_id),
+    property_id: row.property_id == null ? null : String(row.property_id),
+  };
+}
+
+function propertyValuesFor(listing: NormalizedFeedListing) {
+  return {
+    address_line1: listing.address_line1,
+    address_line2: listing.address_line2,
+    city: listing.city,
+    postcode: listing.postcode,
+    property_type: listing.property_type,
+    bedrooms: listing.bedrooms,
+    bathrooms: listing.bathrooms,
+    reception_rooms: listing.reception_rooms,
+    square_footage: listing.square_footage,
+    title: listing.title,
+    description: listing.description,
+    features: listing.features,
+    tenure: listing.tenure,
+    planning_permission_status: listing.planning_permission_status,
+  };
+}
+
+/**
+ * Publish an approved feed item into canonical property/listing/media tables as
+ * a PUBLIC (`active`) listing. Idempotent: a re-published external listing
+ * updates its existing canonical rows rather than creating a duplicate. Sets
+ * PostGIS coordinates so the listing renders on the map, and refreshes the
+ * search materialized view so it is immediately searchable.
+ */
 export async function publishApprovedImportItem(
   supabase: SupabaseClient,
   agentId: string,
   itemId: string,
-): Promise<{ listing_id: string; property_id: string }> {
+): Promise<{ listing_id: string; property_id: string; updated: boolean }> {
   const { data: item, error: itemError } = await supabase
     .from("feed_import_items")
     .select("*")
@@ -500,54 +603,96 @@ export async function publishApprovedImportItem(
     throw new Error(`Feed import item is not publishable: ${validationErrors.join(", ")}`);
   }
 
-  const { data: property, error: propertyError } = await supabase
-    .from("properties")
-    .insert({
-      address_line1: listing.address_line1,
-      address_line2: listing.address_line2,
-      city: listing.city,
-      postcode: listing.postcode,
-      property_type: listing.property_type,
-      bedrooms: listing.bedrooms,
-      bathrooms: listing.bathrooms,
-      reception_rooms: listing.reception_rooms,
-      square_footage: listing.square_footage,
-      title: listing.title,
-      description: listing.description,
-      features: listing.features,
-      tenure: listing.tenure,
-      planning_permission_status: listing.planning_permission_status,
-    })
-    .select()
-    .single();
+  const existingLink = await findExistingListingLink(
+    supabase,
+    agentId,
+    feedItem.integration_id,
+    feedItem.external_id,
+  );
+  const updated = Boolean(existingLink?.listing_id && existingLink.property_id);
 
-  if (propertyError || !property) {
-    throw new Error(
-      `Failed to publish feed property: ${propertyError?.message ?? "Unknown error"}`,
-    );
+  let propertyId: string;
+  let listingId: string;
+
+  if (updated && existingLink) {
+    propertyId = existingLink.property_id as string;
+    listingId = existingLink.listing_id as string;
+
+    const { error: propertyUpdateError } = await supabase
+      .from("properties")
+      .update(propertyValuesFor(listing))
+      .eq("id", propertyId);
+    if (propertyUpdateError) {
+      throw new Error(`Failed to update feed property: ${propertyUpdateError.message}`);
+    }
+
+    const { error: listingUpdateError } = await supabase
+      .from("listings")
+      .update({
+        listing_type: listing.listing_type,
+        price: listing.price,
+        rent_frequency: listing.rent_frequency,
+        status: "active",
+      })
+      .eq("id", listingId)
+      .eq("user_id", agentId);
+    if (listingUpdateError) {
+      throw new Error(`Failed to update feed listing: ${listingUpdateError.message}`);
+    }
+  } else {
+    const { data: property, error: propertyError } = await supabase
+      .from("properties")
+      .insert(propertyValuesFor(listing))
+      .select()
+      .single();
+
+    if (propertyError || !property) {
+      throw new Error(
+        `Failed to publish feed property: ${propertyError?.message ?? "Unknown error"}`,
+      );
+    }
+
+    propertyId = (property as { id: string }).id;
+    const { data: canonicalListing, error: listingError } = await supabase
+      .from("listings")
+      .insert({
+        property_id: propertyId,
+        user_id: agentId,
+        listing_type: listing.listing_type,
+        price: listing.price,
+        rent_frequency: listing.rent_frequency,
+        status: "active",
+      })
+      .select()
+      .single();
+
+    if (listingError || !canonicalListing) {
+      throw new Error(
+        `Failed to publish feed listing: ${listingError?.message ?? "Unknown error"}`,
+      );
+    }
+
+    listingId = (canonicalListing as { id: string }).id;
   }
 
-  const propertyId = (property as { id: string }).id;
-  const { data: canonicalListing, error: listingError } = await supabase
-    .from("listings")
-    .insert({
-      property_id: propertyId,
-      user_id: agentId,
-      listing_type: listing.listing_type,
-      price: listing.price,
-      rent_frequency: listing.rent_frequency,
-      status: "draft",
-    })
-    .select()
-    .single();
-
-  if (listingError || !canonicalListing) {
-    throw new Error(
-      `Failed to publish feed listing: ${listingError?.message ?? "Unknown error"}`,
-    );
+  if (listing.latitude != null && listing.longitude != null) {
+    await supabase
+      .rpc("set_property_coordinates", {
+        p_property_id: propertyId,
+        p_lng: listing.longitude,
+        p_lat: listing.latitude,
+      })
+      .then(
+        () => undefined,
+        () => undefined,
+      );
   }
 
-  const listingId = (canonicalListing as { id: string }).id;
+  // Feed is authoritative for media: clear prior feed media then re-insert in
+  // source order, so a re-publish reflects upstream reordering without dupes.
+  if (updated) {
+    await supabase.from("property_media").delete().eq("listing_id", listingId);
+  }
 
   if (listing.media.length > 0) {
     const { error: mediaError } = await supabase.from("property_media").insert(
@@ -615,7 +760,14 @@ export async function publishApprovedImportItem(
     throw new Error(`Failed to mark feed item as published: ${updateError.message}`);
   }
 
-  return { listing_id: listingId, property_id: propertyId };
+  await supabase
+    .rpc("refresh_search_listings")
+    .then(
+      () => undefined,
+      () => undefined,
+    );
+
+  return { listing_id: listingId, property_id: propertyId, updated };
 }
 
 export async function publishApprovedFeedImportRunItems(
@@ -650,4 +802,77 @@ export async function publishApprovedFeedImportRunItems(
     published_count: publishedCount,
     review: await getFeedImportRunReview(supabase, agentId, runId),
   };
+}
+
+/**
+ * Archive canonical listings whose upstream source record was withdrawn. Never
+ * destructively deletes — sets status 'archived' (out of public search) while
+ * preserving the listing row, the feed link, and the ledger for audit.
+ */
+export async function archiveWithdrawnFeedListings(
+  supabase: SupabaseClient,
+  agentId: string,
+  runId: string,
+): Promise<{ archived_count: number }> {
+  const { data: run, error: runError } = await supabase
+    .from("feed_import_runs")
+    .select("id, integration_id")
+    .eq("id", runId)
+    .eq("agent_id", agentId)
+    .single();
+
+  if (runError || !run) {
+    throw new Error(
+      `Feed import run not found: ${runError?.message ?? "Unknown error"}`,
+    );
+  }
+
+  const integrationId = String((run as { integration_id: string }).integration_id);
+
+  const { data: items, error: itemsError } = await supabase
+    .from("feed_import_items")
+    .select("external_id, status")
+    .eq("run_id", runId)
+    .eq("agent_id", agentId)
+    .eq("status", "withdrawn");
+
+  if (itemsError) {
+    throw new Error(`Failed to load withdrawn feed items: ${itemsError.message}`);
+  }
+
+  let archivedCount = 0;
+  for (const row of (items ?? []) as Array<{ external_id: string }>) {
+    const link = await findExistingListingLink(
+      supabase,
+      agentId,
+      integrationId,
+      String(row.external_id),
+    );
+    if (!link?.listing_id) {
+      continue;
+    }
+
+    const { error: archiveError } = await supabase
+      .from("listings")
+      .update({ status: "archived" })
+      .eq("id", link.listing_id)
+      .eq("user_id", agentId);
+
+    if (archiveError) {
+      throw new Error(`Failed to archive withdrawn listing: ${archiveError.message}`);
+    }
+
+    archivedCount += 1;
+  }
+
+  if (archivedCount > 0) {
+    await supabase
+      .rpc("refresh_search_listings")
+      .then(
+        () => undefined,
+        () => undefined,
+      );
+  }
+
+  return { archived_count: archivedCount };
 }
