@@ -42,6 +42,7 @@ export async function fetchProviderBySlug(
     .select(
       `
       *,
+      description:business_description,
       profiles (
         id,
         avatar_url,

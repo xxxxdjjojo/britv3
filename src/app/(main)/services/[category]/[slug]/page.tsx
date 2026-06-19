@@ -43,12 +43,10 @@ import { ReviewsTab } from "@/components/providers/ReviewsTab";
 import { PortfolioTab } from "@/components/providers/PortfolioTab";
 import { ServicesTab } from "@/components/providers/ServicesTab";
 import { ServicesTabWithModal } from "@/components/providers/ServicesTabWithModal";
-import { QuoteModal } from "@/components/providers/QuoteModal";
 import { ProfileTabs } from "./ProfileTabs";
 import { ProviderSearchCard } from "@/components/providers/ProviderSearchCard";
 import { CategoryPageFAQ } from "@/components/seo/CategoryPageFAQ";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
-import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
 
 // ISR: revalidate every hour. Applies to location pages; provider profiles use
 // dynamic rendering via fetchProviderBySlug (live data).
@@ -147,10 +145,13 @@ async function CategoryLocationPage({
       provider_rating_stats(average_rating, total_reviews, count_5_star, count_4_star, count_3_star, count_2_star, count_1_star, provider_id)
     `,
     )
+    // NOTE: precise location filtering needs a postcode-area/geo mapping that does
+    // not exist yet (service_provider_details has no `city` column; the previous
+    // `city.ilike` branch referenced a non-existent column and errored the whole
+    // query, leaving every SEO location page empty). For now these programmatic
+    // landing pages list verified providers in the category, with the location
+    // surfaced in the page copy/SEO metadata.
     .contains("services", [categoryDb])
-    .or(
-      `city.ilike.%${sanitizePostgrestInput(locationDisplay)}%,service_postcodes.cs.{${sanitizePostgrestInput(location.split("-")[0].toUpperCase())}}`,
-    )
     .eq("profiles.provider_verification_status", "verified")
     .order("created_at", { ascending: false })
     .limit(20);
@@ -347,16 +348,9 @@ export default async function TradespersonProfilePage({ params }: Params) {
                 }
                 services={
                   <ServicesTabWithModal
-                    modal={({ open, initialService, onOpenChange }) => (
-                      <QuoteModal
-                        providerId={provider.id}
-                        providerName={provider.business_name}
-                        services={serviceNames}
-                        open={open}
-                        initialService={initialService}
-                        onOpenChange={onOpenChange}
-                      />
-                    )}
+                    providerId={provider.id}
+                    providerName={provider.business_name}
+                    serviceNames={serviceNames}
                   >
                     <ServicesTab
                       services={services}
