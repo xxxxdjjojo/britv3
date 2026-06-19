@@ -6,6 +6,7 @@
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 import { createInMemoryRateLimiter } from "@/lib/rate-limit-memory";
+import { captureException } from "@/lib/observability/capture-exception";
 
 // ---------------------------------------------------------------------------
 // Client singleton
@@ -133,16 +134,15 @@ export function createRateLimiter(
   });
 }
 
-/**
- * Create a sliding-window rate limiter for auth endpoints.
- * Default: 5 requests per hour.
- *
- * Fails CLOSED: when Redis is unavailable ALL requests are denied.
- * This preserves brute-force protection on sensitive auth endpoints
- * (login, signup, MFA verify, password reset) at the cost of
- * availability during a Redis outage. Use `createRateLimiter` for
- * non-auth endpoints where fail-open behaviour is acceptable.
- */
+type RateLimitResult = {
+  success: boolean;
+  limit: number;
+  remaining: number;
+  reset: number;
+};
+
+type AuthRateLimiter = { limit: (identifier: string) => Promise<RateLimitResult> };
+
 function parseWindowMs(w: string): number {
   const match = w.match(/^(\d+)\s*(ms|s|m|h|d)$/);
   if (!match) return 3_600_000;
@@ -152,21 +152,65 @@ function parseWindowMs(w: string): number {
   return n * (multipliers[unit] ?? 3_600_000);
 }
 
+/** A limiter that denies every request — used to fail CLOSED when Redis is unavailable in production. */
+function denyAllLimiter(maxRequests: number, windowMs: number): AuthRateLimiter {
+  return {
+    limit: async () => ({ success: false, limit: maxRequests, remaining: 0, reset: Date.now() + windowMs }),
+  };
+}
+
+/**
+ * Create a sliding-window rate limiter for auth endpoints.
+ * Default: 5 requests per hour.
+ *
+ * Fails CLOSED in production: when Redis is unavailable — whether unconfigured
+ * (missing env) or erroring at request time — `.limit()` denies the request
+ * (`success: false`). This preserves brute-force protection on sensitive auth
+ * endpoints (login, signup, MFA verify, password reset, account deletion) at
+ * the cost of availability during a Redis outage.
+ *
+ * In non-production (local dev, CI) it falls back to a per-instance in-memory
+ * limiter so these endpoints work without Redis configured. Use
+ * `createRateLimiter` for non-auth endpoints where fail-open is acceptable.
+ */
 export function createAuthRateLimiter(
   maxRequests = 5,
   windowMs: `${number} ms` | `${number} s` | `${number} m` | `${number} h` | `${number} d` = "1 h",
-) {
+): AuthRateLimiter {
   const client = getRedisClient();
   if (!client) {
-    console.warn("[redis] Auth rate limiter falling back to in-memory — per-instance only");
+    if (process.env.NODE_ENV === "production") {
+      captureException(
+        new Error(
+          "Auth rate limiter has no Redis in production — failing CLOSED. Configure UPSTASH_REDIS_REST_URL/TOKEN.",
+        ),
+        { module: "redis", operation: "createAuthRateLimiter" },
+      );
+      return denyAllLimiter(maxRequests, parseWindowMs(windowMs));
+    }
+    console.warn("[redis] Auth rate limiter falling back to in-memory — non-production only");
     return createInMemoryRateLimiter(maxRequests, parseWindowMs(windowMs));
   }
 
-  return new Ratelimit({
+  const limiter = new Ratelimit({
     redis: client,
     limiter: Ratelimit.slidingWindow(maxRequests, windowMs),
     analytics: false,
   });
+
+  // Wrap so a Redis outage at request time fails CLOSED (deny) instead of
+  // throwing — an uncaught throw here would surface as a 500 and let the
+  // request bypass rate limiting on retry.
+  return {
+    limit: async (identifier: string) => {
+      try {
+        return await limiter.limit(identifier);
+      } catch (err) {
+        captureException(err, { module: "redis", operation: "authRateLimiter.limit" });
+        return { success: false, limit: maxRequests, remaining: 0, reset: Date.now() + parseWindowMs(windowMs) };
+      }
+    },
+  };
 }
 
 // ---------------------------------------------------------------------------
