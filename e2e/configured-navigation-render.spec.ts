@@ -51,6 +51,34 @@ async function collectPublicConfiguredHrefs(): Promise<string[]> {
 }
 
 test.describe("configured public navigation render", () => {
+  test("agent sidebar configuration exposes feed integrations", async () => {
+    const source = await readFile(
+      join(process.cwd(), "src/config/navigation.ts"),
+      "utf8",
+    );
+
+    expect(source).toContain('href: "/dashboard/agent/integrations/feeds"');
+  });
+
+  test("configured blog category links render filtered category content", async ({
+    page,
+  }, testInfo) => {
+    const href = "/blog?category=buying";
+    const response = await page.goto(href, {
+      waitUntil: "domcontentloaded",
+    });
+
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page.getByRole("heading").first()).toBeVisible();
+    await expect(
+      page.getByText(/First-Time Buyer's Complete Guide/i),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Renters' Rights Bill Explained/i),
+    ).not.toBeVisible();
+    await capture(page, href, testInfo);
+  });
+
   test("public configured destinations render non-error pages with screenshots", async ({
     page,
   }, testInfo) => {

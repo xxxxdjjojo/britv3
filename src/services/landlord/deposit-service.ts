@@ -115,6 +115,75 @@ export async function updateDeposit(
 }
 
 /**
+ * Deposit-protection compliance counts for the authenticated landlord, derived
+ * from active tenancies vs their deposit registrations. Drives the compliance
+ * dashboard's deposit tile.
+ *
+ * - protected:   active tenancies with a 'registered' deposit
+ * - pending:     active tenancies whose deposit registration is still 'pending'
+ * - unprotected: active tenancies that take a deposit but have no registration
+ *   (a compliance breach — protection is legally required within 30 days)
+ */
+export async function getDepositComplianceCounts(
+  supabase: SupabaseClient,
+): Promise<{ totalTenancies: number; protected: number; pending: number; unprotected: number }> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Authentication required");
+  }
+
+  const [{ data: tenancies, error: tErr }, { data: deposits, error: dErr }] =
+    await Promise.all([
+      supabase
+        .from("tenancies")
+        .select("id, deposit_amount")
+        .eq("landlord_id", user.id)
+        .eq("status", "active"),
+      supabase
+        .from("deposit_registrations")
+        .select("tenancy_id, status")
+        .eq("landlord_id", user.id),
+    ]);
+
+  if (tErr) throw new Error(`Failed to fetch tenancies: ${tErr.message}`);
+  if (dErr) throw new Error(`Failed to fetch deposits: ${dErr.message}`);
+
+  const statusByTenancy = new Map<string, string>();
+  for (const d of deposits ?? []) {
+    statusByTenancy.set(d.tenancy_id as string, d.status as string);
+  }
+
+  let protectedCount = 0;
+  let pending = 0;
+  let unprotected = 0;
+  const activeTenancies = tenancies ?? [];
+
+  for (const t of activeTenancies) {
+    const takesDeposit = Number(t.deposit_amount ?? 0) > 0;
+    const status = statusByTenancy.get(t.id as string);
+    if (status === "registered") {
+      protectedCount += 1;
+    } else if (status === "pending") {
+      pending += 1;
+    } else if (takesDeposit) {
+      // Active tenancy that takes a deposit but has no registration at all.
+      unprotected += 1;
+    }
+  }
+
+  return {
+    totalTenancies: activeTenancies.length,
+    protected: protectedCount,
+    pending,
+    unprotected,
+  };
+}
+
+/**
  * List all deposit registrations for the authenticated landlord.
  */
 export async function listDeposits(

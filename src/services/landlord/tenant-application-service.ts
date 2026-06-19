@@ -261,6 +261,12 @@ export async function updateApplicationStatus(
     );
   }
 
+  // NOTE: referencing kickoff for the shortlisted->referencing transition lives
+  // in the server route POST /api/landlord/applications/[id]/referencing, NOT
+  // here. This module is imported by the client-side decision page, so it must
+  // stay free of any transitive `inngest` import (which pulls node:async_hooks
+  // into the client bundle and breaks the webpack build).
+
   return data as TenantApplication;
 }
 

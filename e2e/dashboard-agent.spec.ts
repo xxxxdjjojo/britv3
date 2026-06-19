@@ -14,6 +14,7 @@ const AGENT_PAGES = [
   { path: "/dashboard/agent/analytics", title: /analytics/i },
   { path: "/dashboard/agent/profile", title: /profile|agency/i },
   { path: "/dashboard/agent/integrations", title: /integration|api/i },
+  { path: "/dashboard/agent/integrations/feeds", title: /feed|integration/i },
 ];
 
 const PROVIDER_PAGES = [

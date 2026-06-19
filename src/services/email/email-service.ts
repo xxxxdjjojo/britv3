@@ -1215,6 +1215,64 @@ export async function sendRenewalReminder(params: {
 }
 
 // ---------------------------------------------------------------------------
+// 14b. Rent Reminder (landlord-initiated, transactional)
+// ---------------------------------------------------------------------------
+
+export async function sendRentReminder(params: {
+  userId: string;
+  email: string;
+  tenantName: string;
+  propertyAddress: string;
+  rentAmount: number;
+  rentFrequency: "weekly" | "monthly";
+  dueDate: string;
+}): Promise<void> {
+  // Landlord-initiated rent reminders are transactional — no preference gate
+  // (matches verification / payment-failed notifications).
+  try {
+    const { RentReminderEmail } = await import("@/emails/rent-reminder");
+    const { render } = await import("@react-email/components");
+    const html = await render(
+      RentReminderEmail({
+        tenantName: params.tenantName || "there",
+        propertyAddress: params.propertyAddress,
+        rentAmount: params.rentAmount,
+        rentFrequency: params.rentFrequency,
+        dueDate: params.dueDate,
+        payUrl: `${BASE_URL}/dashboard/landlord/rent`,
+      })
+    );
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: `Rent reminder for ${params.propertyAddress}`,
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "rent-reminder",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "rent-reminder",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendRentReminder failed", message);
+    throw err instanceof Error ? err : new Error(message);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 15. Weekly Digest
 // ---------------------------------------------------------------------------
 

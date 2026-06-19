@@ -95,6 +95,7 @@ export const PROTECTED_LINK_RENDER_ROUTES: LinkRenderRoute[] = [
   { group: "dashboard", label: "Seller Dashboard", path: "/dashboard/seller" },
   { group: "dashboard", label: "Landlord Dashboard", path: "/dashboard/landlord" },
   { group: "dashboard", label: "Agent Dashboard", path: "/dashboard/agent" },
+  { group: "dashboard", label: "Agent Feed Integrations", path: "/dashboard/agent/integrations/feeds" },
   { group: "dashboard", label: "Provider Dashboard", path: "/dashboard/provider" },
   { group: "dashboard", label: "Broker Dashboard", path: "/dashboard/broker" },
   { group: "shared-protected", label: "Inbox", path: "/inbox" },

@@ -39,6 +39,7 @@ import {
   Grid3X3,
   Sparkles,
   Truck,
+  Plug,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ROUTES, dashboardPathForRole } from "@/lib/routes";
@@ -561,6 +562,7 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
   agent: [
     { href: "/dashboard/agent", label: "Overview", icon: LayoutDashboard },
     { href: "/dashboard/agent/listings", label: "Listings", icon: Building },
+    { href: "/dashboard/agent/integrations/feeds", label: "Feeds", icon: Plug },
     { href: "/dashboard/agent/leads", label: "Leads", icon: UserPlus },
     { href: "/dashboard/agent/viewings", label: "Viewings", icon: Eye },
     { href: "/dashboard/agent/revenue", label: "Revenue", icon: TrendingUp },
@@ -755,6 +757,7 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   // Dashboard — Agent
   { label: "Agent Overview", href: "/dashboard/agent", section: "Dashboard", keywords: ["dashboard", "overview", "agent"], roles: ["agent"] },
   { label: "Listings (Agent)", href: "/dashboard/agent/listings", section: "Dashboard", keywords: ["listings", "properties"], roles: ["agent"] },
+  { label: "Feed Integrations", href: "/dashboard/agent/integrations/feeds", section: "Dashboard", keywords: ["feeds", "integrations", "import", "reapit", "alto", "jupix"], roles: ["agent"] },
   { label: "Leads", href: "/dashboard/agent/leads", section: "Dashboard", keywords: ["leads", "enquiries", "prospects"], roles: ["agent"] },
   { label: "Viewings (Agent)", href: "/dashboard/agent/viewings", section: "Dashboard", keywords: ["viewings", "appointments"], roles: ["agent"] },
   { label: "Revenue (Agent)", href: "/dashboard/agent/revenue", section: "Dashboard", keywords: ["revenue", "income", "earnings"], roles: ["agent"] },

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getComplianceSummary } from "@/services/landlord/document-service";
 import { getPortfolioProperties } from "@/services/landlord/portfolio-service";
+import { getDepositComplianceCounts } from "@/services/landlord/deposit-service";
 import CertificateStatusTile from "@/components/landlord/CertificateStatusTile";
 import type { ComplianceCategoryKey } from "@/lib/compliance-constants";
 import { CATEGORY_LABELS } from "@/lib/compliance-constants";
@@ -81,10 +82,11 @@ function ComplianceSkeleton() {
 export default async function CompliancePage() {
   const supabase = await createClient();
 
-  // Fetch compliance docs and portfolio in parallel
-  const [docs, properties] = await Promise.all([
+  // Fetch compliance docs, portfolio, and deposit counts in parallel
+  const [docs, properties, depositCompliance] = await Promise.all([
     getComplianceSummary(supabase),
     getPortfolioProperties(supabase),
+    getDepositComplianceCounts(supabase),
   ]);
 
   const totalProperties = properties.length;
@@ -94,14 +96,14 @@ export default async function CompliancePage() {
   const eicCounts = buildTileCounts(docs, "electrical_eicr", totalProperties);
   const epcCounts = buildTileCounts(docs, "epc", totalProperties);
 
-  // Deposit protection: query deposit_registrations for unregistered count
-  // For now derived from docs with category deposit_protection (when added)
-  // Default to 0 unregistered until deposit_protection docs are tracked
+  // Deposit protection: real counts derived from active tenancies vs their
+  // deposit_registrations. Unprotected tenancies are a compliance breach
+  // (shown as "expired"); pending registrations show as "expiring soon".
   const depositCounts: TileCounts = {
     totalProperties,
-    expired: 0,
-    expiringSoon: 0,
-    valid: totalProperties,
+    expired: depositCompliance.unprotected,
+    expiringSoon: depositCompliance.pending,
+    valid: depositCompliance.protected,
   };
 
   const totalExpired =
