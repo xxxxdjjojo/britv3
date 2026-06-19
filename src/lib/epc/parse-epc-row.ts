@@ -8,8 +8,49 @@
  *
  * Sentinels in the source ("", "NO DATA!", "INVALID!", "N/A", "NaN",
  * "unknown") collapse to null. Pure functions — no I/O.
+ *
+ * Self-contained (no cross-module imports) so the `scripts/ingest-epc.ts`
+ * ingest can import it under `node --experimental-strip-types`, which does not
+ * resolve the `@/` path alias.
  */
-import { splitCsvFields } from "@/lib/truedeed/ppd-parser";
+
+/**
+ * Split one CSV line into raw field values, honouring double-quoted fields
+ * (commas inside quotes do not split; `""` is an escaped quote). Returns null
+ * when quoting is unterminated. Same semantics as ppd-parser's tokenizer.
+ */
+export function splitCsvFields(line: string): string[] | null {
+  const fields: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (inQuotes) {
+      if (char === '"') {
+        if (line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += char;
+      }
+    } else if (char === '"') {
+      inQuotes = true;
+    } else if (char === ",") {
+      fields.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+
+  if (inQuotes) return null;
+  fields.push(current);
+  return fields;
+}
 
 export type EpcCertificate = {
   certificateNumber: string;
