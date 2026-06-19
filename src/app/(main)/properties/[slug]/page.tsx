@@ -54,7 +54,6 @@ import { BookViewingModal } from "@/components/properties/detail/BookViewingModa
 import AskAgentForm from "@/components/properties/detail/AskAgentForm";
 import { SimilarProperties } from "@/components/properties/detail/SimilarProperties";
 import { RecommendedTradespeople } from "@/components/properties/detail/RecommendedTradespeople";
-import { EpcLookupCard } from "@/components/properties/detail/EpcLookupCard";
 import { SavePropertyButton } from "@/components/properties/detail/SavePropertyButton";
 import { SocialProofBadge } from "@/components/properties/detail/SocialProofBadge";
 import { PropertyDetailActions } from "@/components/properties/detail/PropertyDetailActions";
@@ -594,26 +593,6 @@ export default async function PropertyPage({
                     </p>
                   )}
                 </div>
-              </section>
-            )}
-
-            {/* EPC register lookup — fallback when no stored rating on the listing */}
-            {!property.epcRating && property.postcode && (
-              <section>
-                <h2 className="text-xl font-semibold mb-3">
-                  Energy Performance Certificate
-                </h2>
-                <Separator className="mb-4" />
-                <Suspense
-                  fallback={
-                    <div className="h-32 rounded-xl border bg-card animate-pulse" />
-                  }
-                >
-                  <EpcLookupCard
-                    postcode={property.postcode}
-                    addressLine={property.addressLine1 ?? undefined}
-                  />
-                </Suspense>
               </section>
             )}
 
