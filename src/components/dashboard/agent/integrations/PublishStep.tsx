@@ -31,7 +31,7 @@ export function PublishStep({ publishedCount, review, onSyncAgain }: PublishStep
   return (
     <div className="space-y-8">
       {/* Success banner */}
-      <div className="flex items-start gap-4 rounded-xl border border-green-200 bg-green-50 p-5 dark:border-green-800 dark:bg-green-900/20">
+      <div data-testid="publish-success-banner" className="flex items-start gap-4 rounded-xl border border-green-200 bg-green-50 p-5 dark:border-green-800 dark:bg-green-900/20">
         <CheckCircle2
           className="mt-0.5 size-6 shrink-0 text-green-600 dark:text-green-400"
           aria-hidden

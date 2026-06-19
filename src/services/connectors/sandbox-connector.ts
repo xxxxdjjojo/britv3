@@ -67,7 +67,16 @@ function buildFetchResult(
 // sandbox connector — fixture-backed
 // ---------------------------------------------------------------------------
 
-const SANDBOX_FIXTURE_PATH = join(__dirname, "__fixtures__", "sandbox-portfolio.xml");
+// __dirname is remapped to /ROOT/... under the Next.js dev server (Turbopack/webpack
+// module resolution). Use process.cwd() — always the repo root — instead.
+const SANDBOX_FIXTURE_PATH = join(
+  process.cwd(),
+  "src",
+  "services",
+  "connectors",
+  "__fixtures__",
+  "sandbox-portfolio.xml",
+);
 
 function loadSandboxFixture(): string {
   return readFileSync(SANDBOX_FIXTURE_PATH, "utf-8");

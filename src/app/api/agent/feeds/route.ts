@@ -16,7 +16,11 @@ const fieldMappingSchema = z.record(z.string(), z.string());
 const createFeedIntegrationSchema = z
   .object({
     provider: z.enum(FEED_PROVIDERS),
-    api_key: z.string().trim().min(8),
+    // api_key is required for reapit (and future CRM providers) but optional for
+    // sandbox and csv which need no credential.
+    api_key: z.string().trim().min(8).optional(),
+    // payload carries CSV text or XML for csv / generic_feed providers.
+    payload: z.string().optional(),
     field_mapping: fieldMappingSchema.optional(),
   })
   .strict();

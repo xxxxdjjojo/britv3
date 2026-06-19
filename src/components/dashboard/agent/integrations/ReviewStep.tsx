@@ -48,13 +48,16 @@ export function ReviewStep({
       </div>
 
       {/* Counts — every figure derives from FeedImportReview */}
-      <ReviewCounts review={review} />
+      <div data-testid="review-counts">
+        <ReviewCounts review={review} />
+      </div>
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">
         <Button
           type="button"
           variant="outline"
+          data-testid="approve-btn"
           disabled={approving || review.run.eligible_items === 0}
           onClick={onApprove}
         >
@@ -63,6 +66,7 @@ export function ReviewStep({
         <Button
           type="button"
           variant="default"
+          data-testid="publish-btn"
           disabled={publishing || !canPublish}
           onClick={onPublish}
         >

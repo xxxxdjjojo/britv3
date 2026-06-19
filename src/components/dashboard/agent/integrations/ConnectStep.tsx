@@ -200,6 +200,7 @@ export function ConnectStep({
                 type="button"
                 role="radio"
                 aria-checked={selected}
+                data-testid={`source-option-${s.provider}`}
                 onClick={() => onSelectProvider(s.provider)}
                 className={[
                   "group flex flex-col gap-3 rounded-xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -365,6 +366,7 @@ export function ConnectStep({
           <Button
             type="button"
             variant="default"
+            data-testid="add-connection-btn"
             onClick={onSave}
             disabled={formSubmitting}
           >
@@ -466,7 +468,7 @@ function IntegrationRow({
   const status = STATUS_CONFIG[integration.sync_status] ?? STATUS_CONFIG.disconnected;
   const providerLabel = PROVIDER_LABEL[integration.provider] ?? integration.provider;
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div data-testid={`integration-row-${integration.provider}`} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
         <div className="flex size-9 items-center justify-center rounded-lg bg-surface ring-1 ring-border">
           <LayoutGrid className="size-4 text-muted-foreground" aria-hidden />
@@ -489,6 +491,7 @@ function IntegrationRow({
           type="button"
           variant="outline"
           size="sm"
+          data-testid={`test-connection-btn-${integration.provider}`}
           onClick={onTestConnection}
           aria-label={`Test connection for ${providerLabel}`}
         >
@@ -498,6 +501,7 @@ function IntegrationRow({
           type="button"
           variant="outline"
           size="sm"
+          data-testid={`sync-now-btn-${integration.provider}`}
           disabled={anySyncing || integration.sync_status === "syncing"}
           onClick={onSyncNow}
           aria-label={`Sync now for ${providerLabel}`}

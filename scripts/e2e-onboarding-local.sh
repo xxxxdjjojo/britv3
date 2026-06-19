@@ -98,7 +98,7 @@ echo "    set_property_coordinates: ok"
 echo "==> [3/4] Seeding test users + onboarding fixture"
 # Step 1: all-role users (idempotent — skips existing users).
 SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
-  pnpm exec tsx supabase/seed/seed-test-users.ts
+  node --experimental-strip-types supabase/seed/seed-test-users.ts
 
 # Step 2: onboarding fixture (organisation + membership + integration for test-agent).
 SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \

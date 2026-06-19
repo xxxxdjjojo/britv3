@@ -77,7 +77,7 @@ export async function createFeedIntegration(
   agentId: string,
   input: {
     provider: FeedProvider;
-    api_key: string;
+    api_key?: string;
     field_mapping?: Record<string, string>;
   },
 ): Promise<AgentFeedIntegrationView> {
@@ -86,7 +86,11 @@ export async function createFeedIntegration(
     .insert({
       agent_id: agentId,
       provider: input.provider,
-      api_key_encrypted: createSecretReference(agentId, input.provider),
+      // Only store a secret reference when a credential is actually supplied.
+      // Sandbox and CSV providers need no credential.
+      ...(input.api_key != null && {
+        api_key_encrypted: createSecretReference(agentId, input.provider),
+      }),
       sync_status: "disconnected",
       field_mapping: input.field_mapping ?? null,
     })
