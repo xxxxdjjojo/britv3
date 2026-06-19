@@ -4,6 +4,31 @@
  * Mirrors organisations-model.test.ts harness style — pure synchronous SQL
  * via docker exec psql; no Supabase JS client needed.
  *
+ * What this test proves (and what it does NOT prove):
+ *
+ * PROVES:
+ *   (a) The ledger schema accepts provider 'csv' and the full
+ *       needs_review → approved → published status transitions on
+ *       feed_import_runs and feed_import_items.
+ *   (b) The listings and properties schemas (with all FK/column constraints)
+ *       accept the column values derived from a CSV-sourced normalized_payload,
+ *       including status = 'active' on the resulting listings row.
+ *   (c) The run-fingerprint UNIQUE constraint on (integration_id, source_fingerprint)
+ *       blocks duplicate import runs for the same feed file (idempotency).
+ *
+ * DOES NOT PROVE:
+ *   The real `publishApprovedImportItem` TypeScript function is NOT executed here.
+ *   The ephemeral harness exposes a synchronous psql interface only; the function
+ *   requires @supabase/supabase-js and a PostgREST endpoint not present in this
+ *   container.  Instead, the SQL equivalent is driven directly, which proves schema
+ *   acceptance but not the service-layer code path.
+ *
+ *   - `publishApprovedImportItem` service logic: covered by mocked unit tests in
+ *     `src/services/agent/agent-feed-import-service.test.ts`.
+ *   - True end-to-end "CSV import publishes a live active listing" (real publish
+ *     code + Postgres + PostgREST together): DEFERRED to Phase C2 E2E tests
+ *     against the local Supabase stack.
+ *
  * Strategy:
  *   1. Boot postgres:15-alpine, stub prerequisite schema.
  *   2. Apply ledger + org-model + org-scope migrations.
@@ -15,22 +40,9 @@
  *   5. Insert a feed_import_item with a valid CSV-sourced normalized_payload
  *      and status 'needs_review'.
  *   6. Approve the item (update status → 'approved').
- *   7. Drive the "publish" logic in SQL — insert into properties+listings
- *      exactly as publishApprovedImportItem does — and assert the resulting
+ *   7. Drive the publish logic in SQL — insert into properties+listings
+ *      mirroring what publishApprovedImportItem does — and assert the resulting
  *      listings row has status = 'active'.
- *
- * Why SQL-only (not Supabase JS client):
- *   The harness exposes a synchronous psql interface; publishApprovedImportItem
- *   depends on @supabase/supabase-js which requires a PostgREST endpoint not
- *   available in the ephemeral container.  Driving the same SQL logic directly
- *   gives equal (and arguably superior) proof that the schema accepts an ACTIVE
- *   listing produced from a CSV feed import.  The service-level publish function
- *   itself is covered by the mocked unit tests in agent-feed-import-service.test.ts.
- *
- * This fallback is documented here per the A5 task spec ("DONE_WITH_CONCERNS
- * only if fallback taken").  Since the DB schema acceptance proof is complete
- * and the publish logic is covered by existing service-level tests, this is
- * classified DONE.
  */
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
