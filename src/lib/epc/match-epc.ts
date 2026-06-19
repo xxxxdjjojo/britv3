@@ -6,8 +6,51 @@
  * reusing the PPD matcher's normalisers so EPC and Land-Registry addressing are
  * compared the same way. Anything weaker is left UNLINKED — a wrong EPC band is
  * worse than a missing one. Pure functions; no I/O.
+ *
+ * Self-contained (no cross-module imports) so `scripts/link-epc-to-properties.ts`
+ * can import it under `node --experimental-strip-types`. The normalisers below
+ * mirror the canonical ppd-matcher implementations.
  */
-import { normalisePostcode, paonsEqual } from "@/lib/truedeed/ppd-matcher";
+
+const MAX_PAON_RANGE_SPAN = 100;
+
+/** Uppercase, strip whitespace, re-insert the space before the 3-char incode. */
+function normalisePostcode(raw: string): string {
+  const compact = raw.toUpperCase().replace(/\s+/g, "");
+  if (compact.length <= 3) return compact;
+  return `${compact.slice(0, -3)} ${compact.slice(-3)}`;
+}
+
+/** Uppercase, strip punctuation, collapse whitespace, trim. */
+function normalisePaon(raw: string): string {
+  return raw
+    .toUpperCase()
+    .replace(/[^A-Z0-9\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const paonVariants = (raw: string): Set<string> => {
+  const variants = new Set<string>([normalisePaon(raw)]);
+  const range = raw.trim().match(/^(\d+)\s*-\s*(\d+)$/);
+  if (range) {
+    const lo = Number(range[1]);
+    const hi = Number(range[2]);
+    if (lo <= hi && hi - lo <= MAX_PAON_RANGE_SPAN) {
+      for (let n = lo; n <= hi; n++) variants.add(String(n));
+    }
+  }
+  return variants;
+};
+
+/** Exact PAON equality after normalisation and numeric-range expansion. */
+function paonsEqual(a: string, b: string): boolean {
+  const aVariants = paonVariants(a);
+  for (const variant of paonVariants(b)) {
+    if (aVariants.has(variant)) return true;
+  }
+  return false;
+}
 
 export type EpcMatchInput = {
   uprn: string | null;

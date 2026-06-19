@@ -120,7 +120,7 @@ function cleanDate(value: string | undefined): string | null {
 
 /** PAON = leading numeric/range token of address1 (e.g. "1", "1A", "12-14"),
  *  else the whole address1 for named dwellings ("Rose Cottage"). */
-function extractPaon(address1: string | null): string | null {
+export function extractPaon(address1: string | null): string | null {
   if (!address1) return null;
   const match = address1.match(/^(\d+[A-Za-z]?(?:\s*-\s*\d+[A-Za-z]?)?)\b/);
   return match ? match[1].replace(/\s+/g, "") : address1;
