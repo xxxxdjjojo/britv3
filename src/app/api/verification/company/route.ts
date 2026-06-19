@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
   const { eligible, reason } = assessEligibility(result);
 
   // Persist the authoritative verification server-side. The onboarding trust
-  // fields on agencies / service_provider_profiles are forced from this record
+  // fields on agencies / service_provider_details are forced from this record
   // by DB trigger, so the browser can never self-mark "verified". A service
   // outage is recorded as pending_review (manual review), not as verified.
   if (eligible || result.serviceError) {
