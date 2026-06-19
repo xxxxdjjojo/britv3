@@ -90,14 +90,14 @@ test.describe("Stitch property search page", () => {
     }
   });
 
-  test("provider trade chips link to the working marketplace directory", async ({
+  test("provider trade chips link to the real tradespeople directory", async ({
     page,
   }) => {
     await page.goto("/search");
     const chip = page.getByTestId("local-support-chip").first();
     await expect(chip).toBeAttached();
     const href = await chip.getAttribute("href");
-    expect(href).toMatch(/^\/marketplace\?category=/);
+    expect(href).toMatch(/^\/services\/tradespeople\?category=/);
   });
 
   test("a property card title links to a /properties/ route", async ({

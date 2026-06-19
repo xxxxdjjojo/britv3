@@ -38,7 +38,7 @@ lib/search/card-model.ts             listing -> card view-model (honest fallback
 | Listing query + mock fallback | `src/app/(main)/search/actions.ts` (`searchProperties`, `search_live_data` flag) |
 | Favourites (DB-backed, auth redirect) | `components/properties/SaveButton.tsx` + `hooks/useSavedProperties` |
 | Map renderer | MapLibre GL + MapTiler (`NEXT_PUBLIC_MAPTILER_API_KEY`) |
-| Provider directory | `/marketplace` trades hub (`/api/providers/*`). NOTE: the filtered `/services/tradespeople` route 500s in prod (pre-existing, app-wide); chips point at `/marketplace` until it's fixed. |
+| Provider directory | `/services/tradespeople?category=` and `/marketplace` (`/api/providers/*`) |
 | Nav/footer routes | `src/config/navigation.ts` |
 
 ## Data flow
@@ -55,7 +55,7 @@ lib/search/card-model.ts             listing -> card view-model (honest fallback
   filtered out without crashing. Deterministic e2e probes: `data-testid="search-map-status"`
   (`loading|loaded|empty|error`) and `data-testid="visible-map-marker-count"`.
 - **Providers ("Local Support")**: `LocalSupportChips` link to the real
-  `/marketplace?category={enum}&postcode={postcode} (working trades hub)` directory. No
+  `/services/tradespeople?category={enum}&postcode={listing postcode}` directory. No
   per-listing provider relationship exists in the schema, so these are honest
   category→directory links (spec Option A), never fabricated specific assignments.
 - **Agent**: no per-listing agent is present in the mock/search dataset, so the card shows
