@@ -5,6 +5,7 @@ import { FOOTER_LINKS, footerLinkClasses } from "@/config/navigation";
 import type { FooterColumn } from "@/config/navigation";
 import { CookiePreferencesButton } from "@/components/layout/CookiePreferencesButton";
 import { BackToTopButton } from "@/components/layout/BackToTopButton";
+import { brandConfig } from "@/config/brand";
 
 // ---------------------------------------------------------------------------
 // Social icon mapping
@@ -110,7 +111,7 @@ export function Footer() {
         <div className="border-t border-neutral-800 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-neutral-400">
-              &copy; 2026 Britestate Ltd. All rights reserved.
+              &copy; 2026 {brandConfig.displayName}. All rights reserved.
               <span className="ml-4 text-neutral-600">Company No. 12345678</span>
             </p>
             <BackToTopButton />
