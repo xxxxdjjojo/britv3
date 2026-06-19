@@ -6,6 +6,14 @@ export const brandConfig = {
   canonicalUrl: "https://truedeed.co.uk",
   supportEmail: "support@truedeed.co.uk",
   fromEmail: "hello@truedeed.co.uk",
+  emails: {
+    hello: "hello@truedeed.co.uk",
+    support: "support@truedeed.co.uk",
+    compliance: "compliance@truedeed.co.uk",
+    privacy: "privacy@truedeed.co.uk",
+    accessibility: "accessibility@truedeed.co.uk",
+    complaints: "complaints@truedeed.co.uk",
+  },
   social: {
     x: "https://twitter.com/truedeed",
     linkedIn: "https://linkedin.com/company/truedeed",

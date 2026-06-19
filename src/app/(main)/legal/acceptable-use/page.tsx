@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "introduction", label: "1. Introduction" },
@@ -16,9 +17,9 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Acceptable Use Policy | Britestate",
+  title: `Acceptable Use Policy | ${brandConfig.displayName}`,
   description:
-    "Standards of conduct and prohibited activities on the Britestate platform, informed by the Fraud Act 2006, Computer Misuse Act 1990, Online Safety Act 2023, and Equality Act 2010.",
+    `Standards of conduct and prohibited activities on the ${brandConfig.displayName} platform, informed by the Fraud Act 2006, Computer Misuse Act 1990, Online Safety Act 2023, and Equality Act 2010.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/acceptable-use` },
 };
@@ -41,7 +42,7 @@ export default function AcceptableUsePage() {
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
         This policy supplements our{" "}
         <Link href="/legal/terms" className="underline">Terms of Service</Link>{" "}
-        and applies to all Users of the Britestate platform. Violations may result in account suspension or termination.
+        and applies to all Users of the {brandConfig.displayName} platform. Violations may result in account suspension or termination.
       </div>
 
       <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
@@ -49,7 +50,7 @@ export default function AcceptableUsePage() {
           <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
           <p>
             1.1. This Acceptable Use Policy (&ldquo;AUP&rdquo;) supplements the Terms of Service and applies to all
-            Users of the Britestate platform. It sets out the standards of conduct we expect and the behaviours we
+            Users of the {brandConfig.displayName} platform. It sets out the standards of conduct we expect and the behaviours we
             prohibit.
           </p>
           <p>
@@ -61,7 +62,7 @@ export default function AcceptableUsePage() {
         <section id="permitted-uses">
           <h2 className="text-2xl font-bold font-heading">2. Permitted Uses</h2>
           <p>
-            2.1. You may use Britestate to: search for and view property listings; list properties for sale or rent
+            2.1. You may use {brandConfig.displayName} to: search for and view property listings; list properties for sale or rent
             (where you have lawful authority); contact and communicate with other Users in connection with genuine
             property enquiries; engage estate agents and service providers; leave honest reviews based on genuine
             experience; and access AI-powered property tools and recommendations.
@@ -160,7 +161,7 @@ export default function AcceptableUsePage() {
           </p>
           <p>
             4.3. <strong>AI-Generated Content.</strong> If you use AI tools to generate listing descriptions or other
-            content, you must review the output for accuracy before publishing. Britestate is not responsible for
+            content, you must review the output for accuracy before publishing. {brandConfig.displayName} is not responsible for
             inaccuracies in AI-generated content you publish.
           </p>
         </section>
@@ -191,7 +192,7 @@ export default function AcceptableUsePage() {
           <p>
             6.1. If you believe a User has breached this AUP, please report it using the &ldquo;Report&rdquo; button
             on the relevant listing, review, or profile, or email{" "}
-            <a href="mailto:compliance@britestate.co.uk">compliance@britestate.co.uk</a>.
+            <a href={`mailto:${brandConfig.emails.compliance}`}>{brandConfig.emails.compliance}</a>.
           </p>
           <p>
             6.2. We investigate all reports and aim to respond within 5 working days. We will not disclose your
@@ -203,7 +204,7 @@ export default function AcceptableUsePage() {
           <h2 className="text-2xl font-bold font-heading">7. Appeals</h2>
           <p>
             7.1. If your account is suspended or content is removed, you may appeal within 14 days by emailing{" "}
-            <a href="mailto:compliance@britestate.co.uk">compliance@britestate.co.uk</a> with the subject line
+            <a href={`mailto:${brandConfig.emails.compliance}`}>{brandConfig.emails.compliance}</a> with the subject line
             &ldquo;AUP Appeal &mdash; [Your Account Email].&rdquo;
           </p>
           <p>
@@ -221,7 +222,7 @@ export default function AcceptableUsePage() {
             "@type": "WebPage",
             name: "Acceptable Use Policy",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/acceptable-use`,
           }),
         }}

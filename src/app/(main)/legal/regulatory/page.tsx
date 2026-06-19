@@ -3,9 +3,10 @@ import Link from "next/link";
 import { Landmark, ShieldCheck, Banknote, MessageSquare } from "lucide-react";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LabeledGrid } from "@/components/legal/LabeledGrid";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "16 June 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "company", label: "Company Identity" },
@@ -15,14 +16,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Regulatory & Compliance Information | Britestate",
+  title: `Regulatory & Compliance Information | ${brandConfig.displayName}`,
   description:
-    "Britestate's company identity, the regulatory and redress bodies relevant to our service, our AML supervision, and how to escalate a complaint.",
+    `${brandConfig.displayName}'s company identity, the regulatory and redress bodies relevant to our service, our AML supervision, and how to escalate a complaint.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/regulatory` },
   openGraph: {
-    title: "Regulatory & Compliance Information | Britestate",
-    description: "Britestate's regulatory status, redress routes, and AML supervision.",
+    title: `Regulatory & Compliance Information | ${brandConfig.displayName}`,
+    description: `${brandConfig.displayName}'s regulatory status, redress routes, and AML supervision.`,
   },
 };
 
@@ -43,7 +44,7 @@ export default function RegulatoryPage() {
       <p className="mb-8 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       <div className="mb-8 rounded-lg border border-amber-100 bg-amber-50 p-4 text-sm text-amber-800">
-        This page is drafted for clarity and is pending final review by Britestate&rsquo;s legal
+        This page is drafted for clarity and is pending final review by {brandConfig.displayName}&rsquo;s legal
         team. The applicable regulators, redress-scheme memberships, and registration numbers must
         be confirmed before publication &mdash; do not assert membership of a scheme that has not
         been verified.
@@ -55,7 +56,7 @@ export default function RegulatoryPage() {
             <Landmark className="text-primary" size={22} /> Company Identity
           </h2>
           <p>
-            Britestate is operated by <strong>Britestate Ltd</strong>, a company registered in
+            {brandConfig.displayName} is operated by <strong>{brandConfig.displayName} Ltd</strong>, a company registered in
             England and Wales under company number <strong>[COMPANY NUMBER]</strong>, with its
             registered office at <strong>[REGISTERED ADDRESS]</strong>.
           </p>
@@ -66,7 +67,7 @@ export default function RegulatoryPage() {
             <ShieldCheck className="text-primary" size={22} /> Regulatory Bodies &amp; Redress
           </h2>
           <p>
-            Britestate is a technology platform connecting consumers with property professionals.
+            {brandConfig.displayName} is a technology platform connecting consumers with property professionals.
             The bodies most relevant to our service and the professionals who use it include:
           </p>
           <LabeledGrid

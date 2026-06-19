@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { exportUserData } from "@/services/gdpr/export-service";
 import { createRateLimiter } from "@/lib/cache/redis";
+import { brandConfig } from "@/config/brand";
 
 // 1 GDPR export per hour per user — gracefully degrades if Redis unavailable
 const gdprExportLimiter = createRateLimiter(1, "1 h");
@@ -56,7 +57,7 @@ export async function GET() {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Content-Disposition": `attachment; filename="britestate-data-export-${date}.json"`,
+        "Content-Disposition": `attachment; filename="${brandConfig.lowercaseToken}-data-export-${date}.json"`,
       },
     });
   } catch {

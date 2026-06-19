@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "policy-statement", label: "1. Policy Statement" },
@@ -15,14 +16,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Anti-Money Laundering Policy | Britestate",
+  title: `Anti-Money Laundering Policy | ${brandConfig.displayName}`,
   description:
-    "Britestate&rsquo;s public AML statement: our obligations under the Money Laundering Regulations 2017 and what users need to know.",
+    `${brandConfig.displayName}&rsquo;s public AML statement: our obligations under the Money Laundering Regulations 2017 and what users need to know.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/aml-policy` },
   openGraph: {
-    title: "Anti-Money Laundering Policy | Britestate",
-    description: "Britestate AML Policy — public statement.",
+    title: `Anti-Money Laundering Policy | ${brandConfig.displayName}`,
+    description: `${brandConfig.displayName} AML Policy — public statement.`,
   },
 };
 
@@ -52,8 +53,8 @@ export default function AmlPolicyPage() {
         This is a public summary of our Anti-Money Laundering obligations. Our full internal AML
         policy — including MLRO procedures, SAR processes, and staff training programmes — is
         available on request by contacting{" "}
-        <a href="mailto:compliance@britestate.co.uk" className="underline hover:no-underline">
-          compliance@britestate.co.uk
+        <a href={`mailto:${brandConfig.emails.compliance}`} className="underline hover:no-underline">
+          {brandConfig.emails.compliance}
         </a>
         .
       </div>
@@ -62,7 +63,7 @@ export default function AmlPolicyPage() {
         <section id="policy-statement">
           <h2 className="text-2xl font-bold font-heading">1. Policy Statement</h2>
           <p>
-            1.1. Britestate Ltd is committed to preventing the use of its platform for money
+            1.1. {brandConfig.displayName} Ltd is committed to preventing the use of its platform for money
             laundering and terrorist financing. This policy sets out our obligations under the Money
             Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer)
             Regulations 2017 (&ldquo;MLR 2017&rdquo;), the Proceeds of Crime Act 2002
@@ -70,7 +71,7 @@ export default function AmlPolicyPage() {
             Laundering Act 2018.
           </p>
           <p>
-            1.2. Britestate is registered with HMRC for AML supervision. Our registration reference
+            1.2. {brandConfig.displayName} is registered with HMRC for AML supervision. Our registration reference
             is [HMRC REFERENCE].
           </p>
         </section>
@@ -137,7 +138,7 @@ export default function AmlPolicyPage() {
           <p>
             5.1. If you have concerns about suspected money laundering or financial crime
             connected to activity on the platform, please contact us at{" "}
-            <a href="mailto:compliance@britestate.co.uk">compliance@britestate.co.uk</a>.
+            <a href={`mailto:${brandConfig.emails.compliance}`}>{brandConfig.emails.compliance}</a>.
           </p>
           <p>
             5.2. You can also report suspected financial crime directly to the National Crime
@@ -161,7 +162,7 @@ export default function AmlPolicyPage() {
         <section id="regulatory-oversight">
           <h2 className="text-2xl font-bold font-heading">6. Regulatory Oversight</h2>
           <p>
-            6.1. Britestate Ltd is supervised by HMRC for the purposes of the Money Laundering
+            6.1. {brandConfig.displayName} Ltd is supervised by HMRC for the purposes of the Money Laundering
             Regulations 2017. HMRC AML supervision registration reference: [HMRC REFERENCE].
           </p>
           <p>
@@ -174,7 +175,7 @@ export default function AmlPolicyPage() {
           </p>
           <p>
             6.4. For external concerns about money laundering activity on the platform, contact:{" "}
-            <a href="mailto:compliance@britestate.co.uk">compliance@britestate.co.uk</a>
+            <a href={`mailto:${brandConfig.emails.compliance}`}>{brandConfig.emails.compliance}</a>
           </p>
         </section>
       </div>
@@ -188,7 +189,7 @@ export default function AmlPolicyPage() {
             "@type": "WebPage",
             name: "Anti-Money Laundering Policy",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/aml-policy`,
           }),
         }}

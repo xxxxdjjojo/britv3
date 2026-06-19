@@ -14,6 +14,7 @@ import { Resend } from "resend";
 import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { captureException } from "@/lib/observability/capture-exception";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 import {
   getEnglandWalesBankHolidays,
   addBusinessDays,
@@ -29,7 +30,7 @@ function getResend(): Resend {
   }
   return _resend;
 }
-const FROM = `${process.env.RESEND_FROM_NAME ?? "Britestate"} <${process.env.RESEND_FROM_ADDRESS ?? "hello@britestate.co.uk"}>`;
+const FROM = `${process.env.RESEND_FROM_NAME ?? brandConfig.displayName} <${process.env.RESEND_FROM_ADDRESS ?? brandConfig.fromEmail}>`;
 
 const CONTACT_TYPE_LABELS: Record<string, string> = {
   enquiry: "Enquiry",
@@ -150,7 +151,7 @@ export const truedeedNotifyIntroduction = inngest.createFunction(
       return { notifiedAt: now.toISOString(), deadline: rebuttalDeadline.toISOString() };
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+    const appUrl = appBaseUrl();
     const property = intro.listings?.properties;
     const listingAddress = [property?.address_line1, property?.postcode]
       .filter(Boolean)

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { Award, HeartHandshake, ShieldCheck, BadgeCheck } from "lucide-react";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { NumberedSteps } from "@/components/legal/NumberedSteps";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "16 June 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "code-of-conduct", label: "Core Code of Conduct" },
@@ -15,14 +16,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Professional Standards | Britestate",
+  title: `Professional Standards | ${brandConfig.displayName}`,
   description:
-    "The standards of conduct, ethics, and service quality Britestate expects from the estate agents, landlords, and service providers operating on the platform.",
+    `The standards of conduct, ethics, and service quality ${brandConfig.displayName} expects from the estate agents, landlords, and service providers operating on the platform.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/professional-standards` },
   openGraph: {
-    title: "Professional Standards | Britestate",
-    description: "The conduct and quality standards we expect on Britestate.",
+    title: `Professional Standards | ${brandConfig.displayName}`,
+    description: `The conduct and quality standards we expect on ${brandConfig.displayName}.`,
   },
 };
 
@@ -41,7 +42,7 @@ export default function ProfessionalStandardsPage() {
       <p className="mb-8 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       <div className="mb-8 rounded-lg border border-amber-100 bg-amber-50 p-4 text-sm text-amber-800">
-        These standards are drafted for clarity and are pending final review by Britestate&rsquo;s
+        These standards are drafted for clarity and are pending final review by {brandConfig.displayName}&rsquo;s
         legal team before publication.
       </div>
 
@@ -51,7 +52,7 @@ export default function ProfessionalStandardsPage() {
             <Award className="text-primary" size={22} /> Core Code of Conduct
           </h2>
           <p>
-            Everyone who offers a service on Britestate is expected to act honestly, fairly, and
+            Everyone who offers a service on {brandConfig.displayName} is expected to act honestly, fairly, and
             professionally. In particular, professionals must:
           </p>
           <ul>
@@ -80,7 +81,7 @@ export default function ProfessionalStandardsPage() {
           <h2 className="flex items-center gap-3 text-2xl font-bold font-heading">
             <ShieldCheck className="text-primary" size={22} /> Technical Standards
           </h2>
-          <p>Listings and profiles on Britestate should meet basic quality standards:</p>
+          <p>Listings and profiles on {brandConfig.displayName} should meet basic quality standards:</p>
           <ul>
             <li>Genuine, current photography and accurate property details.</li>
             <li>Correct pricing, tenure, and availability.</li>

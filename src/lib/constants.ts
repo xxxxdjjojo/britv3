@@ -148,7 +148,7 @@ export const VERIFICATION_STAGES: readonly VerificationStageDefinition[] = [
   {
     value: "admin_review",
     label: "Admin Review",
-    description: "Final review by the Britestate team",
+    description: "Final review by the TrueDeed team",
     order: 6,
   },
 ] as const;

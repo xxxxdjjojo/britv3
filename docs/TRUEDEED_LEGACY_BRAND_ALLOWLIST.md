@@ -69,6 +69,9 @@ tests/security/zap-config.conf
 # Existing database/demo records.
 supabase/migrations/20260307010000_epic7_property_management.sql
 supabase/migrations/20260320000003_fix_test_user_roles.sql
+# Rebrand data-migration: the "britestate" tokens are ilike/IN search patterns
+# used to FIND legacy rows and rewrite them via pg_temp.truedeed_rebrand_text().
+supabase/migrations/20260619103642_truedeed_product_controlled_content.sql
 supabase/seed/00_demo_users.sql
 supabase/seed/seed-test-users.ts
 supabase/seed/seed.sh

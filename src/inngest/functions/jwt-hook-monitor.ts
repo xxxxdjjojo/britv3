@@ -8,6 +8,7 @@
 import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { captureException } from "@/lib/observability/capture-exception";
+import { brandConfig } from "@/config/brand";
 
 export const jwtHookMonitor = inngest.createFunction(
   {
@@ -56,14 +57,14 @@ export const jwtHookMonitor = inngest.createFunction(
           },
         );
 
-        const adminEmail = process.env.ADMIN_ALERT_EMAIL ?? "admin@britestate.co.uk";
+        const adminEmail = process.env.ADMIN_ALERT_EMAIL ?? `admin@${brandConfig.canonicalDomain}`;
 
         try {
           const { Resend } = await import("resend");
           const resend = new Resend(process.env.RESEND_API_KEY);
 
           await resend.emails.send({
-            from: "alerts@britestate.co.uk",
+            from: `alerts@${brandConfig.canonicalDomain}`,
             to: adminEmail,
             subject: `[WARNING] ${errorCount} JWT auth hook errors in last hour`,
             text: [

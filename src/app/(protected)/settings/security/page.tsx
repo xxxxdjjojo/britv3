@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { updatePassword } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
+import { brandConfig } from "@/config/brand";
 import { toast } from "sonner";
 import { PasswordChangeCard } from "@/components/settings/PasswordChangeCard";
 import { TotpEnrollmentCard } from "@/components/settings/TotpEnrollmentCard";
@@ -417,7 +418,7 @@ export default function SecuritySettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "britestate-backup-codes.txt";
+    a.download = `${brandConfig.lowercaseToken}-backup-codes.txt`;
     a.click();
     URL.revokeObjectURL(url);
   }

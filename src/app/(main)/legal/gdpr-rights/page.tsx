@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { GdprRequestForm } from "@/components/legal/GdprRequestForm";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "your-rights", label: "1. Your Rights" },
@@ -17,7 +18,7 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "GDPR Data Subject Rights | Britestate",
+  title: `GDPR Data Subject Rights | ${brandConfig.displayName}`,
   description:
     "Exercise your rights under UK GDPR — access, rectification, erasure, portability, restriction, objection, automated decision-making, and withdrawal of consent.",
   robots: { index: true, follow: true },
@@ -41,7 +42,7 @@ export default function GdprRightsPage() {
 
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
         Under the UK General Data Protection Regulation, you have rights in relation to your personal data held by
-        Britestate Ltd. This page explains each right and how to exercise it. See also our{" "}
+        {brandConfig.displayName} Ltd. This page explains each right and how to exercise it. See also our{" "}
         <Link href="/legal/privacy" className="underline">Privacy Policy</Link>.
       </div>
 
@@ -50,7 +51,7 @@ export default function GdprRightsPage() {
           <h2 className="text-2xl font-bold font-heading">1. Your Rights</h2>
           <p>
             Under the UK General Data Protection Regulation, you have the following rights in relation to your
-            personal data held by Britestate Ltd:
+            personal data held by {brandConfig.displayName} Ltd:
           </p>
 
           <p>
@@ -101,8 +102,8 @@ export default function GdprRightsPage() {
           <h2 className="text-2xl font-bold font-heading">2. How to Make a Request</h2>
           <p>
             Use the form below, or email{" "}
-            <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>, or write to: Data Protection
-            Officer, Britestate Ltd, [REGISTERED ADDRESS].
+            <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a>, or write to: Data Protection
+            Officer, {brandConfig.displayName} Ltd, [REGISTERED ADDRESS].
           </p>
           <p>
             Please specify which right you wish to exercise and provide sufficient information for us to verify your
@@ -171,7 +172,7 @@ export default function GdprRightsPage() {
             "@type": "WebPage",
             name: "GDPR Data Subject Rights",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/gdpr-rights`,
           }),
         }}

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "introduction", label: "1. Introduction" },
@@ -23,12 +24,12 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Britestate",
+  title: `Privacy Policy | ${brandConfig.displayName}`,
   description:
-    "How Britestate Ltd collects, uses, shares, and protects your personal data under UK GDPR, the Data Protection Act 2018, and the Data (Use and Access) Act 2025.",
+    `How ${brandConfig.displayName} Ltd collects, uses, shares, and protects your personal data under UK GDPR, the Data Protection Act 2018, and the Data (Use and Access) Act 2025.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/privacy` },
-  openGraph: { title: "Privacy Policy | Britestate", description: "Britestate Privacy Policy." },
+  openGraph: { title: `Privacy Policy | ${brandConfig.displayName}`, description: `${brandConfig.displayName} Privacy Policy.` },
 };
 
 export default function PrivacyPage() {
@@ -51,7 +52,7 @@ export default function PrivacyPage() {
       <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
-        This policy explains how Britestate Ltd processes your personal data in compliance with UK
+        This policy explains how {brandConfig.displayName} Ltd processes your personal data in compliance with UK
         GDPR, the Data Protection Act 2018, and the Data (Use and Access) Act 2025. To exercise
         your data rights, visit our{" "}
         <Link href="/legal/gdpr-rights" className="underline hover:no-underline">
@@ -64,8 +65,8 @@ export default function PrivacyPage() {
         <section id="introduction">
           <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
           <p>
-            1.1. Britestate Ltd (&ldquo;Britestate&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is
-            the data controller for the personal data processed through the britestate.co.uk
+            1.1. {brandConfig.displayName} Ltd (&ldquo;{brandConfig.displayName}&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is
+            the data controller for the personal data processed through the {brandConfig.canonicalDomain}
             platform (the &ldquo;Platform&rdquo;). We are registered with the Information
             Commissioner&rsquo;s Office (ICO) under registration number [ICO REGISTRATION NUMBER].
           </p>
@@ -76,7 +77,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             1.3. Our Data Protection Officer can be contacted at{" "}
-            <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a> or by post at
+            <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a> or by post at
             [REGISTERED ADDRESS].
           </p>
         </section>
@@ -384,7 +385,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             7.4. You may request a copy of the relevant transfer safeguards by contacting{" "}
-            <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>.
+            <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a>.
           </p>
         </section>
 
@@ -457,7 +458,7 @@ export default function PrivacyPage() {
               GDPR Rights page
             </Link>
             , or email{" "}
-            <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>. We will
+            <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a>. We will
             respond within 30 days. We may request identity verification before processing your
             request. If we cannot action your request, we will explain why.
           </p>
@@ -523,9 +524,9 @@ export default function PrivacyPage() {
           <h2 className="text-2xl font-bold font-heading">14. Contact</h2>
           <p>
             Data Protection Officer:{" "}
-            <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>
+            <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a>
             <br />
-            Britestate Ltd, [REGISTERED ADDRESS]
+            {brandConfig.displayName} Ltd, [REGISTERED ADDRESS]
             <br />
             Company No. [COMPANY NUMBER]
             <br />
@@ -542,7 +543,7 @@ export default function PrivacyPage() {
             "@type": "WebPage",
             name: "Privacy Policy",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/privacy`,
           }),
         }}

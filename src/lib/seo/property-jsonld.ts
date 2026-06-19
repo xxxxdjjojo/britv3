@@ -1,6 +1,7 @@
 import type { PropertyDetail } from "@/services/properties/property-detail-service";
+import { appBaseUrl } from "@/config/brand";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 /**
  * Build Schema.org RealEstateListing (or Residence) JSON-LD for a property detail page.

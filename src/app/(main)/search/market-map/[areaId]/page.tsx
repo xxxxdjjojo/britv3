@@ -17,6 +17,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { MarketMapExplorerLoader } from "@/components/market-map/MarketMapExplorerLoader";
+import { brandConfig } from "@/config/brand";
 
 // ---------------------------------------------------------------------------
 // Metadata — resolved server-side from the areaId segment
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
   return {
-    title: `${humanName} Property Prices — Median Sold Prices | Britestate`,
+    title: `${humanName} Property Prices — Median Sold Prices | ${brandConfig.displayName}`,
     description: `Explore median sold prices in ${humanName}. Sub-area breakdown based on registered Land Registry transactions.`,
   };
 }

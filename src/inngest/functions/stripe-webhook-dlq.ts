@@ -25,6 +25,7 @@ import {
   markBillingEventProcessed,
 } from "@/services/billing/billing-events";
 import { captureException, getErrorMessage } from "@/lib/observability/capture-exception";
+import { brandConfig } from "@/config/brand";
 
 type WebhookFailedEvent = {
   eventId: string;
@@ -162,14 +163,14 @@ export const stripeWebhookDlq = inngest.createFunction(
 
     if (attempt >= 3) {
       await step.run("send-admin-alert", async () => {
-        const adminEmail = process.env.ADMIN_ALERT_EMAIL ?? "admin@britestate.co.uk";
+        const adminEmail = process.env.ADMIN_ALERT_EMAIL ?? `admin@${brandConfig.canonicalDomain}`;
 
         try {
           const { Resend } = await import("resend");
           const resend = new Resend(process.env.RESEND_API_KEY);
 
           await resend.emails.send({
-            from: "alerts@britestate.co.uk",
+            from: `alerts@${brandConfig.canonicalDomain}`,
             to: adminEmail,
             subject: `[CRITICAL] Stripe webhook failed after 3 retries: ${data.eventType}`,
             text: [

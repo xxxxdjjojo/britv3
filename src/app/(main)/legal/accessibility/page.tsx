@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "our-commitment", label: "1. Our Commitment" },
@@ -15,14 +16,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Accessibility Statement | Britestate",
+  title: `Accessibility Statement | ${brandConfig.displayName}`,
   description:
-    "Britestate&rsquo;s WCAG 2.1 AA conformance status, known accessibility limitations, and how to report accessibility barriers.",
+    `${brandConfig.displayName}&rsquo;s WCAG 2.1 AA conformance status, known accessibility limitations, and how to report accessibility barriers.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/accessibility` },
   openGraph: {
-    title: "Accessibility Statement | Britestate",
-    description: "Britestate accessibility statement and WCAG 2.1 AA conformance status.",
+    title: `Accessibility Statement | ${brandConfig.displayName}`,
+    description: `${brandConfig.displayName} accessibility statement and WCAG 2.1 AA conformance status.`,
   },
 };
 
@@ -49,13 +50,13 @@ export default function AccessibilityPage() {
 
       {/* Yellow info callout */}
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
-        We are committed to making Britestate accessible to everyone. If you encounter any
+        We are committed to making {brandConfig.displayName} accessible to everyone. If you encounter any
         accessibility barrier, please contact us at{" "}
         <a
-          href="mailto:accessibility@britestate.co.uk"
+          href={`mailto:${brandConfig.emails.accessibility}`}
           className="underline hover:no-underline"
         >
-          accessibility@britestate.co.uk
+          {brandConfig.emails.accessibility}
         </a>{" "}
         and we will do our best to help.
       </div>
@@ -64,7 +65,7 @@ export default function AccessibilityPage() {
         <section id="our-commitment">
           <h2 className="text-2xl font-bold font-heading">1. Our Commitment</h2>
           <p>
-            Britestate Ltd is committed to making our platform accessible to everyone, including
+            {brandConfig.displayName} Ltd is committed to making our platform accessible to everyone, including
             people with disabilities. We aim to conform to the Web Content Accessibility Guidelines
             (WCAG) 2.1 at Level AA.
           </p>
@@ -110,11 +111,11 @@ export default function AccessibilityPage() {
         <section id="feedback">
           <h2 className="text-2xl font-bold font-heading">5. Feedback</h2>
           <p>
-            If you encounter accessibility barriers on Britestate, please contact us:
+            If you encounter accessibility barriers on {brandConfig.displayName}, please contact us:
           </p>
           <p>
             Email:{" "}
-            <a href="mailto:accessibility@britestate.co.uk">accessibility@britestate.co.uk</a>
+            <a href={`mailto:${brandConfig.emails.accessibility}`}>{brandConfig.emails.accessibility}</a>
             <br />
             Phone: [PHONE NUMBER]
           </p>
@@ -151,7 +152,7 @@ export default function AccessibilityPage() {
             "@type": "WebPage",
             name: "Accessibility Statement",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/accessibility`,
           }),
         }}

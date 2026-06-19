@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "introduction", label: "1. Introduction" },
@@ -14,14 +15,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Complaints Procedure | Britestate",
+  title: `Complaints Procedure | ${brandConfig.displayName}`,
   description:
-    "How to make a complaint to Britestate, our investigation and response timelines, and your escalation options including the ICO, Property Ombudsman, and ADR providers.",
+    `How to make a complaint to ${brandConfig.displayName}, our investigation and response timelines, and your escalation options including the ICO, Property Ombudsman, and ADR providers.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/complaints` },
   openGraph: {
-    title: "Complaints Procedure | Britestate",
-    description: "How to raise a complaint with Britestate and available escalation options.",
+    title: `Complaints Procedure | ${brandConfig.displayName}`,
+    description: `How to raise a complaint with ${brandConfig.displayName} and available escalation options.`,
   },
 };
 
@@ -48,13 +49,13 @@ export default function ComplaintsPage() {
 
       {/* Yellow info callout */}
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
-        Britestate Ltd takes all complaints seriously and aims to resolve them fairly and promptly.
+        {brandConfig.displayName} Ltd takes all complaints seriously and aims to resolve them fairly and promptly.
         To raise a complaint, email{" "}
         <a
-          href="mailto:complaints@britestate.co.uk"
+          href={`mailto:${brandConfig.emails.complaints}`}
           className="underline hover:no-underline"
         >
-          complaints@britestate.co.uk
+          {brandConfig.emails.complaints}
         </a>{" "}
         or use the{" "}
         <Link href="/help" className="underline hover:no-underline">
@@ -67,7 +68,7 @@ export default function ComplaintsPage() {
         <section id="introduction">
           <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
           <p>
-            Britestate Ltd takes all complaints seriously and aims to resolve them fairly and
+            {brandConfig.displayName} Ltd takes all complaints seriously and aims to resolve them fairly and
             promptly. This procedure explains how to make a complaint and what to expect from us
             throughout the process.
           </p>
@@ -87,7 +88,7 @@ export default function ComplaintsPage() {
           <h2 className="text-2xl font-bold font-heading">3. How to Complain</h2>
           <p>
             <strong>Step 1 &mdash; Contact Us.</strong> Email{" "}
-            <a href="mailto:complaints@britestate.co.uk">complaints@britestate.co.uk</a> or use the
+            <a href={`mailto:${brandConfig.emails.complaints}`}>{brandConfig.emails.complaints}</a> or use the
             &ldquo;Help &amp; Support&rdquo; section of the platform. Please include your name,
             email address, a description of the issue, and any relevant evidence (screenshots,
             reference numbers).
@@ -167,7 +168,7 @@ export default function ComplaintsPage() {
             agent&rsquo;s redress scheme directly.
           </p>
           <p>
-            Britestate is not responsible for the professional conduct of estate agents or service
+            {brandConfig.displayName} is not responsible for the professional conduct of estate agents or service
             providers on the platform.
           </p>
         </section>
@@ -182,7 +183,7 @@ export default function ComplaintsPage() {
             "@type": "WebPage",
             name: "Complaints Procedure",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/complaints`,
           }),
         }}

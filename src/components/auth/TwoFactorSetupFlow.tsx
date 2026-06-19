@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OTPInput } from "@/components/auth/OTPInput";
 import { WizardStepper } from "@/components/auth/WizardStepper";
 import { createClient } from "@/lib/supabase/client";
+import { brandConfig } from "@/config/brand";
 
 const STEPS = ["Download App", "Scan QR Code", "Save Backup Codes"];
 
@@ -139,7 +140,7 @@ export function TwoFactorSetupFlow(
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "britestate-backup-codes.txt";
+    a.download = `${brandConfig.lowercaseToken}-backup-codes.txt`;
     a.click();
     URL.revokeObjectURL(url);
   }

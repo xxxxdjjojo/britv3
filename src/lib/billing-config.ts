@@ -14,6 +14,8 @@
  */
 import "server-only";
 
+import { brandConfig } from "@/config/brand";
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -93,7 +95,7 @@ export const SELLER_PLANS: readonly Plan[] = [
     commissionRate: 0.005,
     commissionLabel: "0.50% on completion",
     features: [
-      "Listing on Britestate (15 photos)",
+      `Listing on ${brandConfig.displayName} (15 photos)`,
       "Standard hero placement",
       "Tour-booking inbox",
       "Email support",
@@ -167,11 +169,11 @@ export const AGENT_PLANS: readonly Plan[] = [
     priceIdAnnual: FREE,
     priceMonthly: 0,
     priceAnnual: 0,
-    commissionLabel: "Revenue-share only on Britestate-originated leads",
+    commissionLabel: `Revenue-share only on ${brandConfig.displayName}-originated leads`,
     features: [
       "Unlimited free listings",
       "Standard profile",
-      "Britestate-originated leads opt-in",
+      `${brandConfig.displayName}-originated leads opt-in`,
       "Email support",
     ],
   },
@@ -184,14 +186,14 @@ export const AGENT_PLANS: readonly Plan[] = [
     priceIdAnnual: envOrTest("STRIPE_AGENT_PRO_ANNUAL_PRICE_ID", "price_agent_pro_v2_annual_test"),
     priceMonthly: 9900,
     priceAnnual: 95000,
-    commissionLabel: "70/30 split on Britestate-originated leads",
+    commissionLabel: `70/30 split on ${brandConfig.displayName}-originated leads`,
     highlighted: true,
     features: [
       "Everything in Listed",
       "Featured branch profile",
       "Lead intake CRM",
       "Viewing-calendar embed",
-      "70/30 revenue share on Britestate leads",
+      `70/30 revenue share on ${brandConfig.displayName} leads`,
       "Priority support (8hr SLA)",
     ],
   },
@@ -204,14 +206,14 @@ export const AGENT_PLANS: readonly Plan[] = [
     priceIdAnnual: envOrTest("STRIPE_AGENT_ELITE_ANNUAL_PRICE_ID", "price_agent_elite_v2_annual_test"),
     priceMonthly: 34900,
     priceAnnual: 335000,
-    commissionLabel: "85/15 split on Britestate-originated leads",
+    commissionLabel: `85/15 split on ${brandConfig.displayName}-originated leads`,
     features: [
       "Everything in Pro",
       "Multi-branch management",
       "Team accounts",
       "API access",
       "Dedicated account manager",
-      "85/15 revenue share on Britestate leads",
+      `85/15 revenue share on ${brandConfig.displayName} leads`,
       "Custom branding",
     ],
   },
@@ -304,7 +306,7 @@ export const PROVIDER_PLANS: readonly Plan[] = [
     commissionLabel: "12% per job",
     features: [
       "Verified profile listing",
-      "Britestate Trust badge (basic)",
+      `${brandConfig.displayName} Trust badge (basic)`,
       "3 quotes per month",
       "Email support",
     ],

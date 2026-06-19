@@ -12,6 +12,7 @@ import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPropertyAlert } from "@/services/email/email-service";
 import { captureException } from "@/lib/observability/capture-exception";
+import { appBaseUrl } from "@/config/brand";
 
 type PriceDrop = {
   property_id: string;
@@ -107,7 +108,7 @@ export const priceDropAlerts = inngest.createFunction(
                   });
                 }
 
-                const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+                const appUrl = appBaseUrl();
                 const listingUrl = drop.slug
                   ? `${appUrl}/properties/${drop.slug}`
                   : `${appUrl}/properties/listing/${drop.listing_id}`;

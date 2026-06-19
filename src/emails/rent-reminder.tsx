@@ -4,6 +4,7 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import { appBaseUrl } from "@/config/brand";
 
 export function RentReminderEmail({
   tenantName,
@@ -138,7 +139,7 @@ export function RentReminderEmail({
           View Rent Details
         </EmailButton>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter unsubscribeUrl={`${appBaseUrl()}/unsubscribe?token=placeholder`} />
     </EmailWrapper>
   );
 }

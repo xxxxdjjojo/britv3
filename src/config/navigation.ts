@@ -1,5 +1,5 @@
 /**
- * Centralized navigation configuration for Britestate.
+ * Centralized navigation configuration for TrueDeed.
  *
  * Consumed by Header, MegaMenu, Footer, Sidebar, BottomTabBar,
  * Breadcrumbs, and CommandPalette components.

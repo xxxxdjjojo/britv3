@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "commitment", label: "1. Our Commitment to Transparency" },
@@ -17,12 +18,12 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Fee Transparency | Britestate",
-  description: "Clear breakdown of Britestate platform fees, commissions, and payment terms for all user types.",
+  title: `Fee Transparency | ${brandConfig.displayName}`,
+  description: `Clear breakdown of ${brandConfig.displayName} platform fees, commissions, and payment terms for all user types.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/fee-transparency` },
   openGraph: {
-    title: "Fee Transparency | Britestate",
+    title: `Fee Transparency | ${brandConfig.displayName}`,
     description: "Clear breakdown of platform fees, commissions, and payment terms.",
   },
 };
@@ -44,7 +45,7 @@ export default function FeeTransparencyPage() {
 
       {/* Yellow info callout */}
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
-        Britestate Ltd believes in clear, upfront pricing with no hidden fees. This page sets out all
+        {brandConfig.displayName} Ltd believes in clear, upfront pricing with no hidden fees. This page sets out all
         fees associated with using the Platform, in accordance with CMA guidance on fee transparency.
       </div>
 
@@ -52,7 +53,7 @@ export default function FeeTransparencyPage() {
         <section id="commitment">
           <h2 className="text-2xl font-bold font-heading">1. Our Commitment to Transparency</h2>
           <p>
-            Britestate Ltd believes in clear, upfront pricing with no hidden fees. This page sets out
+            {brandConfig.displayName} Ltd believes in clear, upfront pricing with no hidden fees. This page sets out
             all fees associated with using the Platform, in accordance with CMA guidance on fee
             transparency.
           </p>
@@ -69,11 +70,11 @@ export default function FeeTransparencyPage() {
         <section id="sellers">
           <h2 className="text-2xl font-bold font-heading">3. For Sellers</h2>
           <p>
-            Listing your property through an estate agent on Britestate is covered by your agreement
-            with the agent. Britestate does not charge sellers directly.
+            Listing your property through an estate agent on {brandConfig.displayName} is covered by your agreement
+            with the agent. {brandConfig.displayName} does not charge sellers directly.
           </p>
           <p>
-            If you use Britestate&apos;s direct listing service (where available), fees are displayed
+            If you use {brandConfig.displayName}&apos;s direct listing service (where available), fees are displayed
             at the point of listing and must be confirmed before your listing goes live.
           </p>
         </section>
@@ -83,7 +84,7 @@ export default function FeeTransparencyPage() {
           <p>
             Listing rental properties is [free / part of a subscription &mdash; specify]. Landlords
             are responsible for any fees charged by their managing agent, which are separate from
-            Britestate&apos;s fees.
+            {brandConfig.displayName}&apos;s fees.
           </p>
         </section>
 
@@ -143,7 +144,7 @@ export default function FeeTransparencyPage() {
           <h2 className="text-2xl font-bold font-heading">6. For Service Providers</h2>
           <p>
             Service providers (surveyors, conveyancers, mortgage brokers, tradespeople) may list their
-            services on the Britestate marketplace. Listing fees and commission rates are displayed on
+            services on the {brandConfig.displayName} marketplace. Listing fees and commission rates are displayed on
             the marketplace registration page and confirmed before sign-up.
           </p>
         </section>
@@ -151,7 +152,7 @@ export default function FeeTransparencyPage() {
         <section id="payment-processing">
           <h2 className="text-2xl font-bold font-heading">7. Payment Processing</h2>
           <p>
-            All payments are processed securely by Stripe. Britestate does not store your card
+            All payments are processed securely by Stripe. {brandConfig.displayName} does not store your card
             details. Stripe&apos;s fees are included in the prices shown and are not charged
             separately to you.
           </p>
@@ -165,7 +166,7 @@ export default function FeeTransparencyPage() {
           </p>
           <p>
             If you have questions about fees, contact us at{" "}
-            <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a> or see our{" "}
+            <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a> or see our{" "}
             <Link href="/legal/complaints" className="text-primary hover:underline">
               Complaints Procedure
             </Link>{" "}
@@ -183,7 +184,7 @@ export default function FeeTransparencyPage() {
             "@type": "WebPage",
             name: "Fee Transparency",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/fee-transparency`,
           }),
         }}

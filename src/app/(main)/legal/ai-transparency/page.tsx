@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "how-we-use-ai", label: "1. How We Use AI" },
@@ -14,12 +15,12 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "AI Transparency Notice | Britestate",
-  description: "How Britestate uses artificial intelligence and automated decision-making, and your rights under UK GDPR.",
+  title: `AI Transparency Notice | ${brandConfig.displayName}`,
+  description: `How ${brandConfig.displayName} uses artificial intelligence and automated decision-making, and your rights under UK GDPR.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/ai-transparency` },
   openGraph: {
-    title: "AI Transparency Notice | Britestate",
+    title: `AI Transparency Notice | ${brandConfig.displayName}`,
     description: "How we use artificial intelligence and automated decision-making.",
   },
 };
@@ -41,7 +42,7 @@ export default function AiTransparencyPage() {
 
       {/* Yellow info callout */}
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
-        Britestate uses artificial intelligence to enhance your property search experience. We believe
+        {brandConfig.displayName} uses artificial intelligence to enhance your property search experience. We believe
         in being transparent about when and how AI is used.
       </div>
 
@@ -49,7 +50,7 @@ export default function AiTransparencyPage() {
         <section id="how-we-use-ai">
           <h2 className="text-2xl font-bold font-heading">1. How We Use AI</h2>
           <p>
-            Britestate uses artificial intelligence to enhance your property search experience. We
+            {brandConfig.displayName} uses artificial intelligence to enhance your property search experience. We
             believe in being transparent about when and how AI is used.
           </p>
         </section>
@@ -115,7 +116,7 @@ export default function AiTransparencyPage() {
             systems work; and object to profiling under Article 21 of UK GDPR.
           </p>
           <p>
-            Contact <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a> to
+            Contact <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a> to
             exercise these rights, or see our{" "}
             <Link href="/legal/gdpr-rights" className="text-primary hover:underline">
               GDPR Data Subject Rights
@@ -138,7 +139,7 @@ export default function AiTransparencyPage() {
             "@type": "WebPage",
             name: "AI Transparency Notice",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/ai-transparency`,
           }),
         }}

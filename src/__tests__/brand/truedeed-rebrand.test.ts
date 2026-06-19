@@ -66,10 +66,18 @@ describe("TrueDeed rebrand — brand identity", () => {
       for (const file of walkSource(join(ROOT, d))) {
         const lines = readFileSync(file, "utf8").split("\n");
         lines.forEach((line, i) => {
-          if (!/britestate/i.test(line)) return;
-          // Allow internal-only identifiers that are intentionally retained.
-          if (/britestate_compare/.test(line)) return; // localStorage key
-          if (/@(test|demo|example)\.britestate/i.test(line)) return; // test fixtures
+          // Flag only USER-VISIBLE legacy brand: the capitalised display name
+          // ("Britestate") or the legacy domain ("britestate.co.uk").
+          // Lowercase `britestate_` / `britestate-` tokens are intentional
+          // internal identifiers (localStorage/cookie keys, DB enum values,
+          // TOC anchor ids) that MUST stay stable — changing them orphans user
+          // data and breaks server contracts, so they are not brand violations.
+          const hasDisplayName = /Britestate/.test(line);
+          const hasLegacyDomain = /britestate\.co\.uk/i.test(line);
+          if (!hasDisplayName && !hasLegacyDomain) return;
+          // Test/demo fixtures and the reserved `.test` TLD are intentional.
+          if (/@(test|demo|example)\.britestate/i.test(line)) return;
+          if (/britestate\.test\b/i.test(line)) return;
           offenders.push(`${relative(ROOT, file)}:${i + 1}: ${line.trim()}`);
         });
       }

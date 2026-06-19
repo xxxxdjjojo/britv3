@@ -3,9 +3,10 @@ import Link from "next/link";
 import { Network, ShieldCheck, Layers, Link2 } from "lucide-react";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LabeledGrid } from "@/components/legal/LabeledGrid";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "16 June 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "overview", label: "Overview" },
@@ -15,14 +16,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Third-Party Services Disclosure | Britestate",
+  title: `Third-Party Services Disclosure | ${brandConfig.displayName}`,
   description:
-    "The third-party service providers and data processors Britestate relies on to run the platform, what each is used for, and how we vet them.",
+    `The third-party service providers and data processors ${brandConfig.displayName} relies on to run the platform, what each is used for, and how we vet them.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/third-party-services` },
   openGraph: {
-    title: "Third-Party Services Disclosure | Britestate",
-    description: "The processors that power Britestate and how we vet them.",
+    title: `Third-Party Services Disclosure | ${brandConfig.displayName}`,
+    description: `The processors that power ${brandConfig.displayName} and how we vet them.`,
   },
 };
 
@@ -43,7 +44,7 @@ export default function ThirdPartyServicesPage() {
       <p className="mb-8 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       <div className="mb-8 rounded-lg border border-amber-100 bg-amber-50 p-4 text-sm text-amber-800">
-        This disclosure is drafted for clarity and is pending final review by Britestate&rsquo;s
+        This disclosure is drafted for clarity and is pending final review by {brandConfig.displayName}&rsquo;s
         legal team. The processor list should be reconciled against the current vendor register
         before publication.
       </div>
@@ -54,7 +55,7 @@ export default function ThirdPartyServicesPage() {
             <Network className="text-primary" size={22} /> Overview
           </h2>
           <p>
-            To run Britestate we use a number of trusted third-party providers (&ldquo;data
+            To run {brandConfig.displayName} we use a number of trusted third-party providers (&ldquo;data
             processors&rdquo;). They process data only on our instructions and under contract. This
             page summarises who they are and what they do; how we handle your personal data is set
             out in full in our{" "}

@@ -1,5 +1,6 @@
 
 import type { InvoiceLineItem } from "@/types/provider-dashboard";
+import { brandConfig } from "@/config/brand";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -77,7 +78,7 @@ export function InvoicePreview({
         style={{ backgroundColor: "#1B4D3E" }}
       >
         <span className="text-lg font-bold tracking-widest text-white">
-          BRITESTATE
+          {brandConfig.displayName.toUpperCase()}
         </span>
         <span className="text-sm font-semibold uppercase tracking-wider text-white/70">
           Invoice

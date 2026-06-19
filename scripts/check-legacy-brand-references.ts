@@ -154,7 +154,13 @@ function readAllowlistFile(allowlistPath: string): string[] {
     .map(normalizePath);
 }
 
+// Test files (unit, e2e, db) legitimately reference the legacy brand — they are
+// brand-regression guards that assert the string is *absent* from production
+// surfaces, so they must contain it. Never flag them.
+const TEST_FILE_RE = /(\.(test|spec)\.[cm]?[jt]sx?$|(^|\/)(__tests__|db-tests|e2e)\/)/;
+
 function shouldExclude(file: string): boolean {
+  if (TEST_FILE_RE.test(file)) return true;
   return EXCLUDED_PREFIXES.some((prefix) => file === prefix.slice(0, -1) || file.startsWith(prefix));
 }
 

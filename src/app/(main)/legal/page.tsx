@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 import {
   FileText,
   AlertTriangle,
@@ -23,11 +24,11 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Legal Hub | Britestate",
-  description: "Britestate's legal documents, policies, and compliance information.",
+  title: `Legal Hub | ${brandConfig.displayName}`,
+  description: `${brandConfig.displayName}'s legal documents, policies, and compliance information.`,
   robots: { index: true, follow: true },
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/legal`,
+    canonical: `${appBaseUrl()}/legal`,
   },
 };
 
@@ -51,7 +52,7 @@ const categories: Category[] = [
         href: "/legal/terms",
         icon: FileText,
         title: "Terms of Service",
-        desc: "Rules governing your use of the Britestate platform.",
+        desc: `Rules governing your use of the ${brandConfig.displayName} platform.`,
       },
       {
         href: "/legal/acceptable-use",
@@ -115,7 +116,7 @@ const categories: Category[] = [
         href: "/legal/third-party-services",
         icon: Share2,
         title: "Third-Party Services Disclosure",
-        desc: "The processors that power Britestate and how we vet them.",
+        desc: `The processors that power ${brandConfig.displayName} and how we vet them.`,
       },
     ],
   },
@@ -194,7 +195,7 @@ export default function LegalPage() {
           Legal Hub
         </h1>
         <p className="mt-4 text-lg text-neutral-600">
-          Britestate&apos;s legal documents, policies, and compliance information.
+          {brandConfig.displayName}&apos;s legal documents, policies, and compliance information.
         </p>
       </div>
 
