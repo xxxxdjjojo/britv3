@@ -371,6 +371,30 @@ export async function createDeterministicReapitImportRun(
   ).length;
   const withdrawnItems = listings.filter((listing) => listing.status === "withdrawn").length;
 
+  // Idempotency: an identical feed (same fingerprint) already taken to a
+  // terminal state must NOT be reset to needs_review — that would resurface
+  // already-published items for re-review. Re-importing an unchanged feed is a
+  // no-op that returns the prior summary.
+  const { data: existingRun } = await supabase
+    .from("feed_import_runs")
+    .select("id, status")
+    .eq("integration_id", integrationId)
+    .eq("source_fingerprint", sourceFingerprint)
+    .maybeSingle();
+
+  if (
+    existingRun &&
+    ["published", "succeeded"].includes(String((existingRun as { status: string }).status))
+  ) {
+    return {
+      run_id: String((existingRun as { id: string }).id),
+      total_items: listings.length,
+      eligible_items: eligibleItems,
+      error_items: errorItems,
+      withdrawn_items: withdrawnItems,
+    };
+  }
+
   const { data: run, error: runError } = await supabase
     .from("feed_import_runs")
     .upsert(

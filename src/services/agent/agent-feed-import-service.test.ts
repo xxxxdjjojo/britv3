@@ -18,6 +18,9 @@ function createMutationChain(result: unknown) {
     select: vi.fn(() => chain),
     eq: vi.fn(() => chain),
     single: vi.fn().mockResolvedValue(result),
+    // Idempotency pre-check on feed_import_runs uses maybeSingle; default to
+    // "no existing run" so the upsert path is exercised.
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
   };
 
   return chain;
@@ -135,6 +138,33 @@ describe("agent-feed-import-service", () => {
       ]),
       { onConflict: "run_id,item_type,external_id" },
     );
+  });
+
+  it("is a no-op when re-importing an already-published feed (no status reset)", async () => {
+    const runChain = createMutationChain({ data: { id: "run-1" }, error: null });
+    runChain.maybeSingle = vi
+      .fn()
+      .mockResolvedValue({ data: { id: "run-existing", status: "published" }, error: null });
+    const itemChain = createMutationChain({ data: [], error: null });
+    const integrationChain = createFlexibleChain({ data: { organisation_id: "org-1" } });
+    const supabase = {
+      from: vi.fn((table: string) => {
+        if (table === "feed_import_runs") return runChain;
+        if (table === "feed_import_items") return itemChain;
+        if (table === "agent_feed_integrations") return integrationChain;
+        throw new Error(`Unexpected table ${table}`);
+      }),
+    };
+
+    const summary = await createDeterministicReapitImportRun(
+      supabase as never,
+      "agent-1",
+      "integration-1",
+    );
+
+    expect(summary.run_id).toBe("run-existing");
+    expect(runChain.upsert).not.toHaveBeenCalled();
+    expect(itemChain.upsert).not.toHaveBeenCalled();
   });
 
   it("approves review items through an agent-scoped update", async () => {

@@ -44,6 +44,16 @@ create table public.property_media (
   id uuid primary key default gen_random_uuid(),
   listing_id uuid references public.listings(id)
 );
+
+-- Mirror the RLS posture migration 20260313 establishes in production for
+-- agent_branches and agent_feed_integrations (the base harness stub omits it):
+-- RLS enabled + an agent-self ALL policy. Our org-member policies layer on top.
+alter table public.agent_branches enable row level security;
+create policy "ab_agent_self" on public.agent_branches for all to authenticated
+  using (agent_id = (select auth.uid())) with check (agent_id = (select auth.uid()));
+alter table public.agent_feed_integrations enable row level security;
+create policy "afi_agent_self" on public.agent_feed_integrations for all to authenticated
+  using (agent_id = (select auth.uid())) with check (agent_id = (select auth.uid()));
 `;
 
 /** Run a query inside an authenticated transaction for the given user. */
@@ -126,6 +136,51 @@ describe("organisations model", () => {
 
   it("RLS: an outsider cannot read another org's import runs", () => {
     expect(asUser(db, USER_B, `select count(*) from public.feed_import_runs`)).toBe("0");
+  });
+
+  it("RLS: cross-org isolation holds across the whole ingestion surface", () => {
+    const BRANCH_A = "a2222222-2222-2222-2222-222222222222";
+    const PROP_A = "a3333333-3333-3333-3333-333333333333";
+    const LST_A = "a4444444-4444-4444-4444-444444444444";
+
+    // Seed one ORG_1 row in every org-scoped table (service-role / superuser).
+    db.sql(`insert into public.agent_branches (id, agent_id, name, organisation_id)
+      values ('${BRANCH_A}','${AGENT_A}','Branch A','${ORG_1}');`);
+    db.sql(`insert into public.properties (id, address_line1, postcode) values ('${PROP_A}','1 A St','SW1A 1AA');`);
+    db.sql(`insert into public.listings (id, property_id, user_id, status, organisation_id)
+      values ('${LST_A}','${PROP_A}','${AGENT_A}','active','${ORG_1}');`);
+    db.sql(`insert into public.feed_import_items (run_id, integration_id, agent_id, item_type, external_id, payload, payload_sha256, organisation_id)
+      values ('${RUN_1}','${INT_1}','${AGENT_A}','listing','X1','{}','h1','${ORG_1}');`);
+    db.sql(`insert into public.feed_listing_links (integration_id, agent_id, external_listing_id, organisation_id)
+      values ('${INT_1}','${AGENT_A}','L1','${ORG_1}');`);
+    db.sql(`insert into public.feed_branch_links (integration_id, agent_id, external_branch_id, organisation_id)
+      values ('${INT_1}','${AGENT_A}','B1','${ORG_1}');`);
+    db.sql(`insert into public.feed_media_links (integration_id, agent_id, external_media_id, listing_id, organisation_id)
+      values ('${INT_1}','${AGENT_A}','M1','${LST_A}','${ORG_1}');`);
+
+    // An outsider (USER_B) sees nothing in any org-scoped table.
+    for (const table of [
+      "agent_branches",
+      "feed_import_items",
+      "feed_listing_links",
+      "feed_branch_links",
+      "feed_media_links",
+      "agent_feed_integrations",
+    ]) {
+      expect(asUser(db, USER_B, `select count(*) from public.${table}`)).toBe("0");
+    }
+
+    // A non-agent org member (USER_D) reads the org's branches/items/links.
+    expect(asUser(db, USER_D, `select count(*) from public.agent_branches`)).toBe("1");
+    expect(asUser(db, USER_D, `select count(*) from public.feed_import_items`)).toBe("1");
+    expect(asUser(db, USER_D, `select count(*) from public.feed_listing_links`)).toBe("1");
+    expect(asUser(db, USER_D, `select count(*) from public.feed_branch_links`)).toBe("1");
+    expect(asUser(db, USER_D, `select count(*) from public.feed_media_links`)).toBe("1");
+
+    // Feed integrations carry secret references: only owner/admin see them, not
+    // a plain member.
+    expect(asUser(db, USER_D, `select count(*) from public.agent_feed_integrations`)).toBe("0");
+    expect(asUser(db, AGENT_A, `select count(*) from public.agent_feed_integrations`)).toBe("1");
   });
 
   it("trigger rejects an import run whose organisation_id != the integration's org", () => {

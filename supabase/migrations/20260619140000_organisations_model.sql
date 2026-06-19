@@ -2,8 +2,8 @@
 -- Introduces a real multi-user organisation boundary (agencies today, other
 -- trader verticals later) alongside the existing single-user agent_id model.
 -- This migration is ADDITIVE: it adds new tables + membership helpers only.
--- Ownership is wired onto the ingestion surface in 20260619130001 and existing
--- agencies are backfilled in 20260619130002.
+-- Ownership is wired onto the ingestion surface in 20260619140001 and existing
+-- agencies are backfilled in 20260619140002.
 
 CREATE TABLE IF NOT EXISTS public.organisations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -73,8 +73,10 @@ AS $$
   );
 $$;
 
-GRANT EXECUTE ON FUNCTION public.is_org_member(uuid) TO anon, authenticated, service_role;
-GRANT EXECUTE ON FUNCTION public.has_org_role(uuid, text[]) TO anon, authenticated, service_role;
+-- Least privilege: only authenticated callers (via RLS) and the service role
+-- need these. auth.uid() is null for anon, so granting anon added no capability.
+GRANT EXECUTE ON FUNCTION public.is_org_member(uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.has_org_role(uuid, text[]) TO authenticated, service_role;
 
 -- ===== RLS: select for members, writes are service-role only =====
 -- (Mirrors the feed ledger posture: reads via RLS, writes via the trusted

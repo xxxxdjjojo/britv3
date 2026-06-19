@@ -33,43 +33,47 @@ BEGIN
   SELECT m.organisation_id, m.agent_id, 'owner', 'active'
   FROM _org_backfill_map m;
 
+  -- Propagate organisation_id from the agent's OWNER membership. Sourcing from
+  -- organisation_memberships (not the temp map) covers agents who were granted a
+  -- membership out-of-band before this backfill ran, so no agent's feed/listing
+  -- rows are left stranded at organisation_id IS NULL.
   UPDATE public.agent_branches b
-    SET organisation_id = m.organisation_id
-    FROM _org_backfill_map m
-    WHERE b.agent_id = m.agent_id AND b.organisation_id IS NULL;
+    SET organisation_id = om.organisation_id
+    FROM public.organisation_memberships om
+    WHERE om.user_id = b.agent_id AND om.role = 'owner' AND b.organisation_id IS NULL;
 
   UPDATE public.agent_feed_integrations afi
-    SET organisation_id = m.organisation_id
-    FROM _org_backfill_map m
-    WHERE afi.agent_id = m.agent_id AND afi.organisation_id IS NULL;
+    SET organisation_id = om.organisation_id
+    FROM public.organisation_memberships om
+    WHERE om.user_id = afi.agent_id AND om.role = 'owner' AND afi.organisation_id IS NULL;
 
   UPDATE public.feed_import_runs r
-    SET organisation_id = m.organisation_id
-    FROM _org_backfill_map m
-    WHERE r.agent_id = m.agent_id AND r.organisation_id IS NULL;
+    SET organisation_id = om.organisation_id
+    FROM public.organisation_memberships om
+    WHERE om.user_id = r.agent_id AND om.role = 'owner' AND r.organisation_id IS NULL;
 
   UPDATE public.feed_import_items i
-    SET organisation_id = m.organisation_id
-    FROM _org_backfill_map m
-    WHERE i.agent_id = m.agent_id AND i.organisation_id IS NULL;
+    SET organisation_id = om.organisation_id
+    FROM public.organisation_memberships om
+    WHERE om.user_id = i.agent_id AND om.role = 'owner' AND i.organisation_id IS NULL;
 
   UPDATE public.feed_listing_links fl
-    SET organisation_id = m.organisation_id
-    FROM _org_backfill_map m
-    WHERE fl.agent_id = m.agent_id AND fl.organisation_id IS NULL;
+    SET organisation_id = om.organisation_id
+    FROM public.organisation_memberships om
+    WHERE om.user_id = fl.agent_id AND om.role = 'owner' AND fl.organisation_id IS NULL;
 
   UPDATE public.feed_branch_links fb
-    SET organisation_id = m.organisation_id
-    FROM _org_backfill_map m
-    WHERE fb.agent_id = m.agent_id AND fb.organisation_id IS NULL;
+    SET organisation_id = om.organisation_id
+    FROM public.organisation_memberships om
+    WHERE om.user_id = fb.agent_id AND om.role = 'owner' AND fb.organisation_id IS NULL;
 
   UPDATE public.feed_media_links fm
-    SET organisation_id = m.organisation_id
-    FROM _org_backfill_map m
-    WHERE fm.agent_id = m.agent_id AND fm.organisation_id IS NULL;
+    SET organisation_id = om.organisation_id
+    FROM public.organisation_memberships om
+    WHERE om.user_id = fm.agent_id AND om.role = 'owner' AND fm.organisation_id IS NULL;
 
   UPDATE public.listings l
-    SET organisation_id = m.organisation_id
-    FROM _org_backfill_map m
-    WHERE l.user_id = m.agent_id AND l.organisation_id IS NULL;
+    SET organisation_id = om.organisation_id
+    FROM public.organisation_memberships om
+    WHERE om.user_id = l.user_id AND om.role = 'owner' AND l.organisation_id IS NULL;
 END $$;

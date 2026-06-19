@@ -41,12 +41,19 @@ export async function getUserOrganisation(
   const row = data as Record<string, unknown>;
   const org = (
     Array.isArray(row.organisations) ? row.organisations[0] : row.organisations
-  ) as { name?: string; slug?: string } | null;
+  ) as { name?: string; slug?: string } | null | undefined;
+
+  // A membership without a resolvable organisation (FK gap / soft-deleted org)
+  // is not a usable result — surface null rather than a blank-named org that
+  // downstream authorisation/UI would treat as real.
+  if (!org || !org.name || !org.slug) {
+    return null;
+  }
 
   return {
     organisation_id: String(row.organisation_id),
-    name: org?.name ?? "",
-    slug: org?.slug ?? "",
+    name: org.name,
+    slug: org.slug,
     role: String(row.role) as OrganisationRole,
   };
 }

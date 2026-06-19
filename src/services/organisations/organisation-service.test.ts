@@ -65,6 +65,15 @@ describe("organisation-service", () => {
     expect(await getUserOrganisation(supabase as never, "nobody")).toBeNull();
   });
 
+  it("returns null when the membership has no resolvable organisation (FK gap)", async () => {
+    const supabase = {
+      from: vi.fn(() =>
+        chain({ data: { organisation_id: "org-x", role: "owner", organisations: null } }),
+      ),
+    };
+    expect(await getUserOrganisation(supabase as never, "user-x")).toBeNull();
+  });
+
   it("lists organisation members", async () => {
     const c = chain({ data: [{ id: "m1" }, { id: "m2" }] });
     const supabase = { from: vi.fn(() => c) };

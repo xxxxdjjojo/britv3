@@ -66,10 +66,18 @@ CREATE POLICY "feed_media_links_org_member_select"
   ON public.feed_media_links FOR SELECT TO authenticated
   USING (organisation_id IS NOT NULL AND public.is_org_member(organisation_id));
 
-DROP POLICY IF EXISTS "agent_feed_integrations_org_member_select" ON public.agent_feed_integrations;
-CREATE POLICY "agent_feed_integrations_org_member_select"
-  ON public.agent_feed_integrations FOR SELECT TO authenticated
+DROP POLICY IF EXISTS "agent_branches_org_member_select" ON public.agent_branches;
+CREATE POLICY "agent_branches_org_member_select"
+  ON public.agent_branches FOR SELECT TO authenticated
   USING (organisation_id IS NOT NULL AND public.is_org_member(organisation_id));
+
+-- Feed integrations can carry secret references; restrict org visibility to
+-- owners/admins (least privilege) rather than all members. The agent who owns
+-- the integration still sees it via the pre-existing agent_id policy.
+DROP POLICY IF EXISTS "agent_feed_integrations_org_member_select" ON public.agent_feed_integrations;
+CREATE POLICY "agent_feed_integrations_org_admin_select"
+  ON public.agent_feed_integrations FOR SELECT TO authenticated
+  USING (organisation_id IS NOT NULL AND public.has_org_role(organisation_id, ARRAY['owner', 'admin']));
 
 -- ===== Org-consistency in feed tenant triggers =====
 -- Each guard keeps its existing agent_id check AND, when organisation_id is set,
