@@ -20,11 +20,12 @@ import {
   Key,
 } from "lucide-react";
 import { PropertyCardGrid } from "@/components/shared/PropertyCardGrid";
+import { brandConfig } from "@/config/brand";
 
 export const metadata: Metadata = {
-  title: "Britestate | AI-Powered UK Property Platform",
+  title: `${brandConfig.displayName} | AI-Powered UK Property Platform`,
   description:
-    "Find your perfect British home, intelligently. Search over 25,000 homes powered by Britestate Intelligence.",
+    `Find your perfect British home, intelligently. Search over 25,000 homes powered by ${brandConfig.displayName} Intelligence.`,
 };
 
 const FEATURED_PROPERTIES = [
@@ -102,7 +103,7 @@ const HOW_IT_WORKS = [
     icon: Key,
     title: "Move In with Confidence",
     description:
-      "Complete your transaction end-to-end on Britestate — from offer to keys. Secure deposits, digital contracts, and 24/7 support included.",
+      `Complete your transaction end-to-end on ${brandConfig.displayName} — from offer to keys. Secure deposits, digital contracts, and 24/7 support included.`,
   },
 ] as const;
 
@@ -154,7 +155,7 @@ const SERVICE_CATEGORIES = [
 const TESTIMONIALS = [
   {
     quote:
-      "Britestate completely changed how we looked for a house. The AI suggestions were spot on, and we found a place we wouldn't have even considered otherwise.",
+      `${brandConfig.displayName} completely changed how we looked for a house. The AI suggestions were spot on, and we found a place we wouldn't have even considered otherwise.`,
     author: "Sarah Jenkins",
     role: "First-time Buyer",
     avatar: "/images/testimonials/sarah.jpg",
@@ -231,7 +232,7 @@ export default function HomePage() {
                   <br className="hidden sm:block" /> intelligently.
                 </h1>
                 <p className="text-white/90 text-base sm:text-lg font-medium leading-normal drop-shadow-md opacity-90">
-                  Search over 25,000 homes powered by Britestate Intelligence.
+                  Search over 25,000 homes powered by {brandConfig.displayName} Intelligence.
                 </p>
               </div>
 
@@ -358,7 +359,7 @@ export default function HomePage() {
               How It Works
             </h2>
             <p className="text-neutral-600 mt-3 text-lg max-w-2xl mx-auto">
-              From first search to moving day — Britestate guides you every step
+              From first search to moving day — {brandConfig.displayName} guides you every step
               of the way.
             </p>
           </div>
@@ -406,7 +407,7 @@ export default function HomePage() {
                 Trusted professionals, verified by us
               </h2>
               <p className="text-neutral-500 mt-3 text-lg">
-                Every professional on Britestate passes our 3-client + 3-peer
+                Every professional on {brandConfig.displayName} passes our 3-client + 3-peer
                 verification process.
               </p>
             </div>
@@ -504,7 +505,7 @@ export default function HomePage() {
               Community Stories
             </h2>
             <p className="text-neutral-500 text-lg">
-              See how Britestate is changing the property market.
+              See how {brandConfig.displayName} is changing the property market.
             </p>
           </div>
 

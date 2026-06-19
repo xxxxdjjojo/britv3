@@ -19,11 +19,11 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Property Tools & Calculators | Britestate",
+  title: "Property Tools & Calculators | TrueDeed",
   description:
     "Free UK property calculators. Calculate mortgage repayments, stamp duty, rental yield, affordability, energy bills, and whether to buy or rent. Trusted by 50,000+ homebuyers.",
   openGraph: {
-    title: "Property Tools & Calculators | Britestate",
+    title: "Property Tools & Calculators | TrueDeed",
     description:
       "Free UK property calculators. Mortgage, stamp duty, rental yield, affordability and more.",
     type: "website",
@@ -327,7 +327,7 @@ export default function ToolsHubPage() {
               </h3>
               <p className="mb-8 text-brand-primary-lighter leading-relaxed">
                 Connect with FCA-regulated mortgage brokers, verified estate
-                agents, and qualified tradespeople on Britestate.
+                agents, and qualified tradespeople on TrueDeed.
               </p>
               <div className="space-y-3">
                 <Button
@@ -395,7 +395,7 @@ export default function ToolsHubPage() {
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <p className="text-center text-xs text-neutral-400">
             All figures provided are estimates only and do not constitute
-            financial advice. Britestate is not authorised to provide regulated
+            financial advice. TrueDeed is not authorised to provide regulated
             financial advice. Always seek guidance from a qualified, FCA-regulated
             professional before making property or mortgage decisions. Your home
             may be repossessed if you do not keep up repayments on your mortgage.

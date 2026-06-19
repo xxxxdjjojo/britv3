@@ -15,6 +15,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@3";
 
 const BATCH_SIZE = 100;
+const PRODUCT_NAME = "TrueDeed";
+const PRODUCT_DOMAIN = "truedeed.co.uk";
+const PRODUCT_URL = `https://${PRODUCT_DOMAIN}`;
+const PRODUCT_FROM_ADDRESS = `hello@${PRODUCT_DOMAIN}`;
 
 interface DigestData {
   savedSearchResults: Array<{ searchName: string; newMatches: number }>;
@@ -67,7 +71,7 @@ function buildWeeklyDigestHtml(
 <body style="background:#F8F8FA;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Inter,sans-serif;padding:40px 0;margin:0">
   <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.04)">
     <div style="background:#1B4D3E;padding:24px 32px">
-      <p style="color:#fff;font-size:22px;font-weight:700;margin:0">Britestate</p>
+      <p style="color:#fff;font-size:22px;font-weight:700;margin:0">${PRODUCT_NAME}</p>
     </div>
     <div style="padding:32px">
       <h1 style="color:#0A0A0B;font-size:24px;font-weight:700;margin:0 0 8px 0">Your Weekly Digest</h1>
@@ -75,13 +79,13 @@ function buildWeeklyDigestHtml(
       <p style="color:#0A0A0B;font-size:15px;line-height:1.6;margin:0 0 16px 0">Hi ${userName || "there"},</p>
       ${summaryLines.join("\n")}
       <div style="margin-top:32px">
-        <a href="https://britestate.co.uk/dashboard" style="display:inline-block;background:#1B4D3E;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Go to Dashboard</a>
+        <a href="${PRODUCT_URL}/dashboard" style="display:inline-block;background:#1B4D3E;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">Go to Dashboard</a>
       </div>
     </div>
     <div style="padding:24px 32px;background:#F8F8FA;border-top:1px solid #E2E2E8">
-      <p style="color:#9E9EAB;font-size:12px;margin:0">Britestate Ltd, 123 Property Lane, London, EC1A 1BB</p>
-      <p style="color:#9E9EAB;font-size:11px;margin:8px 0 0 0">© 2026 Britestate Ltd. All rights reserved.</p>
-      <p style="color:#9E9EAB;font-size:11px;margin:8px 0 0 0"><a href="https://britestate.co.uk/settings/notifications" style="color:#1B4D3E;text-decoration:none">Manage notification preferences</a></p>
+      <p style="color:#9E9EAB;font-size:12px;margin:0">${PRODUCT_NAME}, ${PRODUCT_DOMAIN}</p>
+      <p style="color:#9E9EAB;font-size:11px;margin:8px 0 0 0">© 2026 ${PRODUCT_NAME}. All rights reserved.</p>
+      <p style="color:#9E9EAB;font-size:11px;margin:8px 0 0 0"><a href="${PRODUCT_URL}/settings/notifications" style="color:#1B4D3E;text-decoration:none">Manage notification preferences</a></p>
     </div>
   </div>
 </body>
@@ -262,9 +266,11 @@ Deno.serve(async (_req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const resendApiKey = Deno.env.get("RESEND_API_KEY")!;
-    const fromAddress =
-      Deno.env.get("RESEND_FROM_ADDRESS") ?? "hello@britestate.co.uk";
-    const fromName = Deno.env.get("RESEND_FROM_NAME") ?? "Britestate";
+    const configuredFromAddress = Deno.env.get("RESEND_FROM_ADDRESS");
+    const fromAddress = configuredFromAddress?.endsWith(`@${PRODUCT_DOMAIN}`)
+      ? configuredFromAddress
+      : PRODUCT_FROM_ADDRESS;
+    const fromName = PRODUCT_NAME;
 
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false },

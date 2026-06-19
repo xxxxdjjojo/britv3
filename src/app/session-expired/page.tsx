@@ -5,7 +5,7 @@ import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Session Expired | Britestate",
+  title: "Session Expired | TrueDeed",
   robots: { index: false },
 };
 
@@ -88,7 +88,7 @@ export default function SessionExpiredPage() {
       {/* ── Footer ─────────────────────────────────────────────── */}
       <footer className="p-6 text-center">
         <p className="text-xs text-neutral-400">
-          © 2026 Britestate Real Estate. All rights reserved. Secure session
+          © 2026 TrueDeed Real Estate. All rights reserved. Secure session
           management.
         </p>
       </footer>

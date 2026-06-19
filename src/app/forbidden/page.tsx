@@ -5,7 +5,7 @@ import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "403 — Access Denied | Britestate",
+  title: "403 — Access Denied | TrueDeed",
   robots: { index: false },
 };
 
@@ -147,7 +147,7 @@ export default function ForbiddenPage() {
           ))}
         </div>
         <p className="text-sm text-neutral-400">
-          © 2026 Britestate Real Estate. All rights reserved.
+          © 2026 TrueDeed Real Estate. All rights reserved.
         </p>
       </footer>
     </div>

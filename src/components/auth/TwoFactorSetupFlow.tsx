@@ -67,7 +67,7 @@ export function TwoFactorSetupFlow(
       const supabase = createClient();
       const { data, error: enrollErr } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        issuer: "Britestate",
+        issuer: "TrueDeed",
       });
       if (enrollErr || !data) {
         setEnrollError(

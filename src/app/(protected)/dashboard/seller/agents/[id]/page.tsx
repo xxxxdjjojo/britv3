@@ -121,7 +121,7 @@ export default async function AgentProfilePage({ params }: Props) {
         </p>
         <div className="flex gap-3 mt-6">
           <a
-            href={`mailto:valuation@britestate.co.uk?subject=Valuation Request - ${encodeURIComponent(agent.full_name)}`}
+            href={`mailto:valuation@truedeed.co.uk?subject=Valuation Request - ${encodeURIComponent(agent.full_name)}`}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-brand-primary text-sm font-bold hover:bg-white/90 active:scale-95 transition-all shadow-lg"
           >
             <Mail size={16} />

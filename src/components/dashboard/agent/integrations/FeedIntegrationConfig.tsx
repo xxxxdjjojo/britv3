@@ -377,7 +377,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                   </label>
                   <div className="rounded-md bg-surface dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-2">
                     <code className="text-xs text-gray-600 dark:text-gray-400 break-all">
-                      {typeof window !== "undefined" ? window.location.origin : "https://app.britestate.co.uk"}
+                      {typeof window !== "undefined" ? window.location.origin : "https://app.truedeed.co.uk"}
                       /api/agent/feeds/webhook/{dialogState.integration.id}
                     </code>
                   </div>
@@ -400,7 +400,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                           Source Field ({PROVIDER_LABELS[formProvider]})
                         </th>
                         <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
-                          Britestate Field
+                          TrueDeed Field
                         </th>
                       </tr>
                     </thead>

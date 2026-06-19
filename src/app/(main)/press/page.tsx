@@ -3,9 +3,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Press | Britestate",
+  title: "Press | TrueDeed",
   description:
-    "Press releases, media resources, and the latest news from Britestate.",
+    "Press releases, media resources, and the latest news from TrueDeed.",
 };
 
 export default async function PressPage() {
@@ -35,7 +35,7 @@ export default async function PressPage() {
           Press
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
-          The latest news, announcements, and media resources from Britestate.
+          The latest news, announcements, and media resources from TrueDeed.
         </p>
       </div>
 

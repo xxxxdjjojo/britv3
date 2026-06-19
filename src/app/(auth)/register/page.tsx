@@ -4,8 +4,8 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 
 export const metadata = {
-  title: "Create Account - Britestate",
-  description: "Create your Britestate account",
+  title: "Create Account - TrueDeed",
+  description: "Create your TrueDeed account",
 };
 
 export default function RegisterPage() {

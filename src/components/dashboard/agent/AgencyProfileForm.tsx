@@ -173,7 +173,7 @@ export function AgencyProfileForm({ profile }: Props) {
             <Input
               id="agency_name"
               {...register("agency_name")}
-              placeholder="Britestate Properties Ltd"
+              placeholder="TrueDeed Properties Ltd"
               className="mt-1"
             />
             {errors.agency_name && (

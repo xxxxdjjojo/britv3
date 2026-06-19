@@ -4,7 +4,7 @@ import { getListingAnalytics } from "@/services/agent/agent-listings-service";
 import { ListingAnalyticsCharts } from "@/components/dashboard/agent/listings/ListingAnalyticsCharts";
 
 export const metadata = {
-  title: "Listing Analytics | Agent | Britestate",
+  title: "Listing Analytics | Agent | TrueDeed",
 };
 
 type Props = Readonly<{

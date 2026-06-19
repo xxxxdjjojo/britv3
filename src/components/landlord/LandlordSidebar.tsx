@@ -91,7 +91,7 @@ function SidebarInner(props: Readonly<{ pathname: string }>) {
         <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary text-white">
           <Building2 className="size-5" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-brand-primary">Britestate</h1>
+        <h1 className="text-xl font-bold tracking-tight text-brand-primary">TrueDeed</h1>
       </div>
 
       {/* Nav items */}

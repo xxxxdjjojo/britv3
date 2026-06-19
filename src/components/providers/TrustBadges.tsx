@@ -25,7 +25,7 @@ type BadgeConfigEntry = {
 };
 
 const BADGE_CONFIG: Record<BadgeKey, BadgeConfigEntry> = {
-  britestate_verified: { label: "Britestate Verified", color: "bg-brand-primary", Icon: ShieldCheck },
+  britestate_verified: { label: "TrueDeed Verified", color: "bg-brand-primary", Icon: ShieldCheck },
   gas_safe: { label: "Gas Safe", color: "bg-orange-600", Icon: Flame },
   niceic: { label: "NICEIC", color: "bg-orange-500", Icon: Zap },
   fca: { label: "FCA Regulated", color: "bg-blue-800", Icon: BadgeCheck },
@@ -55,7 +55,7 @@ export default function TrustBadges({
   const badges: { key: BadgeKey; title: string }[] = [];
 
   if (verificationStatus === "verified") {
-    badges.push({ key: "britestate_verified", title: "Britestate Verified" });
+    badges.push({ key: "britestate_verified", title: "TrueDeed Verified" });
   }
 
   if (insuranceDetails !== null) {

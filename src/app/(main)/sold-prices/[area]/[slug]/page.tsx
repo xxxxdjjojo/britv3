@@ -23,13 +23,13 @@ export async function generateMetadata({ params }: SoldPriceSlugProps): Promise<
     notFound();
   }
   const property = await getPropertySoldPrice(slug);
-  if (!property) return { title: "Property Not Found | Britestate" };
+  if (!property) return { title: "Property Not Found | TrueDeed" };
   return {
-    title: `${property.address} Sold Price History | Britestate`,
+    title: `${property.address} Sold Price History | TrueDeed`,
     description: `See the full sold price history for ${property.address}. Last sold for £${property.lastPrice.toLocaleString()}.`,
     alternates: { canonical: `/sold-prices/${area}/${slug}` },
     openGraph: {
-      title: `${property.address} Sold Price History | Britestate`,
+      title: `${property.address} Sold Price History | TrueDeed`,
       description: `See the full sold price history for ${property.address}. Last sold for £${property.lastPrice.toLocaleString()}.`,
       url: `/sold-prices/${area}/${slug}`,
       type: "website",
@@ -131,7 +131,7 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
                   <div className="rounded-xl bg-primary/5 p-5">
                     <p className="text-xs text-neutral-500 font-medium uppercase tracking-wide mb-1">Estimated Value</p>
                     <p className="text-2xl font-black text-primary font-heading">{estimatedValue}</p>
-                    <p className="text-xs text-neutral-500 mt-1">Britestate estimate</p>
+                    <p className="text-xs text-neutral-500 mt-1">TrueDeed estimate</p>
                     <p className="text-[10px] text-neutral-400 mt-1 italic">
                       This is an automated estimate based on historical transactions and market trends. It is not a formal valuation. For a professional valuation, contact a RICS-qualified surveyor.
                     </p>

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Britestate for Developers — Showcase Entire Schemes",
+  title: "TrueDeed for Developers — Showcase Entire Schemes",
   description:
     "From single-site to enterprise portfolios. Investor exposure, AI renders, integrated leads — at 0.15–0.25% on completion.",
 };

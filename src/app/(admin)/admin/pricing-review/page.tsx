@@ -12,7 +12,7 @@ import {
 } from "@/services/analytics/pricing-metrics-service";
 
 export const metadata: Metadata = {
-  title: "Pricing Review | Britestate Admin",
+  title: "Pricing Review | TrueDeed Admin",
 };
 
 async function requireAdmin(): Promise<boolean> {

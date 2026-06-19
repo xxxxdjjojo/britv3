@@ -30,7 +30,7 @@ export type CategoryDataPoint = Readonly<{
 
 /**
  * Area chart showing monthly income vs expenses over the last 12 months.
- * Uses Britestate brand colours: #1B4D3E (income) and #D4A853 (expenses).
+ * Uses TrueDeed brand colours: #1B4D3E (income) and #D4A853 (expenses).
  */
 export function IncomeExpenseTrendChart(
   props: Readonly<{ data: MonthlyDataPoint[] }>,

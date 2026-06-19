@@ -87,7 +87,7 @@ export default function ErrorPage({
           {/* Status link */}
           <div className="mt-8">
             <a
-              href="https://status.britestate.co.uk"
+              href="https://status.truedeed.co.uk"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 font-medium text-brand-primary underline-offset-4 hover:underline"

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Compare Service Providers | Britestate",
+  title: "Compare Service Providers | TrueDeed",
   description:
     "Compare your shortlisted professionals side-by-side — ratings, pricing, qualifications and coverage.",
 };

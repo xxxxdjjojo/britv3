@@ -6,6 +6,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { brandConfig } from "@/config/brand";
 import type { PlatformEvent, EventType, EntityType } from "@/types/notifications";
 import { sendCriticalEmail } from "./email-service";
 
@@ -307,16 +308,17 @@ async function dispatchCriticalEmail(
 /** Generate email subject line from event type */
 function getEmailSubject(event: PlatformEvent): string {
   const actor = event.actor_name ?? "Someone";
+  const brandName = brandConfig.displayName;
   switch (event.event_type) {
     case "quote_received":
-      return `${actor} sent you a quote on Britestate`;
+      return `${actor} sent you a quote on ${brandName}`;
     case "booking_confirmed":
-      return "Your booking has been confirmed - Britestate";
+      return `Your booking has been confirmed - ${brandName}`;
     case "offer_received":
-      return `${actor} made an offer on your property - Britestate`;
+      return `${actor} made an offer on your property - ${brandName}`;
     case "maintenance_request_created":
-      return `${actor} submitted a maintenance request - Britestate`;
+      return `${actor} submitted a maintenance request - ${brandName}`;
     default:
-      return "New notification from Britestate";
+      return `New notification from ${brandName}`;
   }
 }

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { TwoFactorForm } from "@/components/auth/TwoFactorForm";
 
 export const metadata = {
-  title: "Two-Factor Authentication - Britestate",
+  title: "Two-Factor Authentication - TrueDeed",
 };
 
 export default function TwoFactorPage() {

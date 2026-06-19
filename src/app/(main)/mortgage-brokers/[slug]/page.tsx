@@ -28,13 +28,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const provider = await fetchProviderBySlug(slug);
   if (!provider) {
-    return { title: "Mortgage Broker Not Found | Britestate" };
+    return { title: "Mortgage Broker Not Found | TrueDeed" };
   }
   return {
-    title: `${provider.business_name} | Mortgage Broker | Britestate`,
+    title: `${provider.business_name} | Mortgage Broker | TrueDeed`,
     description:
       provider.description ??
-      `View ${provider.business_name}'s mortgage broker profile, FCA credentials, fee structure, and reviews on Britestate.`,
+      `View ${provider.business_name}'s mortgage broker profile, FCA credentials, fee structure, and reviews on TrueDeed.`,
     openGraph: {
       title: `${provider.business_name} | Mortgage Broker`,
       description: provider.description ?? undefined,

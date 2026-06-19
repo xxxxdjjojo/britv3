@@ -36,7 +36,7 @@ const MOCK_ARTICLE: BlogArticle = {
   author: {
     name: "Sarah Mitchell",
     initials: "SM",
-    title: "Property Expert at Britestate",
+    title: "Property Expert at TrueDeed",
     bio: "Sarah has spent over a decade helping first-time buyers navigate the UK property market. A former solicitor, she specialises in making complex legal and financial topics accessible to everyday buyers.",
   },
   date: "15 Jan 2025",
@@ -102,7 +102,7 @@ const MOCK_ARTICLE: BlogArticle = {
     },
     {
       type: "paragraph" as const,
-      text: "Use the Britestate Stamp Duty Calculator to model different purchase prices and see how your liability changes. Our AI can also factor SDLT into your full cost-of-purchase breakdown, including legal fees, survey costs, and moving expenses, so you never face a financial surprise at completion.",
+      text: "Use the TrueDeed Stamp Duty Calculator to model different purchase prices and see how your liability changes. Our AI can also factor SDLT into your full cost-of-purchase breakdown, including legal fees, survey costs, and moving expenses, so you never face a financial surprise at completion.",
     },
   ],
 };
@@ -121,7 +121,7 @@ const BLOG_ARTICLES: Record<string, BlogArticle> = {
     author: {
       name: "Emma Clarke",
       initials: "EC",
-      title: "Market Analyst at Britestate",
+      title: "Market Analyst at TrueDeed",
       bio: "Emma tracks regional housing data, buyer demand, and affordability signals across the UK market.",
     },
     body: [
@@ -196,7 +196,7 @@ const BLOG_ARTICLES: Record<string, BlogArticle> = {
     author: {
       name: "Rachel Hughes",
       initials: "RH",
-      title: "Homes Editor at Britestate",
+      title: "Homes Editor at TrueDeed",
       bio: "Rachel writes about home improvements, energy performance, and design decisions that improve everyday living.",
     },
     body: [
@@ -284,7 +284,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getArticleBySlug(slug);
   return {
-    title: `${post.title} | Britestate Blog`,
+    title: `${post.title} | TrueDeed Blog`,
     description: post.excerpt,
   };
 }
@@ -371,7 +371,7 @@ export default async function BlogPostPage({
                 Share on Twitter
               </a>
               <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://britestate.co.uk/blog/${post.slug}`)}`}
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://truedeed.co.uk/blog/${post.slug}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-200 text-neutral-700 text-sm font-medium hover:border-brand-primary hover:text-brand-primary transition-colors bg-white"
@@ -379,7 +379,7 @@ export default async function BlogPostPage({
                 <Linkedin className="size-4" />
                 Share on LinkedIn
               </a>
-              <CopyLinkButton url={`https://britestate.co.uk/blog/${post.slug}`} />
+              <CopyLinkButton url={`https://truedeed.co.uk/blog/${post.slug}`} />
             </div>
           </header>
 

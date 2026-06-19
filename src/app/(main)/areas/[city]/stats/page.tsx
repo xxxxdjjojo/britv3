@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: StatsPageProps): Promise<Meta
   const data = await getCityData(city);
   if (!data) return {};
   return {
-    title: `${data.name} House Prices & Statistics | Property Market Data | Britestate`,
+    title: `${data.name} House Prices & Statistics | Property Market Data | TrueDeed`,
     description: `Average house prices in ${data.name}: ${data.avgPriceFormatted}. View property market statistics, price trends, and transaction volumes. Data from HM Land Registry.`,
     openGraph: {
       title: `${data.name} Property Statistics`,
@@ -128,11 +128,11 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
     "@type": "Dataset",
     name: `${city_data.name} Property Market Statistics`,
     description: `House price data and market statistics for ${city_data.name}, including average prices by property type, year-on-year changes, and transaction volumes.`,
-    url: `https://britestate.co.uk/areas/${city_data.slug}/stats`,
+    url: `https://truedeed.co.uk/areas/${city_data.slug}/stats`,
     creator: {
       "@type": "Organization",
-      name: "Britestate",
-      url: "https://britestate.co.uk",
+      name: "TrueDeed",
+      url: "https://truedeed.co.uk",
     },
     license: "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
     isBasedOn: "https://landregistry.data.gov.uk/",

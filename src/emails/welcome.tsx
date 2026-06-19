@@ -4,6 +4,7 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import { appUrl, brandConfig } from "@/config/brand";
 
 const steps = [
   {
@@ -24,10 +25,11 @@ const steps = [
 ];
 
 export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps>) {
-  const ctaUrl = loginUrl ?? "https://britestate.co.uk/dashboard";
+  const ctaUrl = loginUrl ?? appUrl("/dashboard");
+  const brandName = brandConfig.displayName;
 
   return (
-    <EmailWrapper previewText={`Welcome to Britestate, ${firstName}!`}>
+    <EmailWrapper previewText={`Welcome to ${brandName}, ${firstName}!`}>
       <EmailHeader />
       <Section style={{ padding: "32px" }}>
         <Text
@@ -39,7 +41,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
             lineHeight: "1.3",
           }}
         >
-          Welcome to Britestate, {firstName}!
+          Welcome to {brandName}, {firstName}!
         </Text>
         <Text
           style={{
@@ -141,7 +143,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
           Takes less than 2 minutes to complete
         </Text>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

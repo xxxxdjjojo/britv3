@@ -11,7 +11,7 @@ import {
 } from "@/services/truedeed/dispute-metrics-service";
 
 export const metadata = {
-  title: "Truedeed Disputes - Admin - Britestate",
+  title: "Truedeed Disputes - Admin - TrueDeed",
 };
 
 // Live moderation state — never serve a cached render.

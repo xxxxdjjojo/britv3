@@ -109,7 +109,7 @@ export default function InsurancePage() {
 
       {/* Non-commission banner */}
       <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
-        <strong>Note:</strong> Britestate does not earn commission from insurance referrals. The
+        <strong>Note:</strong> TrueDeed does not earn commission from insurance referrals. The
         providers listed below are displayed for informational purposes only. Prices shown are
         indicative — always get your own quote directly with the insurer.
       </div>

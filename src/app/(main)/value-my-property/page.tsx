@@ -4,7 +4,7 @@ import { MapPin, Home, ClipboardList, Mail, ArrowRight, ShieldCheck } from "luci
 import { TrackedLink } from "@/components/valuation/TrackedLink";
 
 export const metadata: Metadata = {
-  title: "Value my property | Britestate",
+  title: "Value my property | TrueDeed",
   description:
     "Get a free indicative automated estimate of your home's current market value, based on HM Land Registry sold prices. Not a survey or formal valuation.",
   alternates: { canonical: "/value-my-property" },

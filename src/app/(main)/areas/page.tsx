@@ -4,7 +4,7 @@ import { MapPin, TrendingUp, ArrowRight, Search } from "lucide-react";
 import { getMarketKPIs } from "@/services/areas/market-trends-service";
 
 export const metadata: Metadata = {
-  title: "Browse UK Property Areas | Britestate",
+  title: "Browse UK Property Areas | TrueDeed",
   description:
     "Explore property markets across the UK. Find area guides, average prices, transport links, and local market insights for every city and borough.",
 };

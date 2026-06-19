@@ -5,7 +5,7 @@ import { LeadPipelineKanban } from "@/components/dashboard/agent/leads/LeadPipel
 import type { AgentLead, LeadStage } from "@/types/agent";
 
 export const metadata = {
-  title: "Leads & Pipeline | Agent | Britestate",
+  title: "Leads & Pipeline | Agent | TrueDeed",
 };
 
 export default async function AgentLeadsPage() {

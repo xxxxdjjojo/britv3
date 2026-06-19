@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ReviewResponseForm } from "@/components/dashboard/agent/reviews/ReviewResponseForm";
 
 export const metadata = {
-  title: "Respond to Review - Britestate Agent",
+  title: "Respond to Review - TrueDeed Agent",
   description: "Write a professional response to a client review",
 };
 

@@ -51,7 +51,7 @@ function makeRequest(body: unknown, ip = "1.2.3.4"): Request {
 const validBody = {
   name: "Alice Smith",
   email: "alice@example.com",
-  subject: "Question about Britestate",
+  subject: "Question about TrueDeed",
   message: "I have a question about how to list my property on the platform.",
 };
 
@@ -68,7 +68,7 @@ describe("POST /api/contact", () => {
     mockEmailSend.mockResolvedValue({ id: "email-id-123" });
     // Set required env var
     process.env.RESEND_API_KEY = "re_test_key";
-    process.env.SUPPORT_EMAIL = "support@britestate.com";
+    process.env.SUPPORT_EMAIL = "support@truedeed.co.uk";
   });
 
   describe("valid submission", () => {
@@ -87,7 +87,7 @@ describe("POST /api/contact", () => {
 
       expect(mockEmailSend).toHaveBeenCalledOnce();
       const callArgs = mockEmailSend.mock.calls[0][0];
-      expect(callArgs.to).toBe("support@britestate.com");
+      expect(callArgs.to).toBe("support@truedeed.co.uk");
       expect(callArgs.subject).toContain(validBody.subject);
     });
   });

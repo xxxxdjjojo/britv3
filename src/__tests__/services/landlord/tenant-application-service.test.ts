@@ -1,7 +1,7 @@
 /**
  * Tests for tenant-application-service covering LD-04 state transitions.
  */
-import { describe, it, expect, vi } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import {
   acceptApplication,
   rejectApplication,
@@ -29,12 +29,18 @@ const mockApplication: TenantApplication = {
   updated_at: new Date().toISOString(),
 };
 
+const { resendSendMock } = vi.hoisted(() => ({
+  resendSendMock: vi.fn(),
+}));
+
 vi.mock("resend", () => ({
-  Resend: vi.fn().mockImplementation(() => ({
+  Resend: vi.fn().mockImplementation(function Resend() {
+    return {
     emails: {
-      send: vi.fn().mockResolvedValue({ id: "email-1" }),
+      send: resendSendMock,
     },
-  })),
+    };
+  }),
 }));
 
 function createSupabaseMock(application: TenantApplication = mockApplication) {
@@ -65,6 +71,12 @@ function createSupabaseMock(application: TenantApplication = mockApplication) {
 }
 
 describe("tenant-application-service", () => {
+  beforeEach(() => {
+    process.env.RESEND_API_KEY = "test-resend-key";
+    resendSendMock.mockReset();
+    resendSendMock.mockResolvedValue({ id: "email-1" });
+  });
+
   describe("acceptApplication", () => {
     it("transitions status from 'referencing' to 'approved'", async () => {
       const supabase = createSupabaseMock(mockApplication);
@@ -83,6 +95,22 @@ describe("tenant-application-service", () => {
       // acceptApplication should complete without error, indicating email was sent
       await expect(acceptApplication(supabase as never, "app-1")).resolves.not.toThrow();
     });
+
+    it("uses TrueDeed sender, subject and body copy for acceptance emails", async () => {
+      const supabase = createSupabaseMock(mockApplication);
+
+      await acceptApplication(supabase as never, "app-1");
+
+      expect(resendSendMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          from: "TrueDeed <hello@truedeed.co.uk>",
+          subject: "Your rental application has been approved - TrueDeed",
+          html: expect.stringContaining("TrueDeed"),
+        }),
+      );
+      const payload = resendSendMock.mock.calls[0][0] as { html: string; subject: string; from: string };
+      expect(`${payload.from} ${payload.subject} ${payload.html}`).not.toMatch(/Britestate|britestate\./);
+    });
   });
 
   describe("rejectApplication", () => {
@@ -98,6 +126,22 @@ describe("tenant-application-service", () => {
       await expect(
         rejectApplication(supabase as never, "app-1", "Insufficient income"),
       ).resolves.not.toThrow();
+    });
+
+    it("uses TrueDeed sender, subject and body copy for rejection emails", async () => {
+      const supabase = createSupabaseMock(mockApplication);
+
+      await rejectApplication(supabase as never, "app-1", "Insufficient income");
+
+      expect(resendSendMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          from: "TrueDeed <hello@truedeed.co.uk>",
+          subject: "Update on your rental application - TrueDeed",
+          html: expect.stringContaining("TrueDeed"),
+        }),
+      );
+      const payload = resendSendMock.mock.calls[0][0] as { html: string; subject: string; from: string };
+      expect(`${payload.from} ${payload.subject} ${payload.html}`).not.toMatch(/Britestate|britestate\./);
     });
   });
 

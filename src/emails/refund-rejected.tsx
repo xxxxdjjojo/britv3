@@ -3,6 +3,7 @@ import type { RefundRejectedEmailProps } from "@/types/email";
 import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
+import { brandUrl } from "@/config/brand";
 
 export function RefundRejectedEmail({
   userName,
@@ -164,7 +165,7 @@ export function RefundRejectedEmail({
         >
           Need help?{" "}
           <Link
-            href="https://britestate.co.uk/support"
+            href={brandUrl("/support")}
             style={{
               color: "#2563EB",
               textDecoration: "none",
@@ -174,7 +175,7 @@ export function RefundRejectedEmail({
           </Link>
         </Text>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

@@ -5,7 +5,7 @@ import { getResultForUser } from "@/services/valuation/session-repo";
 import { AgentLeadForm } from "@/components/valuation/AgentLeadForm";
 
 export const metadata: Metadata = {
-  title: "Get a local expert valuation | Britestate",
+  title: "Get a local expert valuation | TrueDeed",
   robots: { index: false },
 };
 

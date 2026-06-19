@@ -6,7 +6,7 @@ import { SdltRelatedTools } from "@/components/calculators/SdltRelatedTools";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "Stamp Duty Calculator | Britestate",
+  title: "Stamp Duty Calculator | TrueDeed",
   description:
     "Calculate Stamp Duty (SDLT), Scottish LBTT, or Welsh LTT for residential property purchases across the UK. Supports first-time buyer relief and additional property surcharge.",
 };

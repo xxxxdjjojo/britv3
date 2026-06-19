@@ -14,6 +14,7 @@ import {
   Button,
   Section,
 } from "@react-email/components";
+import { appUrl, brandConfig } from "@/config/brand";
 
 type BookingConfirmedProps = Readonly<{
   recipientName: string;
@@ -26,8 +27,10 @@ export default function BookingConfirmed({
   recipientName = "there",
   serviceName = "Service",
   dateTime = "",
-  bookingUrl = "https://britestate.com/bookings",
+  bookingUrl = appUrl("/bookings"),
 }: BookingConfirmedProps) {
+  const brandName = brandConfig.displayName;
+
   return (
     <Html>
       <Head />
@@ -35,7 +38,7 @@ export default function BookingConfirmed({
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logoText}>Britestate</Heading>
+            <Heading style={logoText}>{brandName}</Heading>
           </Section>
           <Section style={content}>
             <Text style={greeting}>Hi {recipientName},</Text>
@@ -54,7 +57,7 @@ export default function BookingConfirmed({
           </Section>
           <Text style={footer}>
             You received this email because of your notification preferences on
-            Britestate.
+            {brandName}.
           </Text>
         </Container>
       </Body>

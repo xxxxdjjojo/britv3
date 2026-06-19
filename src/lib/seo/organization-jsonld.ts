@@ -1,19 +1,20 @@
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+import { appBaseUrl, brandConfig } from "@/config/brand";
+
+const BASE_URL = appBaseUrl();
 
 export const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Britestate",
-  legalName: "Britestate Ltd",
+  name: brandConfig.displayName,
   url: BASE_URL,
-  logo: `${BASE_URL}/logo.png`,
+  logo: `${BASE_URL}${brandConfig.assets.logo}`,
   contactPoint: { "@type": "ContactPoint", contactType: "customer service", url: `${BASE_URL}/contact` },
 };
 
 export const webSiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Britestate",
+  name: brandConfig.displayName,
   url: BASE_URL,
   potentialAction: {
     "@type": "SearchAction",

@@ -4,7 +4,7 @@ import { getAgentListings } from "@/services/agent/agent-listings-service";
 import { ArchivedDraftListings } from "@/components/dashboard/agent/listings/ArchivedDraftListings";
 
 export const metadata = {
-  title: "Archived & Draft Listings | Agent | Britestate",
+  title: "Archived & Draft Listings | Agent | TrueDeed",
 };
 
 export default async function AgentArchivedListingsPage() {

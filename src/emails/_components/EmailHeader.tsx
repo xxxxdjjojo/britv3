@@ -1,4 +1,5 @@
 import { Section, Text } from "@react-email/components";
+import { brandConfig } from "@/config/brand";
 
 export function EmailHeader() {
   return (
@@ -18,7 +19,7 @@ export function EmailHeader() {
           lineHeight: "1.2",
         }}
       >
-        Britestate
+        {brandConfig.displayName}
       </Text>
       <Text
         style={{

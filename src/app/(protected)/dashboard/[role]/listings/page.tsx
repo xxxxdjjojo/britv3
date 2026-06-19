@@ -59,7 +59,7 @@ function formatStatus(status: string): string {
 }
 
 export const metadata = {
-  title: "My Listings - Britestate",
+  title: "My Listings - TrueDeed",
   description: "Manage your property listings",
 };
 

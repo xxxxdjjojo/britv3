@@ -103,7 +103,7 @@ export function ReEngagementEmail({
 
         <div style={{ marginTop: "24px" }}>
           <EmailButton href={loginUrl} variant="primary">
-            Explore Britestate
+            Explore TrueDeed
           </EmailButton>
         </div>
 

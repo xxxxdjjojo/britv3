@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pricing | Britestate",
+  title: "Pricing | TrueDeed",
   description:
     "Free for homeowners. Tradespeople from £47/month. Estate agents pay nothing upfront — performance-based pricing.",
 };

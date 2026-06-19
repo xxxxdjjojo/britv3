@@ -52,8 +52,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const label = titleCaseService(service);
   const area = uppercasePostcode(postcode);
   return {
-    title: `${label}s in ${area} — Verified, Britestate-rated`,
-    description: `Find a verified ${label.toLowerCase()} in ${area} on Britestate. Compare ratings, quotes and availability.`,
+    title: `${label}s in ${area} — Verified, TrueDeed-rated`,
+    description: `Find a verified ${label.toLowerCase()} in ${area} on TrueDeed. Compare ratings, quotes and availability.`,
   };
 }
 
@@ -70,7 +70,7 @@ export default async function ServiceAreaPage({ params }: Props) {
           Service not found
         </h1>
         <p className="mt-4 text-muted-foreground">
-          The service <strong>{service}</strong> isn&apos;t on Britestate yet.{" "}
+          The service <strong>{service}</strong> isn&apos;t on TrueDeed yet.{" "}
           <Link href="/marketplace" className="text-brand-primary underline-offset-4 hover:underline">
             Browse all services
           </Link>
@@ -84,13 +84,13 @@ export default async function ServiceAreaPage({ params }: Props) {
     <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <header>
         <p className="text-sm font-semibold uppercase tracking-wide text-brand-primary">
-          Britestate · {area}
+          TrueDeed · {area}
         </p>
         <h1 className="mt-2 font-heading text-4xl font-bold text-brand-primary-dark sm:text-5xl">
           {label}s in {area}
         </h1>
         <p className="mt-4 max-w-3xl text-lg text-muted-foreground">
-          Verified, Britestate-rated {label.toLowerCase()}s serving {area}. Compare
+          Verified, TrueDeed-rated {label.toLowerCase()}s serving {area}. Compare
           quotes, ratings, and availability in minutes.
         </p>
       </header>
@@ -98,11 +98,11 @@ export default async function ServiceAreaPage({ params }: Props) {
       <section className="mt-12 grid gap-6 sm:grid-cols-2">
         <div className="rounded-xl border border-border p-6">
           <h2 className="font-heading text-xl font-bold text-foreground">
-            Why Britestate {label.toLowerCase()}s?
+            Why TrueDeed {label.toLowerCase()}s?
           </h2>
           <ul className="mt-4 list-disc space-y-2 pl-5 text-muted-foreground">
             <li>Verified Companies House checks on every listing</li>
-            <li>Britestate Trust badge for reviewed providers</li>
+            <li>TrueDeed Trust badge for reviewed providers</li>
             <li>Transparent quotes — no surprise fees</li>
             <li>Insurance documents on file</li>
           </ul>
@@ -129,7 +129,7 @@ export default async function ServiceAreaPage({ params }: Props) {
           Common {label.toLowerCase()} jobs in {area}
         </h2>
         <p className="mt-3 text-muted-foreground">
-          Britestate gathers thousands of jobs across {area}. Typical
+          TrueDeed gathers thousands of jobs across {area}. Typical
           requests for a local {label.toLowerCase()} include emergency
           callouts, scheduled maintenance, and property-transaction
           checks.

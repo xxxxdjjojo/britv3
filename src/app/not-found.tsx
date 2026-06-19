@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "404 — Page Not Found | Britestate",
+  title: "404 — Page Not Found | TrueDeed",
 };
 
 export default async function NotFound() {
@@ -168,7 +168,7 @@ export default async function NotFound() {
             ))}
           </div>
           <p className="text-sm text-neutral-400">
-            © 2026 Britestate. All rights reserved.
+            © 2026 TrueDeed. All rights reserved.
           </p>
         </div>
       </footer>

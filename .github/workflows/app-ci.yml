@@ -37,6 +37,9 @@ jobs:
       - name: Check migration versions
         run: pnpm check:migrations
 
+      - name: Check brand references
+        run: pnpm check:brand
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

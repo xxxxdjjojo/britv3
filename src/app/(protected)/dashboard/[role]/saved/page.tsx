@@ -25,7 +25,7 @@ function formatPrice(price: number): string {
 }
 
 export const metadata = {
-  title: "Saved Properties - Britestate",
+  title: "Saved Properties - TrueDeed",
   description: "Your saved properties shortlist",
 };
 

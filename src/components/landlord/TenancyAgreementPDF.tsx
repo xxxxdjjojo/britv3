@@ -174,14 +174,14 @@ function TenancyAgreementDoc({ tenancy, landlordName, propertyAddress }: Tenancy
   return (
     <Document
       title="Assured Shorthold Tenancy Agreement"
-      author="Britestate"
+      author="TrueDeed"
       subject="Tenancy Agreement"
     >
       <Page size="A4" style={styles.page}>
         {/* Title */}
         <Text style={styles.title}>Assured Shorthold Tenancy Agreement</Text>
         <Text style={styles.subtitle}>
-          Prepared via Britestate — for guidance only; seek legal advice before signing
+          Prepared via TrueDeed — for guidance only; seek legal advice before signing
         </Text>
 
         {/* Parties */}

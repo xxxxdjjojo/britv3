@@ -26,13 +26,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const provider = await fetchProviderBySlug(slug);
   if (!provider) {
-    return { title: "Architect Not Found | Britestate" };
+    return { title: "Architect Not Found | TrueDeed" };
   }
   return {
-    title: `${provider.business_name} | Architect | Britestate`,
+    title: `${provider.business_name} | Architect | TrueDeed`,
     description:
       provider.description ??
-      `View ${provider.business_name}'s architecture portfolio, credentials, and reviews on Britestate.`,
+      `View ${provider.business_name}'s architecture portfolio, credentials, and reviews on TrueDeed.`,
   };
 }
 

@@ -4,8 +4,8 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 
 export const metadata = {
-  title: "Sign In - Britestate",
-  description: "Sign in to your Britestate account",
+  title: "Sign In - TrueDeed",
+  description: "Sign in to your TrueDeed account",
 };
 
 export default function LoginPage() {

@@ -31,15 +31,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const agency = await fetchAgentBySlug(slug);
   if (!agency) {
-    return { title: "Agency Not Found | Britestate" };
+    return { title: "Agency Not Found | TrueDeed" };
   }
   const agencyName = agency.agency?.name ?? agency.display_name;
   const logoUrl = agency.agency?.logo_url ?? null;
   return {
-    title: `${agencyName} Estate Agents | Britestate`,
+    title: `${agencyName} Estate Agents | TrueDeed`,
     description:
       agency.bio ??
-      `View ${agencyName}'s listings, sold properties, team and reviews on Britestate.`,
+      `View ${agencyName}'s listings, sold properties, team and reviews on TrueDeed.`,
     openGraph: {
       title: agencyName,
       type: "profile",
@@ -89,7 +89,7 @@ export default async function AgentProfilePage({ params }: Params) {
                         About {agency.agency?.name ?? agency.display_name}
                       </h3>
                       <p className="text-muted-foreground dark:text-slate-400 leading-relaxed">
-                        {agency.bio ?? `${agency.agency?.name ?? agency.display_name} is a trusted estate agency on Britestate.`}
+                        {agency.bio ?? `${agency.agency?.name ?? agency.display_name} is a trusted estate agency on TrueDeed.`}
                       </p>
                     </section>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

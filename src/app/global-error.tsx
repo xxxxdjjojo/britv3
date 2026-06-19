@@ -31,7 +31,7 @@ export default function GlobalError({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Something went wrong | Britestate</title>
+        <title>Something went wrong | TrueDeed</title>
         <style>{`
           *, *::before, *::after { box-sizing: border-box; }
           body {

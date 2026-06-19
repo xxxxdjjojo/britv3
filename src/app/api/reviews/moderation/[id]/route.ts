@@ -80,7 +80,7 @@ export async function PATCH(
         if (reviewer?.email) {
           const providerName = (provider?.business_name ?? provider?.first_name ?? "the provider") as string;
           const reviewTitle = (review?.title as string) ?? "your review";
-          const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/reviews/${reviewId}`;
+          const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://truedeed.co.uk"}/reviews/${reviewId}`;
 
           if (body.decision === "approve") {
             void sendReviewPublished({

@@ -94,14 +94,14 @@ export function ComplianceWarningEmail({
           }}
         >
           Please upload your updated document as soon as possible to maintain your compliance
-          status and continue using Britestate services without interruption.
+          status and continue using TrueDeed services without interruption.
         </Text>
 
         <EmailButton href={uploadUrl} variant="primary">
           Upload Updated Document
         </EmailButton>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

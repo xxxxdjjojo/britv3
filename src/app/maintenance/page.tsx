@@ -86,7 +86,7 @@ export default function MaintenancePage() {
               We&apos;ll be right back
             </h1>
             <p className="mx-auto max-w-lg text-lg leading-relaxed text-neutral-600 md:text-xl">
-              Britestate is currently undergoing scheduled maintenance. We&apos;re
+              TrueDeed is currently undergoing scheduled maintenance. We&apos;re
               working hard to improve your property experience.
             </p>
           </div>
@@ -197,7 +197,7 @@ export default function MaintenancePage() {
       {/* ── Footer ─────────────────────────────────────────────── */}
       <footer className="border-t border-brand-primary/5 py-10 text-center">
         <p className="text-sm text-neutral-400">
-          © 2026 Britestate Real Estate Services. All rights reserved.
+          © 2026 TrueDeed Real Estate Services. All rights reserved.
         </p>
       </footer>
     </div>

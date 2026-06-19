@@ -276,7 +276,7 @@ function MarketInsights() {
       <div>
         <p className="font-semibold text-foreground">Market analysis coming soon</p>
         <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-          Britestate Insights will show price trends, days on market, demand
+          TrueDeed Insights will show price trends, days on market, demand
           indicators, and neighbourhood comparisons for this area.
         </p>
       </div>

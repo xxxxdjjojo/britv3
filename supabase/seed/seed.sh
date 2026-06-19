@@ -1,5 +1,5 @@
 #!/bin/bash
-# Master seed runner for Britestate demo data
+# Master seed runner for TrueDeed demo data
 # Usage: ./supabase/seed/seed.sh
 # Requires: psql connected to your Supabase database
 
@@ -23,7 +23,7 @@ if ! command -v psql &> /dev/null; then
 fi
 
 echo "========================================="
-echo "  Britestate Demo Data Seeder"
+echo "  TrueDeed Demo Data Seeder"
 echo "========================================="
 echo ""
 

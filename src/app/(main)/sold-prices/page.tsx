@@ -4,7 +4,7 @@ import { Search, TrendingUp, MapPin, Sparkles } from "lucide-react";
 import { getAreaSlugsWithSoldPrices, getAreaSoldPriceSummary } from "@/services/areas/mock-data/sold-prices";
 
 export const metadata: Metadata = {
-  title: "Sold Prices | Britestate",
+  title: "Sold Prices | TrueDeed",
   description:
     "Browse property sold prices across the UK. View recent transactions, price trends, and market data by area — powered by Land Registry records.",
 };

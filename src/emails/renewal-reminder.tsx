@@ -136,7 +136,7 @@ export function RenewalReminderEmail({
           Manage Subscription
         </EmailButton>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { SafeHTML } from "@/components/ui/SafeHTML";
 
 export const metadata: Metadata = {
-  title: "Partners | Britestate",
+  title: "Partners | TrueDeed",
   description:
-    "Partner with Britestate to reach millions of UK property seekers. Learn about our partnership programmes.",
+    "Partner with TrueDeed to reach millions of UK property seekers. Learn about our partnership programmes.",
 };
 
 export default async function PartnersPage() {
@@ -38,7 +38,7 @@ export default async function PartnersPage() {
           Partner With Us
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
-          Join the Britestate partner programme and connect your services with
+          Join the TrueDeed partner programme and connect your services with
           millions of UK property seekers.
         </p>
       </div>
