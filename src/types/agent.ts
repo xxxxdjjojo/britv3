@@ -71,6 +71,9 @@ export const FEED_PROVIDERS = [
   "reapit",
   "alto",
   "jupix",
+  "csv",
+  "sandbox",
+  "generic_feed",
 ] as const;
 
 export const SYNC_STATUSES = [

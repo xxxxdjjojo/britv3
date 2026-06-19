@@ -18,12 +18,18 @@ const PROVIDER_LABELS: Record<FeedProvider, string> = {
   reapit: "Reapit",
   alto: "Alto",
   jupix: "Jupix",
+  csv: "CSV Upload",
+  sandbox: "Sandbox (demo)",
+  generic_feed: "Generic Feed",
 };
 
 const PROVIDER_DESCRIPTIONS: Record<FeedProvider, string> = {
   reapit: "Reapit Agency Cloud — leading UK estate agency CRM",
   alto: "Alto CRM — Jupix-integrated cloud-based platform",
   jupix: "Jupix — cloud-based estate and lettings software",
+  csv: "Upload a CSV export from your CRM",
+  sandbox: "Demo feed — sandbox listings for testing",
+  generic_feed: "Generic XML/JSON property feed",
 };
 
 const DEFAULT_FIELD_MAPPING: Record<string, string> = {
