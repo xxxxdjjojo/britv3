@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import type { SourceConnector, ConnectorContext, FetchResult } from "./source-connector";
-import { registerConnector, getConnector, listConnectorProviders } from "./registry";
+import {
+  registerConnector,
+  getConnector,
+  listConnectorProviders,
+  _resetRegistryForTesting,
+} from "./registry";
 
 // ---------------------------------------------------------------------------
 // In-test fake connector — implements SourceConnector with a known provider
@@ -52,7 +57,6 @@ const anotherConnector: SourceConnector = {
 // Because the registry is a module-level Map we use a reset helper exported
 // from registry.ts (test-only — never called in production code).
 // ---------------------------------------------------------------------------
-import { _resetRegistryForTesting } from "./registry";
 
 describe("connector registry", () => {
   beforeEach(() => {

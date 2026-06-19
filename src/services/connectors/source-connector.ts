@@ -30,22 +30,27 @@ export type BranchRecord = Readonly<{
 }>;
 
 export type FetchResult = Readonly<{
-  listings: NormalizedFeedListing[];
+  listings: ReadonlyArray<NormalizedFeedListing>;
   /** Rows that failed normalization (per-row errors, e.g. CSV). Empty when all rows OK. */
-  errors: RowError[];
+  errors: ReadonlyArray<RowError>;
   /** SHA256 over the raw source payload(s) — the run idempotency key. */
   sourceFingerprint: string;
   /** Branch records seen this run (for feed_branch_links). */
-  branches: BranchRecord[];
+  branches: ReadonlyArray<BranchRecord>;
   /** Transport diagnostics. transport.ok = true does NOT imply per-item success. */
-  transport: { ok: boolean; itemsSeen: number; warnings: string[] };
+  transport: { ok: boolean; itemsSeen: number; warnings: ReadonlyArray<string> };
 }>;
 
 export type ConnectorContext = Readonly<{
   integrationId: string;
   /** organisationId post-org-migration; pass agentId where org not yet resolved. */
   organisationId: string;
-  /** Resolved secret (never the vault placeholder reference). Optional for credential-less sources. */
+  /**
+   * Resolved secret value — the CALLER resolves the vault reference before constructing
+   * the context, so connectors never receive a placeholder string. Typed `unknown` so each
+   * connector narrows it to its own credential shape (e.g. `{ apiKey: string }`).
+   * Optional for credential-less sources (e.g. public feeds, file uploads).
+   */
   credential?: unknown;
   /** Field mapping for CSV/generic sources: sourceHeader -> canonical field. */
   fieldMapping?: Record<string, string>;
@@ -58,12 +63,21 @@ export type ConnectorContext = Readonly<{
 }>;
 
 export interface SourceConnector {
-  readonly provider: string; // 'csv' | 'sandbox' | 'generic_feed' | 'reapit' | ...
+  /**
+   * Stable provider identifier used as the registry key.
+   * Examples: `'csv' | 'sandbox' | 'generic_feed' | 'reapit' | ...`
+   */
+  readonly provider: string;
   readonly capabilities: ReadonlySet<ConnectorCapability>;
   /** Probe the source/credential WITHOUT importing. Must actually attempt to reach/parse the source. */
   testConnection(ctx: ConnectorContext): Promise<{ ok: boolean; message: string }>;
-  /** Branch structure seen for this integration (may be a subset of fetchListings' branches). */
-  discoverBranches(ctx: ConnectorContext): Promise<{ branches: BranchRecord[] }>;
+  /**
+   * Discover the branch structure for this integration cheaply, WITHOUT performing a full import
+   * (e.g. to populate the Review step's branch picker before the user commits to an import).
+   * If a connector cannot discover branches independently, return `{ branches: [] }` and rely
+   * on the branches surfaced by `fetchListings` instead.
+   */
+  discoverBranches(ctx: ConnectorContext): Promise<{ branches: ReadonlyArray<BranchRecord> }>;
   /** Pull/accept the current set; normalize to canonical shape; surface per-row errors. */
   fetchListings(ctx: ConnectorContext): Promise<FetchResult>;
 }
