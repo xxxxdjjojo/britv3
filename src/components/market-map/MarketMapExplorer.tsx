@@ -29,6 +29,7 @@ import { parseAsString, parseAsInteger, useQueryStates } from "nuqs";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { useMarketSearch } from "@/hooks/useMarketSearch";
 import { useMarketAreaDetail } from "@/hooks/useMarketAreaDetail";
+import { useMarketAreaCard } from "@/hooks/useMarketAreaCard";
 import { geographyLevelForZoom, type GeographyLevel } from "@/lib/market-map/geography";
 import { fitBoundsFor } from "@/lib/market-map/fit-bounds";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,7 @@ import { MarketMapFilters } from "./MarketMapFilters";
 import { MarketMapSummaryCards } from "./MarketMapSummaryCards";
 import { MarketMapAreaList } from "./MarketMapAreaList";
 import { MarketMapAreaDetail } from "./MarketMapAreaDetail";
+import { MarketMapPriceCard } from "./MarketMapPriceCard";
 import { MarketMapLegend } from "./MarketMapLegend";
 import {
   Drawer,
@@ -148,6 +150,16 @@ export function MarketMapExplorer({
     detailLevel,
     detailLevel ? selectedArea?.area_id ?? null : null,
     months,
+  );
+
+  // Instant headline card (flat/house bands) for the selected area. Driven
+  // entirely by the query keyed on level + areaId — independent of the flyTo
+  // side-effect in handleResultSelect, so the card and the camera move in
+  // parallel (neither awaits the other). Disabled until an area is selected.
+  const { card: areaCard, isLoading: areaCardLoading } = useMarketAreaCard(
+    selectedArea?.geography_level ?? "",
+    selectedArea?.area_id ?? "",
+    12,
   );
 
   // Current map zoom (drives the active-granularity diagnostic). Initialised to
@@ -491,9 +503,16 @@ export function MarketMapExplorer({
           </div>
         </div>
 
-        {/* Selected area detail card — desktop, anchored bottom-right of map */}
+        {/* Selected area — desktop, anchored bottom-right of map.
+            Headline: instant flat/house price card (precompute, no live wait).
+            Below it the live drill-down detail card. */}
         {selectedArea && (
-          <div className="absolute bottom-6 right-6 z-30 hidden lg:block">
+          <div className="absolute bottom-6 right-6 z-30 hidden max-h-[calc(100%-3rem)] flex-col gap-3 overflow-y-auto lg:flex">
+            <MarketMapPriceCard
+              card={areaCard ?? undefined}
+              areaName={selectedArea.area_name ?? selectedArea.area_id}
+              isLoading={areaCardLoading}
+            />
             <MarketMapAreaDetail
               properties={selectedArea}
               scaleMode={scaleMode}
@@ -548,9 +567,14 @@ export function MarketMapExplorer({
                   onApply={() => {/* reactive */}}
                 />
 
-                {/* Selected area detail inside sheet */}
+                {/* Selected area inside sheet — instant price card + drill-down */}
                 {selectedArea && (
-                  <div className="p-4">
+                  <div className="flex flex-col gap-3 p-4">
+                    <MarketMapPriceCard
+                      card={areaCard ?? undefined}
+                      areaName={selectedArea.area_name ?? selectedArea.area_id}
+                      isLoading={areaCardLoading}
+                    />
                     <MarketMapAreaDetail
                       properties={selectedArea}
                       scaleMode={scaleMode}
