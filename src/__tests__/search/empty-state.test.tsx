@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { EmptyState } from "@/components/search/EmptyState";
 
 describe("EmptyState", () => {
@@ -25,5 +25,36 @@ describe("EmptyState", () => {
     render(<EmptyState title="Nothing here" description="Custom message" />);
     expect(screen.getByText("Nothing here")).toBeInTheDocument();
     expect(screen.getByText("Custom message")).toBeInTheDocument();
+  });
+});
+
+describe("EmptyState — soldWithin coverage hint", () => {
+  it("does not show the land-registry hint when soldWithin is 'all'", () => {
+    render(<EmptyState state={{ soldWithin: "all" }} onChange={() => {}} />);
+    expect(
+      screen.queryByText(/Only listings whose last sale is in HM Land Registry/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows the land-registry hint when soldWithin is active", () => {
+    render(<EmptyState state={{ soldWithin: "6m" }} onChange={() => {}} />);
+    expect(
+      screen.getByText(/Only listings whose last sale is in HM Land Registry/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /show all/i })).toBeInTheDocument();
+  });
+
+  it("resets soldWithin to 'all' when the Show all button is clicked", () => {
+    const onChange = vi.fn();
+    render(<EmptyState state={{ soldWithin: "12m" }} onChange={onChange} />);
+    fireEvent.click(screen.getByRole("button", { name: /show all/i }));
+    expect(onChange).toHaveBeenCalledWith({ soldWithin: "all" });
+  });
+
+  it("renders without the optional state/onChange props (back-compat)", () => {
+    render(<EmptyState />);
+    expect(
+      screen.queryByText(/Only listings whose last sale is in HM Land Registry/),
+    ).not.toBeInTheDocument();
   });
 });

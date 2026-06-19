@@ -387,7 +387,10 @@ function SearchPageInner() {
               </span>
             </div>
           ) : showEmpty ? (
-            <EmptyState />
+            <EmptyState
+              state={{ soldWithin: committedState.soldWithin }}
+              onChange={(patch) => commit({ ...committedState, ...patch })}
+            />
           ) : (
             <div className="flex flex-col gap-6">
               {properties.map((property) => (
