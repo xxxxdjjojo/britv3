@@ -67,6 +67,19 @@ type TenureType = NormalizedFeedListing["tenure"];
 type PlanningStatus = NormalizedFeedListing["planning_permission_status"];
 type RentFrequency = NormalizedFeedListing["rent_frequency"];
 
+/**
+ * STATUS_MAP — STATUS column only.
+ * "let" / "let agreed" in the STATUS column means the property is no longer
+ * available for new tenancies → maps to "withdrawn" (tombstone).
+ *
+ * This is intentionally asymmetric with LISTING_TYPE_MAP:
+ * "let" / "to let" in the TYPE column identifies a rental product → maps to
+ * "rent".  The two columns are independent and must not be confused.
+ *
+ * IMPORTANT: Any status value that does NOT appear here must produce a RowError
+ * (unknown_status).  Do NOT add a fallback/default — silently publishing or
+ * withdrawing on an unknown status is unsafe.
+ */
 const STATUS_MAP: Record<string, ListingStatus> = {
   available: "available",
   forsale: "available",
@@ -74,16 +87,24 @@ const STATUS_MAP: Record<string, ListingStatus> = {
   tolet: "available",
   withdrawn: "withdrawn",
   removed: "withdrawn",
-  let: "withdrawn",
+  let: "withdrawn",      // "let" in STATUS column = no longer available → withdrawn
+  letagreed: "withdrawn",
   sold: "withdrawn",
+  soldsubjecttocontract: "withdrawn",
 };
 
+/**
+ * LISTING_TYPE_MAP — TYPE column only.
+ * "let" / "to let" in the TYPE column describes the listing product type
+ * (rental), NOT the availability status.  This differs from STATUS_MAP
+ * where "let" signals the property has already been let (i.e. withdrawn).
+ */
 const LISTING_TYPE_MAP: Record<string, ListingType> = {
   sale: "sale",
   forsale: "sale",
   rent: "rent",
   tolet: "rent",
-  let: "rent",
+  let: "rent",   // "let" in TYPE column = rental product
 };
 
 const PROPERTY_TYPE_MAP: Record<string, PropertyType> = {
@@ -128,6 +149,10 @@ function normalise(raw: string): string {
 }
 
 function parseNum(raw: string): number | null {
+  // Blank/whitespace-only cell → absent value, not zero.
+  // Number("") === 0 which is indistinguishable from a real zero — return null
+  // instead so callers can distinguish "not supplied" from "zero".
+  if (!raw.trim()) return null;
   const n = Number(raw.trim().replace(/[,£$€\s]/g, ""));
   return Number.isFinite(n) ? n : null;
 }
@@ -179,16 +204,20 @@ function normalizeRow(
   const propertyType: PropertyType =
     PROPERTY_TYPE_MAP[normalise(rawPropType)] ?? "other";
 
-  // bedrooms
+  // bedrooms — absent (empty cell) defaults to 0 (studio/unknown).
+  // This is a deliberate default: 0 beds is a valid value (e.g. studio flat).
+  // A junk/non-numeric value (not merely blank) is still an error.
   const rawBedrooms = field("bedrooms");
-  const bedrooms = parseNum(rawBedrooms);
+  const parsedBedrooms = parseNum(rawBedrooms);
+  const bedrooms = rawBedrooms.trim() === "" ? 0 : (parsedBedrooms ?? null);
   if (bedrooms === null) {
     fieldErr("invalid_bedrooms", `Unparseable bedrooms at row ${rowIndex}`, "bedrooms");
   }
 
-  // bathrooms
+  // bathrooms — absent (empty cell) defaults to 0 (same rationale as bedrooms).
   const rawBathrooms = field("bathrooms");
-  const bathrooms = parseNum(rawBathrooms);
+  const parsedBathrooms = parseNum(rawBathrooms);
+  const bathrooms = rawBathrooms.trim() === "" ? 0 : (parsedBathrooms ?? null);
   if (bathrooms === null) {
     fieldErr("invalid_bathrooms", `Unparseable bathrooms at row ${rowIndex}`, "bathrooms");
   }
@@ -258,8 +287,14 @@ function normalizeRow(
   const listing: NormalizedFeedListing = {
     source,
     external_id: field("external_id"),
+    // external_branch_id is "" when no branch column is mapped.  "" signals
+    // "no branch" to the import service; branch-link creation skips empties.
     external_branch_id: rawBranchId,
     status: status!,
+    // listing_type defaults to "sale" for withdrawn rows: type is moot for a
+    // tombstone (the listing is being removed, not published).  For available
+    // rows, an unmapped/unrecognised type is already caught above as a RowError
+    // so we only reach ?? "sale" in the withdrawn path.
     listing_type: listingType ?? "sale",
     price: price!,
     rent_frequency: rentFrequency,
@@ -340,8 +375,40 @@ function parseCsvPayload(
     (h) => fieldMapping[h.trim()] ?? null,
   );
 
+  // I1: Header-level required-column check.
+  // Emit a single structural RowError for each required canonical field that
+  // has no CSV column mapped to it.  This surfaces configuration problems
+  // (missing fieldMapping entries) up-front rather than producing N noisy
+  // per-row errors for the same root cause.
+  //
+  // REQUIRED_FIELDS that are truly mandatory for any row to be parseable:
+  const TRULY_REQUIRED: readonly string[] = [
+    "external_id",
+    "address_line1",
+    "city",
+    "postcode",
+    "price",
+    "status",
+    // listing_type is NOT truly required at the header level: withdrawn rows
+    // do not need it (type is moot for a tombstone), so we tolerate a missing
+    // listing_type column and let per-row logic handle available rows without it.
+  ] as const;
+
+  const mappedCanonicals = new Set(canonicalHeaders.filter((h): h is string => h !== null));
+  const headerErrors: RowError[] = [];
+  for (const required of TRULY_REQUIRED) {
+    if (!mappedCanonicals.has(required)) {
+      headerErrors.push({
+        row: "header",
+        code: "missing_required_column",
+        message: `Required column "${required}" has no field mapping — add a fieldMapping entry for this canonical field`,
+        field: required,
+      });
+    }
+  }
+
   const listings: NormalizedFeedListing[] = [];
-  const errors: RowError[] = [];
+  const errors: RowError[] = [...headerErrors];
   const branchMap = new Map<string, BranchRecord>();
 
   // Data rows start at index 1
@@ -396,6 +463,8 @@ function parseCsvPayload(
  * Columns: row, field, code, message.
  * Pure function — the UI wires the file download separately.
  *
+ * Uses \r\n line endings (RFC 4180) so the report opens correctly in Excel.
+ *
  * IMPORTANT: message values must NOT contain secrets.  The normalizeRow
  * function ensures this — it never echoes back cell values.
  */
@@ -411,7 +480,7 @@ export function buildCsvErrorReport(errors: ReadonlyArray<RowError>): string {
       .map((v) => `"${v.replace(/"/g, '""')}"`)
       .join(",");
   });
-  return [header, ...dataRows].join("\n");
+  return [header, ...dataRows].join("\r\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -472,6 +541,14 @@ export const csvConnector: SourceConnector = {
     }
 
     const mapping = getFieldMapping(ctx);
+    const warnings: string[] = [];
+
+    if (Object.keys(mapping).length === 0) {
+      warnings.push(
+        "no field mapping supplied — no columns could be mapped; all rows will fail",
+      );
+    }
+
     const result = parseCsvPayload("csv", payload, mapping);
 
     if (result.parseWarning) {
@@ -480,7 +557,7 @@ export const csvConnector: SourceConnector = {
         errors: [],
         sourceFingerprint: result.sourceFingerprint,
         branches: [],
-        transport: { ok: false, itemsSeen: 0, warnings: [result.parseWarning] },
+        transport: { ok: false, itemsSeen: 0, warnings: [result.parseWarning, ...warnings] },
       };
     }
 
@@ -492,7 +569,7 @@ export const csvConnector: SourceConnector = {
       transport: {
         ok: true,
         itemsSeen: result.listings.length + result.errors.length,
-        warnings: [],
+        warnings,
       },
     };
   },
