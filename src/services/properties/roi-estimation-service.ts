@@ -24,7 +24,10 @@
 
 import { z } from "zod";
 import { getCached, setCache } from "@/lib/cache/redis";
-import { fetchLandRegistryComparables } from "./land-registry-service";
+import {
+  fetchLandRegistryComparables,
+  upsertLastSoldForProperty,
+} from "./land-registry-service";
 import { getRenovationBenchmarks } from "./property-detail-service";
 import { callClaude } from "@/services/ai/claude-service";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -226,6 +229,17 @@ export async function estimateROI(
 
     // 2. Fetch Land Registry comparables (non-blocking — null on failure)
     const comparables = await fetchLandRegistryComparables(property.postcode);
+
+    // 2a. Sidecar: upsert property_last_sold for the sold-within search filter.
+    //     Best-effort; never blocks or throws.
+    if (comparables && comparables.length > 0) {
+      await upsertLastSoldForProperty(
+        property.id,
+        property.address_line1,
+        comparables,
+        supabase,
+      );
+    }
 
     // 3. Fetch renovation benchmarks from DB
     const region = deriveRegionFromPostcode(property.postcode);

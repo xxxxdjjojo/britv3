@@ -11,6 +11,7 @@
  */
 
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getCached, setCache } from "@/lib/cache/redis";
 
 // ---------------------------------------------------------------------------
@@ -275,5 +276,99 @@ export async function fetchLandRegistryComparables(
       error_type: error instanceof Error ? error.name : "unknown",
     });
     return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// property_last_sold sidecar — ongoing-write path
+// ---------------------------------------------------------------------------
+
+/**
+ * Pick the maximum (most-recent) YYYY-MM-DD date from a comparables list.
+ * String comparison is correct here because dates are already ISO-formatted.
+ */
+export function extractLatestSaleDate(
+  records: ReadonlyArray<{ date?: string | null }>,
+): string | null {
+  if (!Array.isArray(records) || records.length === 0) return null;
+  let latest: string | null = null;
+  for (const r of records) {
+    const d = r?.date;
+    if (typeof d === "string" && d.length > 0 && (!latest || d > latest)) {
+      latest = d;
+    }
+  }
+  return latest;
+}
+
+/**
+ * Heuristic match between a Land Registry comparable's `address` (built as
+ * `"PAON, SAON, STREET, TOWN"`) and a listing's `address_line1` (e.g.
+ * `"42 High Street"`).
+ *
+ * The leading token of an LR address is the same PAON / building number that
+ * `address_line1` starts with, so a normalised prefix match is reliable in
+ * practice without resorting to a UPRN/USRN join.
+ */
+export function addressMatches(
+  lrAddress: string,
+  addressLine1: string,
+): boolean {
+  if (!lrAddress || !addressLine1) return false;
+  const normalise = (s: string): string =>
+    s.replace(/[\s,]+/g, " ").trim().toLowerCase();
+  const lr = normalise(lrAddress);
+  const target = normalise(addressLine1);
+  if (!lr || !target) return false;
+  return lr.startsWith(target);
+}
+
+type LastSoldCandidate = Readonly<{
+  address?: string | null;
+  date?: string | null;
+}>;
+
+/**
+ * Upsert `property_last_sold` for a specific property from a list of Land
+ * Registry comparables. Only comparables whose address matches the given
+ * `addressLine1` are considered. No-op when nothing matches or `records` is
+ * empty / null.
+ *
+ * NEVER throws — logs and returns. The caller (e.g. the ROI estimator) must
+ * not have its happy-path disturbed by a sidecar write failure.
+ */
+export async function upsertLastSoldForProperty(
+  propertyId: string,
+  addressLine1: string,
+  records: ReadonlyArray<LastSoldCandidate> | null | undefined,
+  supabase: Pick<SupabaseClient, "from">,
+): Promise<void> {
+  try {
+    if (!records || records.length === 0) return;
+    const matched = records.filter((r) =>
+      typeof r?.address === "string"
+        ? addressMatches(r.address, addressLine1)
+        : false,
+    );
+    const latest = extractLatestSaleDate(matched);
+    if (!latest) return;
+
+    const { error } = await supabase
+      .from("property_last_sold")
+      .upsert(
+        { property_id: propertyId, last_sold_date: latest, source: "hmlr" },
+        { onConflict: "property_id" },
+      );
+
+    if (error) {
+      console.error(
+        "[land-registry-service] property_last_sold upsert failed",
+        { error_type: "UpsertError", message: error.message },
+      );
+    }
+  } catch (error) {
+    console.error("[land-registry-service] property_last_sold upsert threw", {
+      error_type: error instanceof Error ? error.name : "unknown",
+    });
   }
 }
