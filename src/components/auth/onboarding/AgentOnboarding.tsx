@@ -36,6 +36,15 @@ export function AgentOnboarding(
   const [agencyAddress, setAgencyAddress] = useState("");
   const [regNumber, setRegNumber] = useState("");
 
+  // Companies House verification (gate: registered >= 2 years)
+  const [verifying, setVerifying] = useState(false);
+  const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
+  const [companyVerification, setCompanyVerification] = useState<{
+    status: string | null;
+    incorporationDate: string | null;
+    pendingReview: boolean;
+  } | null>(null);
+
   // Step 2 — Profile
   const [jobTitle, setJobTitle] = useState("");
   const [coverageRegions, setCoverageRegions] = useState<string[]>([]);
@@ -57,6 +66,68 @@ export function AgentOnboarding(
     }
   }
 
+  const VERIFY_REASONS: Record<string, string> = {
+    company_under_two_years:
+      "Companies must be registered with Companies House for at least 2 years to onboard.",
+    company_not_found:
+      "We couldn't find that company number on Companies House. Please check and try again.",
+    company_not_active:
+      "This company is not listed as active on Companies House.",
+  };
+
+  async function handleVerifyAndContinue() {
+    setVerifyMessage(null);
+    const number = regNumber.trim();
+    if (!number) {
+      setVerifyMessage("A Companies House registration number is required.");
+      return;
+    }
+
+    setVerifying(true);
+    try {
+      const res = await fetch("/api/verification/company", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ companyNumber: number }),
+      });
+      const data = await res.json();
+
+      if (data.eligible) {
+        setCompanyVerification({
+          status: data.companyStatus ?? null,
+          incorporationDate: data.incorporationDate ?? null,
+          pendingReview: false,
+        });
+        setStep(1);
+        return;
+      }
+
+      // Verification unavailable (key unset/outage) — allow through but flag for review.
+      if (data.serviceError) {
+        setCompanyVerification({
+          status: data.companyStatus ?? null,
+          incorporationDate: data.incorporationDate ?? null,
+          pendingReview: true,
+        });
+        setVerifyMessage(null);
+        setStep(1);
+        return;
+      }
+
+      // Confirmed ineligible — block.
+      setVerifyMessage(
+        VERIFY_REASONS[data.reason as string] ??
+          "This company could not be verified for onboarding.",
+      );
+    } catch {
+      // Network failure on the client — let them proceed, mark for review.
+      setCompanyVerification({ status: null, incorporationDate: null, pendingReview: true });
+      setStep(1);
+    } finally {
+      setVerifying(false);
+    }
+  }
+
   async function handleComplete() {
     setSaving(true);
     try {
@@ -70,6 +141,12 @@ export function AgentOnboarding(
             name: sanitize(agencyName),
             address: sanitize(agencyAddress),
             registration_number: sanitize(regNumber),
+            company_number: sanitize(regNumber),
+            companies_house_status: companyVerification?.pendingReview
+              ? "pending_review"
+              : "verified",
+            companies_house_verified_at: new Date().toISOString(),
+            incorporation_date: companyVerification?.incorporationDate ?? null,
             owner_id: user.id,
           })
           .select("id")
@@ -127,10 +204,16 @@ export function AgentOnboarding(
             <Input placeholder="e.g. 10 King Street, Manchester, M2 4WG" value={agencyAddress} onChange={(e) => setAgencyAddress(e.target.value)} className="h-11" />
           </div>
           <div className="space-y-2">
-            <Label>Registration number <span className="text-neutral-400 text-xs">(optional)</span></Label>
-            <Input placeholder="e.g. Companies House or ARLA number" value={regNumber} onChange={(e) => setRegNumber(e.target.value)} className="h-11" />
+            <Label>Companies House registration number</Label>
+            <Input placeholder="e.g. 09876543" value={regNumber} onChange={(e) => { setRegNumber(e.target.value); setVerifyMessage(null); }} className="h-11" />
+            <p className="text-xs text-neutral-400">Your company must be registered with Companies House for at least 2 years.</p>
+            {verifyMessage && (
+              <p className="text-xs text-red-600">{verifyMessage}</p>
+            )}
           </div>
-          <Button onClick={() => setStep(1)} className="w-full" disabled={!agencyName}>Continue</Button>
+          <Button onClick={handleVerifyAndContinue} className="w-full" disabled={!agencyName || !regNumber.trim() || verifying}>
+            {verifying ? "Verifying…" : "Continue"}
+          </Button>
           <SkipLink />
         </div>
       )}
