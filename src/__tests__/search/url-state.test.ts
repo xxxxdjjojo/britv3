@@ -3,6 +3,7 @@ import {
   DEFAULT_SEARCH_STATE,
   parseSearchState,
   serializeSearchState,
+  type SearchState,
 } from "@/lib/search/url-state";
 
 describe("url-state: bedrooms min/max and soldWithin", () => {
@@ -15,7 +16,7 @@ describe("url-state: bedrooms min/max and soldWithin", () => {
   });
 
   it("non-default bedrooms round-trip through URL", () => {
-    const state = { ...DEFAULT_SEARCH_STATE, bedsMin: "2", bedsMax: "4" };
+    const state: SearchState = { ...DEFAULT_SEARCH_STATE, bedsMin: "2", bedsMax: "4" };
     const qs = serializeSearchState(state);
     const parsed = parseSearchState(new URLSearchParams(qs));
     expect(parsed.bedsMin).toBe("2");
