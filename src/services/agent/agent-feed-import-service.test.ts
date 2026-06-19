@@ -90,10 +90,14 @@ describe("agent-feed-import-service", () => {
       error: null,
     });
     const itemChain = createMutationChain({ data: [], error: null });
+    const integrationChain = createFlexibleChain({
+      data: { organisation_id: "org-1" },
+    });
     const supabase = {
       from: vi.fn((table: string) => {
         if (table === "feed_import_runs") return runChain;
         if (table === "feed_import_items") return itemChain;
+        if (table === "agent_feed_integrations") return integrationChain;
         throw new Error(`Unexpected table ${table}`);
       }),
     };
@@ -108,6 +112,7 @@ describe("agent-feed-import-service", () => {
       expect.objectContaining({
         agent_id: "agent-1",
         integration_id: "integration-1",
+        organisation_id: "org-1",
         source_fingerprint: expect.any(String),
         status: "needs_review",
       }),
@@ -156,6 +161,7 @@ describe("agent-feed-import-service", () => {
         id: "item-1",
         integration_id: "integration-1",
         agent_id: "agent-1",
+        organisation_id: "org-1",
         external_id: validListing.external_id,
         status: "approved",
         normalized_payload: validListing,
@@ -213,9 +219,14 @@ describe("agent-feed-import-service", () => {
         planning_permission_status: "none_known",
       }),
     );
-    // Published as PUBLIC, not draft — the three-action "Publish" makes it live.
+    // Published as PUBLIC, not draft — the three-action "Publish" makes it live,
+    // stamped with the owning organisation.
     expect(listingChain.insert).toHaveBeenCalledWith(
-      expect.objectContaining({ user_id: "agent-1", status: "active" }),
+      expect.objectContaining({
+        user_id: "agent-1",
+        status: "active",
+        organisation_id: "org-1",
+      }),
     );
     // Coordinates set (map) + search index refreshed.
     expect(supabase.rpc).toHaveBeenCalledWith(

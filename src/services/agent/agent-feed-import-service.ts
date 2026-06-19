@@ -334,12 +334,36 @@ export function assessFeedSafety(input: {
   return { safe: true, reason: null };
 }
 
+/**
+ * Resolve the organisation that owns a feed integration, so import runs,
+ * items, links and published listings are stamped with the org tenant.
+ * Returns null for integrations not yet onboarded into the org model.
+ */
+async function getIntegrationOrganisationId(
+  supabase: SupabaseClient,
+  integrationId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("agent_feed_integrations")
+    .select("organisation_id")
+    .eq("id", integrationId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to resolve integration organisation: ${error.message}`);
+  }
+
+  const orgId = (data as { organisation_id?: string | null } | null)?.organisation_id;
+  return orgId == null ? null : String(orgId);
+}
+
 export async function createDeterministicReapitImportRun(
   supabase: SupabaseClient,
   agentId: string,
   integrationId: string,
 ): Promise<FeedImportRunSummary> {
   const listings = normalizeReapitFixture();
+  const organisationId = await getIntegrationOrganisationId(supabase, integrationId);
   const sourceFingerprint = sha256(listings.map((listing) => listing.raw_payload));
   const eligibleItems = listings.filter(isPublishEligible).length;
   const errorItems = listings.filter(
@@ -353,6 +377,7 @@ export async function createDeterministicReapitImportRun(
       {
         integration_id: integrationId,
         agent_id: agentId,
+        organisation_id: organisationId,
         provider: "reapit",
         source_fingerprint: sourceFingerprint,
         status: "needs_review",
@@ -379,6 +404,7 @@ export async function createDeterministicReapitImportRun(
       run_id: runId,
       integration_id: integrationId,
       agent_id: agentId,
+      organisation_id: organisationId,
       item_type: "listing",
       external_id: listing.external_id,
       external_branch_id: listing.external_branch_id,
@@ -504,6 +530,7 @@ type FeedImportItemRow = {
   id: string;
   integration_id: string;
   agent_id: string;
+  organisation_id: string | null;
   external_id: string;
   status: string;
   normalized_payload: NormalizedFeedListing;
@@ -603,6 +630,7 @@ export async function publishApprovedImportItem(
     throw new Error(`Feed import item is not publishable: ${validationErrors.join(", ")}`);
   }
 
+  const organisationId = feedItem.organisation_id ?? null;
   const existingLink = await findExistingListingLink(
     supabase,
     agentId,
@@ -633,6 +661,7 @@ export async function publishApprovedImportItem(
         price: listing.price,
         rent_frequency: listing.rent_frequency,
         status: "active",
+        organisation_id: organisationId,
       })
       .eq("id", listingId)
       .eq("user_id", agentId);
@@ -658,6 +687,7 @@ export async function publishApprovedImportItem(
       .insert({
         property_id: propertyId,
         user_id: agentId,
+        organisation_id: organisationId,
         listing_type: listing.listing_type,
         price: listing.price,
         rent_frequency: listing.rent_frequency,
@@ -718,6 +748,7 @@ export async function publishApprovedImportItem(
       {
         integration_id: feedItem.integration_id,
         agent_id: agentId,
+        organisation_id: organisationId,
         external_listing_id: feedItem.external_id,
         listing_id: listingId,
         property_id: propertyId,
