@@ -7,18 +7,28 @@
  * Uses event delegation on the container: when a button with
  * `data-quote-service` is clicked, the QuoteModal opens with the
  * pre-selected service name.
+ *
+ * Takes only serializable props so it can be rendered from a Server Component
+ * (the public profile page) without passing a function across the RSC boundary.
  */
 
 import { useRef, useState, useCallback } from "react";
 import type { ReactNode } from "react";
+import { QuoteModal } from "@/components/providers/QuoteModal";
 
 type ServicesTabWithModalProps = Readonly<{
   children: ReactNode;
-  /** QuoteModal component rendered as a child to keep open state local */
-  modal: (props: { open: boolean; initialService: string; onOpenChange: (open: boolean) => void }) => ReactNode;
+  providerId: string;
+  providerName: string;
+  serviceNames: string[];
 }>;
 
-export function ServicesTabWithModal({ children, modal }: ServicesTabWithModalProps) {
+export function ServicesTabWithModal({
+  children,
+  providerId,
+  providerName,
+  serviceNames,
+}: ServicesTabWithModalProps) {
   const [open, setOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,7 +46,14 @@ export function ServicesTabWithModal({ children, modal }: ServicesTabWithModalPr
   return (
     <div ref={containerRef} onClick={handleContainerClick}>
       {children}
-      {modal({ open, initialService: selectedService, onOpenChange: setOpen })}
+      <QuoteModal
+        providerId={providerId}
+        providerName={providerName}
+        services={serviceNames}
+        open={open}
+        initialService={selectedService}
+        onOpenChange={setOpen}
+      />
     </div>
   );
 }
