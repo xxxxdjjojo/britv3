@@ -69,6 +69,12 @@ const ORPHAN_ALLOWLIST = new Set<string>([
   // link; reached via breadcrumbs / footer / direct entry.
   "/services",
   "/tools",
+  // Value-My-Property wizard steps — reached by progressing through the flow
+  // from the linked entry point (/value-my-property), not via global nav.
+  "/value-my-property/address",
+  "/value-my-property/details",
+  "/value-my-property/review",
+  "/value-my-property/verify-email",
 ]);
 
 function listPageFiles(dir: string): string[] {
