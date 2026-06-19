@@ -57,6 +57,95 @@ export function buildAreaDetail(raw: RawAreaDetail): AreaPriceDetail {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Instant area card — flat/house bands read straight from the precompute
+// (market_map_area_card RPC). Indexed lookup only; never touches the live path.
+// ---------------------------------------------------------------------------
+
+/** Raw band as returned by the market_map_area_card RPC (prices in pence). */
+type RawCardBand = {
+  median_price_pence?: number | null;
+  p10_price_pence?: number | null;
+  p90_price_pence?: number | null;
+  transaction_count?: number | null;
+  latest_transaction_date?: string | null;
+};
+
+/** Raw jsonb payload from the market_map_area_card RPC. */
+type RawAreaCard = {
+  flat: RawCardBand;
+  house: RawCardBand;
+};
+
+/** One band (flat or house) on the instant card; prices in POUNDS. */
+export type MarketCardSeries = {
+  median: number | null;
+  p10: number | null;
+  p90: number | null;
+  count: number;
+  latestDate: string | null;
+  confidence: ReturnType<typeof confidenceFor>;
+  insufficient: boolean;
+};
+
+export type MarketAreaCard = {
+  flat: MarketCardSeries;
+  house: MarketCardSeries;
+};
+
+function toCardSeries(raw: RawCardBand): MarketCardSeries {
+  const count = raw.transaction_count ?? 0;
+  return {
+    median: penceToPounds(raw.median_price_pence),
+    p10: penceToPounds(raw.p10_price_pence),
+    p90: penceToPounds(raw.p90_price_pence),
+    count,
+    latestDate: raw.latest_transaction_date ?? null,
+    confidence: confidenceFor(count),
+    insufficient: count === 0,
+  };
+}
+
+/**
+ * Converts the raw market_map_area_card jsonb (prices in pence) into a
+ * MarketAreaCard (prices in pounds), grading confidence per band.
+ */
+export function buildAreaCard(raw: RawAreaCard): MarketAreaCard {
+  return {
+    flat: toCardSeries(raw.flat),
+    house: toCardSeries(raw.house),
+  };
+}
+
+/**
+ * Fetches the flat/house instant-card bands for a single area via the
+ * market_map_area_card RPC (precompute lookup only). Uses the admin
+ * (service-role) client — call only from server-side code. On error, logs and
+ * returns an all-insufficient card so callers always get a usable shape.
+ */
+export async function getAreaCard(
+  level: string,
+  areaId: string,
+  window = 12,
+): Promise<MarketAreaCard> {
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase.rpc("market_map_area_card", {
+    p_level: level,
+    p_area_id: areaId,
+    p_window: window,
+  });
+
+  if (error) {
+    console.error(
+      `[area-detail-service] Failed to fetch market_map_area_card: ${error.message}`,
+    );
+    return buildAreaCard({ flat: { transaction_count: 0 }, house: { transaction_count: 0 } });
+  }
+
+  return buildAreaCard(data as RawAreaCard);
+}
+
 /**
  * Fetches the flat/house breakdown for a single area via the
  * market_map_area_detail RPC. Uses the admin (service-role) client — call only
