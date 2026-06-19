@@ -182,6 +182,8 @@ export const PROPERTY_DETAIL_TTL = {
   ROI: 24 * 60 * 60,
   /** Ofsted schools data — 7 days */
   OFSTED: 7 * 24 * 60 * 60,
+  /** EPC certificates — 30 days (EPCs are valid for 10 years) */
+  EPC: 30 * 24 * 60 * 60,
   /** Crime stats — 24 hours */
   CRIME: 24 * 60 * 60,
   /** Area demographics — 7 days */
@@ -196,6 +198,7 @@ export const propertyDetailCacheKey = {
     `roi:${postcode}:${propType}:${priceBand}`,
   ofsted: (lat: number, lng: number, radius: number) =>
     `ofsted:lat:${lat.toFixed(4)}:lng:${lng.toFixed(4)}:r:${radius}`,
+  epc: (postcode: string) => `epc:postcode:${postcode.replace(/\s+/g, "").toUpperCase()}`,
   crime: (postcode: string) => `crime:postcode:${postcode}`,
   demographics: (postcodeDistrict: string) =>
     `demo:postcode_district:${postcodeDistrict}`,

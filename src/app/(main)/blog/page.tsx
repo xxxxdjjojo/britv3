@@ -121,15 +121,62 @@ const CATEGORIES = [
   "Legal & Finance",
 ] as const;
 
-const featuredPost = BLOG_POSTS[0];
-const gridPosts = BLOG_POSTS.slice(1);
+type BlogCategory = (typeof CATEGORIES)[number];
+type FilterableBlogCategory = Exclude<BlogCategory, "All">;
 
-export default function BlogPage({
+function categorySlug(category: string): string {
+  return category
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+const CATEGORY_ALIASES: Record<string, FilterableBlogCategory> = {
+  agents: "Selling",
+  buying: "Buying",
+  landlords: "Landlord Tips",
+  "landlord-tips": "Landlord Tips",
+  "legal-and-finance": "Legal & Finance",
+  "legal-finance": "Legal & Finance",
+  "market-news": "Market News",
+  renting: "Renting",
+  selling: "Selling",
+  "tenant-rights": "Renting",
+};
+
+function resolveCategory(category?: string): BlogCategory {
+  if (!category) {
+    return "All";
+  }
+
+  const normalized = categorySlug(category);
+  const exactCategory = CATEGORIES.find(
+    (candidate) => categorySlug(candidate) === normalized,
+  );
+
+  if (exactCategory) {
+    return exactCategory;
+  }
+
+  return CATEGORY_ALIASES[normalized] ?? "All";
+}
+
+export default async function BlogPage({
   searchParams,
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
-  void searchParams;
+  const { category } = await searchParams;
+  const activeCategory = resolveCategory(category);
+  const filteredPosts =
+    activeCategory === "All"
+      ? BLOG_POSTS
+      : BLOG_POSTS.filter((post) => post.category === activeCategory);
+  const featuredPost = filteredPosts.find((post) => post.featured) ?? filteredPosts[0];
+  const gridPosts = featuredPost
+    ? filteredPosts.filter((post) => post.slug !== featuredPost.slug)
+    : [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -173,97 +220,121 @@ export default function BlogPage({
       </div>
 
       {/* Featured Post */}
-      <article className="mb-12 bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden group hover:shadow-md transition-shadow">
-        <div className="grid lg:grid-cols-2">
-          <div className="aspect-[16/9] lg:aspect-auto bg-neutral-200 min-h-[260px]" aria-hidden="true" />
-          <div className="p-8 lg:p-10 flex flex-col justify-center">
-            <span className="inline-block bg-brand-primary text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4 w-fit">
-              {featuredPost.category}
-            </span>
-            <h2 className="text-2xl lg:text-3xl font-bold text-neutral-900 font-heading leading-snug mb-4 group-hover:text-brand-primary transition-colors">
-              {featuredPost.title}
-            </h2>
-            <p className="text-neutral-600 leading-relaxed mb-6 line-clamp-3">
-              {featuredPost.excerpt}
-            </p>
-            <div className="flex items-center gap-3 text-sm text-neutral-500 mb-6">
-              <span className="size-8 rounded-full bg-brand-primary-lighter text-brand-primary font-bold text-xs flex items-center justify-center shrink-0">
-                {featuredPost.author.initials}
+      {featuredPost ? (
+        <article className="mb-12 bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden group hover:shadow-md transition-shadow">
+          <div className="grid lg:grid-cols-2">
+            <div className="aspect-[16/9] lg:aspect-auto bg-neutral-200 min-h-[260px]" aria-hidden="true" />
+            <div className="p-8 lg:p-10 flex flex-col justify-center">
+              <span className="inline-block bg-brand-primary text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4 w-fit">
+                {featuredPost.category}
               </span>
-              <span className="font-medium text-neutral-700">{featuredPost.author.name}</span>
-              <span aria-hidden="true">·</span>
-              <span>{featuredPost.date}</span>
-              <span aria-hidden="true">·</span>
-              <span>{featuredPost.readTime}</span>
+              <h2 className="text-2xl lg:text-3xl font-bold text-neutral-900 font-heading leading-snug mb-4 group-hover:text-brand-primary transition-colors">
+                {featuredPost.title}
+              </h2>
+              <p className="text-neutral-600 leading-relaxed mb-6 line-clamp-3">
+                {featuredPost.excerpt}
+              </p>
+              <div className="flex items-center gap-3 text-sm text-neutral-500 mb-6">
+                <span className="size-8 rounded-full bg-brand-primary-lighter text-brand-primary font-bold text-xs flex items-center justify-center shrink-0">
+                  {featuredPost.author.initials}
+                </span>
+                <span className="font-medium text-neutral-700">{featuredPost.author.name}</span>
+                <span aria-hidden="true">·</span>
+                <span>{featuredPost.date}</span>
+                <span aria-hidden="true">·</span>
+                <span>{featuredPost.readTime}</span>
+              </div>
+              <Link
+                href={`/blog/${featuredPost.slug}`}
+                className="inline-flex items-center gap-2 text-brand-primary font-semibold hover:underline"
+              >
+                Read Article <ArrowRight className="size-4" />
+              </Link>
             </div>
-            <Link
-              href={`/blog/${featuredPost.slug}`}
-              className="inline-flex items-center gap-2 text-brand-primary font-semibold hover:underline"
-            >
-              Read Article <ArrowRight className="size-4" />
-            </Link>
           </div>
-        </div>
-      </article>
+        </article>
+      ) : null}
 
       {/* Category Filter Pills */}
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 mb-10">
-        {CATEGORIES.map((cat) => (
-          <Link
-            key={cat}
-            href={cat === "All" ? "/blog" : `/blog?category=${encodeURIComponent(cat)}`}
-            className="shrink-0 px-4 py-2 rounded-full text-sm font-medium border border-neutral-200 bg-white text-neutral-700 hover:border-brand-primary hover:text-brand-primary transition-colors whitespace-nowrap"
-          >
-            {cat}
-          </Link>
-        ))}
+        {CATEGORIES.map((cat) => {
+          const isActive = cat === activeCategory;
+
+          return (
+            <Link
+              key={cat}
+              href={cat === "All" ? "/blog" : `/blog?category=${categorySlug(cat)}`}
+              aria-current={isActive ? "page" : undefined}
+              className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-colors whitespace-nowrap ${
+                isActive
+                  ? "border-brand-primary bg-brand-primary text-white"
+                  : "border-neutral-200 bg-white text-neutral-700 hover:border-brand-primary hover:text-brand-primary"
+              }`}
+            >
+              {cat}
+            </Link>
+          );
+        })}
       </div>
 
       {/* Blog Card Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        {gridPosts.map((post) => (
-          <article
-            key={post.slug}
-            className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300 flex flex-col"
-          >
-            <div className="aspect-[16/9] bg-neutral-200 w-full" aria-hidden="true" />
-            <div className="flex flex-col flex-1 p-5">
-              <span className="inline-block bg-brand-primary-lighter text-brand-primary text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-3 w-fit">
-                {post.category}
-              </span>
-              <h3 className="text-lg font-bold text-neutral-900 font-heading leading-snug mb-2 line-clamp-2 group-hover:text-brand-primary transition-colors">
-                {post.title}
-              </h3>
-              <p className="text-sm text-neutral-600 leading-relaxed mb-4 line-clamp-2 flex-1">
-                {post.excerpt}
-              </p>
-              <div className="flex items-center gap-2 text-xs text-neutral-500 mt-auto pt-3 border-t border-neutral-100">
-                <span className="size-7 rounded-full bg-brand-primary-lighter text-brand-primary font-bold text-xs flex items-center justify-center shrink-0">
-                  {post.author.initials}
+      {filteredPosts.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {gridPosts.map((post) => (
+            <article
+              key={post.slug}
+              className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300 flex flex-col"
+            >
+              <div className="aspect-[16/9] bg-neutral-200 w-full" aria-hidden="true" />
+              <div className="flex flex-col flex-1 p-5">
+                <span className="inline-block bg-brand-primary-lighter text-brand-primary text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-3 w-fit">
+                  {post.category}
                 </span>
-                <span className="font-medium text-neutral-700 truncate">{post.author.name}</span>
-                <span aria-hidden="true" className="shrink-0">·</span>
-                <span className="shrink-0">{post.date}</span>
-                <span aria-hidden="true" className="shrink-0">·</span>
-                <span className="shrink-0">{post.readTime}</span>
+                <h3 className="text-lg font-bold text-neutral-900 font-heading leading-snug mb-2 line-clamp-2 group-hover:text-brand-primary transition-colors">
+                  {post.title}
+                </h3>
+                <p className="text-sm text-neutral-600 leading-relaxed mb-4 line-clamp-2 flex-1">
+                  {post.excerpt}
+                </p>
+                <div className="flex items-center gap-2 text-xs text-neutral-500 mt-auto pt-3 border-t border-neutral-100">
+                  <span className="size-7 rounded-full bg-brand-primary-lighter text-brand-primary font-bold text-xs flex items-center justify-center shrink-0">
+                    {post.author.initials}
+                  </span>
+                  <span className="font-medium text-neutral-700 truncate">{post.author.name}</span>
+                  <span aria-hidden="true" className="shrink-0">·</span>
+                  <span className="shrink-0">{post.date}</span>
+                  <span aria-hidden="true" className="shrink-0">·</span>
+                  <span className="shrink-0">{post.readTime}</span>
+                </div>
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="inline-flex items-center gap-1 text-brand-primary font-semibold text-sm mt-4 hover:underline"
+                >
+                  Read more <ArrowRight className="size-3.5" />
+                </Link>
               </div>
-              <Link
-                href={`/blog/${post.slug}`}
-                className="inline-flex items-center gap-1 text-brand-primary font-semibold text-sm mt-4 hover:underline"
-              >
-                Read more <ArrowRight className="size-3.5" />
-              </Link>
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="mb-12 rounded-2xl border border-dashed border-neutral-300 bg-white p-8 text-center">
+          <h2 className="text-2xl font-bold text-neutral-900 font-heading mb-3">
+            No articles found
+          </h2>
+          <p className="text-neutral-600">
+            There are no {activeCategory.toLowerCase()} articles available yet.
+          </p>
+        </div>
+      )}
 
       {/* Load More */}
-      <div className="flex justify-center">
-        <Button variant="outline" className="px-8 py-3 border-neutral-300 text-neutral-700 hover:border-brand-primary hover:text-brand-primary font-semibold">
-          Load More Articles
-        </Button>
-      </div>
+      {filteredPosts.length > 0 ? (
+        <div className="flex justify-center">
+          <Button variant="outline" className="px-8 py-3 border-neutral-300 text-neutral-700 hover:border-brand-primary hover:text-brand-primary font-semibold">
+            Load More Articles
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

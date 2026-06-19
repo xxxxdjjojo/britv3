@@ -15,6 +15,18 @@ export const env = createEnv({
       process.env.NODE_ENV === "production"
         ? z.string().min(1)
         : z.string().min(1).optional(),
+    // EPC Register (gov.uk Open Data Communities) — set EPC_API_KEY="disabled" to hide EPC sections
+    EPC_API_KEY: z.string().min(1).optional(),
+    EPC_API_EMAIL: z.string().email().optional(),
+    // Companies House (gov.uk) — set ="disabled" to bypass the verification gate
+    COMPANIES_HOUSE_API_KEY: z.string().min(1).optional(),
+    // Tenant referencing / credit checks (pluggable provider; "mock" = no live vendor)
+    REFERENCING_PROVIDER: z.enum(["mock", "goodlord", "homelet"]).default("mock"),
+    REFERENCING_API_KEY: z.string().min(1).optional(),
+    REFERENCING_WEBHOOK_SECRET: z.string().min(1).optional(),
+    // ID verification / KYC (scaffolded; "stub" = no live vendor)
+    KYC_PROVIDER: z.enum(["stub", "stripe", "didit"]).default("stub"),
+    KYC_API_KEY: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -29,6 +41,14 @@ export const env = createEnv({
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     INNGEST_SIGNING_KEY: process.env.INNGEST_SIGNING_KEY,
+    EPC_API_KEY: process.env.EPC_API_KEY,
+    EPC_API_EMAIL: process.env.EPC_API_EMAIL,
+    COMPANIES_HOUSE_API_KEY: process.env.COMPANIES_HOUSE_API_KEY,
+    REFERENCING_PROVIDER: process.env.REFERENCING_PROVIDER,
+    REFERENCING_API_KEY: process.env.REFERENCING_API_KEY,
+    REFERENCING_WEBHOOK_SECRET: process.env.REFERENCING_WEBHOOK_SECRET,
+    KYC_PROVIDER: process.env.KYC_PROVIDER,
+    KYC_API_KEY: process.env.KYC_API_KEY,
   },
   skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
 });

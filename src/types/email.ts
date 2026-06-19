@@ -169,6 +169,15 @@ export type RenewalReminderEmailProps = {
   manageSubscriptionUrl: string;
 };
 
+export type RentReminderEmailProps = {
+  tenantName: string;
+  propertyAddress: string;
+  rentAmount: number;
+  rentFrequency: "weekly" | "monthly";
+  dueDate: string;
+  payUrl: string;
+};
+
 export type WeeklyDigestEmailProps = {
   firstName: string;
   weekStarting: string;
@@ -252,6 +261,7 @@ export type AnyEmailProps =
   | PaymentConfirmationEmailProps
   | PaymentFailedEmailProps
   | RenewalReminderEmailProps
+  | RentReminderEmailProps
   | WeeklyDigestEmailProps
   | AccountDeletionEmailProps
   | ReferralInvitationEmailProps

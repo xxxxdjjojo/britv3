@@ -53,8 +53,9 @@ async function collectPublicConfiguredHrefs(): Promise<string[]> {
 test.describe("configured public navigation render", () => {
   test("configured blog category links render filtered category content", async ({
     page,
-  }) => {
-    const response = await page.goto("/blog?category=buying", {
+  }, testInfo) => {
+    const href = "/blog?category=buying";
+    const response = await page.goto(href, {
       waitUntil: "domcontentloaded",
     });
 
@@ -66,6 +67,7 @@ test.describe("configured public navigation render", () => {
     await expect(
       page.getByText(/Renters' Rights Bill Explained/i),
     ).not.toBeVisible();
+    await capture(page, href, testInfo);
   });
 
   test("public configured destinations render non-error pages with screenshots", async ({
