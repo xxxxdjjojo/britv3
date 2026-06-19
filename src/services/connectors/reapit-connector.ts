@@ -3,11 +3,13 @@
  *
  * This connector is wired to the in-process `normalizeReapitFixture()` function
  * until the live Reapit API (OIDC auth + signedUrl media CDN + webhook push) is
- * implemented in a later phase. All capability flags reflect the eventual live
- * Reapit API contract so the registry/UI can advertise them correctly, but the
- * transport is always the deterministic fixture payload during this phase.
+ * implemented in a later phase. Capabilities reflect only what the current
+ * fixture path actually exercises. The live Reapit connector (future phase) will
+ * additionally declare `incremental`, `webhook_push`, and `tombstones` once those
+ * code paths are implemented — capabilities must reflect what is actually
+ * supported today, not aspirational.
  */
-import { createHash } from "node:crypto";
+import { sha256 } from "@/lib/hash";
 import {
   normalizeReapitFixture,
 } from "@/services/agent/agent-feed-import-service";
@@ -19,25 +21,6 @@ import type {
   SourceConnector,
 } from "./source-connector";
 
-function stableStringify(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map(stableStringify).join(",")}]`;
-  }
-
-  if (value && typeof value === "object") {
-    return `{${Object.entries(value as Record<string, unknown>)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, v]) => `${JSON.stringify(k)}:${stableStringify(v)}`)
-      .join(",")}}`;
-  }
-
-  return JSON.stringify(value);
-}
-
-function sha256(value: unknown): string {
-  return createHash("sha256").update(stableStringify(value)).digest("hex");
-}
-
 /** Derive unique branch records from the listing set. */
 function deriveBranches(
   listings: ReturnType<typeof normalizeReapitFixture>,
@@ -45,6 +28,7 @@ function deriveBranches(
   const seen = new Map<string, BranchRecord>();
   for (const listing of listings) {
     if (!seen.has(listing.external_branch_id)) {
+      // TODO: the live Reapit API supplies a real branch name; using external_branch_id as placeholder for now.
       seen.set(listing.external_branch_id, {
         externalId: listing.external_branch_id,
         name: listing.external_branch_id,
@@ -56,11 +40,8 @@ function deriveBranches(
 
 const REAPIT_CAPABILITIES: ReadonlySet<ConnectorCapability> = new Set<ConnectorCapability>([
   "full_snapshot",
-  "incremental",
-  "webhook_push",
-  "tombstones",
-  "media_urls",
   "branches",
+  "media_urls",
 ]);
 
 export const reapitConnector: SourceConnector = {

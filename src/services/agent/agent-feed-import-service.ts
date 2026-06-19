@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { sha256 } from "@/lib/hash";
 import type {
   ListingType,
   PlanningPermissionStatus,
@@ -198,25 +198,6 @@ const REAPIT_FIXTURE: ReapitFixtureListing[] = [
     media: [],
   },
 ];
-
-function stableStringify(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map(stableStringify).join(",")}]`;
-  }
-
-  if (value && typeof value === "object") {
-    return `{${Object.entries(value)
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([key, entry]) => `${JSON.stringify(key)}:${stableStringify(entry)}`)
-      .join(",")}}`;
-  }
-
-  return JSON.stringify(value);
-}
-
-function sha256(value: unknown): string {
-  return createHash("sha256").update(stableStringify(value)).digest("hex");
-}
 
 function normalizeReapitListing(listing: ReapitFixtureListing): NormalizedFeedListing {
   const listingType: ListingType = listing.status === "toLet" ? "rent" : "sale";

@@ -8,13 +8,25 @@
  *
  * To add a new connector: import it here and add a `safeRegister(...)` call.
  */
-import { listConnectorProviders, registerConnector } from "./registry";
+import { getConnector, listConnectorProviders, registerConnector } from "./registry";
 import { reapitConnector } from "./reapit-connector";
 
+/**
+ * Idempotent for repeated imports of the same connector; throws if a different
+ * connector is registered under an existing key.
+ */
 function safeRegister(connector: Parameters<typeof registerConnector>[0]): void {
-  if (!listConnectorProviders().includes(connector.provider)) {
-    registerConnector(connector);
+  if (listConnectorProviders().includes(connector.provider)) {
+    const existing = getConnector(connector.provider);
+    if (existing !== connector) {
+      throw new Error(
+        `Connector conflict: a different connector is already registered for provider "${connector.provider}".`,
+      );
+    }
+    // Same object — idempotent, skip re-registration.
+    return;
   }
+  registerConnector(connector);
 }
 
 safeRegister(reapitConnector);
