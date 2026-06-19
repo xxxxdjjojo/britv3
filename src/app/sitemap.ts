@@ -98,16 +98,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
-    const { data: properties } = await supabase
-      .from("properties")
+    // Property URLs use the listing slug, and slug/status live on `listings`
+    // (not `properties`). Query active, non-deleted listings — anon-readable
+    // via the listings_select_active RLS policy.
+    const { data: listings } = await supabase
+      .from("listings")
       .select("slug, updated_at")
       .eq("status", "active")
+      .is("deleted_at", null)
       .limit(5000);
 
-    if (properties) {
-      propertyPages = properties.map((p) => ({
-        url: `${baseUrl}/properties/${p.slug}`,
-        lastModified: new Date(p.updated_at),
+    if (listings) {
+      propertyPages = listings.map((l) => ({
+        url: `${baseUrl}/properties/${l.slug}`,
+        lastModified: new Date(l.updated_at),
         changeFrequency: "weekly" as const,
         priority: 0.8,
       }));
