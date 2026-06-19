@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import type { AgentFeedIntegration, FeedProvider, SyncStatus } from "@/types/agent";
+import type { AgentFeedIntegrationView, FeedProvider, SyncStatus } from "@/types/agent";
 
 type Props = Readonly<{
-  initialIntegrations: AgentFeedIntegration[];
+  initialIntegrations: AgentFeedIntegrationView[];
 }>;
 
 type AddDialogState =
   | { open: false }
   | { open: true; mode: "add" }
-  | { open: true; mode: "edit"; integration: AgentFeedIntegration };
+  | { open: true; mode: "edit"; integration: AgentFeedIntegrationView };
 
 type ErrorLogState = { open: false } | { open: true; integrationId: string };
 
@@ -72,7 +72,7 @@ type ErrorLogEntry = {
 };
 
 export function FeedIntegrationConfig({ initialIntegrations }: Props) {
-  const [integrations, setIntegrations] = useState<AgentFeedIntegration[]>(initialIntegrations);
+  const [integrations, setIntegrations] = useState<AgentFeedIntegrationView[]>(initialIntegrations);
   const [dialogState, setDialogState] = useState<AddDialogState>({ open: false });
   const [errorLogState, setErrorLogState] = useState<ErrorLogState>({ open: false });
 
@@ -101,10 +101,10 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
     setDialogState({ open: true, mode: "add" });
   }
 
-  function openEditDialog(integration: AgentFeedIntegration) {
+  function openEditDialog(integration: AgentFeedIntegrationView) {
     setFormProvider(integration.provider);
     setFormApiKey("");
-    const mapping = integration.field_mapping as Record<string, string>;
+    const mapping = (integration.field_mapping ?? {}) as Record<string, string>;
     setFormFieldMapping(
       Object.keys(mapping).length > 0 ? mapping : DEFAULT_FIELD_MAPPING,
     );
@@ -158,25 +158,24 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
       const isEdit = dialogState.open && dialogState.mode === "edit";
 
       if (isEdit) {
-        // PATCH /api/agent/feeds?id=<id> — update existing integration
-        const body: Record<string, unknown> = { field_mapping: formFieldMapping };
+        const body: Record<string, unknown> = {
+          id: dialogState.integration.id,
+          field_mapping: formFieldMapping,
+        };
         if (formApiKey.trim()) {
           body.api_key = formApiKey.trim();
         }
-        const res = await fetch(
-          `/api/agent/feeds?id=${encodeURIComponent(dialogState.integration.id)}`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          },
-        );
+        const res = await fetch("/api/agent/feeds", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
         if (!res.ok) {
           const json = (await res.json()) as { error?: string };
           setFormError(json.error ?? "Failed to update integration.");
           return;
         }
-        const updated = (await res.json()) as AgentFeedIntegration;
+        const updated = (await res.json()) as AgentFeedIntegrationView;
         setIntegrations((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
       } else {
         // POST /api/agent/feeds — create new integration
@@ -195,7 +194,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
           setFormError(json.error ?? "Failed to create integration.");
           return;
         }
-        const created = (await res.json()) as AgentFeedIntegration;
+        const created = (await res.json()) as AgentFeedIntegrationView;
         setIntegrations((prev) => [created, ...prev]);
       }
       closeDialog();
@@ -209,17 +208,12 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
   async function handleSyncNow(integrationId: string) {
     setSyncingId(integrationId);
     try {
-      // PATCH with sync_status='syncing' to trigger sync
       const res = await fetch(
-        `/api/agent/feeds?id=${encodeURIComponent(integrationId)}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sync_status: "syncing" }),
-        },
+        `/api/agent/feeds/${encodeURIComponent(integrationId)}/sync`,
+        { method: "POST" },
       );
       if (res.ok) {
-        const updated = (await res.json()) as AgentFeedIntegration;
+        const updated = (await res.json()) as AgentFeedIntegrationView;
         setIntegrations((prev) =>
           prev.map((i) => (i.id === integrationId ? updated : i)),
         );

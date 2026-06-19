@@ -393,6 +393,14 @@ export type AgentFeedIntegration = Readonly<{
   updated_at: string;
 }>;
 
+export type AgentFeedIntegrationView = Omit<
+  AgentFeedIntegration,
+  "api_key_encrypted"
+> &
+  Readonly<{
+    has_secret: boolean;
+  }>;
+
 export type AgentVendorReport = Readonly<{
   id: string;
   agent_id: string;
