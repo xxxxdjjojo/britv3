@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createMockSupabaseClient } from "../mocks/supabase";
 import { MOCK_SEARCH_RESULTS } from "../fixtures/search-results";
 import { buildSearchQuery } from "@/lib/search/query-builder";
+import { searchProperties } from "@/app/(main)/search/actions";
 
 describe("search filters (basic)", () => {
   let mockClient: ReturnType<typeof createMockSupabaseClient>;
@@ -51,5 +52,59 @@ describe("search filters (basic)", () => {
       "detached",
       "semi_detached",
     ]);
+  });
+});
+
+describe("searchProperties (mock path) — bedrooms min/max", () => {
+  it("Any/Any returns all rows", async () => {
+    const { data } = await searchProperties({
+      bedsMin: "Any",
+      bedsMax: "Any",
+    });
+    expect(data.length).toBe(8);
+  });
+
+  it("bedsMin=3 returns rows with >= 3 beds", async () => {
+    const { data } = await searchProperties({
+      bedsMin: "3",
+      bedsMax: "Any",
+    });
+    expect(data.every((p) => p.beds >= 3)).toBe(true);
+  });
+
+  it("bedsMax=2 returns rows with <= 2 beds", async () => {
+    const { data } = await searchProperties({
+      bedsMin: "Any",
+      bedsMax: "2",
+    });
+    expect(data.every((p) => p.beds <= 2)).toBe(true);
+  });
+
+  it("bedsMin=3 bedsMax=4 returns rows in [3,4]", async () => {
+    const { data } = await searchProperties({
+      bedsMin: "3",
+      bedsMax: "4",
+    });
+    expect(data.every((p) => p.beds >= 3 && p.beds <= 4)).toBe(true);
+  });
+
+  it("bedsMax=5+ applies no upper bound", async () => {
+    const { data } = await searchProperties({
+      bedsMin: "Any",
+      bedsMax: "5+",
+    });
+    expect(data.length).toBe(8);
+  });
+});
+
+describe("searchProperties (mock path) — soldWithin", () => {
+  it("'all' returns all rows (mock has no LR data)", async () => {
+    const { data } = await searchProperties({ soldWithin: "all" });
+    expect(data.length).toBe(8);
+  });
+
+  it("'3m' returns empty (mock data has no last_sold_date)", async () => {
+    const { data } = await searchProperties({ soldWithin: "3m" });
+    expect(data.length).toBe(0);
   });
 });

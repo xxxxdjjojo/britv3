@@ -80,7 +80,9 @@ function toSearchFilters(state: SearchState): SearchFilters {
     maxPrice: state.maxPrice || undefined,
     minSqft: state.minSqft || undefined,
     maxSqft: state.maxSqft || undefined,
-    beds: state.beds !== "Any" ? state.beds : undefined,
+    bedsMin: state.bedsMin,
+    bedsMax: state.bedsMax,
+    soldWithin: state.soldWithin,
     propertyType: state.propertyType.length > 0 ? state.propertyType : undefined,
     mustHaves: state.mustHaves,
     sort: state.sort,
@@ -385,7 +387,10 @@ function SearchPageInner() {
               </span>
             </div>
           ) : showEmpty ? (
-            <EmptyState />
+            <EmptyState
+              state={{ soldWithin: committedState.soldWithin }}
+              onChange={(patch) => commit({ ...committedState, ...patch })}
+            />
           ) : (
             <div className="flex flex-col gap-6">
               {properties.map((property) => (

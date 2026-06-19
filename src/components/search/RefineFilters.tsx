@@ -8,7 +8,8 @@
 
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { SearchState } from "@/lib/search/url-state";
+import type { BedroomOption, SearchState, SoldWithin } from "@/lib/search/url-state";
+import { BEDROOM_OPTIONS } from "@/lib/search/url-state";
 
 export const PROPERTY_TYPE_OPTIONS = [
   "Detached",
@@ -18,7 +19,12 @@ export const PROPERTY_TYPE_OPTIONS = [
   "Bungalow",
 ] as const;
 
-const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"] as const;
+const SOLD_WITHIN_OPTIONS: ReadonlyArray<{ value: SoldWithin; label: string }> = [
+  { value: "3m", label: "3 months" },
+  { value: "6m", label: "6 months" },
+  { value: "12m", label: "12 months" },
+  { value: "all", label: "Show all" },
+];
 
 type RefineFiltersProps = Readonly<{
   state: SearchState;
@@ -33,6 +39,25 @@ function toggle(list: string[], value: string): string[] {
     : [...list, value];
 }
 
+const BEDS_RANK: Record<string, number> = {
+  Any: 0,
+  "1": 1,
+  "2": 2,
+  "3": 3,
+  "4": 4,
+  "5+": 5,
+};
+
+function clampBedrooms(
+  min: BedroomOption,
+  max: BedroomOption,
+): { bedsMin: BedroomOption; bedsMax: BedroomOption } {
+  if (min === "Any" || max === "Any") return { bedsMin: min, bedsMax: max };
+  return BEDS_RANK[min] > BEDS_RANK[max]
+    ? { bedsMin: min, bedsMax: min }
+    : { bedsMin: min, bedsMax: max };
+}
+
 export function RefineFilters({
   state,
   onChange,
@@ -44,6 +69,10 @@ export function RefineFilters({
       data-testid="refine-filters"
       onSubmit={(e) => {
         e.preventDefault();
+        const clamped = clampBedrooms(state.bedsMin, state.bedsMax);
+        if (clamped.bedsMax !== state.bedsMax) {
+          onChange({ bedsMax: clamped.bedsMax });
+        }
         onSubmit();
       }}
       className="space-y-8 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm lg:p-8"
@@ -106,6 +135,39 @@ export function RefineFilters({
         </div>
       </fieldset>
 
+      {/* Sold within the last few — Land Registry */}
+      <fieldset className="space-y-3">
+        <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+          Sold within the last few
+        </legend>
+        <div className="grid grid-cols-2 gap-2">
+          {SOLD_WITHIN_OPTIONS.map(({ value, label }) => {
+            const active = state.soldWithin === value;
+            return (
+              <label
+                key={value}
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold transition-colors",
+                  active
+                    ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300",
+                )}
+              >
+                <input
+                  type="radio"
+                  name="refine-sold-within"
+                  value={value}
+                  checked={active}
+                  onChange={() => onChange({ soldWithin: value })}
+                  className="size-4 accent-brand-primary"
+                />
+                <span>{label}</span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
       {/* Price Range */}
       <fieldset className="space-y-3">
         <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
@@ -160,26 +222,46 @@ export function RefineFilters({
         </div>
       </fieldset>
 
-      {/* Min Bedrooms */}
+      {/* Bedrooms — Min / Max */}
       <div className="space-y-3">
-        <label
-          htmlFor="refine-beds"
-          className="block text-[11px] font-bold uppercase tracking-widest text-neutral-500"
-        >
-          Min Bedrooms
-        </label>
-        <select
-          id="refine-beds"
-          value={state.beds}
-          onChange={(e) => onChange({ beds: e.target.value })}
-          className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
-        >
-          {BEDROOM_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt === "Any" ? "Any" : `${opt}+`}
-            </option>
-          ))}
-        </select>
+        <span className="block text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+          Bedrooms
+        </span>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <select
+            id="refine-beds-min"
+            aria-label="Min bedrooms"
+            value={state.bedsMin}
+            onChange={(e) =>
+              onChange({ bedsMin: e.target.value as BedroomOption })
+            }
+            className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          >
+            {BEDROOM_OPTIONS.map((opt) => (
+              <option key={`min-${opt}`} value={opt}>
+                {opt === "Any" ? "Min" : opt}
+              </option>
+            ))}
+          </select>
+          <span className="text-sm font-bold text-neutral-400" aria-hidden="true">
+            —
+          </span>
+          <select
+            id="refine-beds-max"
+            aria-label="Max bedrooms"
+            value={state.bedsMax}
+            onChange={(e) =>
+              onChange({ bedsMax: e.target.value as BedroomOption })
+            }
+            className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          >
+            {BEDROOM_OPTIONS.map((opt) => (
+              <option key={`max-${opt}`} value={opt}>
+                {opt === "Any" ? "Max" : opt}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* NOTE: a "Must-haves" (Garden/Parking/…) control intentionally omitted —

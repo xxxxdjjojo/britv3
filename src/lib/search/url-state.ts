@@ -12,6 +12,10 @@
 export type ListingType = "all" | "sale" | "rent" | "new_build";
 export type SortOption = "most_recent" | "price_asc" | "price_desc" | "most_popular";
 export type ViewMode = "list" | "map";
+export type SoldWithin = "3m" | "6m" | "12m" | "all";
+
+export const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"] as const;
+export type BedroomOption = (typeof BEDROOM_OPTIONS)[number];
 
 export type SearchState = {
   listingType: ListingType;
@@ -22,7 +26,9 @@ export type SearchState = {
   maxPrice: string;
   minSqft: string;
   maxSqft: string;
-  beds: string;
+  bedsMin: BedroomOption;
+  bedsMax: BedroomOption;
+  soldWithin: SoldWithin;
   sort: SortOption;
   view: ViewMode;
   page: number;
@@ -37,7 +43,9 @@ export const DEFAULT_SEARCH_STATE: SearchState = {
   maxPrice: "",
   minSqft: "",
   maxSqft: "",
-  beds: "Any",
+  bedsMin: "Any",
+  bedsMax: "Any",
+  soldWithin: "all",
   sort: "most_recent",
   view: "list",
   page: 1,
@@ -51,6 +59,10 @@ const VALID_SORTS: ReadonlySet<SortOption> = new Set([
 ]);
 
 const VALID_VIEWS: ReadonlySet<ViewMode> = new Set(["list", "map"]);
+
+const VALID_BEDS: ReadonlySet<BedroomOption> = new Set(BEDROOM_OPTIONS);
+
+const VALID_SOLD_WITHIN: ReadonlySet<SoldWithin> = new Set(["3m", "6m", "12m", "all"]);
 
 /**
  * Serialize search state into a URLSearchParams query string.
@@ -73,7 +85,11 @@ export function serializeSearchState(state: SearchState): string {
   if (state.maxPrice) params.set("maxPrice", state.maxPrice);
   if (state.minSqft) params.set("minSqft", state.minSqft);
   if (state.maxSqft) params.set("maxSqft", state.maxSqft);
-  if (state.beds !== DEFAULT_SEARCH_STATE.beds) params.set("beds", state.beds);
+  if (state.bedsMin !== DEFAULT_SEARCH_STATE.bedsMin) params.set("bedsMin", state.bedsMin);
+  if (state.bedsMax !== DEFAULT_SEARCH_STATE.bedsMax) params.set("bedsMax", state.bedsMax);
+  if (state.soldWithin !== DEFAULT_SEARCH_STATE.soldWithin) {
+    params.set("soldWithin", state.soldWithin);
+  }
   if (state.sort !== DEFAULT_SEARCH_STATE.sort) params.set("sort", state.sort);
   if (state.view !== DEFAULT_SEARCH_STATE.view) params.set("view", state.view);
   if (state.page > 1) params.set("page", String(state.page));
@@ -84,7 +100,6 @@ export function serializeSearchState(state: SearchState): string {
 /** Resolve the listing type from the raw `type` query param (handles legacy aliases). */
 function parseListingType(raw: string | null): ListingType {
   if (raw === "rent") return "rent";
-  // The public nav links use ?type=buy as an alias for sale.
   if (raw === "buy" || raw === "sale") return "sale";
   if (raw === "new_build" || raw === "new-builds") return "new_build";
   return "all";
@@ -92,6 +107,16 @@ function parseListingType(raw: string | null): ListingType {
 
 function parseList(raw: string | null): string[] {
   return raw?.split(",").map((s) => s.trim()).filter(Boolean) ?? [];
+}
+
+function parseBeds(raw: string | null, fallback: BedroomOption): BedroomOption {
+  return raw && VALID_BEDS.has(raw as BedroomOption) ? (raw as BedroomOption) : fallback;
+}
+
+function parseSoldWithin(raw: string | null): SoldWithin {
+  return raw && VALID_SOLD_WITHIN.has(raw as SoldWithin)
+    ? (raw as SoldWithin)
+    : DEFAULT_SEARCH_STATE.soldWithin;
 }
 
 /**
@@ -114,7 +139,9 @@ export function parseSearchState(params: URLSearchParams): SearchState {
     maxPrice: params.get("maxPrice") ?? "",
     minSqft: params.get("minSqft") ?? "",
     maxSqft: params.get("maxSqft") ?? "",
-    beds: params.get("beds") ?? DEFAULT_SEARCH_STATE.beds,
+    bedsMin: parseBeds(params.get("bedsMin"), DEFAULT_SEARCH_STATE.bedsMin),
+    bedsMax: parseBeds(params.get("bedsMax"), DEFAULT_SEARCH_STATE.bedsMax),
+    soldWithin: parseSoldWithin(params.get("soldWithin")),
     sort: sortRaw && VALID_SORTS.has(sortRaw) ? sortRaw : DEFAULT_SEARCH_STATE.sort,
     view: viewRaw && VALID_VIEWS.has(viewRaw) ? viewRaw : DEFAULT_SEARCH_STATE.view,
     page,

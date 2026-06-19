@@ -3,6 +3,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { isFeatureEnabled } from "@/lib/features";
+import type { SoldWithin } from "@/lib/search/url-state";
+import { computeSoldSince } from "@/lib/search/sold-within";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -25,6 +27,7 @@ export type SearchProperty = {
   lng: number;
   epc_rating: string | null;
   tenure: string | null;
+  last_sold_date: string | null;
   /** True only when the listing is genuinely verified. Never fabricated. */
   verified?: boolean;
 };
@@ -33,7 +36,9 @@ export type SearchFilters = {
   listingType?: string;
   minPrice?: string;
   maxPrice?: string;
-  beds?: string;
+  bedsMin?: string;
+  bedsMax?: string;
+  soldWithin?: SoldWithin;
   propertyType?: string[];
   mustHaves?: string[];
   minSqft?: string;
@@ -63,19 +68,33 @@ const PROPERTY_TYPE_REVERSE: Record<string, string> = Object.fromEntries(
 // ---------------------------------------------------------------------------
 
 const MOCK_PROPERTIES: SearchProperty[] = [
-  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794, epc_rating: "C", tenure: "freehold", verified: true },
-  { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale", lat: 51.5392, lng: -0.1547, epc_rating: "B", tenure: "leasehold", verified: false },
-  { id: "3", slug: "45-bermondsey-street-london-rent", image: "/images/properties/property-3.jpg", price: 1850, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat", listing_type: "rent", lat: 51.4998, lng: -0.0821, epc_rating: "D", tenure: "leasehold" },
-  { id: "4", slug: "3-highbury-park-london-sale", image: "/images/properties/property-1.jpg", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached", listing_type: "sale", lat: 51.5555, lng: -0.0984, epc_rating: "A", tenure: "freehold" },
-  { id: "5", slug: "22-canary-wharf-way-london-rent", image: "/images/properties/property-2.jpg", price: 2200, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat", listing_type: "rent", lat: 51.5054, lng: -0.0235, epc_rating: null, tenure: "leasehold" },
-  { id: "6", slug: "7-peckham-rye-lane-london-sale", image: "/images/properties/property-3.jpg", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "Terraced", listing_type: "sale", lat: 51.4691, lng: -0.0691, epc_rating: "E", tenure: "freehold" },
-  { id: "7", slug: "15-notting-hill-gate-london-commercial", image: "/images/properties/property-1.jpg", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "Detached", listing_type: "sale", lat: 51.5095, lng: -0.1963, epc_rating: "C", tenure: null },
-  { id: "8", slug: "31-borough-market-close-london-sale", image: "/images/properties/property-2.jpg", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "Flat", listing_type: "sale", lat: 51.5055, lng: -0.0910, epc_rating: "F", tenure: "leasehold" },
+  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794, epc_rating: "C", tenure: "freehold", last_sold_date: null, verified: true },
+  { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale", lat: 51.5392, lng: -0.1547, epc_rating: "B", tenure: "leasehold", last_sold_date: null, verified: false },
+  { id: "3", slug: "45-bermondsey-street-london-rent", image: "/images/properties/property-3.jpg", price: 1850, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat", listing_type: "rent", lat: 51.4998, lng: -0.0821, epc_rating: "D", tenure: "leasehold", last_sold_date: null },
+  { id: "4", slug: "3-highbury-park-london-sale", image: "/images/properties/property-1.jpg", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached", listing_type: "sale", lat: 51.5555, lng: -0.0984, epc_rating: "A", tenure: "freehold", last_sold_date: null },
+  { id: "5", slug: "22-canary-wharf-way-london-rent", image: "/images/properties/property-2.jpg", price: 2200, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat", listing_type: "rent", lat: 51.5054, lng: -0.0235, epc_rating: null, tenure: "leasehold", last_sold_date: null },
+  { id: "6", slug: "7-peckham-rye-lane-london-sale", image: "/images/properties/property-3.jpg", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "Terraced", listing_type: "sale", lat: 51.4691, lng: -0.0691, epc_rating: "E", tenure: "freehold", last_sold_date: null },
+  { id: "7", slug: "15-notting-hill-gate-london-commercial", image: "/images/properties/property-1.jpg", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "Detached", listing_type: "sale", lat: 51.5095, lng: -0.1963, epc_rating: "C", tenure: null, last_sold_date: null },
+  { id: "8", slug: "31-borough-market-close-london-sale", image: "/images/properties/property-2.jpg", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "Flat", listing_type: "sale", lat: 51.5055, lng: -0.0910, epc_rating: "F", tenure: "leasehold", last_sold_date: null },
 ];
 
 // ---------------------------------------------------------------------------
 // Client-side filter for mock data (mirrors the Supabase query logic)
 // ---------------------------------------------------------------------------
+
+function rankBedsMin(value: string | undefined): number | null {
+  if (!value || value === "Any") return null;
+  if (value === "5+") return 5;
+  const n = Number(value);
+  return Number.isInteger(n) ? n : null;
+}
+
+function rankBeds(value: string | undefined): number | null {
+  if (!value || value === "Any") return null;
+  if (value === "5+") return null; // sentinel: no upper bound
+  const n = Number(value);
+  return Number.isInteger(n) ? n : null;
+}
 
 function filterMockProperties(filters: SearchFilters): SearchProperty[] {
   let results = [...MOCK_PROPERTIES];
@@ -105,11 +124,23 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
     if (!isNaN(max)) results = results.filter((p) => p.price <= max);
   }
 
-  // Bedrooms
-  if (filters.beds && filters.beds !== "Any") {
-    const minBeds = filters.beds === "5+" ? 5 : Number(filters.beds);
-    if (!isNaN(minBeds)) {
-      results = results.filter((p) => p.beds >= minBeds);
+  // Bedrooms — min/max range
+  const minBedsRank = rankBedsMin(filters.bedsMin);
+  const maxBedsRank = rankBeds(filters.bedsMax);
+  if (minBedsRank !== null) {
+    results = results.filter((p) => p.beds >= minBedsRank);
+  }
+  if (maxBedsRank !== null) {
+    results = results.filter((p) => p.beds <= maxBedsRank);
+  }
+
+  // Sold within last N months — runs against last_sold_date.
+  if (filters.soldWithin && filters.soldWithin !== "all") {
+    const floor = computeSoldSince(filters.soldWithin);
+    if (floor) {
+      results = results.filter(
+        (p) => p.last_sold_date !== null && p.last_sold_date >= floor,
+      );
     }
   }
 
@@ -161,7 +192,7 @@ export async function searchProperties(
     // Query the search_listings materialized view
     let query = supabase
       .from("search_listings")
-      .select("listing_id, property_id, listing_type, price, property_type, bedrooms, bathrooms, city, postcode, coordinates, slug, thumbnail_url, title, address_line1, square_footage, epc_rating, tenure")
+      .select("listing_id, property_id, listing_type, price, property_type, bedrooms, bathrooms, city, postcode, coordinates, slug, thumbnail_url, title, address_line1, square_footage, epc_rating, tenure, last_sold_date")
       .limit(50);
 
     // Listing type filter
@@ -185,10 +216,16 @@ export async function searchProperties(
       if (!isNaN(max)) query = query.lte("price", max);
     }
 
-    // Bedrooms
-    if (filters.beds && filters.beds !== "Any") {
-      const minBeds = filters.beds === "5+" ? 5 : Number(filters.beds);
-      if (!isNaN(minBeds)) query = query.gte("bedrooms", minBeds);
+    // Bedrooms — min/max range
+    const minBeds = rankBedsMin(filters.bedsMin);
+    const maxBeds = rankBeds(filters.bedsMax);
+    if (minBeds !== null) query = query.gte("bedrooms", minBeds);
+    if (maxBeds !== null) query = query.lte("bedrooms", maxBeds);
+
+    // Sold within last N months
+    if (filters.soldWithin && filters.soldWithin !== "all") {
+      const floor = computeSoldSince(filters.soldWithin);
+      if (floor) query = query.gte("last_sold_date", floor);
     }
 
     // Living area (sqft)
@@ -265,6 +302,7 @@ export async function searchProperties(
         lng,
         epc_rating: row.epc_rating ?? null,
         tenure: row.tenure ?? null,
+        last_sold_date: row.last_sold_date ?? null,
       };
     });
 

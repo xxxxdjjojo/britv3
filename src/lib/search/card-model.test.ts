@@ -19,6 +19,7 @@ const BASE: SearchProperty = {
   lng: -1.5,
   epc_rating: "B",
   tenure: "freehold",
+  last_sold_date: null,
 };
 
 describe("toCardModel — honest fallbacks", () => {
