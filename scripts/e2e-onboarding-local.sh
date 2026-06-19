@@ -47,6 +47,14 @@ echo "==> [2/4] Exporting local env (overrides .env.local so Next.js hits local,
 # Grab the local API URL / keys from the running stack.
 eval "$(supabase status -o env 2>/dev/null | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=')"
 
+# Fail loudly if supabase start didn't actually bring the stack up.
+# Under `set -u` an unset var would abort with a cryptic "unbound variable" error;
+# this gives a clear, actionable message instead.
+if [ -z "${API_URL:-}" ] || [ -z "${SERVICE_ROLE_KEY:-}" ]; then
+  echo "[e2e-onboarding-local] FATAL: Supabase local stack is not running — run 'supabase start'"
+  exit 1
+fi
+
 # These process-env vars take precedence over .env.local in Next.js builds / dev servers.
 export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
 export NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY"

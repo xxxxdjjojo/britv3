@@ -48,8 +48,11 @@ if (!SERVICE_ROLE_KEY) {
 
 // CRITICAL: refuse to run against anything other than 127.0.0.1 / localhost.
 // .env.local points at PROD (supabase.co) — never let that URL reach here.
-const isLocalTarget =
-  SUPABASE_URL.includes("127.0.0.1") || SUPABASE_URL.includes("localhost");
+// Require an explicit local host (with optional port). This rejects tunnel
+// hostnames such as "https://x.localhost.run" which contain "localhost" but
+// are NOT a local stack.
+const LOCAL_HOST_RE = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?(\/|$)/;
+const isLocalTarget = LOCAL_HOST_RE.test(SUPABASE_URL);
 if (!isLocalTarget) {
   console.error(
     "[seed-onboarding-fixture] FATAL: SUPABASE_URL does not point at a local stack.",
