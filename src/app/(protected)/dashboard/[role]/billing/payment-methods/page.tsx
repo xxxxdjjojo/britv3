@@ -195,7 +195,7 @@ export default function PaymentMethodsPage() {
       </Card>
 
       <p className="text-xs text-gray-400 dark:text-gray-600">
-        To add a new payment method, manage your subscription via the Stripe portal. Your card details are stored securely by Stripe — never on Britestate servers.
+        To add a new payment method, manage your subscription via the Stripe portal. Your card details are stored securely by Stripe — never on TrueDeed servers.
       </p>
     </div>
   );

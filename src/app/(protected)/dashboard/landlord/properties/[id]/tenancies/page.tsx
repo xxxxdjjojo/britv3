@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TenancyStatus } from "@/types/landlord";
 
 export const metadata = {
-  title: "Tenancies | Britestate",
+  title: "Tenancies | TrueDeed",
 };
 
 export default async function TenanciesPage(

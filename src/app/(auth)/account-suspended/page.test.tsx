@@ -27,6 +27,6 @@ describe("AccountSuspendedPage", () => {
     render(<AccountSuspendedPage />);
     const link = await screen.findByRole("link", { name: /Contact Support/i });
     expect(link).toBeDefined();
-    expect((link as HTMLAnchorElement).href).toContain("mailto:support@britestate.co.uk");
+    expect((link as HTMLAnchorElement).href).toContain("mailto:support@truedeed.co.uk");
   });
 });

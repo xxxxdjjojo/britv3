@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Careers | Britestate",
+  title: "Careers | TrueDeed",
   description:
-    "Join the team building the future of UK property. Explore open roles at Britestate.",
+    "Join the team building the future of UK property. Explore open roles at TrueDeed.",
 };
 
 const openRoles = [
@@ -49,7 +49,7 @@ const values = [
   {
     title: "Own the outcome",
     description:
-      "Everyone at Britestate has the autonomy to make decisions and the accountability to deliver results.",
+      "Everyone at TrueDeed has the autonomy to make decisions and the accountability to deliver results.",
   },
 ];
 
@@ -59,7 +59,7 @@ export default function CareersPage() {
       {/* Hero */}
       <div className="text-center">
         <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
-          Join Britestate
+          Join TrueDeed
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
           We are on a mission to make the UK property market transparent, fair,

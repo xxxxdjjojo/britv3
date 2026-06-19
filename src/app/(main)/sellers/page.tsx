@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Sell with Britestate — One-Off Pricing, Lower Commission",
+  title: "Sell with TrueDeed — One-Off Pricing, Lower Commission",
   description:
     "List your home for a one-off £99 / £249 / £449, with completion fees as low as 0.25%. No 1.4% high-street estate-agent cuts.",
 };

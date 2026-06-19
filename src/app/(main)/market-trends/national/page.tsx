@@ -9,15 +9,15 @@ import { InternalLinkCard } from "@/components/areas/InternalLinkCard";
 import { HistoricalPriceChartClient } from "@/components/charts/HistoricalPriceChartClient";
 
 export const metadata: Metadata = {
-  title: "UK House Prices & National Market Trends 2026 | Britestate",
+  title: "UK House Prices & National Market Trends 2026 | TrueDeed",
   description:
     "Explore UK national property market data: average house prices, regional comparisons, first-time buyer stats and historical price trends from 1995 to 2026.",
   openGraph: {
-    title: "UK House Prices & National Market Trends 2026 | Britestate",
+    title: "UK House Prices & National Market Trends 2026 | TrueDeed",
     description:
       "Live UK property market data: average prices, transactions, affordability ratios and 30-year historical trends.",
-    url: "https://britestate.co.uk/market-trends/national",
-    siteName: "Britestate",
+    url: "https://truedeed.co.uk/market-trends/national",
+    siteName: "TrueDeed",
     type: "website",
   },
 };

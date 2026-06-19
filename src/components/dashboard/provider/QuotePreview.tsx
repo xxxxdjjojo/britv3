@@ -52,7 +52,7 @@ export function QuotePreview({
       {/* Branded top bar */}
       <div className="rounded-t-xl bg-brand-primary-dark px-6 py-4">
         <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-gold">
-          Britestate
+          TrueDeed
         </p>
         <h2 className="font-heading text-xl font-bold text-white">Quote</h2>
         {quoteRef && (

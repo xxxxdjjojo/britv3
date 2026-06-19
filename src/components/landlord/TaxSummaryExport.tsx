@@ -220,7 +220,7 @@ function TaxSummaryDocument(
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Britestate — Property Tax Summary
+            TrueDeed — Property Tax Summary
           </Text>
           <Text style={styles.footerText}>
             For self-assessment purposes only

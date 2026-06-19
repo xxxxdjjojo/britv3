@@ -7,7 +7,7 @@ import {
 import { IntroductionsClient } from "@/components/dashboard/agent/introductions/IntroductionsClient";
 
 export const metadata = {
-  title: "Introductions | Agent | Britestate",
+  title: "Introductions | Agent | TrueDeed",
 };
 
 export default async function AgentIntroductionsPage() {

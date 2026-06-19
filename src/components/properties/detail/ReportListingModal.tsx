@@ -97,7 +97,7 @@ export function ReportListingModal({ propertyId, isOpen, onClose }: Props) {
         <DialogHeader>
           <DialogTitle>Report this listing</DialogTitle>
           <DialogDescription>
-            Help us keep Britestate accurate and trustworthy.
+            Help us keep TrueDeed accurate and trustworthy.
           </DialogDescription>
         </DialogHeader>
 

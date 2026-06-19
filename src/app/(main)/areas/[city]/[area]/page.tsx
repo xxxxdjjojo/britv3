@@ -51,14 +51,14 @@ export async function generateMetadata({ params }: AreaPageProps): Promise<Metad
   const { city, area: areaSlug } = await params;
   const area = await getNeighbourhoodData(city, areaSlug);
   if (!area) {
-    return { title: "Area Not Found | Britestate" };
+    return { title: "Area Not Found | TrueDeed" };
   }
   return {
-    title: `${area.name}, ${area.cityName} Property Guide — Average Prices & Local Info | Britestate`,
+    title: `${area.name}, ${area.cityName} Property Guide — Average Prices & Local Info | TrueDeed`,
     description: `Discover ${area.name}: property prices, schools, transport and lifestyle in ${area.cityName}.`,
     alternates: { canonical: `/areas/${area.citySlug}/${area.slug}` },
     openGraph: {
-      title: `${area.name}, ${area.cityName} Property Guide | Britestate`,
+      title: `${area.name}, ${area.cityName} Property Guide | TrueDeed`,
       description: area.description,
       url: `/areas/${area.citySlug}/${area.slug}`,
       type: "website",
@@ -375,7 +375,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
                     <h3 className="font-bold text-neutral-900 mb-4">New Listings vs Sold Volume</h3>
                     <ListingVolumeClient />
-                    <DataAttribution source="Britestate Market Intelligence" />
+                    <DataAttribution source="TrueDeed Market Intelligence" />
                   </div>
                 </div>
 

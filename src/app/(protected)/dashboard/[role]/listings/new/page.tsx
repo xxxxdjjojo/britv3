@@ -6,7 +6,7 @@ import { ListingForm } from "@/components/listings/ListingForm";
 const ALLOWED_ROLES: UserRole[] = ["agent", "seller"];
 
 export const metadata = {
-  title: "Create New Listing - Britestate",
+  title: "Create New Listing - TrueDeed",
   description: "Create a new property listing",
 };
 
@@ -35,7 +35,7 @@ export default async function NewListingPage(
           Create New Listing
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Fill in the details to list a property on Britestate.
+          Fill in the details to list a property on TrueDeed.
         </p>
       </div>
 

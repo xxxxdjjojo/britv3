@@ -90,7 +90,7 @@ export async function generateMetadata({
 
   if (!detail) {
     return {
-      title: "Property not found | Britestate",
+      title: "Property not found | TrueDeed",
     };
   }
 
@@ -100,13 +100,13 @@ export async function generateMetadata({
   const cityLabel = property.city;
 
   return {
-    title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
+    title: `${bedsLabel} ${typeLabel} in ${cityLabel} | TrueDeed`,
     description: (property.description ?? "").slice(0, 160),
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/properties/${slug}`,
+      canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://truedeed.co.uk"}/properties/${slug}`,
     },
     openGraph: {
-      title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
+      title: `${bedsLabel} ${typeLabel} in ${cityLabel} | TrueDeed`,
       description: (property.description ?? "").slice(0, 160),
       images: detail.media
         .filter((m) => m.mediaType === "image")
@@ -243,7 +243,7 @@ export default async function PropertyPage({
   // Canonical property URL for Share modal
   const propertyUrl =
     typeof process !== "undefined"
-      ? `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/properties/${listing.slug ?? listing.id}`
+      ? `${process.env.NEXT_PUBLIC_APP_URL ?? "https://truedeed.co.uk"}/properties/${listing.slug ?? listing.id}`
       : `/properties/${listing.slug ?? listing.id}`;
 
   // Property title for share / metadata

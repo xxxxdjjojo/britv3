@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About | Britestate",
+  title: "About | TrueDeed",
   description:
-    "Learn about Britestate -- the UK property portal that brings together search, services, and transactions in one platform.",
+    "Learn about TrueDeed -- the UK property portal that brings together search, services, and transactions in one platform.",
 };
 
 export default function AboutPage() {
@@ -12,7 +12,7 @@ export default function AboutPage() {
       {/* Page Header */}
       <div className="text-center">
         <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
-          About Britestate
+          About TrueDeed
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
           We are building the future of UK property transactions -- transparent,
@@ -26,7 +26,7 @@ export default function AboutPage() {
           Our Mission
         </h2>
         <p className="mt-4 text-base leading-relaxed text-neutral-600">
-          Britestate exists to make the UK property market fair and transparent
+          TrueDeed exists to make the UK property market fair and transparent
           for everyone. Whether you are buying your first home, renting a flat,
           managing a portfolio, or providing property services, our platform
           connects you with the tools, people, and information you need.
@@ -88,7 +88,7 @@ export default function AboutPage() {
           Our Team
         </h2>
         <p className="mt-4 text-base leading-relaxed text-neutral-600">
-          Britestate is built by a team of property industry veterans,
+          TrueDeed is built by a team of property industry veterans,
           technologists, and designers who share a passion for improving the UK
           property experience. More details coming soon.
         </p>

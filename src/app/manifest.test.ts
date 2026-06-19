@@ -1,11 +1,12 @@
 import { describe, it, expect } from "vitest";
+import { brandConfig } from "@/config/brand";
 import manifest from "./manifest";
 
 describe("manifest", () => {
-  it("returns correct name and short_name", () => {
+  it("returns TrueDeed app names from the brand config", () => {
     const result = manifest();
-    expect(result.name).toBe("Britestate - UK Property Portal");
-    expect(result.short_name).toBe("Britestate");
+    expect(result.name).toBe(`${brandConfig.displayName} - UK Property Portal`);
+    expect(result.short_name).toBe(brandConfig.shortName);
   });
 
   it("returns start_url as /", () => {
@@ -24,24 +25,24 @@ describe("manifest", () => {
     expect(result.background_color).toBe("#ffffff");
   });
 
-  it("returns 3 icons with correct sizes and purposes", () => {
+  it("returns 3 brand icons with correct sizes and purposes", () => {
     const result = manifest();
     expect(result.icons).toHaveLength(3);
     expect(result.icons).toEqual([
       {
-        src: "/icons/icon-192.png",
+        src: brandConfig.assets.icon192,
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icons/icon-512.png",
+        src: brandConfig.assets.icon512,
         sizes: "512x512",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icons/icon-maskable.png",
+        src: brandConfig.assets.iconMaskable,
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
@@ -51,6 +52,6 @@ describe("manifest", () => {
 
   it("includes a description", () => {
     const result = manifest();
-    expect(result.description).toBeTruthy();
+    expect(result.description).toContain(brandConfig.displayName);
   });
 });

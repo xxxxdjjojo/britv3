@@ -28,15 +28,15 @@ import { DataAttribution } from "@/components/areas/DataAttribution";
 import { InternalLinkCard } from "@/components/areas/InternalLinkCard";
 
 export const metadata: Metadata = {
-  title: "UK Property Market Trends | Britestate",
+  title: "UK Property Market Trends | TrueDeed",
   description:
     "Live UK property market data, regional price trends, and expert analysis. Track house prices, transaction volumes, and market indicators.",
   openGraph: {
-    title: "UK Property Market Trends | Britestate",
+    title: "UK Property Market Trends | TrueDeed",
     description:
       "Live UK property market data, regional price trends, and expert analysis. Track house prices, transaction volumes, and market indicators.",
-    url: "https://britestate.co.uk/market-trends",
-    siteName: "Britestate",
+    url: "https://truedeed.co.uk/market-trends",
+    siteName: "TrueDeed",
     type: "website",
   },
 };
@@ -649,7 +649,7 @@ export default async function MarketTrendsPage() {
                   </div>
                   <div>
                     <div className="text-sm font-bold text-neutral-900">Dr. Marcus Thorne</div>
-                    <div className="text-xs text-neutral-500">Chief Economist, Britestate</div>
+                    <div className="text-xs text-neutral-500">Chief Economist, TrueDeed</div>
                   </div>
                 </div>
               </div>

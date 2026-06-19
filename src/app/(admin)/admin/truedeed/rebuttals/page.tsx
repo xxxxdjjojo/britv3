@@ -4,7 +4,7 @@ import { getPendingRebuttals } from "@/lib/truedeed/queries";
 import type { PendingRebuttal } from "@/types/truedeed";
 
 export const metadata = {
-  title: "Truedeed Rebuttals - Admin - Britestate",
+  title: "Truedeed Rebuttals - Admin - TrueDeed",
 };
 
 // Live moderation state — never serve a cached render (the page reads no

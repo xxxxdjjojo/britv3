@@ -5,7 +5,7 @@ import { BranchManager } from "@/components/dashboard/agent/team/BranchManager";
 import type { AgentBranch, AgentTeamMember } from "@/types/agent";
 
 export const metadata = {
-  title: "Branch Management | Agent | Britestate",
+  title: "Branch Management | Agent | TrueDeed",
 };
 
 export default async function BranchesPage() {

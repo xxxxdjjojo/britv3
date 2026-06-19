@@ -4,7 +4,7 @@ import { Home, TrendingUp, ShieldCheck, Clock } from "lucide-react";
 import { TrackedLink } from "@/components/valuation/TrackedLink";
 
 export const metadata: Metadata = {
-  title: "Free Property Valuation | Britestate",
+  title: "Free Property Valuation | TrueDeed",
   description:
     "Get an instant, AI-powered property valuation for any UK address. Accurate estimates based on recent sold prices, market trends, and local data.",
 };

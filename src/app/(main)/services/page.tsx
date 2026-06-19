@@ -27,7 +27,7 @@ import TopRatedCarousel from "@/components/services/TopRatedCarousel";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Find Trusted Professionals | Britestate Services",
+  title: "Find Trusted Professionals | TrueDeed Services",
   description:
     "Browse verified tradespeople, agents, brokers and specialists. Connect with over 5,000+ professionals through our rigorous 3+3 verification process.",
 };
@@ -108,7 +108,7 @@ export default async function ServicesPage() {
                 Popular Categories
               </h2>
               <p className="mt-2 text-brand-primary/60">
-                Browse the most in-demand professionals on Britestate.
+                Browse the most in-demand professionals on TrueDeed.
               </p>
             </div>
             <Link
@@ -217,7 +217,7 @@ export default async function ServicesPage() {
                 <ShieldCheck className="h-7 w-7 text-brand-primary" />
               </div>
               <h2 className="font-heading text-3xl font-bold text-brand-primary sm:text-4xl">
-                The Britestate 3+3 Verification Standard
+                The TrueDeed 3+3 Verification Standard
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-brand-primary/60">
                 Every professional on our platform goes through a rigorous

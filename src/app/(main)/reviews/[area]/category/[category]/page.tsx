@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const categoryTitle = formatCategoryTitle(category);
 
   return {
-    title: `${categoryTitle} Reviews in ${areaCode} | Britestate`,
+    title: `${categoryTitle} Reviews in ${areaCode} | TrueDeed`,
     description: `Find top rated ${categoryTitle.toLowerCase()} in ${areaCode} with verified customer reviews and ratings.`,
   };
 }

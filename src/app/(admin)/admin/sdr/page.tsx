@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { snapshotQueue } from "@/services/acquisition/sdr-campaign-service";
 
 export const metadata: Metadata = {
-  title: "SDR Campaigns | Britestate Admin",
+  title: "SDR Campaigns | TrueDeed Admin",
 };
 
 async function requireAdmin(): Promise<void> {

@@ -25,11 +25,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const provider = await getProvider(slug);
   if (!provider) {
-    return { title: "Provider Not Found | Britestate" };
+    return { title: "Provider Not Found | TrueDeed" };
   }
   return {
-    title: `${provider.business_name} | Britestate Marketplace`,
-    description: provider.business_description ?? `View ${provider.business_name} on Britestate Marketplace`,
+    title: `${provider.business_name} | TrueDeed Marketplace`,
+    description: provider.business_description ?? `View ${provider.business_name} on TrueDeed Marketplace`,
   };
 }
 

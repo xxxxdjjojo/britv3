@@ -9,8 +9,8 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
 import { validateInviteCode, type InviteAudience } from "@/lib/invite-codes";
 
 export const metadata = {
-  title: "Sign up — Britestate",
-  description: "Create your Britestate account.",
+  title: "Sign up — TrueDeed",
+  description: "Create your TrueDeed account.",
 };
 
 interface Props {

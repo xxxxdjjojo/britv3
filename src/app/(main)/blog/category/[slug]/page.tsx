@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .join(" ");
 
   return {
-    title: `${title} | Blog | Britestate`,
-    description: `Browse ${title.toLowerCase()} articles on the Britestate blog.`,
+    title: `${title} | Blog | TrueDeed`,
+    description: `Browse ${title.toLowerCase()} articles on the TrueDeed blog.`,
   };
 }
 

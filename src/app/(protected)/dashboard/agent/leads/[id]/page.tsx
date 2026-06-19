@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import type { AgentLead, AgentLeadActivity, AgentTeamMember } from "@/types/agent";
 
 export const metadata = {
-  title: "Lead Detail | Agent | Britestate",
+  title: "Lead Detail | Agent | TrueDeed",
 };
 
 type Props = Readonly<{

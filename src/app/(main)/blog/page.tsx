@@ -4,7 +4,7 @@ import { ArrowRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Britestate Blog | Property Advice & Insights",
+  title: "TrueDeed Blog | Property Advice & Insights",
   description:
     "Expert guidance for every stage of your property journey — buying, renting, selling, and investing in UK property.",
 };
@@ -145,7 +145,7 @@ export default function BlogPage({
       {/* Hero */}
       <div className="text-center mb-12">
         <h1 className="text-4xl lg:text-5xl font-bold text-neutral-900 font-heading tracking-tight mb-4">
-          Britestate Advice &amp; Insights
+          TrueDeed Advice &amp; Insights
         </h1>
         <p className="text-lg text-neutral-600 max-w-2xl mx-auto mb-8">
           Expert guidance for every stage of your property journey.

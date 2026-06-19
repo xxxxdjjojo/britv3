@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Britestate for Property Traders — Off-Market Deal Feed",
+  title: "TrueDeed for Property Traders — Off-Market Deal Feed",
   description:
     "Flippers and traders: off-market alerts, comp tools, and 0.50% on resale. From £99/mo (Pro) to £299/mo (Elite).",
 };
@@ -23,7 +23,7 @@ export default function TradersLanding() {
         </h1>
         <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground">
           Built for flippers and property traders. Subscription unlocks the
-          off-market feed; you pay 0.50% on resale through Britestate.
+          off-market feed; you pay 0.50% on resale through TrueDeed.
         </p>
         <div className="mt-8 flex justify-center gap-3">
           <Button asChild className="bg-brand-primary hover:bg-brand-primary-light">

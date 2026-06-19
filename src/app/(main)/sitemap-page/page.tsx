@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Sitemap | Britestate",
-  description: "Browse all pages on Britestate.",
+  title: "Sitemap | TrueDeed",
+  description: "Browse all pages on TrueDeed.",
 };
 
 const sections = [
@@ -94,7 +94,7 @@ export default function SitemapPage() {
           Sitemap
         </h1>
         <p className="mt-3 text-base text-neutral-600">
-          Browse all pages on Britestate.
+          Browse all pages on TrueDeed.
         </p>
       </div>
 

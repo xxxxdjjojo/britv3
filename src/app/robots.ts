@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
-
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+import { appBaseUrl } from "@/config/brand";
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = appBaseUrl();
+
   return {
     rules: [
       {
@@ -32,6 +33,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

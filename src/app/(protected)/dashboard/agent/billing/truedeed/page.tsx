@@ -35,7 +35,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Truedeed Billing | Agent | Britestate",
+  title: "Truedeed Billing | Agent | TrueDeed",
 };
 
 const CLAUSE_9_5_WINDOW_BUSINESS_DAYS = 10;

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ReviewsDashboard } from "@/components/dashboard/agent/reviews/ReviewsDashboard";
 
 export const metadata = {
-  title: "Reviews - Britestate Agent",
+  title: "Reviews - TrueDeed Agent",
   description: "Manage your agency reviews and ratings",
 };
 

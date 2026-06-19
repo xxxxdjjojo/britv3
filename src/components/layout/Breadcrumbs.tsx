@@ -13,7 +13,7 @@ import {
 } from "@/config/navigation";
 import type { BreadcrumbEntry } from "@/config/navigation";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://truedeed.co.uk";
 
 /**
  * Capitalize the first letter of each hyphen-separated word in a path segment.

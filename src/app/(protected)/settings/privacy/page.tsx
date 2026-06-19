@@ -76,7 +76,7 @@ const PRIVACY_MODES: {
   {
     id: "members-only",
     label: "Members Only",
-    description: "Visible to registered Britestate users only. Hidden from search engines.",
+    description: "Visible to registered TrueDeed users only. Hidden from search engines.",
     icon: Users,
     visibilityValue: "registered_only",
     settings: {

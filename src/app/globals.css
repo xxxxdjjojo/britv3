@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* === Britestate Design System === */
+/* === TrueDeed Design System === */
 
 @theme inline {
   /* --- Fonts --- */
@@ -12,7 +12,7 @@
   --font-heading: var(--font-plus-jakarta-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* --- Shadcn semantic tokens (mapped to Britestate) --- */
+  /* --- Shadcn semantic tokens (mapped to TrueDeed) --- */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -49,7 +49,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* --- Britestate Brand Colors --- */
+  /* --- TrueDeed Brand Colors --- */
   --color-brand-primary: #1B4D3E;
   --color-brand-primary-light: #2D7A5F;
   --color-brand-primary-lighter: #E8F5EE;
@@ -109,7 +109,7 @@
   /* sm (640px), md (768px), lg (1024px), xl (1280px), 2xl (1536px) are Tailwind defaults */
 }
 
-/* === Root — Light Mode (Britestate branded) === */
+/* === Root — Light Mode (TrueDeed branded) === */
 :root {
   --background: #FFFFFF;
   --foreground: #0A0A0B;

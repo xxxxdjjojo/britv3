@@ -116,7 +116,7 @@ export default function OfflinePage() {
             </h1>
             <p className="mt-2 max-w-xs text-center text-neutral-600">
               {isOnline
-                ? "Redirecting you back to Britestate…"
+                ? "Redirecting you back to TrueDeed…"
                 : "Check your internet connection and try again."}
             </p>
             {!isOnline && (

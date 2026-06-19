@@ -408,7 +408,7 @@ export default function SecuritySettingsPage() {
   function handleDownload() {
     if (!backupCodes) return;
     const content = [
-      "Britestate — Backup Recovery Codes",
+      "TrueDeed — Backup Recovery Codes",
       "Keep these codes safe. Each code can only be used once.",
       "",
       ...backupCodes,

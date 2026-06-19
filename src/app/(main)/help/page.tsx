@@ -5,9 +5,9 @@ import { ChevronDown } from "lucide-react";
 import { FAQ_SECTIONS } from "@/content/help-faq";
 
 export const metadata: Metadata = {
-  title: "Help Center | Britestate",
+  title: "Help Center | TrueDeed",
   description:
-    "Find answers to common questions about Britestate -- property search, accounts, service providers, messaging, and more.",
+    "Find answers to common questions about TrueDeed -- property search, accounts, service providers, messaging, and more.",
 };
 
 export default function HelpPage() {
@@ -19,7 +19,7 @@ export default function HelpPage() {
           Help Center
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-neutral-600">
-          Answers to the most common questions about using Britestate.
+          Answers to the most common questions about using TrueDeed.
         </p>
       </div>
 

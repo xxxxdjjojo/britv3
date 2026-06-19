@@ -14,7 +14,7 @@ export default function SoldPricesSlugError({
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="bg-white border border-primary/10 rounded-2xl shadow-sm p-10 max-w-md w-full text-center">
-        <p className="text-4xl font-black text-primary font-heading mb-2">Britestate</p>
+        <p className="text-4xl font-black text-primary font-heading mb-2">TrueDeed</p>
         <h2 className="text-xl font-bold text-neutral-900 mb-2">Something went wrong loading this page</h2>
         <p className="text-sm text-neutral-500 mb-8">{error.message}</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

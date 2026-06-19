@@ -20,7 +20,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Find Service Providers | Britestate",
+  title: "Find Service Providers | TrueDeed",
   description:
     "Browse verified tradespeople, estate agents, mortgage brokers, conveyancers and surveyors across the UK.",
 };
@@ -248,7 +248,7 @@ export default async function MarketplaceLandingPage() {
         <div className="bg-gradient-to-r from-brand-primary-dark to-brand-primary rounded-2xl p-10 text-center text-white">
           <h2 className="text-3xl font-heading font-bold mb-3">Are you a professional?</h2>
           <p className="text-white/80 mb-7 max-w-xl mx-auto">
-            Join 10,000+ verified providers on Britestate and grow your
+            Join 10,000+ verified providers on TrueDeed and grow your
             business with quality leads.
           </p>
           <Link

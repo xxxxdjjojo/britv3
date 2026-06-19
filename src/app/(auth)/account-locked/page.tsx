@@ -124,10 +124,10 @@ function AccountLockedContent() {
       <p className="text-center font-body text-xs text-neutral-400">
         Contact{" "}
         <a
-          href="mailto:support@britestate.co.uk"
+          href="mailto:support@truedeed.co.uk"
           className="underline hover:text-neutral-600"
         >
-          support@britestate.co.uk
+          support@truedeed.co.uk
         </a>{" "}
         if you need immediate help.
       </p>

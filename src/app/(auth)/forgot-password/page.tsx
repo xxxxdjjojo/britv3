@@ -2,8 +2,8 @@ import Link from "next/link";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 
 export const metadata = {
-  title: "Reset Password - Britestate",
-  description: "Reset your Britestate account password",
+  title: "Reset Password - TrueDeed",
+  description: "Reset your TrueDeed account password",
 };
 
 export default function ForgotPasswordPage() {

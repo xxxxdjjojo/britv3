@@ -61,7 +61,7 @@ export default function InstallPrompt() {
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-brand-primary text-white shadow-lg">
       <div className="flex items-center justify-between px-4 py-3">
         <div>
-          <p className="text-sm font-semibold">Install Britestate</p>
+          <p className="text-sm font-semibold">Install TrueDeed</p>
           <p className="text-xs opacity-80">
             Add to your home screen for quick access
           </p>

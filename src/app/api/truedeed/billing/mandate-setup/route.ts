@@ -39,7 +39,7 @@ export async function POST(): Promise<NextResponse> {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://truedeed.co.uk";
   const billingUrl = `${appUrl}/dashboard/agent/billing/truedeed`;
 
   const result = await createMandateSetupFlow(

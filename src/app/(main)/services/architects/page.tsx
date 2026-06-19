@@ -6,9 +6,9 @@ import type { ServiceCategory } from "@/types/marketplace";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 
 export const metadata: Metadata = {
-  title: "Find an Architect Near You | Britestate",
+  title: "Find an Architect Near You | TrueDeed",
   description:
-    "Compare architects for extensions, renovations, and new builds. Find an architect near you on Britestate.",
+    "Compare architects for extensions, renovations, and new builds. Find an architect near you on TrueDeed.",
 };
 
 type PageProps = Readonly<{

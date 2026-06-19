@@ -11,7 +11,7 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps) {
   const { area } = await params;
   return {
-    title: `Service Providers in ${area.toUpperCase()} — Reviews | Britestate`,
+    title: `Service Providers in ${area.toUpperCase()} — Reviews | TrueDeed`,
     description: `Find verified and reviewed service providers in the ${area.toUpperCase()} area. Read real customer reviews and ratings.`,
   };
 }

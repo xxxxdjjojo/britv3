@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Mortgage Calculator | Britestate",
+  title: "Mortgage Calculator | TrueDeed",
   description:
     "Calculate your monthly mortgage payments, total interest, and loan-to-value ratio. Save your parameters to see personalised estimates on property listings.",
 };

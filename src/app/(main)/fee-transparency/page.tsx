@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Fee Transparency | Britestate",
+  title: "Fee Transparency | TrueDeed",
   description:
-    "Every commission rate, every segment, every tier — Hemnet-style transparency on what Britestate earns and when.",
+    "Every commission rate, every segment, every tier — Hemnet-style transparency on what TrueDeed earns and when.",
 };
 
 interface Row {
@@ -39,11 +39,11 @@ const SEGMENTS: readonly SegmentBlock[] = [
     id: "agents",
     name: "Estate Agents",
     summary:
-      "Free to list. Britestate only earns on the leads we originate — never on the rest of your pipeline.",
+      "Free to list. TrueDeed only earns on the leads we originate — never on the rest of your pipeline.",
     rows: [
       { tier: "Listed — Free", base: "£0", commission: "Revenue-share, opt-in" },
-      { tier: "Pro — £99/mo", base: "£99/mo", commission: "70/30 split on Britestate leads" },
-      { tier: "Elite — £349/mo", base: "£349/mo", commission: "85/15 split on Britestate leads" },
+      { tier: "Pro — £99/mo", base: "£99/mo", commission: "70/30 split on TrueDeed leads" },
+      { tier: "Elite — £349/mo", base: "£349/mo", commission: "85/15 split on TrueDeed leads" },
     ],
   },
   {
@@ -95,7 +95,7 @@ const SEGMENTS: readonly SegmentBlock[] = [
     id: "traders",
     name: "Traders",
     summary:
-      "Property traders pay a flat 0.50% on resale through Britestate, regardless of tier.",
+      "Property traders pay a flat 0.50% on resale through TrueDeed, regardless of tier.",
     rows: [
       { tier: "Pro — £99/mo", base: "£99/mo", commission: "0.50% on resale" },
       { tier: "Elite — £299/mo", base: "£299/mo", commission: "0.50% on resale" },
@@ -166,7 +166,7 @@ export default function FeeTransparencyPage() {
         </h2>
         <ul className="mt-4 space-y-2 text-neutral-700">
           <li>
-            <strong>vs. Rightmove enhanced:</strong> Britestate Elite agent
+            <strong>vs. Rightmove enhanced:</strong> TrueDeed Elite agent
             (£349/mo) undercuts Rightmove&apos;s enhanced tier by ~76%.
           </li>
           <li>
@@ -174,7 +174,7 @@ export default function FeeTransparencyPage() {
             tradespeople £30–£70/mo before any lead spend.
           </li>
           <li>
-            <strong>vs. Hemnet:</strong> Britestate Seller Plus matches
+            <strong>vs. Hemnet:</strong> TrueDeed Seller Plus matches
             Hemnet&apos;s upfront price while offering No-Sale-No-Fee for
             sellers who prefer to pay only on completion.
           </li>

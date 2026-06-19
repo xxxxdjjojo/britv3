@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { FinancialEntry, Tenancy } from "@/types/landlord";
 
 export const metadata = {
-  title: "Financials | Britestate",
+  title: "Financials | TrueDeed",
 };
 
 const gbpFormatter = new Intl.NumberFormat("en-GB", {

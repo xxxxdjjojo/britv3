@@ -6,7 +6,7 @@ import type { ServiceCategory } from "@/types/marketplace";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 
 export const metadata: Metadata = {
-  title: "Find a Tradesperson Near You | Britestate",
+  title: "Find a Tradesperson Near You | TrueDeed",
   description:
     "Search verified plumbers, electricians, builders, cleaners and more across the UK.",
 };

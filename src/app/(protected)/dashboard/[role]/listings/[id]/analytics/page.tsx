@@ -14,7 +14,7 @@ import { ArrowLeft } from "lucide-react";
 const ALLOWED_ROLES: UserRole[] = ["agent", "seller"];
 
 export const metadata = {
-  title: "Listing Analytics - Britestate",
+  title: "Listing Analytics - TrueDeed",
   description: "View analytics for your property listing",
 };
 

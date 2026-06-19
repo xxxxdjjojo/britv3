@@ -1,23 +1,23 @@
 /* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import type { MetadataRoute } from "next";
-
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+import { appBaseUrl } from "@/config/brand";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = appBaseUrl();
   const now = new Date();
 
   /* --- Static pages --- */
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
-    { url: `${BASE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE_URL}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE_URL}/pricing`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE_URL}/search`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { url: `${BASE_URL}/areas`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE_URL}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/help`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/careers`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${BASE_URL}/press`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${baseUrl}`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
+    { url: `${baseUrl}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/pricing`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${baseUrl}/search`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${baseUrl}/areas`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${baseUrl}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/help`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/careers`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${baseUrl}/press`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
   ];
 
   /* --- Legal pages --- */
@@ -30,9 +30,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "professional-standards",
   ];
   const legalPages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/legal`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${baseUrl}/legal`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     ...legalSlugs.map((slug) => ({
-      url: `${BASE_URL}/legal/${slug}`,
+      url: `${baseUrl}/legal/${slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.3,
@@ -41,30 +41,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   /* --- Service pages --- */
   const servicePages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/agents`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
-    { url: `${BASE_URL}/surveyors`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/conveyancers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/mortgage-brokers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/architects`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/agents`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/surveyors`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/conveyancers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/mortgage-brokers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/architects`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
   ];
 
   /* --- Tool/calculator pages --- */
   const toolPages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE_URL}/tools/mortgage-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE_URL}/tools/stamp-duty-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE_URL}/tools/buy-vs-rent`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/tools/rental-yield`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/tools/energy-bill-estimator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/tools/moving-cost-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/tools/mortgage-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/tools/stamp-duty-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/tools/buy-vs-rent`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/rental-yield`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/energy-bill-estimator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/moving-cost-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   /* --- Marketplace --- */
   const marketplacePages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/marketplace`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
-    { url: `${BASE_URL}/sold-prices`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
-    { url: `${BASE_URL}/market-trends`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/reviews`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
+    { url: `${baseUrl}/marketplace`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/sold-prices`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
+    { url: `${baseUrl}/market-trends`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/reviews`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
   /* --- Section 6: Area guide pages --- */
@@ -76,21 +76,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const areaPages: MetadataRoute.Sitemap = [];
 
   for (const city of citySlugs) {
-    areaPages.push({ url: `${BASE_URL}/areas/${city}`, lastModified: now, changeFrequency: "weekly", priority: 0.8 });
-    areaPages.push({ url: `${BASE_URL}/areas/${city}/stats`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
+    areaPages.push({ url: `${baseUrl}/areas/${city}`, lastModified: now, changeFrequency: "weekly", priority: 0.8 });
+    areaPages.push({ url: `${baseUrl}/areas/${city}/stats`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
     const neighbourhoods = getNeighbourhoodsForCity(city);
     for (const n of neighbourhoods) {
-      areaPages.push({ url: `${BASE_URL}/areas/${city}/${n.slug}`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
+      areaPages.push({ url: `${baseUrl}/areas/${city}/${n.slug}`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
     }
   }
 
   // Sold prices area pages
   for (const areaSlug of getAreaSlugsWithSoldPrices()) {
-    areaPages.push({ url: `${BASE_URL}/sold-prices/${areaSlug}`, lastModified: now, changeFrequency: "daily", priority: 0.7 });
+    areaPages.push({ url: `${baseUrl}/sold-prices/${areaSlug}`, lastModified: now, changeFrequency: "daily", priority: 0.7 });
   }
 
   // National market trends
-  areaPages.push({ url: `${BASE_URL}/market-trends/national`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
+  areaPages.push({ url: `${baseUrl}/market-trends/national`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
 
   /* --- Dynamic pages from database --- */
   let propertyPages: MetadataRoute.Sitemap = [];
@@ -106,7 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     if (properties) {
       propertyPages = properties.map((p) => ({
-        url: `${BASE_URL}/properties/${p.slug}`,
+        url: `${baseUrl}/properties/${p.slug}`,
         lastModified: new Date(p.updated_at),
         changeFrequency: "weekly" as const,
         priority: 0.8,
@@ -121,7 +121,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     if (agents) {
       agentPages = agents.map((a) => ({
-        url: `${BASE_URL}/agents/${a.slug}`,
+        url: `${baseUrl}/agents/${a.slug}`,
         lastModified: new Date(a.updated_at),
         changeFrequency: "weekly" as const,
         priority: 0.7,
@@ -135,7 +135,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Lazy require so the matrix tree-shakes out of production if disabled.
   const { buildDefaultMatrix } = await import("@/lib/seo/postcode-service-matrix");
   const programmaticPages: MetadataRoute.Sitemap = buildDefaultMatrix().map((p) => ({
-    url: `${BASE_URL}/services-near/${p.service}/${p.postcode.toLowerCase()}`,
+    url: `${baseUrl}/services-near/${p.service}/${p.postcode.toLowerCase()}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.5,
@@ -143,10 +143,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   /* --- Memo Pivot v2 — new segment landing pages --- */
   const segmentLandingPages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/sellers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/developers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/traders`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/fee-transparency`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/sellers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/developers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/traders`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/fee-transparency`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
   ];
 
   return [

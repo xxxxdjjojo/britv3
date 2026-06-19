@@ -18,7 +18,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
     title: "Account & Registration",
     items: [
       {
-        question: "How do I create a Britestate account?",
+        question: "How do I create a TrueDeed account?",
         answer:
           "Click 'Sign up' in the top right corner. You can register with your email address or sign in with Google. After registration you will be prompted to choose your role (homebuyer, renter, landlord, etc.) and complete a short onboarding flow.",
       },
@@ -98,7 +98,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
     title: "Messaging",
     items: [
       {
-        question: "How does messaging work on Britestate?",
+        question: "How does messaging work on TrueDeed?",
         answer:
           "All communication happens through our secure in-platform messaging system. You can message agents, sellers, service providers, and other parties involved in your transaction. Attachments (documents and images) are supported.",
       },
@@ -118,7 +118,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
     title: "Landlord Tools",
     items: [
       {
-        question: "What landlord features does Britestate offer?",
+        question: "What landlord features does TrueDeed offer?",
         answer:
           "The landlord dashboard includes portfolio management, tenancy tracking, rent payment records, maintenance request management, compliance reminders (EPC, gas safety, EICR, HMO), and financial summaries with export to CSV.",
       },
@@ -150,7 +150,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: "Is there a platform fee?",
         answer:
-          "Britestate charges a 2.5% platform commission on service provider transactions. Property listings for agents and individual sellers are charged a flat fee at point of listing. Full pricing details are available on our Pricing page.",
+          "TrueDeed charges a 2.5% platform commission on service provider transactions. Property listings for agents and individual sellers are charged a flat fee at point of listing. Full pricing details are available on our Pricing page.",
       },
       {
         question: "How do refunds work?",

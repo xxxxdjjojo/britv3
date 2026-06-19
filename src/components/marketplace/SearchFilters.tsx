@@ -21,7 +21,7 @@ const RATING_OPTIONS = [
 ] as const;
 
 const VERIFICATION_BADGE_OPTIONS = [
-  { label: "Britestate Verified", value: "britestate_verified" },
+  { label: "TrueDeed Verified", value: "britestate_verified" },
   { label: "Background Checked", value: "background_checked" },
   { label: "Insured", value: "insured" },
 ] as const;

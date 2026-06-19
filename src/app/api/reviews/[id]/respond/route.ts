@@ -55,7 +55,7 @@ export async function POST(
       if (reviewer?.email) {
         const providerName = (provider?.business_name ?? provider?.first_name ?? "the provider") as string;
         const responsePreview = body.response.slice(0, 100);
-        const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/reviews/${reviewId}`;
+        const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://truedeed.co.uk"}/reviews/${reviewId}`;
 
         void sendReviewResponse({
           userId: reviewerId,

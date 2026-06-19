@@ -20,7 +20,7 @@ import { DashboardAnalytics } from "@/components/landlord/DashboardAnalytics";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
-  title: "Dashboard | Landlord | Britestate",
+  title: "Dashboard | Landlord | TrueDeed",
 };
 
 async function DashboardContent() {

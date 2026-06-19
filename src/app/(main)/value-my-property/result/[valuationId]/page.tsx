@@ -6,7 +6,7 @@ import { ResultView } from "@/components/valuation/ResultView";
 import { TrackOnMount } from "@/components/valuation/TrackOnMount";
 
 export const metadata: Metadata = {
-  title: "Your property estimate | Britestate",
+  title: "Your property estimate | TrueDeed",
   robots: { index: false },
 };
 
