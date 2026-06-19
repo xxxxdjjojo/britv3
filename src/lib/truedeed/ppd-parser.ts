@@ -68,7 +68,7 @@ const emptyToNull = (value: string): string | null =>
  * (commas inside quotes do not split; `""` is an escaped quote).
  * Returns null when quoting is unterminated.
  */
-const splitCsvFields = (line: string): string[] | null => {
+export const splitCsvFields = (line: string): string[] | null => {
   const fields: string[] = [];
   let current = "";
   let inQuotes = false;
