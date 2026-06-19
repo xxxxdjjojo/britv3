@@ -27,7 +27,7 @@ const SCHEMA_STUB = `
 create table public.agent_feed_integrations (
   id uuid primary key default gen_random_uuid(),
   agent_id uuid references auth.users(id),
-  provider text check (provider in ('reapit', 'alto', 'jupix'))
+  provider text not null check (provider in ('reapit', 'alto', 'jupix'))
 );
 `;
 
@@ -91,6 +91,6 @@ describe("feed-provider-check: widened CHECK constraint", () => {
         `insert into public.agent_feed_integrations (agent_id, provider)
          values ('${AGENT_1}', 'not_a_provider');`,
       ),
-    ).toThrow();
+    ).toThrow(/violates check constraint/);
   });
 });
