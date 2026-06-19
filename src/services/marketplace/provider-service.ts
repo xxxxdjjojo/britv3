@@ -27,7 +27,7 @@ function slugify(text: string): string {
     .replace(/^-|-$/g, "");
 }
 
-async function generateUniqueSlug(
+export async function generateUniqueSlug(
   supabase: SupabaseClient,
   businessName: string
 ): Promise<string> {
