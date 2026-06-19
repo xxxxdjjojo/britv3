@@ -237,7 +237,28 @@ export async function searchProviders(
     throw new Error(`Provider search failed: ${error.message}`);
   }
 
-  const results = (data ?? []) as ServiceProviderDetails[];
+  // The search_providers RPC returns FLAT rows (avatar_url, average_rating,
+  // review_count, ...), but the card consumer reads the nested
+  // ServiceProviderPublicProfile JOIN shape (profiles.*, provider_rating_stats.*).
+  // Adapt here — additively, so flat consumers (/api/providers/search ->
+  // MarketplaceSearch) keep working — otherwise `provider.profiles` is
+  // undefined and ProviderSearchCard 500s the whole page. Verification status
+  // isn't returned by the RPC, so leave it unset rather than assert a trust
+  // badge we can't prove (TODO: return it from search_providers to restore it).
+  const rows = (data ?? []) as Array<Record<string, unknown>>;
+  const results = rows.map((row) => ({
+    ...row,
+    id: row.provider_id ?? row.id,
+    years_experience: row.years_in_business ?? null,
+    profiles: {
+      avatar_url: (row.avatar_url as string | null) ?? null,
+      provider_verification_status: null,
+    },
+    provider_rating_stats: {
+      average_rating: (row.average_rating as number | null) ?? 0,
+      total_reviews: (row.review_count as number | null) ?? 0,
+    },
+  })) as unknown as ServiceProviderDetails[];
 
   return {
     data: results,
