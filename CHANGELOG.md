@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0.2] - 2026-06-19 — Auth rate limiter fails closed in production
+
+`createAuthRateLimiter` now honours its documented "fails CLOSED" contract
+(#56). Previously, when Redis was unavailable it silently degraded to a
+per-instance in-memory limiter — weak brute-force protection on serverless —
+and a Redis error at request time threw, surfacing as a 500.
+
+- **Production, Redis unconfigured** → denies (`success: false`) and logs loudly,
+  instead of the in-memory bypass.
+- **Redis errors at request time** → the limiter wrapper catches and denies,
+  instead of throwing a 500.
+- **Non-production (local dev, CI)** → still uses the in-memory limiter so auth
+  endpoints work without Redis configured (CI sets no Upstash env).
+
+Also relocated the misplaced doc-comment and added module-isolated tests for all
+three behaviours. No call-site changes — every consumer already checks `success`.
+
 ## [0.3.0.1] - 2026-06-19 — Test type-check gate
 
 Added a CI type-check gate (`pnpm typecheck` → `tsc --noEmit`) to the `app`
