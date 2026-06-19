@@ -19,7 +19,8 @@ describe("serializeSearchState", () => {
     const qs = serializeSearchState({
       ...DEFAULT_SEARCH_STATE,
       q: "",
-      beds: "Any",
+      bedsMin: "Any",
+      bedsMax: "Any",
       sort: "most_recent",
       view: "list",
       page: 1,
@@ -57,7 +58,8 @@ describe("serializeSearchState", () => {
       maxPrice: "500000",
       minSqft: "800",
       maxSqft: "2000",
-      beds: "3",
+      bedsMin: "3",
+      bedsMax: "4",
       sort: "price_asc",
       view: "map",
     });
@@ -66,7 +68,8 @@ describe("serializeSearchState", () => {
     expect(params.get("maxPrice")).toBe("500000");
     expect(params.get("minSqft")).toBe("800");
     expect(params.get("maxSqft")).toBe("2000");
-    expect(params.get("beds")).toBe("3");
+    expect(params.get("bedsMin")).toBe("3");
+    expect(params.get("bedsMax")).toBe("4");
     expect(params.get("sort")).toBe("price_asc");
     expect(params.get("view")).toBe("map");
   });
@@ -147,7 +150,9 @@ describe("round-trip", () => {
       maxPrice: "3000",
       minSqft: "500",
       maxSqft: "1500",
-      beds: "2",
+      bedsMin: "2",
+      bedsMax: "3",
+      soldWithin: "6m",
       sort: "price_desc",
       view: "map",
       page: 2,

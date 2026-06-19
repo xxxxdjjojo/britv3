@@ -80,7 +80,7 @@ function toSearchFilters(state: SearchState): SearchFilters {
     maxPrice: state.maxPrice || undefined,
     minSqft: state.minSqft || undefined,
     maxSqft: state.maxSqft || undefined,
-    beds: state.beds !== "Any" ? state.beds : undefined,
+    beds: state.bedsMin !== "Any" ? state.bedsMin : undefined,
     propertyType: state.propertyType.length > 0 ? state.propertyType : undefined,
     mustHaves: state.mustHaves,
     sort: state.sort,
