@@ -73,8 +73,10 @@ async function requireAgentUser(): Promise<AgentApiGuardResult> {
 }
 
 function redactFeedIntegration<T>(integration: T): Omit<T, "api_key_encrypted"> {
-  const { api_key_encrypted: _apiKeyEncrypted, ...safeIntegration } =
-    integration as T & { api_key_encrypted?: unknown };
+  const safeIntegration = {
+    ...(integration as T & { api_key_encrypted?: unknown }),
+  };
+  delete safeIntegration.api_key_encrypted;
 
   return safeIntegration;
 }

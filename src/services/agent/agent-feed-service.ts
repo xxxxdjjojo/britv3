@@ -62,7 +62,9 @@ export async function getFeedIntegrations(
     throw new Error(`Failed to get feed integrations: ${error.message}`);
   }
 
-  return ((data ?? []) as AgentFeedIntegrationRow[]).map(toFeedIntegrationView);
+  return ((data ?? []) as unknown as AgentFeedIntegrationRow[]).map(
+    toFeedIntegrationView,
+  );
 }
 
 /**
@@ -95,7 +97,7 @@ export async function createFeedIntegration(
     throw new Error(`Failed to create feed integration: ${error.message}`);
   }
 
-  return toFeedIntegrationView(data as AgentFeedIntegrationRow);
+  return toFeedIntegrationView(data as unknown as AgentFeedIntegrationRow);
 }
 
 /**
@@ -132,7 +134,36 @@ export async function updateFeedIntegration(
     throw new Error(`Failed to update feed integration: ${error.message}`);
   }
 
-  return toFeedIntegrationView(data as AgentFeedIntegrationRow);
+  return toFeedIntegrationView(data as unknown as AgentFeedIntegrationRow);
+}
+
+export async function setFeedIntegrationSyncStatus(
+  supabase: SupabaseClient,
+  integrationId: string,
+  agentId: string,
+  input: {
+    sync_status: "connected" | "syncing" | "error";
+    last_sync_at?: string | null;
+    error_log?: Record<string, unknown>[] | null;
+  },
+): Promise<AgentFeedIntegrationView> {
+  const { data, error } = await supabase
+    .from("agent_feed_integrations")
+    .update({
+      sync_status: input.sync_status,
+      last_sync_at: input.last_sync_at ?? new Date().toISOString(),
+      error_log: input.error_log ?? null,
+    })
+    .eq("id", integrationId)
+    .eq("agent_id", agentId)
+    .select(FEED_INTEGRATION_PUBLIC_COLUMNS)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update feed sync status: ${error.message}`);
+  }
+
+  return toFeedIntegrationView(data as unknown as AgentFeedIntegrationRow);
 }
 
 /**

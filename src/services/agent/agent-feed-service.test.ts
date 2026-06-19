@@ -81,7 +81,10 @@ describe("agent-feed-service", () => {
       provider: "reapit",
       api_key: "secret-api-key",
     });
-    const inserted = chain.insert.mock.calls[0][0] as {
+    const insertCalls = (chain.insert as unknown as {
+      mock: { calls: unknown[][] };
+    }).mock.calls;
+    const inserted = insertCalls[0]?.[0] as {
       api_key_encrypted: string;
     };
 
@@ -116,7 +119,10 @@ describe("agent-feed-service", () => {
       field_mapping: { price: "price" },
       sync_status: "syncing",
     } as never);
-    const updated = chain.update.mock.calls[0][0] as Record<string, unknown>;
+    const updateCalls = (chain.update as unknown as {
+      mock: { calls: unknown[][] };
+    }).mock.calls;
+    const updated = updateCalls[0]?.[0] as Record<string, unknown>;
 
     expect(updated).toEqual({ field_mapping: { price: "price" } });
   });

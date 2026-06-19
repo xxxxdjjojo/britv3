@@ -71,10 +71,44 @@ type ErrorLogEntry = {
   [key: string]: unknown;
 };
 
+type FeedImportReviewItem = {
+  id: string;
+  external_id: string;
+  external_branch_id: string | null;
+  status: string;
+  validation_errors: string[];
+  listing: {
+    title: string;
+    address_line1: string;
+    city: string;
+    postcode: string;
+    price: number;
+    listing_type: string;
+    planning_permission_status: string | null;
+  };
+};
+
+type FeedImportReview = {
+  run: {
+    id: string;
+    status: string;
+    total_items: number;
+    eligible_items: number;
+    error_items: number;
+    published_items: number;
+  };
+  items: FeedImportReviewItem[];
+};
+
 export function FeedIntegrationConfig({ initialIntegrations }: Props) {
   const [integrations, setIntegrations] = useState<AgentFeedIntegrationView[]>(initialIntegrations);
   const [dialogState, setDialogState] = useState<AddDialogState>({ open: false });
   const [errorLogState, setErrorLogState] = useState<ErrorLogState>({ open: false });
+  const [review, setReview] = useState<FeedImportReview | null>(null);
+  const [flowError, setFlowError] = useState<string | null>(null);
+  const [approving, setApproving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishedCount, setPublishedCount] = useState(0);
 
   // Form state
   const [formProvider, setFormProvider] = useState<FeedProvider>("reapit");
@@ -207,19 +241,82 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
 
   async function handleSyncNow(integrationId: string) {
     setSyncingId(integrationId);
+    setFlowError(null);
+    setPublishedCount(0);
     try {
       const res = await fetch(
         `/api/agent/feeds/${encodeURIComponent(integrationId)}/sync`,
         { method: "POST" },
       );
       if (res.ok) {
-        const updated = (await res.json()) as AgentFeedIntegrationView;
+        const payload = (await res.json()) as {
+          integration: AgentFeedIntegrationView;
+          review: FeedImportReview;
+        };
         setIntegrations((prev) =>
-          prev.map((i) => (i.id === integrationId ? updated : i)),
+          prev.map((i) => (i.id === integrationId ? payload.integration : i)),
         );
+        setReview(payload.review);
+      } else {
+        const json = (await res.json()) as { error?: string };
+        setFlowError(json.error ?? "Failed to sync feed.");
       }
+    } catch {
+      setFlowError("Network error while syncing feed.");
     } finally {
       setSyncingId(null);
+    }
+  }
+
+  async function handleApproveReview() {
+    if (!review) return;
+
+    setApproving(true);
+    setFlowError(null);
+    try {
+      const res = await fetch(`/api/agent/feed-imports/${review.run.id}/approve`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const json = (await res.json()) as { error?: string };
+        setFlowError(json.error ?? "Failed to approve feed items.");
+        return;
+      }
+
+      const payload = (await res.json()) as { review: FeedImportReview };
+      setReview(payload.review);
+    } catch {
+      setFlowError("Network error while approving feed items.");
+    } finally {
+      setApproving(false);
+    }
+  }
+
+  async function handlePublishReview() {
+    if (!review) return;
+
+    setPublishing(true);
+    setFlowError(null);
+    try {
+      const res = await fetch(`/api/agent/feed-imports/${review.run.id}/publish`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const json = (await res.json()) as { error?: string };
+        setFlowError(json.error ?? "Failed to publish feed items.");
+        return;
+      }
+
+      const payload = (await res.json()) as {
+        published_count: number;
+        review: FeedImportReview;
+      };
+      setPublishedCount(payload.published_count);
+      setReview(payload.review);
+    } catch {
+      setFlowError("Network error while publishing feed items.");
+    } finally {
+      setPublishing(false);
     }
   }
 
@@ -244,6 +341,12 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
     errorLogState.open
       ? integrations.find((i) => i.id === errorLogState.integrationId)
       : null;
+  const reviewItems = review?.items ?? [];
+  const approvedItems = reviewItems.filter((item) => item.status === "approved");
+  const errorItems = reviewItems.filter((item) => item.validation_errors.length > 0);
+  const withdrawnItems = reviewItems.filter((item) => item.status === "withdrawn");
+  const draftCount = publishedCount || review?.run.published_items || 0;
+  const activeStep = draftCount > 0 ? "Publish" : review ? "Review" : "Connect";
 
   return (
     <div className="mt-12">
@@ -266,6 +369,131 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
           Add Integration
         </button>
       </div>
+
+      <div className="mb-6 grid gap-3 md:grid-cols-3">
+        {(["Connect", "Review", "Publish"] as const).map((step, index) => (
+          <div
+            key={step}
+            className={`rounded-lg border p-4 ${
+              activeStep === step
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
+                : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <span
+                className={`flex size-7 items-center justify-center rounded-full text-xs font-bold ${
+                  activeStep === step
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-500 dark:bg-gray-800"
+                }`}
+              >
+                {index + 1}
+              </span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100">
+                {step}
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              {step === "Connect" &&
+                `${integrations.length} feed connection${integrations.length === 1 ? "" : "s"}`}
+              {step === "Review" &&
+                `${review?.run.eligible_items ?? 0} eligible, ${errorItems.length} with errors`}
+              {step === "Publish" &&
+                `${draftCount} draft listing${draftCount === 1 ? "" : "s"} created`}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {flowError && (
+        <div className="mb-6 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
+          {flowError}
+        </div>
+      )}
+
+      {review && (
+        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Review Imported Listings
+              </h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Branch {reviewItems[0]?.external_branch_id ?? "unknown"} · {review.run.total_items} detected · {withdrawnItems.length} withdrawn
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={handleApproveReview}
+                disabled={approving || review.run.eligible_items === 0}
+                className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-surface disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+              >
+                {approving ? "Approving..." : "Approve Eligible"}
+              </button>
+              <button
+                type="button"
+                onClick={handlePublishReview}
+                disabled={publishing || approvedItems.length === 0}
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {publishing ? "Publishing..." : "Publish Approved"}
+              </button>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-md border border-gray-200 dark:border-gray-800">
+            <table className="w-full text-sm">
+              <thead className="bg-muted dark:bg-gray-800">
+                <tr>
+                  <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                    Listing
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                    Status
+                  </th>
+                  <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                    Validation
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {reviewItems.map((item) => (
+                  <tr key={item.id}>
+                    <td className="px-3 py-3">
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
+                        {item.listing.title}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {item.external_id} · {item.listing.address_line1}, {item.listing.city} {item.listing.postcode} · £{item.listing.price.toLocaleString("en-GB")}
+                      </p>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium capitalize text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                        {item.status.replace("_", " ")}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      {item.validation_errors.length === 0 ? (
+                        <span className="text-xs font-medium text-green-700 dark:text-green-300">
+                          Ready
+                        </span>
+                      ) : (
+                        <ul className="space-y-1 text-xs text-red-600 dark:text-red-400">
+                          {item.validation_errors.map((error) => (
+                            <li key={error}>{error}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Add/Edit Dialog */}
       {dialogState.open && (

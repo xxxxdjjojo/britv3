@@ -81,6 +81,28 @@ export type FeedImportRunSummary = {
   withdrawn_items: number;
 };
 
+export type FeedImportReviewItem = {
+  id: string;
+  external_id: string;
+  external_branch_id: string | null;
+  status: string;
+  validation_errors: string[];
+  listing: NormalizedFeedListing;
+};
+
+export type FeedImportReview = {
+  run: {
+    id: string;
+    status: string;
+    total_items: number;
+    eligible_items: number;
+    error_items: number;
+    published_items: number;
+    created_at: string;
+  };
+  items: FeedImportReviewItem[];
+};
+
 const REAPIT_FIXTURE: ReapitFixtureListing[] = [
   {
     id: "RPT-1001",
@@ -367,6 +389,79 @@ export async function approveFeedImportItem(
   return data;
 }
 
+export async function getFeedImportRunReview(
+  supabase: SupabaseClient,
+  agentId: string,
+  runId: string,
+): Promise<FeedImportReview> {
+  const { data: run, error: runError } = await supabase
+    .from("feed_import_runs")
+    .select("*")
+    .eq("id", runId)
+    .eq("agent_id", agentId)
+    .single();
+
+  if (runError || !run) {
+    throw new Error(
+      `Feed import run not found: ${runError?.message ?? "Unknown error"}`,
+    );
+  }
+
+  const { data: items, error: itemsError } = await supabase
+    .from("feed_import_items")
+    .select("*")
+    .eq("run_id", runId)
+    .eq("agent_id", agentId)
+    .order("created_at", { ascending: true });
+
+  if (itemsError) {
+    throw new Error(`Failed to load feed import items: ${itemsError.message}`);
+  }
+
+  return {
+    run: {
+      id: (run as { id: string }).id,
+      status: (run as { status: string }).status,
+      total_items: Number((run as { total_items?: number }).total_items ?? 0),
+      eligible_items: Number((run as { eligible_items?: number }).eligible_items ?? 0),
+      error_items: Number((run as { error_items?: number }).error_items ?? 0),
+      published_items: Number((run as { published_items?: number }).published_items ?? 0),
+      created_at: String((run as { created_at?: string }).created_at ?? ""),
+    },
+    items: ((items ?? []) as Array<Record<string, unknown>>).map((item) => ({
+      id: String(item.id),
+      external_id: String(item.external_id),
+      external_branch_id:
+        item.external_branch_id == null ? null : String(item.external_branch_id),
+      status: String(item.status),
+      validation_errors: Array.isArray(item.validation_errors)
+        ? (item.validation_errors as string[])
+        : [],
+      listing: item.normalized_payload as NormalizedFeedListing,
+    })),
+  };
+}
+
+export async function approveEligibleFeedImportRunItems(
+  supabase: SupabaseClient,
+  agentId: string,
+  runId: string,
+): Promise<FeedImportReview> {
+  const review = await getFeedImportRunReview(supabase, agentId, runId);
+  const approvableItems = review.items.filter(
+    (item) =>
+      item.status === "needs_review" &&
+      item.validation_errors.length === 0 &&
+      isPublishEligible(item.listing),
+  );
+
+  for (const item of approvableItems) {
+    await approveFeedImportItem(supabase, agentId, item.id);
+  }
+
+  return getFeedImportRunReview(supabase, agentId, runId);
+}
+
 type FeedImportItemRow = {
   id: string;
   integration_id: string;
@@ -521,4 +616,38 @@ export async function publishApprovedImportItem(
   }
 
   return { listing_id: listingId, property_id: propertyId };
+}
+
+export async function publishApprovedFeedImportRunItems(
+  supabase: SupabaseClient,
+  agentId: string,
+  runId: string,
+): Promise<{ published_count: number; review: FeedImportReview }> {
+  const review = await getFeedImportRunReview(supabase, agentId, runId);
+  const approvedItems = review.items.filter((item) => item.status === "approved");
+  let publishedCount = 0;
+
+  for (const item of approvedItems) {
+    await publishApprovedImportItem(supabase, agentId, item.id);
+    publishedCount += 1;
+  }
+
+  const { error } = await supabase
+    .from("feed_import_runs")
+    .update({
+      status: "published",
+      published_items: review.run.published_items + publishedCount,
+      finished_at: new Date().toISOString(),
+    })
+    .eq("id", runId)
+    .eq("agent_id", agentId);
+
+  if (error) {
+    throw new Error(`Failed to update feed import run: ${error.message}`);
+  }
+
+  return {
+    published_count: publishedCount,
+    review: await getFeedImportRunReview(supabase, agentId, runId),
+  };
 }
