@@ -55,6 +55,8 @@ test("home: brand logo links to / and the footer brand reads TrueDeed", async ({
 });
 
 test("footer links all resolve (no 404s)", async ({ page, baseURL }) => {
+  // Dev-server compiles each route on first hit, so allow generous headroom.
+  test.setTimeout(180_000);
   await page.goto("/", { waitUntil: "networkidle" });
   const hrefs = await page.locator("footer a[href^='/']").evaluateAll((els) =>
     Array.from(new Set(els.map((e) => (e as HTMLAnchorElement).getAttribute("href")!))),
@@ -63,7 +65,7 @@ test("footer links all resolve (no 404s)", async ({ page, baseURL }) => {
   const broken: string[] = [];
   for (const href of hrefs) {
     const url = new URL(href, baseURL).toString();
-    const resp = await page.request.get(url);
+    const resp = await page.request.get(url, { timeout: 30_000 });
     if (resp.status() >= 400) broken.push(`${href} -> ${resp.status()}`);
   }
   expect(broken, `broken footer links:\n${broken.join("\n")}`).toEqual([]);
