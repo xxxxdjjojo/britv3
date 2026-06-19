@@ -198,6 +198,19 @@ test.describe("Homepage internal links render expected content", () => {
     await openHomepage(page);
   });
 
+  test("homepage renders TrueDeed brand surfaces without Britestate copy", async ({
+    page,
+  }) => {
+    await captureLinkAuditScreenshot(page, "homepage-truedeed-brand");
+
+    await expect(page).toHaveTitle(/TrueDeed/i);
+    await expect(page).not.toHaveTitle(/Britestate/i);
+    await expect(
+      page.getByRole("link", { name: /^TrueDeed$/ }).first(),
+    ).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(/Britestate/i);
+  });
+
   test("homepage blog card links render the matching article", async ({
     page,
   }) => {
