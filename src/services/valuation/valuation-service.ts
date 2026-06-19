@@ -164,6 +164,7 @@ export async function calculateValuation(
         saon: prior.saon,
         street: prior.street,
         distanceMetres: 0,
+        weight: 0, // anchor only; excluded from the comparable pool, carries no estimate weight
       };
       // Exclude the subject's own sale from the comparable pool (no self-comp).
       comparables = comparables.filter((c) => c.transactionId !== prior.transactionId);

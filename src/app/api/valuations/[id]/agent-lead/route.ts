@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAgentLead } from "@/services/valuation/agent-lead-service";
 import { captureException } from "@/lib/observability/capture-exception";
 
-export const AGENT_NOTICE_VERSION = "vmp-agent-share-2026-06-18"; // TODO(legal): counsel review
+const AGENT_NOTICE_VERSION = "vmp-agent-share-2026-06-18"; // TODO(legal): counsel review
 
 const schema = z.object({
   contactPreference: z.enum(["email", "phone"]),
