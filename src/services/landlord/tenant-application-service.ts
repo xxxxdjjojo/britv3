@@ -261,18 +261,11 @@ export async function updateApplicationStatus(
     );
   }
 
-  // Kick off referencing when an application enters the referencing stage.
-  // Best-effort: a referencing failure must not roll back the status change.
-  if (newStatus === "referencing") {
-    try {
-      const { startReferencing } = await import(
-        "@/services/referencing/referencing-service"
-      );
-      await startReferencing(supabase, applicationId);
-    } catch (err) {
-      console.error("[tenant-application-service] startReferencing failed:", err);
-    }
-  }
+  // NOTE: referencing kickoff for the shortlisted->referencing transition lives
+  // in the server route POST /api/landlord/applications/[id]/referencing, NOT
+  // here. This module is imported by the client-side decision page, so it must
+  // stay free of any transitive `inngest` import (which pulls node:async_hooks
+  // into the client bundle and breaks the webpack build).
 
   return data as TenantApplication;
 }

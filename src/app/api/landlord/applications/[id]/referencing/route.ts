@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { updateApplicationStatus } from "@/services/landlord/tenant-application-service";
+import { startReferencing } from "@/services/referencing/referencing-service";
 
 /**
  * POST /api/landlord/applications/[id]/referencing
@@ -24,6 +25,13 @@ export async function POST(
 
   try {
     const application = await updateApplicationStatus(supabase, id, "referencing");
+    // Kick off referencing here (server-only) so the inngest dispatch never
+    // reaches a client bundle. Best-effort — the transition already succeeded.
+    try {
+      await startReferencing(supabase, id);
+    } catch (refErr) {
+      console.error("[applications/referencing] startReferencing failed:", refErr);
+    }
     return NextResponse.json({
       status: application.status,
       credit_check_status: application.credit_check_status,
