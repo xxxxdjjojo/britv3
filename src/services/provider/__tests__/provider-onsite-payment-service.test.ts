@@ -270,7 +270,7 @@ describe("createOnsitePaymentIntent", () => {
 
     // Verify update was called on provider_invoices
     const fromCalls = (supabase.from as ReturnType<typeof vi.fn>).mock.calls;
-    const invoiceCalls = fromCalls.filter(([t]: [string]) => t === "provider_invoices");
+    const invoiceCalls = fromCalls.filter(([t]: string[]) => t === "provider_invoices");
     // Should have a select call and an update call
     expect(invoiceCalls.length).toBeGreaterThanOrEqual(2);
   });

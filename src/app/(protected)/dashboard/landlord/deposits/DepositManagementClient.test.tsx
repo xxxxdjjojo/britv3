@@ -55,6 +55,7 @@ const MOCK_DEPOSITS = [
   {
     id: "d1",
     tenancy_id: "t1",
+    landlord_id: "11111111-1111-1111-1111-111111111111",
     amount: 1500,
     scheme: "TDS" as const,
     scheme_reference: "TDS-12345",
@@ -63,6 +64,7 @@ const MOCK_DEPOSITS = [
     status: "registered" as const,
     notes: "",
     created_at: "2023-06-01T00:00:00Z",
+    updated_at: "2023-06-12T00:00:00Z",
     tenancy: {
       tenant_name: "Alice Test",
       property_address: "10 Test Street, London",
@@ -71,6 +73,7 @@ const MOCK_DEPOSITS = [
   {
     id: "d2",
     tenancy_id: "t1",
+    landlord_id: "22222222-2222-2222-2222-222222222222",
     amount: 875,
     scheme: "DPS" as const,
     scheme_reference: null,
@@ -79,6 +82,7 @@ const MOCK_DEPOSITS = [
     status: "pending" as const,
     notes: null,
     created_at: "2023-12-01T00:00:00Z",
+    updated_at: "2023-12-01T00:00:00Z",
     tenancy: {
       tenant_name: "Bob Test",
       property_address: "22 Sample Road, Manchester",

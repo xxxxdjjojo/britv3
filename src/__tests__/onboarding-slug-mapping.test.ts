@@ -66,7 +66,8 @@ describe("onboarding slug mapping", () => {
 
     it("resolving an invalid slug still fails VALID_ROLES check", () => {
       const resolved = resolveRoleSlug("invalid_role");
-      expect(VALID_ROLES.includes(resolved)).toBe(false);
+      // resolveRoleSlug returns UserRole | null; null (or any non-valid role) must not pass the VALID_ROLES check.
+      expect(resolved !== null && VALID_ROLES.includes(resolved)).toBe(false);
     });
   });
 });

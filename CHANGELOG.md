@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0.1] - 2026-06-19 — Test type-check gate
+
+Added a CI type-check gate (`pnpm typecheck` → `tsc --noEmit`) to the `app`
+workflow and cleared the 36 pre-existing TypeScript errors that had accumulated
+in test/spec/e2e files — none of which any prior gate caught (Vitest transpiles
+via esbuild without type-checking; `next build` only checks the app's module
+graph, not orphan test files). Fixes #57.
+
+Most were test-fixture drift behind evolved production types (deposits, provider
+invoices, notifications, listings, agent leads). One was a genuine production
+type bug surfaced by the cleanup: `updateListing` reads and acts on `input.status`
+at runtime (it's in `LISTING_FIELDS` and drives the publish guard) but
+`UpdateListingFullInput` omitted it, so no caller could legally publish — now
+widened to include `status?: ListingStatus`. Also bumped tsconfig `target` to
+ES2018 (dotAll regex flag) and added an ambient `*?raw` import declaration.
+
 ## [0.3.0.0] - 2026-06-18 — Value my property: indicative AVM journey
 
 Dedicated "Value my property" valuation journey, fixing the CTA that previously

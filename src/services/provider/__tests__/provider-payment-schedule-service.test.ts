@@ -295,7 +295,27 @@ describe("invoiceMilestone", () => {
       status: "invoiced",
       invoice_id: "invoice-uuid-1",
     });
-    const mockInvoice = { id: "invoice-uuid-1" };
+    const mockInvoice = {
+      id: "invoice-uuid-1",
+      provider_id: PROVIDER_ID,
+      booking_id: BOOKING_ID,
+      client_id: CLIENT_ID,
+      invoice_number: "INV-2026-0001",
+      line_items: [
+        { name: "Deposit", quantity: 1, unit_price_pence: 5000, total_pence: 5000 },
+      ],
+      subtotal: 5000,
+      vat_amount: 1000,
+      total_amount: 6000,
+      currency: "GBP",
+      status: "draft" as const,
+      due_date: "2026-04-01",
+      paid_at: null,
+      stripe_payment_intent_id: null,
+      notes: null,
+      created_at: "2026-03-22T00:00:00Z",
+      updated_at: "2026-03-22T00:00:00Z",
+    };
 
     mockGenerateInvoice.mockResolvedValue(mockInvoice);
 

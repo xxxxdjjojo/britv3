@@ -55,10 +55,13 @@ const MOCK_TEAM_MEMBERS: AgentTeamMember[] = [
     id: "tm-1",
     agent_id: "agent-1",
     user_id: "member-1",
+    branch_id: null,
     name: "Alice Smith",
     email: "alice@example.com",
     role: "negotiator",
     status: "active",
+    invited_at: "2023-12-15T00:00:00Z",
+    joined_at: "2024-01-01T00:00:00Z",
     created_at: "2024-01-01T00:00:00Z",
   },
 ];

@@ -108,8 +108,8 @@ describe("CertificateStatusTile — valid/expiring/expired categorisation", () =
 
   it("renders nothing for an unknown category", () => {
     const { container } = render(
-      // @ts-expect-error — exercising the unknown-category guard branch.
       <CertificateStatusTile
+        // @ts-expect-error — exercising the unknown-category guard branch.
         category="not_a_category"
         totalProperties={1}
         expired={0}

@@ -77,7 +77,7 @@ function makeUnhandledEvent(id = "evt_unhandled_type") {
     id,
     type: "customer.tax_id.created", // a real Stripe event type we don't handle
     data: {
-      object: { id: "txi_test_123" },
+      object: { id: "txi_test_123", customer: "cus_test123" },
     },
   };
 }
