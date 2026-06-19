@@ -4,25 +4,28 @@
  * MarketMap — choropleth canvas for the multi-scale property price map.
  *
  * Uses @vis.gl/react-maplibre v8 (declarative Map / Source / Layer / Popup).
- * Fetches viewport-scoped GeoJSON from /api/market-map via useMarketMap.
- * Fill colours are server-computed (fill_colour property); grey fallback
- * (#9E9EAB) for areas with insufficient data.
+ * The choropleth fill is rendered from cached MapLibre vector tiles
+ * (GET /api/market-map/tiles/{z}/{x}/{y}?v=<dataVersion>, layer "areas") and
+ * coloured client-side from the baked `bucket` prop via colourForBucket();
+ * INSUFFICIENT_COLOUR for null/absent buckets.
  *
- * // TODO(pmtiles): At national zoom levels (<7) a PMTiles source could replace
- * // or augment the GeoJSON source for better performance once ONS boundary
- * // tiles are generated. Swap the <Source type="geojson"> for a
- * // <Source type="vector" url="pmtiles://..."> and update the Layer
- * // source-layer prop. The pmtiles package is NOT currently installed.
+ * Per-area rich stats (area_name, p10/p90, property_type_mix, confidence, date
+ * window) are NOT carried in the tiles — they still come from /api/market-map
+ * via useMarketMap, which also feeds the "Areas in view" list and the legend.
+ * Hover/click look up the full properties by area_id from that collection and
+ * fall back to a minimal record synthesised from the tile feature props.
  */
 
-import { useRef, useState, useCallback, useEffect } from "react";
-import { Map, Source, Layer, Popup, NavigationControl } from "@vis.gl/react-maplibre";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
+import { Map as MapGL, Source, Layer, Popup, NavigationControl } from "@vis.gl/react-maplibre";
 import type { MapRef, ViewStateChangeEvent, MapLayerMouseEvent } from "@vis.gl/react-maplibre";
 import type { MapGeoJSONFeature } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { useMarketMap } from "@/hooks/useMarketMap";
+import { useMarketMapVersion } from "@/hooks/useMarketMapVersion";
 import { MarketMapTooltip } from "./MarketMapTooltip";
+import { colourForBucket, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
 import type { MarketMapFeatureProperties, MarketMapScaleMode, MarketMapMetadata } from "@/services/market-map/types";
 import type { FitBoundsParams } from "@/lib/market-map/fit-bounds";
 import { cn } from "@/lib/utils";
@@ -36,17 +39,47 @@ const STREETS_STYLE = `https://api.maptiler.com/maps/streets-v2/style.json?key=$
 const UK_CENTER: [number, number] = [-2, 54.5];
 const DEFAULT_ZOOM = 6;
 
-/** Insufficient-data fill colour per DESIGN.md §4.2 */
-const GREY_FALLBACK = "#9E9EAB";
+/** Vector-tile source bounds. MapLibre overzooms past maxzoom for fine levels. */
+const TILE_MINZOOM = 4;
+const TILE_MAXZOOM = 16;
 
 // ---------------------------------------------------------------------------
 // Source / Layer IDs
 // ---------------------------------------------------------------------------
 
-const SOURCE_ID = "market-areas";
-const FILL_LAYER_ID = "market-areas-fill";
-const STROKE_LAYER_ID = "market-areas-stroke";
-const SELECTED_STROKE_LAYER_ID = "market-areas-selected-stroke";
+const SOURCE_ID = "market-map";
+/** MVT layer name baked by the market_map_tile RPC. */
+const TILE_SOURCE_LAYER = "areas";
+const FILL_LAYER_ID = "market-map-fill";
+const STROKE_LAYER_ID = "market-map-stroke";
+const SELECTED_STROKE_LAYER_ID = "market-map-selected-stroke";
+
+// ---------------------------------------------------------------------------
+// fill-color: match the baked bucket (1..9) to its hex; null/absent → grey.
+// ---------------------------------------------------------------------------
+
+const FILL_COLOUR_EXPRESSION = [
+  "match",
+  ["get", "bucket"],
+  1, colourForBucket(1),
+  2, colourForBucket(2),
+  3, colourForBucket(3),
+  4, colourForBucket(4),
+  5, colourForBucket(5),
+  6, colourForBucket(6),
+  7, colourForBucket(7),
+  8, colourForBucket(8),
+  9, colourForBucket(9),
+  INSUFFICIENT_COLOUR,
+] as const;
+
+/** Feature props carried in the MVT `areas` layer (baked by market_map_tile). */
+type TileFeatureProperties = {
+  area_id: string;
+  bucket?: number | null;
+  median_price_pence?: number;
+  transaction_count?: number;
+};
 
 // ---------------------------------------------------------------------------
 // Props
@@ -136,6 +169,19 @@ export function MarketMap({
     scaleMode,
   });
 
+  // Tile cache-buster — fetched once, falls back to "0" until resolved.
+  const dataVersion = useMarketMapVersion();
+
+  // area_id → full feature properties, used to enrich tile hover/click. Tiles
+  // only carry area_id/bucket/median_price_pence/transaction_count.
+  const propsByAreaId = useMemo(() => {
+    const map = new Map<string, MarketMapFeatureProperties>();
+    for (const f of featureCollection?.features ?? []) {
+      if (f.properties) map.set(f.properties.area_id, f.properties);
+    }
+    return map;
+  }, [featureCollection]);
+
   // Surface metadata + features to parent when data changes
   useEffect(() => {
     if (!featureCollection) return;
@@ -192,29 +238,64 @@ export function MarketMap({
   }, [onViewportChange]);
 
   // ---------------------------------------------------------------------------
-  // Mouse interaction on the fill layer
+  // Mouse interaction on the fill layer (tile features)
   // ---------------------------------------------------------------------------
 
-  const handleMouseMove = useCallback((e: MapLayerMouseEvent) => {
-    const feature = e.features?.[0] as (MapGeoJSONFeature & { properties: MarketMapFeatureProperties }) | undefined;
-    if (!feature?.properties) {
-      setTooltip(null);
-      return;
-    }
-    // property_type_mix arrives as a JSON string when coming through MapLibre
-    // feature serialisation — parse it back if needed.
-    const props = feature.properties;
-    const mix: Record<string, number> =
-      typeof props.property_type_mix === "string"
-        ? (JSON.parse(props.property_type_mix) as Record<string, number>)
-        : props.property_type_mix;
+  // Resolve full feature properties for a hovered/clicked tile feature. Tiles
+  // carry only area_id/bucket/median_price_pence/transaction_count, so prefer
+  // the rich record from useMarketMap (keyed by area_id) and fall back to a
+  // minimal synthesised record when the GeoJSON layer has not loaded that area.
+  const resolveProperties = useCallback(
+    (tile: TileFeatureProperties): MarketMapFeatureProperties => {
+      const enriched = propsByAreaId.get(tile.area_id);
+      if (enriched) return enriched;
 
-    setTooltip({
-      longitude: e.lngLat.lng,
-      latitude: e.lngLat.lat,
-      properties: { ...props, property_type_mix: mix },
-    });
-  }, []);
+      const medianPounds =
+        tile.median_price_pence !== undefined
+          ? Math.round(tile.median_price_pence / 100)
+          : 0;
+      return {
+        area_id: tile.area_id,
+        area_name: null,
+        geography_level: "",
+        median_price: medianPounds,
+        p10_price: 0,
+        p90_price: 0,
+        transaction_count: tile.transaction_count ?? 0,
+        latest_transaction_date: null,
+        confidence:
+          tile.bucket === null || tile.bucket === undefined
+            ? "Insufficient"
+            : "Low",
+        colour_bucket: tile.bucket ?? null,
+        fill_colour:
+          tile.bucket === null || tile.bucket === undefined
+            ? INSUFFICIENT_COLOUR
+            : colourForBucket(tile.bucket),
+        scale_mode: scaleMode,
+        date_from: "",
+        date_to: "",
+        property_type_mix: {},
+      };
+    },
+    [propsByAreaId, scaleMode],
+  );
+
+  const handleMouseMove = useCallback(
+    (e: MapLayerMouseEvent) => {
+      const feature = e.features?.[0] as (MapGeoJSONFeature & { properties: TileFeatureProperties }) | undefined;
+      if (!feature?.properties?.area_id) {
+        setTooltip(null);
+        return;
+      }
+      setTooltip({
+        longitude: e.lngLat.lng,
+        latitude: e.lngLat.lat,
+        properties: resolveProperties(feature.properties),
+      });
+    },
+    [resolveProperties],
+  );
 
   const handleMouseLeave = useCallback(() => {
     setTooltip(null);
@@ -222,22 +303,16 @@ export function MarketMap({
 
   const handleClick = useCallback(
     (e: MapLayerMouseEvent) => {
-      const feature = e.features?.[0] as (MapGeoJSONFeature & { properties: MarketMapFeatureProperties }) | undefined;
-      if (!feature?.properties) {
+      const feature = e.features?.[0] as (MapGeoJSONFeature & { properties: TileFeatureProperties }) | undefined;
+      if (!feature?.properties?.area_id) {
         setSelectedAreaId(null);
         onAreaSelect?.(null);
         return;
       }
-      const props = feature.properties;
-      const mix: Record<string, number> =
-        typeof props.property_type_mix === "string"
-          ? (JSON.parse(props.property_type_mix) as Record<string, number>)
-          : props.property_type_mix;
-      const fullProps: MarketMapFeatureProperties = { ...props, property_type_mix: mix };
-      setSelectedAreaId(props.area_id);
-      onAreaSelect?.(fullProps);
+      setSelectedAreaId(feature.properties.area_id);
+      onAreaSelect?.(resolveProperties(feature.properties));
     },
-    [onAreaSelect],
+    [onAreaSelect, resolveProperties],
   );
 
   // ---------------------------------------------------------------------------
@@ -260,16 +335,11 @@ export function MarketMap({
   }
 
   // ---------------------------------------------------------------------------
-  // GeoJSON source data — empty FeatureCollection while loading
+  // Vector-tile URL template — absolute, cache-busted by the data version.
   // ---------------------------------------------------------------------------
 
-  // The Source component accepts any GeoJSON FeatureCollection shape.
-  // Cast to satisfy the geojson package's stricter Geometry (no null) constraint
-  // while preserving the actual runtime value — MapLibre handles null geometries fine.
-  const sourceData = (featureCollection ?? {
-    type: "FeatureCollection" as const,
-    features: [],
-  }) as GeoJSON.FeatureCollection;
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const tileUrl = `${origin}/api/market-map/tiles/{z}/{x}/{y}?v=${dataVersion}`;
 
   // ---------------------------------------------------------------------------
   // Render
@@ -277,7 +347,7 @@ export function MarketMap({
 
   return (
     <div className={cn("relative w-full h-full", className)}>
-      <Map
+      <MapGL
         ref={mapRef}
         mapStyle={STREETS_STYLE}
         initialViewState={{
@@ -297,39 +367,40 @@ export function MarketMap({
         {/* Navigation controls — top-right to avoid overlapping the detail card at bottom-right */}
         <NavigationControl position="top-right" showCompass={false} />
 
-        {/* Choropleth source — viewport-scoped GeoJSON from /api/market-map */}
-        {/* TODO(pmtiles): replace with <Source type="vector" url="pmtiles://..."> */}
-        {/* once ONS boundary tiles are generated and the pmtiles package is added. */}
-        <Source id={SOURCE_ID} type="geojson" data={sourceData}>
+        {/*
+         * Choropleth source — cached MapLibre vector tiles from
+         * /api/market-map/tiles. minzoom/maxzoom bound tile generation;
+         * MapLibre overzooms past maxzoom for fine geography levels.
+         */}
+        <Source
+          id={SOURCE_ID}
+          type="vector"
+          tiles={[tileUrl]}
+          minzoom={TILE_MINZOOM}
+          maxzoom={TILE_MAXZOOM}
+        >
           {/*
-           * Fill layer: uses server-computed fill_colour per DESIGN.md §4.
-           * Grey fallback (#9E9EAB) for insufficient-data areas.
-           * Default opacity 65% per DESIGN.md §4.3.
+           * Fill layer: coloured from the baked `bucket` prop (1..9) via
+           * colourForBucket; INSUFFICIENT_COLOUR for null/absent buckets.
+           * Opacity matches the previous GeoJSON layer (DESIGN.md §4.3).
            */}
           <Layer
             id={FILL_LAYER_ID}
             type="fill"
             source={SOURCE_ID}
+            source-layer={TILE_SOURCE_LAYER}
             paint={{
-              "fill-color": ["coalesce", ["get", "fill_colour"], GREY_FALLBACK],
-              "fill-opacity": [
-                "case",
-                ["==", ["get", "confidence"], "Insufficient"],
-                0.5,
-                0.65,
-              ],
+              "fill-color": FILL_COLOUR_EXPRESSION as unknown as string,
+              "fill-opacity": 0.65,
             }}
           />
 
-          {/*
-           * Outline layer: subtle white stroke per DESIGN.md §4.4.
-           * Hover state handled via MapLibre feature-state where supported,
-           * but opacity is pre-baked here for broad compatibility.
-           */}
+          {/* Outline layer: subtle white stroke per DESIGN.md §4.4. */}
           <Layer
             id={STROKE_LAYER_ID}
             type="line"
             source={SOURCE_ID}
+            source-layer={TILE_SOURCE_LAYER}
             paint={{
               "line-color": "rgba(255,255,255,0.4)",
               "line-width": 0.5,
@@ -344,6 +415,7 @@ export function MarketMap({
             id={SELECTED_STROKE_LAYER_ID}
             type="line"
             source={SOURCE_ID}
+            source-layer={TILE_SOURCE_LAYER}
             filter={
               selectedAreaId !== null
                 ? ["==", ["get", "area_id"], selectedAreaId]
@@ -369,7 +441,7 @@ export function MarketMap({
             <MarketMapTooltip properties={tooltip.properties} />
           </Popup>
         )}
-      </Map>
+      </MapGL>
     </div>
   );
 }
