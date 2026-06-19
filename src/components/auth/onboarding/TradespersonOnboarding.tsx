@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
-import { sanitize } from "@/lib/sanitize";
+import { generateUniqueSlug } from "@/services/marketplace/provider-service";
+import { buildProviderRow } from "./tradesperson-onboarding-mapping";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Trade Category", "Coverage Area", "Credentials", "Availability"];
@@ -36,7 +37,9 @@ export function TradespersonOnboarding(
 ) {
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [businessName, setBusinessName] = useState("");
   const [tradeCategories, setTradeCategories] = useState<string[]>([]);
   const [coverageAreas, setCoverageAreas] = useState<string[]>([]);
   const [qualifications, setQualifications] = useState("");
@@ -46,7 +49,7 @@ export function TradespersonOnboarding(
 
   // Companies House verification (only when a limited-company number is provided;
   // sole traders leave it blank and are not gated). The result is recorded
-  // server-side; trust fields on `service_provider_profiles` are set by trigger.
+  // server-side; trust fields on `service_provider_details` are set by trigger.
   const [verifying, setVerifying] = useState(false);
   const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
   const [availableDays, setAvailableDays] = useState<string[]>(["Mon", "Tue", "Wed", "Thu", "Fri"]);
@@ -116,41 +119,48 @@ export function TradespersonOnboarding(
 
   async function handleComplete() {
     setSaving(true);
+    setErrorMessage(null);
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const trimmedCompanyNumber = companyNumber.trim();
-        await supabase.from("service_provider_profiles").upsert(
-          {
-            user_id: user.id,
-            trade_categories: tradeCategories,
-            qualifications: sanitize(qualifications),
-            insurance_policy_number: sanitize(insuranceNumber),
-            accreditations,
-            available_days: availableDays,
-            response_time: responseTime,
-            // Company number only — trust fields (companies_house_*) are set
-            // server-side by DB trigger from the authoritative verification.
-            ...(trimmedCompanyNumber
-              ? { company_number: sanitize(trimmedCompanyNumber) }
-              : {}),
-          },
-          { onConflict: "user_id" },
-        );
-        if (coverageAreas.length > 0) {
-          await supabase.from("provider_service_areas").upsert(
-            coverageAreas.map((area) => ({ user_id: user.id, area })),
-            { onConflict: "user_id,area" },
-          );
-        }
+      if (!user) {
+        setErrorMessage("Your session has expired. Please sign in again.");
+        return;
       }
+
+      const name = businessName.trim();
+      const slug = await generateUniqueSlug(supabase, name);
+
+      const { error } = await supabase.from("service_provider_details").upsert(
+        {
+          user_id: user.id,
+          business_name: name,
+          slug,
+          ...buildProviderRow({
+            tradeCategories,
+            qualifications,
+            insuranceNumber,
+            companyNumber,
+            accreditations,
+            responseTime,
+          }),
+        },
+        { onConflict: "user_id" },
+      );
+
+      // TODO: service areas (coverageAreas) are set later in the provider
+      // dashboard, which writes the `provider_service_areas` geometry zones.
+      if (error) {
+        setErrorMessage("We couldn't save your provider profile. Please try again.");
+        return;
+      }
+
+      props.onComplete();
     } catch {
-      // Non-blocking
+      setErrorMessage("We couldn't save your provider profile. Please try again.");
     } finally {
       setSaving(false);
     }
-    props.onComplete();
   }
 
   const SkipLink = () => (
@@ -163,6 +173,10 @@ export function TradespersonOnboarding(
     <OnboardingLayout steps={STEPS} currentStep={step} title={titles[step]} subtitle="This helps clients find you for the right jobs.">
       {step === 0 && (
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="business-name">Business or trading name</Label>
+            <Input id="business-name" placeholder="e.g. Acme Plumbing Ltd" value={businessName} onChange={(e) => setBusinessName(e.target.value)} className="h-11" />
+          </div>
           <div className="flex flex-wrap gap-2">
             {TRADE_CATEGORIES.map((cat) => (
               <button key={cat} type="button" onClick={() => toggle(tradeCategories, cat, setTradeCategories)} className={cn("rounded-full border-2 px-3 py-1 text-sm font-medium transition-colors", tradeCategories.includes(cat) ? "border-brand-primary bg-brand-primary text-white" : "border-neutral-300 text-neutral-600 hover:border-brand-primary")}>
@@ -170,7 +184,7 @@ export function TradespersonOnboarding(
               </button>
             ))}
           </div>
-          <Button onClick={() => setStep(1)} className="w-full" disabled={tradeCategories.length === 0}>Continue</Button>
+          <Button onClick={() => setStep(1)} className="w-full" disabled={tradeCategories.length === 0 || businessName.trim().length < 3}>Continue</Button>
           <SkipLink />
         </div>
       )}
@@ -278,6 +292,9 @@ export function TradespersonOnboarding(
               ))}
             </div>
           </div>
+          {errorMessage && (
+            <p className="text-xs text-red-600" role="alert">{errorMessage}</p>
+          )}
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setStep(2)} className="flex-1">Back</Button>
             <Button onClick={handleComplete} disabled={saving} className="flex-1">
