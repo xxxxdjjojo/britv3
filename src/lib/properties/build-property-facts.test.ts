@@ -23,6 +23,8 @@ function makeProperty(overrides: Partial<Property> = {}): Property {
     features: {},
     epcRating: null,
     epcScore: null,
+    epcPotentialRating: null,
+    epcPotentialScore: null,
     tenure: null,
     leaseRemainingYears: null,
     councilTaxBand: null,

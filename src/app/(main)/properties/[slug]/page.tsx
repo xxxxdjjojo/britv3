@@ -9,7 +9,6 @@ import {
   Bath,
   Square,
   MapPin,
-  Zap,
   FileText,
   Calendar as CalendarIcon,
 } from "lucide-react";
@@ -43,6 +42,7 @@ import { VideoTourPlayer } from "@/components/properties/detail/VideoTourPlayer"
 
 // Local area — real-data section (self-gates per layer; widgets degrade to null)
 import { LocalAreaSection } from "@/components/properties/detail/LocalAreaSection";
+import { EPCDisplay } from "@/components/properties/detail/EPCDisplay";
 
 // Wave 6 — Sidebar calculators
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
@@ -141,17 +141,6 @@ function formatPriceHistory(
 function postcodeDistrict(postcode: string): string {
   return postcode.trim().split(" ")[0] ?? postcode.trim();
 }
-
-const EPC_BANDS = ["A", "B", "C", "D", "E", "F", "G"] as const;
-const EPC_COLORS: Record<string, string> = {
-  A: "bg-success",
-  B: "bg-success/80",
-  C: "bg-success/60",
-  D: "bg-yellow-400",
-  E: "bg-orange-400",
-  F: "bg-orange-600",
-  G: "bg-red-600",
-};
 
 // ---------------------------------------------------------------------------
 // Page
@@ -550,45 +539,25 @@ export default async function PropertyPage({
                   Energy Performance Certificate
                 </h2>
                 <Separator className="mb-4" />
-                <div className="rounded-xl border bg-card p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Zap className="size-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">Current EPC Rating</p>
-                      <p className="text-xs text-muted-foreground">
-                        Energy efficiency: {epc}
-                      </p>
-                    </div>
-                    <Badge className="ml-auto">{epc}</Badge>
-                  </div>
-                  <div className="flex items-stretch gap-1 h-8">
-                    {EPC_BANDS.map((band) => (
-                      <div
-                        key={band}
-                        className={`flex flex-1 items-center justify-center rounded text-xs font-bold text-white ${EPC_COLORS[band]} ${band === epc ? "ring-2 ring-offset-1 ring-foreground scale-110 z-10" : "opacity-70"}`}
-                      >
-                        {band}
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    Rating {epc} — Energy efficiency certificate
-                  </p>
-                  {property.epcScore != null && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Score: {property.epcScore}/100
-                    </p>
-                  )}
+                <div className="space-y-2">
+                  <EPCDisplay
+                    currentRating={property.epcRating as EpcRating}
+                    currentScore={property.epcScore}
+                    potentialRating={
+                      property.epcPotentialRating as EpcRating | null
+                    }
+                    potentialScore={property.epcPotentialScore}
+                  />
                   <a
                     href={`https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode=${encodeURIComponent(property.postcode)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-brand-primary hover:underline mt-2"
+                    className="inline-flex items-center gap-1 text-xs text-brand-primary hover:underline"
                   >
                     View full EPC certificate <span aria-hidden="true">↗</span>
                   </a>
                   {listing.listingType === "rent" && epc !== "N/A" && ["D", "E", "F", "G"].includes(epc) && (
-                    <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                    <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
                       <strong>MEES Notice:</strong> Rental properties in England and Wales may require a minimum EPC rating of C under upcoming regulations. This property currently holds a rating of {epc}.
                     </p>
                   )}

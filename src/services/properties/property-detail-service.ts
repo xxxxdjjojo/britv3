@@ -52,6 +52,8 @@ export type PropertyDetail = {
     features: Record<string, unknown>;
     epcRating: string | null;
     epcScore: number | null;
+    epcPotentialRating: string | null;
+    epcPotentialScore: number | null;
     tenure: string | null;
     leaseRemainingYears: number | null;
     councilTaxBand: string | null;
@@ -223,6 +225,8 @@ function getMockPropertyBySlug(slug: string): PropertyDetail | null {
       features: { items: ["Central heating", "Double glazing", "Garden", "Parking"] },
       epcRating: mock.epc_rating,
       epcScore: mock.epc_rating ? { A: 95, B: 85, C: 72, D: 58, E: 42, F: 28, G: 12 }[mock.epc_rating] ?? null : null,
+      epcPotentialRating: null,
+      epcPotentialScore: null,
       tenure: mock.tenure,
       leaseRemainingYears: mock.tenure === "leasehold" ? 95 : null,
       councilTaxBand: ["A", "B", "C", "D", "E"][Number(mock.id) % 5] ?? "C",
@@ -300,6 +304,8 @@ export async function getPropertyBySlug(
         features,
         epc_rating,
         epc_score,
+        epc_potential_rating,
+        epc_potential_score,
         tenure,
         lease_remaining_years,
         council_tax_band,
@@ -412,6 +418,10 @@ export async function getPropertyBySlug(
         (property.features as Record<string, unknown> | null) ?? {},
       epcRating: (property.epc_rating as string | null) ?? null,
       epcScore: (property.epc_score as number | null) ?? null,
+      epcPotentialRating:
+        (property.epc_potential_rating as string | null) ?? null,
+      epcPotentialScore:
+        (property.epc_potential_score as number | null) ?? null,
       tenure: (property.tenure as string | null) ?? null,
       leaseRemainingYears:
         (property.lease_remaining_years as number | null) ?? null,
