@@ -60,7 +60,7 @@ const offer3 = makeOffer({
   buyer_name: "Carol Chen",
   amount: 310000,
   status: "accepted",
-  aip_status: "none",
+  aip_status: "not_provided",
 });
 
 // ---------------------------------------------------------------------------

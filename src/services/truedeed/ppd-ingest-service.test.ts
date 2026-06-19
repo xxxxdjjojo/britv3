@@ -256,7 +256,7 @@ describe("applyPpdRows — A/C/D partitioning", () => {
     const upserted = transactions.upsert.mock.calls.flatMap(
       (c: unknown[]) => c[0] as Array<{ ppd_tuid: string }>,
     );
-    expect(upserted.some((p) => p.ppd_tuid === TUID_D)).toBe(false);
+    expect(upserted.some((p: { ppd_tuid: string }) => p.ppd_tuid === TUID_D)).toBe(false);
   });
 
   it("returns { added, changed, deleted } counts for a mixed batch", async () => {

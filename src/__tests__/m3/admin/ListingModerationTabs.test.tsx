@@ -34,7 +34,8 @@ function listing(over: Partial<AdminListing>): AdminListing {
     title: "A listing",
     status: "pending",
     created_at: "2026-03-15T00:00:00.000Z",
-    owner_id: "owner-1",
+    user_id: "owner-1",
+    flagged: false,
     ...over,
   };
 }

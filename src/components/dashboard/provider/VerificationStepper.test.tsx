@@ -29,6 +29,7 @@ const makeStep = (
   description: "Government-issued ID required.",
   status: "not_started",
   required: true,
+  updatedAt: null,
   rejectionReason: null,
   ...overrides,
 });

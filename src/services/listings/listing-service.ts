@@ -10,6 +10,7 @@ import type {
   CreateListingInput,
   UpdatePropertyInput,
   UpdateListingInput,
+  ListingStatus,
   Property,
   Listing,
   PriceHistory,
@@ -21,7 +22,9 @@ import { geocodePostcode } from "@/services/geocoding/postcodes-io";
 
 type CreateListingFullInput = CreatePropertyInput & Omit<CreateListingInput, "property_id">;
 
-type UpdateListingFullInput = UpdatePropertyInput & UpdateListingInput;
+// `status` is accepted on update at runtime (it's in LISTING_FIELDS and drives the
+// publish guard below), so the input type must allow callers to set it.
+type UpdateListingFullInput = UpdatePropertyInput & UpdateListingInput & { status?: ListingStatus };
 
 type ListingResult = {
   listing: Listing;

@@ -13,13 +13,14 @@ import type { PlatformEvent } from "@/types/notifications";
 // ---------------------------------------------------------------------------
 
 const mockNotification: PlatformEvent = {
-  id: "notif-1",
+  id: 1,
   event_type: "new_message",
   actor_name: "Alice",
   entity_type: "conversation",
   entity_id: "conv-123",
-  created_at: new Date(Date.now() - 300_000).toISOString(), // 5 min ago
-  recipient_id: "user-1",
+  created_at: new Date(Date.now() - 300_000), // 5 min ago
+  actor_id: "user-1",
+  metadata: {},
 };
 
 vi.mock("@/hooks/useNotifications", () => ({

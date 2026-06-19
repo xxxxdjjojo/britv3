@@ -2,7 +2,8 @@ import { mkdir } from "node:fs/promises";
 import { ROLE_NAV_ITEMS, TAB_CONFIG } from "../src/config/navigation";
 import { dashboardPathForRole, savedDashboardPathForRole } from "../src/lib/routes";
 import type { UserRole as AppRole } from "../src/types/auth";
-import { test, expect, type Page, type UserRole as AuthRole } from "./fixtures/auth";
+import type { Page } from "@playwright/test";
+import { test, expect, type UserRole as AuthRole } from "./fixtures/auth";
 
 const SCREENSHOT_DIR = "test-results/dashboard-nav";
 

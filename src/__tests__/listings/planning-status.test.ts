@@ -61,7 +61,7 @@ describe("listingFormSchema planning_permission_status", () => {
     const issues = result.success ? [] : result.error.issues;
     expect(
       issues.some(
-        (issue: { path: (string | number)[] }) =>
+        (issue: { path: PropertyKey[] }) =>
           issue.path[0] === "planning_permission_status",
       ),
     ).toBe(true);

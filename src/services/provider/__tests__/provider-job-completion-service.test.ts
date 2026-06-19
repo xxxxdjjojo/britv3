@@ -10,6 +10,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Mock the invoice service before importing the SUT
 vi.mock("@/services/provider/provider-invoice-service", () => ({
@@ -188,7 +189,7 @@ describe("initiateJobCompletion", () => {
   describe("happy path — no invoice", () => {
     it("transitions in_progress → completing → completed and returns { status: 'completed' }", async () => {
       const { from, updateCalls } = buildTrackingSupabaseMock(IN_PROGRESS_BOOKING);
-      const supabase = { from } as unknown;
+      const supabase = { from } as unknown as SupabaseClient;
 
       const result = await initiateJobCompletion(BOOKING_ID, PROVIDER_ID, supabase);
 
@@ -214,7 +215,7 @@ describe("initiateJobCompletion", () => {
           }),
         }),
       }));
-      const supabase = { from: fromFn } as unknown;
+      const supabase = { from: fromFn } as unknown as SupabaseClient;
 
       const result = await initiateJobCompletion(BOOKING_ID, PROVIDER_ID, supabase);
 
@@ -233,7 +234,7 @@ describe("initiateJobCompletion", () => {
           }),
         }),
       }));
-      const supabase = { from: fromFn } as unknown;
+      const supabase = { from: fromFn } as unknown as SupabaseClient;
 
       const result = await initiateJobCompletion(BOOKING_ID, PROVIDER_ID, supabase);
 
@@ -252,7 +253,7 @@ describe("initiateJobCompletion", () => {
           }),
         }),
       }));
-      const supabase = { from: fromFn } as unknown;
+      const supabase = { from: fromFn } as unknown as SupabaseClient;
 
       const result = await initiateJobCompletion(BOOKING_ID, PROVIDER_ID, supabase);
 
@@ -267,7 +268,7 @@ describe("initiateJobCompletion", () => {
       mockGenerateInvoice.mockResolvedValue(fakeInvoice as never);
 
       const { from } = buildTrackingSupabaseMock(IN_PROGRESS_BOOKING);
-      const supabase = { from } as unknown;
+      const supabase = { from } as unknown as SupabaseClient;
 
       const lineItems = [
         {
@@ -327,7 +328,7 @@ describe("initiateJobCompletion", () => {
           };
         }),
       }));
-      const supabase = { from: fromFn } as unknown;
+      const supabase = { from: fromFn } as unknown as SupabaseClient;
 
       const result = await initiateJobCompletion(BOOKING_ID, PROVIDER_ID, supabase, {
         generateInvoice: true,
@@ -372,7 +373,7 @@ describe("initiateJobCompletion", () => {
           };
         }),
       }));
-      const supabase = { from: fromFn } as unknown;
+      const supabase = { from: fromFn } as unknown as SupabaseClient;
 
       await initiateJobCompletion(BOOKING_ID, PROVIDER_ID, supabase);
 

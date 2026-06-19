@@ -14,6 +14,7 @@ const baseBalance: StripeBalance = {
 const basePayout: PayoutRecord = {
   id: "po_test_1",
   amountPence: 129000,
+  currency: "GBP",
   status: "paid",
   initiatedAt: "2023-10-24T10:00:00Z",
   arrivedAt: "2023-10-26T10:00:00Z",

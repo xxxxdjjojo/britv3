@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "version": "0.3.0.0",
+  "version": "0.3.0.1",
   "packageManager": "pnpm@10.18.3",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit --incremental false",
     "check:migrations": "node scripts/check-migration-versions.mjs",
     "test": "vitest",
     "test:db": "RUN_DB_TESTS=1 vitest run --config vitest.db.config.ts db-tests --testTimeout=120000",
