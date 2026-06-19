@@ -385,7 +385,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                 className={`flex size-7 items-center justify-center rounded-full text-xs font-bold ${
                   activeStep === step
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-500 dark:bg-gray-800"
+                    : "bg-surface text-gray-500 dark:bg-gray-800"
                 }`}
               >
                 {index + 1}
@@ -470,7 +470,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                       </p>
                     </td>
                     <td className="px-3 py-3">
-                      <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium capitalize text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                      <span className="rounded-full bg-surface px-2 py-1 text-xs font-medium capitalize text-gray-700 dark:bg-gray-800 dark:text-gray-300">
                         {item.status.replace("_", " ")}
                       </span>
                     </td>
