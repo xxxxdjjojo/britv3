@@ -40,9 +40,9 @@ export async function PATCH(
 
     // Fetch provider name for the denormalised field
     const { data: providerData, error: providerError } = await supabase
-      .from("service_provider_profiles")
+      .from("service_provider_details")
       .select("business_name")
-      .eq("id", provider_id)
+      .eq("user_id", provider_id)
       .maybeSingle();
 
     if (providerError) {

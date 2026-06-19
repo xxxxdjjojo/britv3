@@ -10,8 +10,8 @@ type Params = Promise<{ id: string }>;
 
 /**
  * Maintenance category → marketplace provider category mapping.
- * Maps the maintenance_requests.title/description category to
- * service_provider_profiles.category values used in Epic 4 marketplace.
+ * Maps the maintenance_requests.title/description category to a
+ * service_provider_details.services (service_category[]) value.
  */
 function mapMaintenanceCategoryToProviderCategory(
   title: string,
@@ -24,7 +24,9 @@ function mapMaintenanceCategoryToProviderCategory(
     return "electrician";
   }
   if (lower.includes("boiler") || lower.includes("heat") || lower.includes("gas") || lower.includes("radiator")) {
-    return "gas_engineer";
+    // No dedicated gas category in service_category; gas/heating work is
+    // classified under the plumbing trade.
+    return "plumber";
   }
   if (lower.includes("roof") || lower.includes("wall") || lower.includes("brick") || lower.includes("crack")) {
     return "builder";
@@ -73,23 +75,31 @@ export default async function AssignTradesPersonPage({
 
   // Fetch matching marketplace providers
   let providersQuery = supabase
-    .from("service_provider_profiles")
-    .select("id, business_name, category, average_rating, city")
-    .order("average_rating", { ascending: false })
+    .from("service_provider_details")
+    .select("user_id, business_name, services, trust_score, base_location")
+    .order("trust_score", { ascending: false })
     .limit(20);
 
   if (providerCategory) {
-    providersQuery = providersQuery.eq("category", providerCategory);
+    providersQuery = providersQuery.contains("services", [providerCategory]);
   }
 
   const { data: providersData } = await providersQuery;
-  const providers = (providersData ?? []) as Array<{
-    id: string;
-    business_name: string;
-    category: string | null;
-    average_rating: number | null;
-    city: string | null;
-  }>;
+  const providers = (
+    (providersData ?? []) as Array<{
+      user_id: string;
+      business_name: string;
+      services: string[] | null;
+      trust_score: number | null;
+      base_location: string | null;
+    }>
+  ).map((p) => ({
+    id: p.user_id,
+    business_name: p.business_name,
+    category: p.services?.[0] ?? null,
+    average_rating: p.trust_score ?? null,
+    city: p.base_location ?? null,
+  }));
 
   return (
     <div className="space-y-6 p-6 max-w-3xl mx-auto">
