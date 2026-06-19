@@ -10,6 +10,7 @@
  */
 import { getConnector, listConnectorProviders, registerConnector } from "./registry";
 import { reapitConnector } from "./reapit-connector";
+import { sandboxConnector, genericFeedConnector } from "./sandbox-connector";
 
 /**
  * Idempotent for repeated imports of the same connector; throws if a different
@@ -30,6 +31,8 @@ function safeRegister(connector: Parameters<typeof registerConnector>[0]): void 
 }
 
 safeRegister(reapitConnector);
+safeRegister(sandboxConnector);
+safeRegister(genericFeedConnector);
 
 // Re-export registry helpers so consumers only need one import.
 export { getConnector, listConnectorProviders, registerConnector } from "./registry";
