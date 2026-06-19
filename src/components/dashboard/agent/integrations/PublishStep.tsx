@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 import type { FeedImportReview } from "./types";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Search, MapPin, RefreshCw } from "lucide-react";
@@ -13,9 +15,6 @@ type PublishStepProps = Readonly<{
 export function PublishStep({ publishedCount, review, onSyncAgain }: PublishStepProps) {
   const items = review.items;
 
-  // published_count from the publish response (passed as prop)
-  const published = publishedCount;
-
   // Geocoded: published items that had coordinates.
   // We count items with a valid status (not withdrawn/error) that have coords.
   const geocodedItems = items.filter(
@@ -27,7 +26,7 @@ export function PublishStep({ publishedCount, review, onSyncAgain }: PublishStep
   );
   // Cap geocoded display at published count — we can only know about items
   // in this run's review object.
-  const geocoded = Math.min(geocodedItems.length, published);
+  const geocoded = Math.min(geocodedItems.length, publishedCount);
 
   return (
     <div className="space-y-8">
@@ -39,7 +38,7 @@ export function PublishStep({ publishedCount, review, onSyncAgain }: PublishStep
         />
         <div>
           <p className="text-base font-semibold text-green-800 dark:text-green-200">
-            {published} listing{published !== 1 ? "s" : ""} published
+            {publishedCount} listing{publishedCount !== 1 ? "s" : ""} published
           </p>
           <p className="mt-1 text-sm text-green-700 dark:text-green-300">
             Your portfolio is live. Listings are now searchable on TrueDeed.
@@ -53,21 +52,21 @@ export function PublishStep({ publishedCount, review, onSyncAgain }: PublishStep
           icon={CheckCircle2}
           iconClass="text-green-600 dark:text-green-400"
           label="Published"
-          value={String(published)}
+          value={String(publishedCount)}
           sub="listings added to your portfolio"
         />
         <SummaryCard
           icon={Search}
           iconClass="text-brand-primary dark:text-brand-primary-light"
           label="Search index"
-          value={String(published)}
+          value={String(publishedCount)}
           sub="listings added to search"
         />
         <SummaryCard
           icon={MapPin}
           iconClass="text-brand-secondary"
           label="On map"
-          value={`${geocoded} of ${published}`}
+          value={`${geocoded} of ${publishedCount}`}
           sub="geocoded and visible on the map"
         />
       </div>
@@ -99,11 +98,10 @@ export function PublishStep({ publishedCount, review, onSyncAgain }: PublishStep
             <RefreshCw className="size-4" aria-hidden />
             Sync again
           </Button>
+          <Button type="button" variant="default" asChild>
+            <Link href="/dashboard/agent/listings">View your listings</Link>
+          </Button>
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          To view or manage your published listings, visit your agent listings page from the dashboard navigation.
-          To resolve blocked items, use the Review step above and correct the issues in your source CRM before re-syncing.
-        </p>
       </div>
     </div>
   );
@@ -120,7 +118,7 @@ function SummaryCard({
   value,
   sub,
 }: {
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconClass: string;
   label: string;
   value: string;

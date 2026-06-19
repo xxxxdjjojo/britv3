@@ -3,11 +3,20 @@
  * Keep in one place so all step components share the same contract.
  */
 
+/** Status of a single import item after processing. */
+export type ItemStatus = "eligible" | "approved" | "withdrawn" | "error";
+
+/** Status of an import run. */
+export type RunStatus = "pending" | "running" | "completed" | "failed";
+
+/** Status of a published listing slot. */
+export type ListingStatus = "active" | "withdrawn" | "error";
+
 export type FeedImportReviewItem = {
   id: string;
   external_id: string;
   external_branch_id: string | null;
-  status: string;
+  status: ItemStatus;
   validation_errors: string[];
   listing: {
     title: string;
@@ -20,13 +29,13 @@ export type FeedImportReviewItem = {
     media: { url: string }[];
     latitude: number | null;
     longitude: number | null;
-    status: string;
+    status: ListingStatus;
   };
 };
 
 export type FeedImportRun = {
   id: string;
-  status: string;
+  status: RunStatus;
   total_items: number;
   eligible_items: number;
   error_items: number;

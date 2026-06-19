@@ -1,18 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import type { FeedImportReview, FeedImportReviewItem } from "./types";
+import type { FeedImportReview, FeedImportReviewItem, ItemStatus } from "./types";
 import { ReviewCounts } from "./ReviewCounts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Alert } from "@/components/ui/alert";
-import { AlertCircle, ChevronDown, ChevronUp, MapPin, ImageOff } from "lucide-react";
+import { ChevronDown, ChevronUp, MapPin, ImageOff } from "lucide-react";
 
 type ReviewStepProps = Readonly<{
   review: FeedImportReview;
   approving: boolean;
   publishing: boolean;
-  flowError: string | null;
   onApprove: () => void;
   onPublish: () => void;
 }>;
@@ -21,7 +19,6 @@ export function ReviewStep({
   review,
   approving,
   publishing,
-  flowError,
   onApprove,
   onPublish,
 }: ReviewStepProps) {
@@ -37,13 +34,6 @@ export function ReviewStep({
 
   return (
     <div className="space-y-6">
-      {flowError && (
-        <Alert className="border-destructive/30 bg-destructive/10 text-destructive">
-          <AlertCircle className="size-4" aria-hidden />
-          <span className="ml-2 text-sm">{flowError}</span>
-        </Alert>
-      )}
-
       {/* Header */}
       <div className="flex flex-col gap-1">
         <h3 className="text-base font-semibold text-foreground">
@@ -87,6 +77,7 @@ export function ReviewStep({
           onClick={() => setExpanded((v) => !v)}
           className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-foreground hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-expanded={expanded}
+          aria-controls="review-item-list"
         >
           <span>
             {expanded ? "Hide" : "Show"} listing details
@@ -100,7 +91,7 @@ export function ReviewStep({
         </button>
 
         {expanded && (
-          <div className="border-t border-border">
+          <div id="review-item-list" className="border-t border-border">
             <div className="max-h-96 overflow-y-auto">
               <table className="w-full text-sm">
                 <thead className="sticky top-0 bg-muted">
@@ -196,14 +187,15 @@ function ItemRow({ item }: { item: FeedImportReviewItem }) {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { variant: "default" | "outline" | "destructive" | "secondary"; label: string }> = {
-    approved: { variant: "default", label: "Approved" },
-    eligible: { variant: "secondary", label: "Eligible" },
-    error: { variant: "destructive", label: "Error" },
-    withdrawn: { variant: "outline", label: "Withdrawn" },
-  };
-  const cfg = map[status] ?? { variant: "outline" as const, label: status.replace(/_/g, " ") };
+const STATUS_BADGE_MAP: Record<ItemStatus, { variant: "default" | "outline" | "destructive" | "secondary"; label: string }> = {
+  approved: { variant: "default", label: "Approved" },
+  eligible: { variant: "secondary", label: "Eligible" },
+  error: { variant: "destructive", label: "Error" },
+  withdrawn: { variant: "outline", label: "Withdrawn" },
+};
+
+function StatusBadge({ status }: { status: ItemStatus }) {
+  const cfg = STATUS_BADGE_MAP[status] ?? { variant: "outline" as const, label: (status as string).replace(/_/g, " ") };
   return (
     <Badge variant={cfg.variant} className="capitalize">
       {cfg.label}

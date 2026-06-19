@@ -7,6 +7,16 @@ import { ConnectStep, DEFAULT_FIELD_MAPPING } from "./ConnectStep";
 import { ReviewStep } from "./ReviewStep";
 import { PublishStep } from "./PublishStep";
 import { Alert } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { AlertCircle, Check } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -294,8 +304,8 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
     <div className="mt-8">
       <StepBar active={activeStep} />
 
-      {/* Global flow error (not form-level) */}
-      {flowError && activeStep === "Connect" && (
+      {/* Global flow error — shown on whichever step it occurred on */}
+      {flowError && (
         <Alert className="mb-6 border-destructive/30 bg-destructive/10 text-destructive">
           <AlertCircle className="size-4" aria-hidden />
           <span className="ml-2 text-sm">{flowError}</span>
@@ -336,7 +346,6 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
           review={review}
           approving={approving}
           publishing={publishing}
-          flowError={flowError}
           onApprove={handleApproveReview}
           onPublish={handlePublishReview}
         />
@@ -350,34 +359,34 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
         />
       )}
 
-      {/* Confirm delete dialog */}
-      {confirmDeleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-xl bg-card p-6 shadow-xl ring-1 ring-border">
-            <h3 className="text-base font-semibold text-foreground">Delete integration?</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+      {/* Confirm delete dialog — Radix AlertDialog provides role/aria-modal/focus-trap/labelledby */}
+      <AlertDialog
+        open={confirmDeleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDeleteId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete integration?</AlertDialogTitle>
+            <AlertDialogDescription>
               This will remove the feed connection and stop all syncing. This action cannot be undone.
-            </p>
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setConfirmDeleteId(null)}
-                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDelete(confirmDeleteId)}
-                disabled={deletingId === confirmDeleteId}
-                className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-white hover:bg-destructive/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-              >
-                {deletingId === confirmDeleteId ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmDeleteId(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmDeleteId && handleDelete(confirmDeleteId)}
+              disabled={deletingId === confirmDeleteId}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {deletingId === confirmDeleteId ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

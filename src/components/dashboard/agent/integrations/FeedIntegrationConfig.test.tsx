@@ -5,7 +5,7 @@ import { ReviewStep } from "./ReviewStep";
 import { PublishStep } from "./PublishStep";
 import { ReviewCounts, deriveReviewCounts } from "./ReviewCounts";
 import type { AgentFeedIntegrationView } from "@/types/agent";
-import type { FeedImportReview } from "./types";
+import type { FeedImportReview, ItemStatus, RunStatus, ListingStatus } from "./types";
 
 // ---------------------------------------------------------------------------
 // Fetch stub — prevents component throwing during render
@@ -42,7 +42,7 @@ const MOCK_INTEGRATION: AgentFeedIntegrationView = {
 const MOCK_REVIEW: FeedImportReview = {
   run: {
     id: "run-1",
-    status: "completed",
+    status: "completed" as RunStatus,
     total_items: 10,
     eligible_items: 7,
     error_items: 2,
@@ -54,7 +54,7 @@ const MOCK_REVIEW: FeedImportReview = {
       id: `item-ok-${i}`,
       external_id: `EXT-${i}`,
       external_branch_id: "BRANCH-A",
-      status: "eligible",
+      status: "eligible" as ItemStatus,
       validation_errors: [],
       listing: {
         title: `Property ${i}`,
@@ -67,7 +67,7 @@ const MOCK_REVIEW: FeedImportReview = {
         media: [{ url: "https://example.com/photo.jpg" }],
         latitude: 51.5,
         longitude: -0.1,
-        status: "active",
+        status: "active" as ListingStatus,
       },
     })),
     // 1 eligible but missing media
@@ -75,7 +75,7 @@ const MOCK_REVIEW: FeedImportReview = {
       id: "item-no-media",
       external_id: "EXT-NO-MEDIA",
       external_branch_id: "BRANCH-A",
-      status: "eligible",
+      status: "eligible" as ItemStatus,
       validation_errors: [],
       listing: {
         title: "No media property",
@@ -88,7 +88,7 @@ const MOCK_REVIEW: FeedImportReview = {
         media: [],
         latitude: 51.5,
         longitude: -0.1,
-        status: "active",
+        status: "active" as ListingStatus,
       },
     },
     // 1 eligible but missing coords
@@ -96,7 +96,7 @@ const MOCK_REVIEW: FeedImportReview = {
       id: "item-no-coords",
       external_id: "EXT-NO-COORDS",
       external_branch_id: "BRANCH-B",
-      status: "eligible",
+      status: "eligible" as ItemStatus,
       validation_errors: [],
       listing: {
         title: "No coords property",
@@ -109,7 +109,7 @@ const MOCK_REVIEW: FeedImportReview = {
         media: [{ url: "https://example.com/photo.jpg" }],
         latitude: null,
         longitude: null,
-        status: "active",
+        status: "active" as ListingStatus,
       },
     },
     // 1 withdrawn
@@ -117,7 +117,7 @@ const MOCK_REVIEW: FeedImportReview = {
       id: "item-withdrawn",
       external_id: "EXT-WITHDRAWN",
       external_branch_id: "BRANCH-A",
-      status: "withdrawn",
+      status: "withdrawn" as ItemStatus,
       validation_errors: [],
       listing: {
         title: "Withdrawn property",
@@ -130,7 +130,7 @@ const MOCK_REVIEW: FeedImportReview = {
         media: [],
         latitude: 51.5,
         longitude: -0.1,
-        status: "withdrawn",
+        status: "withdrawn" as ListingStatus,
       },
     },
     // 2 with validation errors (error_items: 2)
@@ -138,7 +138,7 @@ const MOCK_REVIEW: FeedImportReview = {
       id: `item-error-${i}`,
       external_id: `EXT-ERR-${i}`,
       external_branch_id: "BRANCH-A",
-      status: "error",
+      status: "error" as ItemStatus,
       validation_errors: ["Missing price"],
       listing: {
         title: `Error property ${i}`,
@@ -151,7 +151,7 @@ const MOCK_REVIEW: FeedImportReview = {
         media: [],
         latitude: null,
         longitude: null,
-        status: "error",
+        status: "error" as ListingStatus,
       },
     })),
   ],

@@ -1,7 +1,8 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import type { AgentFeedIntegrationView, FeedProvider } from "@/types/agent";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert } from "@/components/ui/alert";
@@ -26,7 +27,7 @@ type SupportedSource = {
   label: string;
   tagline: string;
   badge: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconClass: string;
   needsApiKey: boolean;
   needsCsv: boolean;
@@ -123,6 +124,7 @@ export function ConnectStep({
   testingConnection,
   testResult,
   syncingId,
+  deletingId,
   onSelectProvider,
   onApiKeyChange,
   onFieldMappingChange,
@@ -134,6 +136,7 @@ export function ConnectStep({
   onConfirmDelete,
 }: ConnectStepProps) {
   const source = SUPPORTED_SOURCES.find((s) => s.provider === formProvider) ?? SUPPORTED_SOURCES[0];
+  const anySyncing = syncingId !== null;
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -177,10 +180,17 @@ export function ConnectStep({
 
       {/* Source selector */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <h3
+          id="source-selector-label"
+          className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground"
+        >
           Choose your data source
         </h3>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div
+          role="radiogroup"
+          aria-labelledby="source-selector-label"
+          className="grid gap-3 sm:grid-cols-3"
+        >
           {SUPPORTED_SOURCES.map((s) => {
             const Icon = s.icon;
             const selected = formProvider === s.provider;
@@ -188,7 +198,8 @@ export function ConnectStep({
               <button
                 key={s.provider}
                 type="button"
-                aria-pressed={selected}
+                role="radio"
+                aria-checked={selected}
                 onClick={() => onSelectProvider(s.provider)}
                 className={[
                   "group flex flex-col gap-3 rounded-xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -319,24 +330,24 @@ export function ConnectStep({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {Object.entries(formFieldMapping).map(([source, dest]) => (
-                      <tr key={source} className="bg-card">
+                    {Object.entries(formFieldMapping).map(([csvColumn, targetField]) => (
+                      <tr key={csvColumn} className="bg-card">
                         <td className="px-3 py-2">
                           <input
                             type="text"
-                            value={source}
+                            value={csvColumn}
                             readOnly
-                            aria-label={`Source column: ${source}`}
+                            aria-label={`Source column: ${csvColumn}`}
                             className="w-full bg-transparent text-muted-foreground focus:outline-none"
                           />
                         </td>
                         <td className="px-3 py-2">
                           <input
                             type="text"
-                            value={dest}
-                            aria-label={`Target field for ${source}`}
+                            value={targetField}
+                            aria-label={`Target field for ${csvColumn}`}
                             onChange={(e) =>
-                              onFieldMappingChange({ ...formFieldMapping, [source]: e.target.value })
+                              onFieldMappingChange({ ...formFieldMapping, [csvColumn]: e.target.value })
                             }
                             className="w-full rounded bg-transparent text-foreground focus:outline-none focus:ring-1 focus:ring-ring px-1"
                           />
@@ -374,6 +385,8 @@ export function ConnectStep({
                 key={integration.id}
                 integration={integration}
                 syncing={syncingId === integration.id}
+                anySyncing={anySyncing}
+                deleting={deletingId === integration.id}
                 onSyncNow={() => onSyncNow(integration.id)}
                 onTestConnection={() => onTestConnection(integration.id)}
                 onDelete={() => onConfirmDelete(integration.id)}
@@ -436,17 +449,22 @@ const STATUS_CONFIG: Record<
 function IntegrationRow({
   integration,
   syncing,
+  anySyncing,
+  deleting,
   onSyncNow,
   onTestConnection,
   onDelete,
 }: {
   integration: AgentFeedIntegrationView;
   syncing: boolean;
+  anySyncing: boolean;
+  deleting: boolean;
   onSyncNow: () => void;
   onTestConnection: () => void;
   onDelete: () => void;
 }) {
   const status = STATUS_CONFIG[integration.sync_status] ?? STATUS_CONFIG.disconnected;
+  const providerLabel = PROVIDER_LABEL[integration.provider] ?? integration.provider;
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
@@ -454,9 +472,7 @@ function IntegrationRow({
           <LayoutGrid className="size-4 text-muted-foreground" aria-hidden />
         </div>
         <div>
-          <p className="text-sm font-semibold text-foreground">
-            {PROVIDER_LABEL[integration.provider] ?? integration.provider}
-          </p>
+          <p className="text-sm font-semibold text-foreground">{providerLabel}</p>
           <p className={`flex items-center gap-1.5 text-xs ${status.badgeClass}`}>
             <span className={`inline-block size-1.5 rounded-full ${status.dotClass}`} aria-hidden />
             {status.label}
@@ -474,7 +490,7 @@ function IntegrationRow({
           variant="outline"
           size="sm"
           onClick={onTestConnection}
-          aria-label="Test connection"
+          aria-label={`Test connection for ${providerLabel}`}
         >
           Test connection
         </Button>
@@ -482,9 +498,9 @@ function IntegrationRow({
           type="button"
           variant="outline"
           size="sm"
-          disabled={syncing || integration.sync_status === "syncing"}
+          disabled={anySyncing || integration.sync_status === "syncing"}
           onClick={onSyncNow}
-          aria-label="Sync now"
+          aria-label={`Sync now for ${providerLabel}`}
         >
           <RefreshCw className={`size-3.5 ${syncing ? "animate-spin" : ""}`} aria-hidden />
           {syncing ? "Syncing…" : "Sync now"}
@@ -493,8 +509,9 @@ function IntegrationRow({
           type="button"
           variant="destructive"
           size="sm"
+          disabled={deleting}
           onClick={onDelete}
-          aria-label="Delete integration"
+          aria-label={`Delete ${providerLabel} integration`}
         >
           <Trash2 className="size-3.5" aria-hidden />
         </Button>
