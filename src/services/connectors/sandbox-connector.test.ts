@@ -54,7 +54,7 @@ const XML_WITH_FEATURES = `<?xml version="1.0" encoding="UTF-8"?>
   </listing>
 </listings>`;
 
-/** XML with an unknown listingType on a row whose status is valid — tests I2. */
+/** XML with an unknown listingType on a non-withdrawn row — tests I2. */
 const UNKNOWN_LISTING_TYPE_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <listings>
   <listing id="LT-OK" branchId="branch-lt">
@@ -80,7 +80,7 @@ const UNKNOWN_LISTING_TYPE_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <media/>
   </listing>
   <listing id="LT-BAD" branchId="branch-lt">
-    <status>withdrawn</status>
+    <status>forSale</status>
     <listingType>unknown_kind</listingType>
     <price>150000</price>
     <address>
@@ -97,7 +97,36 @@ const UNKNOWN_LISTING_TYPE_XML = `<?xml version="1.0" encoding="UTF-8"?>
     </property>
     <marketing>
       <title>Bad listingType listing</title>
-      <description>Should produce unknown_listing_type error.</description>
+      <description>Non-withdrawn row with junk listingType — should produce unknown_listing_type error.</description>
+    </marketing>
+    <media/>
+  </listing>
+</listings>`;
+
+/**
+ * XML with a withdrawn row that has NO listingType field — tests that the tombstone
+ * path is never silently dropped (the withdrawn fallback must kick in).
+ */
+const XML_WITHDRAWN_NO_LISTING_TYPE = `<?xml version="1.0" encoding="UTF-8"?>
+<listings>
+  <listing id="WR-NT-001" branchId="branch-wr">
+    <status>withdrawn</status>
+    <price>0</price>
+    <address>
+      <line1>3 Ghost Lane</line1>
+      <city>Sheffield</city>
+      <postcode>S1 1AA</postcode>
+    </address>
+    <property>
+      <type>flat</type>
+      <bedrooms>1</bedrooms>
+      <bathrooms>1</bathrooms>
+      <tenure>leasehold</tenure>
+      <planningPermissionStatus>none_known</planningPermissionStatus>
+    </property>
+    <marketing>
+      <title>Withdrawn, no type</title>
+      <description>Tombstone row with no listingType field.</description>
     </marketing>
     <media/>
   </listing>
@@ -570,15 +599,15 @@ describe("generic_feed connector", () => {
     expect(features).toContain("South-facing garden");
   });
 
-  // I2 — unknown listingType must produce code:"unknown_listing_type" (not "unknown_status")
-  it("I2 (unknown listingType): RowError has code 'unknown_listing_type'", async () => {
+  // I2 — a row with a valid status and an unrecognised listingType field infers
+  //       the type from status (forsale → "sale"); it does NOT produce a RowError.
+  it("I2 (unknown listingType field, valid status): row infers listing_type from status, no RowError", async () => {
     const result = await genericFeedConnector.fetchListings({ ...BASE_CTX, payload: UNKNOWN_LISTING_TYPE_XML });
-    expect(result.listings).toHaveLength(1);
-    expect(result.listings[0].external_id).toBe("LT-OK");
-    expect(result.errors).toHaveLength(1);
-    expect(result.errors[0].row).toBe("LT-BAD");
-    expect(result.errors[0].code).toBe("unknown_listing_type");
-    expect(result.errors[0].field).toBe("listingType");
+    expect(result.errors).toHaveLength(0);
+    expect(result.listings).toHaveLength(2);
+    const bad = result.listings.find((l) => l.external_id === "LT-BAD");
+    expect(bad).toBeDefined();
+    expect(bad!.listing_type).toBe("sale");
   });
 
   // M1 — BOM-prefixed JSON payload must parse correctly
@@ -598,5 +627,16 @@ describe("generic_feed connector", () => {
     const listing = result.listings[0];
     expect(listing.status).toBe("withdrawn");
     expect(listing.listing_type).toBe("rent");
+  });
+
+  // M5 — withdrawn row with NO listingType must still produce a withdrawn listing (tombstone path)
+  it("M5 (withdrawn, no listingType): row yields a withdrawn listing, never a RowError", async () => {
+    const result = await genericFeedConnector.fetchListings({ ...BASE_CTX, payload: XML_WITHDRAWN_NO_LISTING_TYPE });
+    expect(result.transport.ok).toBe(true);
+    expect(result.errors).toHaveLength(0);
+    expect(result.listings).toHaveLength(1);
+    const listing = result.listings[0];
+    expect(listing.external_id).toBe("WR-NT-001");
+    expect(listing.status).toBe("withdrawn");
   });
 });

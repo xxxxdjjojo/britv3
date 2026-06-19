@@ -191,6 +191,11 @@ function normalizeRow(
     listingType = "rent";
   } else if (rawStatus === "forsale") {
     listingType = "sale";
+  } else if (rawStatus === "withdrawn") {
+    // For tombstones the listing_type is moot — archival matches by external_id.
+    // Default to "sale" so the withdrawal always flows through instead of being
+    // silently dropped as a RowError.
+    listingType = "sale";
   } else {
     return {
       error: {
