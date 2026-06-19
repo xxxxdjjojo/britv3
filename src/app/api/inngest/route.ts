@@ -37,6 +37,7 @@ import {
   truedeedDisputeResolved,
   truedeedInvoiceChargedBack,
 } from "@/inngest/functions/truedeed-dispute-emails";
+import { referencingInitiate } from "@/inngest/functions/referencing-initiate";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -70,5 +71,6 @@ export const { GET, POST, PUT } = serve({
     truedeedDisputeRaised,
     truedeedDisputeResolved,
     truedeedInvoiceChargedBack,
+    referencingInitiate,
   ],
 });

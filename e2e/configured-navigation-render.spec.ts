@@ -51,6 +51,15 @@ async function collectPublicConfiguredHrefs(): Promise<string[]> {
 }
 
 test.describe("configured public navigation render", () => {
+  test("agent sidebar configuration exposes feed integrations", async () => {
+    const source = await readFile(
+      join(process.cwd(), "src/config/navigation.ts"),
+      "utf8",
+    );
+
+    expect(source).toContain('href: "/dashboard/agent/integrations/feeds"');
+  });
+
   test("configured blog category links render filtered category content", async ({
     page,
   }, testInfo) => {
