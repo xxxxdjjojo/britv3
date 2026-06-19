@@ -268,7 +268,6 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/agent/crm",
   "/dashboard/agent/documents",
   "/dashboard/agent/integrations",
-  "/dashboard/agent/integrations/feeds",
   "/dashboard/agent/introductions",
   "/dashboard/agent/listings/archived",
   "/dashboard/agent/listings/create",
