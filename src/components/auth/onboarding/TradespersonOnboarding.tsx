@@ -45,14 +45,10 @@ export function TradespersonOnboarding(
   const [accreditations, setAccreditations] = useState<string[]>([]);
 
   // Companies House verification (only when a limited-company number is provided;
-  // sole traders leave it blank and are not gated).
+  // sole traders leave it blank and are not gated). The result is recorded
+  // server-side; trust fields on `service_provider_profiles` are set by trigger.
   const [verifying, setVerifying] = useState(false);
   const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
-  const [companyVerification, setCompanyVerification] = useState<{
-    status: string | null;
-    incorporationDate: string | null;
-    pendingReview: boolean;
-  } | null>(null);
   const [availableDays, setAvailableDays] = useState<string[]>(["Mon", "Tue", "Wed", "Thu", "Fri"]);
   const [responseTime, setResponseTime] = useState("24h");
 
@@ -78,7 +74,6 @@ export function TradespersonOnboarding(
 
     // Sole traders (no company number) proceed without a Companies House check.
     if (!number) {
-      setCompanyVerification(null);
       setStep(3);
       return;
     }
@@ -92,21 +87,9 @@ export function TradespersonOnboarding(
       });
       const data = await res.json();
 
-      if (data.eligible) {
-        setCompanyVerification({
-          status: data.companyStatus ?? null,
-          incorporationDate: data.incorporationDate ?? null,
-          pendingReview: false,
-        });
-        setStep(3);
-        return;
-      }
-      if (data.serviceError) {
-        setCompanyVerification({
-          status: data.companyStatus ?? null,
-          incorporationDate: data.incorporationDate ?? null,
-          pendingReview: true,
-        });
+      // Eligible or service-unavailable (the server records the authoritative
+      // verification; provider trust fields are set by DB trigger). Advance.
+      if (data.eligible || data.serviceError) {
         setStep(3);
         return;
       }
@@ -115,8 +98,10 @@ export function TradespersonOnboarding(
           "This company could not be verified for onboarding.",
       );
     } catch {
-      setCompanyVerification({ status: null, incorporationDate: null, pendingReview: true });
-      setStep(3);
+      // Fail closed: do not advance on a network error.
+      setVerifyMessage(
+        "We couldn't verify your company right now. Please try again.",
+      );
     } finally {
       setVerifying(false);
     }
@@ -145,16 +130,10 @@ export function TradespersonOnboarding(
             accreditations,
             available_days: availableDays,
             response_time: responseTime,
-            // Companies House fields — only set when a limited-company number was given.
+            // Company number only — trust fields (companies_house_*) are set
+            // server-side by DB trigger from the authoritative verification.
             ...(trimmedCompanyNumber
-              ? {
-                  company_number: sanitize(trimmedCompanyNumber),
-                  companies_house_status: companyVerification?.pendingReview
-                    ? "pending_review"
-                    : "verified",
-                  companies_house_verified_at: new Date().toISOString(),
-                  incorporation_date: companyVerification?.incorporationDate ?? null,
-                }
+              ? { company_number: sanitize(trimmedCompanyNumber) }
               : {}),
           },
           { onConflict: "user_id" },

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createRateLimiter } from "@/lib/cache/redis";
 import {
   lookupCompany,
@@ -60,6 +61,35 @@ export async function POST(request: NextRequest) {
 
   const result = await lookupCompany(parsed.data.companyNumber);
   const { eligible, reason } = assessEligibility(result);
+
+  // Persist the authoritative verification server-side. The onboarding trust
+  // fields on agencies / service_provider_profiles are forced from this record
+  // by DB trigger, so the browser can never self-mark "verified". A service
+  // outage is recorded as pending_review (manual review), not as verified.
+  if (eligible || result.serviceError) {
+    const admin = createAdminClient();
+    const { error: persistError } = await admin
+      .from("company_verifications")
+      .upsert(
+        {
+          user_id: user.id,
+          company_number: parsed.data.companyNumber,
+          status: result.serviceError ? "pending_review" : "verified",
+          company_name: result.companyName ?? null,
+          company_status: result.companyStatus ?? null,
+          incorporation_date: result.incorporationDate ?? null,
+          verified_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+    if (persistError) {
+      return NextResponse.json(
+        { error: "Could not record verification. Please try again." },
+        { status: 500 },
+      );
+    }
+  }
 
   return NextResponse.json({
     eligible,

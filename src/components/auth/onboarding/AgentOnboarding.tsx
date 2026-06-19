@@ -36,14 +36,10 @@ export function AgentOnboarding(
   const [agencyAddress, setAgencyAddress] = useState("");
   const [regNumber, setRegNumber] = useState("");
 
-  // Companies House verification (gate: registered >= 2 years)
+  // Companies House verification (gate: registered >= 2 years). The result is
+  // recorded server-side; trust fields on `agencies` are set by DB trigger.
   const [verifying, setVerifying] = useState(false);
   const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
-  const [companyVerification, setCompanyVerification] = useState<{
-    status: string | null;
-    incorporationDate: string | null;
-    pendingReview: boolean;
-  } | null>(null);
 
   // Step 2 — Profile
   const [jobTitle, setJobTitle] = useState("");
@@ -92,24 +88,10 @@ export function AgentOnboarding(
       });
       const data = await res.json();
 
-      if (data.eligible) {
-        setCompanyVerification({
-          status: data.companyStatus ?? null,
-          incorporationDate: data.incorporationDate ?? null,
-          pendingReview: false,
-        });
-        setStep(1);
-        return;
-      }
-
-      // Verification unavailable (key unset/outage) — allow through but flag for review.
-      if (data.serviceError) {
-        setCompanyVerification({
-          status: data.companyStatus ?? null,
-          incorporationDate: data.incorporationDate ?? null,
-          pendingReview: true,
-        });
-        setVerifyMessage(null);
+      // Eligible, or the CH service was unavailable (the server records it as
+      // pending_review for manual follow-up). Either way the server has written
+      // the authoritative verification, so advance.
+      if (data.eligible || data.serviceError) {
         setStep(1);
         return;
       }
@@ -120,9 +102,10 @@ export function AgentOnboarding(
           "This company could not be verified for onboarding.",
       );
     } catch {
-      // Network failure on the client — let them proceed, mark for review.
-      setCompanyVerification({ status: null, incorporationDate: null, pendingReview: true });
-      setStep(1);
+      // Fail closed: do not advance on a network error.
+      setVerifyMessage(
+        "We couldn't verify your company right now. Please try again.",
+      );
     } finally {
       setVerifying(false);
     }
@@ -142,11 +125,6 @@ export function AgentOnboarding(
             address: sanitize(agencyAddress),
             registration_number: sanitize(regNumber),
             company_number: sanitize(regNumber),
-            companies_house_status: companyVerification?.pendingReview
-              ? "pending_review"
-              : "verified",
-            companies_house_verified_at: new Date().toISOString(),
-            incorporation_date: companyVerification?.incorporationDate ?? null,
             owner_id: user.id,
           })
           .select("id")
