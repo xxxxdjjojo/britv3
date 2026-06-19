@@ -7,6 +7,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { isFeatureEnabled } from "@/lib/features";
+import { Constants } from "@/types/database.types";
+
+// Statuses for which the property-detail page is viewable. Derived from the
+// generated DB `listing_status` enum (minus draft/archived) so the query can
+// never reference a value the enum lacks — passing an unknown value makes
+// PostgREST reject the whole query with 22P02, which 404s every property page.
+// (Regression: "sold_stc" was hard-coded here but never existed in the enum.)
+export const DETAIL_VIEWABLE_STATUSES =
+  Constants.public.Enums.listing_status.filter(
+    (status) => status !== "draft" && status !== "archived",
+  );
 
 // -- Types -------------------------------------------------------------------
 
@@ -318,7 +329,7 @@ export async function getPropertyBySlug(
     `,
     )
     .eq("slug", slug)
-    .in("status", ["active", "under_offer", "sold", "sold_stc", "let", "withdrawn"])
+    .in("status", DETAIL_VIEWABLE_STATUSES)
     .single();
 
   if (listingError || !listingRow) {
