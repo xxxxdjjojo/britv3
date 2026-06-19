@@ -7,7 +7,7 @@ import { ComplianceMatrix } from "@/components/landlord/ComplianceMatrix";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
-  title: "Compliance Matrix | Landlord | Britestate",
+  title: "Compliance Matrix | Landlord | TrueDeed",
 };
 
 async function MatrixContent() {

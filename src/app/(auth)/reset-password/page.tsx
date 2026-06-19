@@ -1,8 +1,8 @@
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 
 export const metadata = {
-  title: "Create New Password - Britestate",
-  description: "Create a new password for your Britestate account",
+  title: "Create New Password - TrueDeed",
+  description: "Create a new password for your TrueDeed account",
 };
 
 export default function ResetPasswordPage() {

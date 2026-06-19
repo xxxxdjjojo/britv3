@@ -74,7 +74,7 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
         {isVerified && (
           <span
             className="absolute -bottom-1 -right-1 bg-brand-primary rounded-full p-0.5"
-            title="Britestate Verified"
+            title="TrueDeed Verified"
           >
             <ShieldCheck className="w-4 h-4 text-white" />
           </span>

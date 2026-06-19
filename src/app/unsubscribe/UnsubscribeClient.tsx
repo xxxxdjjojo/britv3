@@ -63,7 +63,7 @@ export default function UnsubscribeClient({ token, status }: Props) {
           </div>
           <h1 className="text-2xl font-semibold">Unsubscribed</h1>
           <p className="text-muted-foreground">
-            You&apos;ve been unsubscribed from Britestate email notifications.
+            You&apos;ve been unsubscribed from TrueDeed email notifications.
             You can re-enable them at any time from your notification settings.
           </p>
           <Button variant="outline" asChild>
@@ -107,7 +107,7 @@ export default function UnsubscribeClient({ token, status }: Props) {
         </div>
         <h1 className="text-2xl font-semibold">Unsubscribe from emails?</h1>
         <p className="text-muted-foreground">
-          You&apos;ll stop receiving all email notifications from Britestate.
+          You&apos;ll stop receiving all email notifications from TrueDeed.
           You can re-enable them in your account settings.
         </p>
         {state === "error" && (

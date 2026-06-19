@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "about-these-terms", label: "1. About These Terms" },
@@ -27,14 +28,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Britestate",
+  title: `Terms of Service | ${brandConfig.displayName}`,
   description:
-    "The terms and conditions governing your access to and use of the Britestate property platform, operated by Britestate Ltd under English law.",
+    `The terms and conditions governing your access to and use of the ${brandConfig.displayName} property platform, operated by ${brandConfig.displayName} Ltd under English law.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/terms` },
   openGraph: {
-    title: "Terms of Service | Britestate",
-    description: "Terms and conditions for Britestate.",
+    title: `Terms of Service | ${brandConfig.displayName}`,
+    description: `Terms and conditions for ${brandConfig.displayName}.`,
   },
 };
 
@@ -61,7 +62,7 @@ export default function TermsPage() {
 
       {/* Yellow info callout */}
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
-        Please read these Terms carefully before using Britestate. By accessing or using our
+        Please read these Terms carefully before using {brandConfig.displayName}. By accessing or using our
         platform, you agree to be bound by these Terms and our other{" "}
         <Link href="/legal" className="underline hover:no-underline">
           Legal Documents
@@ -74,9 +75,9 @@ export default function TermsPage() {
           <h2 className="text-2xl font-bold font-heading">1. About These Terms</h2>
           <p>
             1.1. These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of the
-            Britestate platform at britestate.co.uk and any associated mobile applications
-            (together, the &ldquo;Platform&rdquo;), operated by Britestate Ltd
-            (&ldquo;Britestate&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), a
+            {brandConfig.displayName} platform at {brandConfig.canonicalDomain} and any associated mobile applications
+            (together, the &ldquo;Platform&rdquo;), operated by {brandConfig.displayName} Ltd
+            (&ldquo;{brandConfig.displayName}&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), a
             company registered in England and Wales under company number [COMPANY NUMBER], with its
             registered office at [REGISTERED ADDRESS].
           </p>
@@ -109,7 +110,7 @@ export default function TermsPage() {
         <section id="the-platform">
           <h2 className="text-2xl font-bold font-heading">2. The Platform</h2>
           <p>
-            2.1. Britestate is a property technology platform that connects homebuyers, renters,
+            2.1. {brandConfig.displayName} is a property technology platform that connects homebuyers, renters,
             sellers, landlords, estate agents, and service providers (each a &ldquo;User&rdquo; or
             &ldquo;you&rdquo;). We act as an intermediary — we do not buy, sell, let, or manage
             property directly.
@@ -135,7 +136,7 @@ export default function TermsPage() {
           <p>
             3.2. You are responsible for maintaining the security of your account credentials. You
             must notify us immediately at{" "}
-            <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a> if you suspect
+            <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a> if you suspect
             unauthorised access.
           </p>
           <p>
@@ -173,7 +174,7 @@ export default function TermsPage() {
             a government-approved redress scheme (The Property Ombudsman or the Property Redress
             Scheme), that you hold appropriate professional indemnity insurance, and that you are
             registered with HMRC for AML supervision. You must display your fees transparently on
-            your Britestate profile in accordance with CMA guidance. See our{" "}
+            your {brandConfig.displayName} profile in accordance with CMA guidance. See our{" "}
             <Link href="/legal/fee-transparency" className="text-primary hover:underline">
               Fee Transparency Policy
             </Link>
@@ -209,7 +210,7 @@ export default function TermsPage() {
             5.3. <strong>Cooling-Off Period.</strong> If you are a consumer subscribing to a paid
             plan, you have a 14-day right to cancel under the Consumer Contracts (Information,
             Cancellation and Additional Charges) Regulations 2013. To cancel, email{" "}
-            <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a> within 14 days
+            <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a> within 14 days
             of subscribing. If you have used the service during the cooling-off period, you may be
             charged a proportionate amount.
           </p>
@@ -231,14 +232,14 @@ export default function TermsPage() {
           </h2>
           <p>
             6.1. <strong>Our Content.</strong> All content on the Platform (including the software,
-            design, logos, text, and database structure) is owned by or licensed to Britestate Ltd
+            design, logos, text, and database structure) is owned by or licensed to {brandConfig.displayName} Ltd
             and is protected by copyright, database rights, trade marks, and other intellectual
             property laws. You may not copy, reproduce, or redistribute our content without our
             prior written consent.
           </p>
           <p>
             6.2. <strong>Your Content.</strong> By uploading content (listings, photos, reviews,
-            messages) to the Platform, you grant Britestate a non-exclusive, worldwide,
+            messages) to the Platform, you grant {brandConfig.displayName} a non-exclusive, worldwide,
             royalty-free licence to use, display, reproduce, and distribute that content for the
             purpose of operating and promoting the Platform. You retain ownership of your content.
           </p>
@@ -324,7 +325,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-bold font-heading">10. Indemnification</h2>
           <p>
             10.1. If you are an estate agent, landlord, or service provider, you agree to
-            indemnify Britestate against any claims, losses, damages, or expenses (including legal
+            indemnify {brandConfig.displayName} against any claims, losses, damages, or expenses (including legal
             fees) arising from: (a) your breach of these Terms; (b) your breach of any applicable
             law or regulation; (c) any claim by a third party arising from your use of the Platform
             or your content.
@@ -345,7 +346,7 @@ export default function TermsPage() {
           <p>
             11.2. You may close your account at any time through your account settings or by
             emailing{" "}
-            <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a>. Account
+            <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a>. Account
             deletion is subject to a 30-day grace period during which you may reverse the decision.
           </p>
           <p>
@@ -358,7 +359,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-bold font-heading">12. Dispute Resolution</h2>
           <p>
             12.1. We aim to resolve disputes informally. Please contact{" "}
-            <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a> in the first
+            <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a> in the first
             instance.
           </p>
           <p>
@@ -391,7 +392,7 @@ export default function TermsPage() {
             14. AI Features and Automated Decision-Making
           </h2>
           <p>
-            14.1. Britestate uses artificial intelligence (powered by Anthropic Claude and vector
+            14.1. {brandConfig.displayName} uses artificial intelligence (powered by Anthropic Claude and vector
             embeddings) to provide property recommendations, estimated valuations, and search
             matching. These outputs are generated algorithmically and should not be relied upon as
             professional advice. See our{" "}
@@ -403,7 +404,7 @@ export default function TermsPage() {
           <p>
             14.2. Where AI features involve automated decision-making that significantly affects
             you, you have the right to request human review under Article 22 of UK GDPR. Contact{" "}
-            <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a> to exercise
+            <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a> to exercise
             this right.
           </p>
           <p>
@@ -440,7 +441,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-bold font-heading">17. General</h2>
           <p>
             17.1. <strong>Entire Agreement.</strong> These Terms (together with the other Legal
-            Documents) constitute the entire agreement between you and Britestate in relation to
+            Documents) constitute the entire agreement between you and {brandConfig.displayName} in relation to
             your use of the Platform.
           </p>
           <p>
@@ -449,7 +450,7 @@ export default function TermsPage() {
             effect.
           </p>
           <p>
-            17.3. <strong>Waiver.</strong> No failure or delay by Britestate in exercising any
+            17.3. <strong>Waiver.</strong> No failure or delay by {brandConfig.displayName} in exercising any
             right shall constitute a waiver of that right.
           </p>
           <p>
@@ -465,14 +466,14 @@ export default function TermsPage() {
         <section id="contact">
           <h2 className="text-2xl font-bold font-heading">18. Contact Us</h2>
           <p>
-            Britestate Ltd
+            {brandConfig.displayName} Ltd
             <br />
             [REGISTERED ADDRESS]
             <br />
             Company No. [COMPANY NUMBER]
             <br />
             Email:{" "}
-            <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a>
+            <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a>
             <br />
             HMRC AML Registration: [REFERENCE]
           </p>
@@ -488,7 +489,7 @@ export default function TermsPage() {
             "@type": "WebPage",
             name: "Terms of Service",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/terms`,
           }),
         }}

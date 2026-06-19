@@ -5,6 +5,7 @@ import {
   CacheFirst,
   ExpirationPlugin,
 } from "serwist";
+import { brandConfig } from "@/config/brand";
 
 declare const self: ServiceWorkerGlobalScope & {
   __SW_MANIFEST: (PrecacheEntry | string)[];
@@ -66,7 +67,7 @@ const serwist = new Serwist({
 self.addEventListener("push", (event) => {
   const data = event.data?.json() ?? {};
   event.waitUntil(
-    self.registration.showNotification(data.title ?? "Britestate", {
+    self.registration.showNotification(data.title ?? brandConfig.displayName, {
       body: data.body ?? "",
       icon: data.icon ?? "/icons/icon-192.png",
       badge: "/badge.png",

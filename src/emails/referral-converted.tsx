@@ -26,7 +26,7 @@ export function ReferralConvertedEmail({
         </Text>
         <Text style={{ fontSize: "15px", color: "#5E5E6A", margin: "0 0 16px 0", lineHeight: "1.6" }}>
           Hi {referrerName}, great news — <strong style={{ color: "#0A0A0B" }}>{refereeName}</strong>{" "}
-          just activated their Britestate membership using your referral link.
+          just activated their TrueDeed membership using your referral link.
         </Text>
         <div style={{ backgroundColor: "#F0FDF4", border: "1px solid #86EFAC", borderRadius: "8px", padding: "16px 20px", marginBottom: "24px" }}>
           <Text style={{ fontSize: "14px", fontWeight: "600", color: "#15803D", margin: "0" }}>
@@ -40,7 +40,7 @@ export function ReferralConvertedEmail({
           View Your Referrals
         </EmailButton>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

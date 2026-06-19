@@ -74,7 +74,7 @@ export function TierProgressBar({ currentTier, successfulReferrals }: Props) {
       )}
       {!next && currentTier === "partner" && (
         <p className="mt-4 text-sm font-medium text-[#1B4D3E]">
-          You&apos;ve reached the highest tier. Thank you for building the Britestate community!
+          You&apos;ve reached the highest tier. Thank you for building the TrueDeed community!
         </p>
       )}
     </div>

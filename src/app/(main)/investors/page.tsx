@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { SafeHTML } from "@/components/ui/SafeHTML";
 
 export const metadata: Metadata = {
-  title: "Investor Relations | Britestate",
+  title: "Investor Relations | TrueDeed",
   description:
-    "Key metrics, financials, and investor information for Britestate.",
+    "Key metrics, financials, and investor information for TrueDeed.",
 };
 
 export default async function InvestorsPage() {

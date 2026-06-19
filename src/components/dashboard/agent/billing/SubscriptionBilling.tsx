@@ -144,7 +144,7 @@ export function SubscriptionBilling({ subscription }: Props) {
       <div className="max-w-2xl space-y-6">
         <div>
           <h1 className="font-heading text-2xl font-bold tracking-tight">Billing</h1>
-          <p className="text-muted-foreground">Manage your Britestate subscription</p>
+          <p className="text-muted-foreground">Manage your TrueDeed subscription</p>
         </div>
 
         <Card>
@@ -189,7 +189,7 @@ export function SubscriptionBilling({ subscription }: Props) {
         </Card>
 
         <p className="text-sm text-muted-foreground">
-          Britestate charges a 2.5% platform commission on completed sales.
+          TrueDeed charges a 2.5% platform commission on completed sales.
         </p>
       </div>
     );
@@ -200,7 +200,7 @@ export function SubscriptionBilling({ subscription }: Props) {
       <div>
         <h1 className="font-heading text-2xl font-bold tracking-tight">Choose a Plan</h1>
         <p className="text-muted-foreground">
-          Get started with Britestate — grow your agency with the right tools.
+          Get started with TrueDeed — grow your agency with the right tools.
         </p>
       </div>
 
@@ -256,7 +256,7 @@ export function SubscriptionBilling({ subscription }: Props) {
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Britestate charges a 2.5% platform commission on completed sales.
+        TrueDeed charges a 2.5% platform commission on completed sales.
       </p>
     </div>
   );

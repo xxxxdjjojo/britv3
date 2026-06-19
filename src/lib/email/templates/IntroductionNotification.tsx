@@ -15,6 +15,7 @@ import {
   Button,
   Section,
 } from "@react-email/components";
+import { appUrl, brandConfig } from "@/config/brand";
 
 type IntroductionNotificationProps = Readonly<{
   applicantName: string;
@@ -32,9 +33,11 @@ export default function IntroductionNotification({
   introducedAt = "",
   contactTypeLabel = "",
   rebuttalDeadline = "",
-  dashboardUrl = "https://britestate.co.uk/dashboard/agent/introductions",
+  dashboardUrl = appUrl("/dashboard/agent/introductions"),
   introductionId = "",
 }: IntroductionNotificationProps) {
+  const brandName = brandConfig.displayName;
+
   return (
     <Html>
       <Head />
@@ -42,7 +45,7 @@ export default function IntroductionNotification({
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logoText}>Britestate</Heading>
+            <Heading style={logoText}>{brandName}</Heading>
           </Section>
           <Section style={content}>
             <Heading as="h2" style={title}>

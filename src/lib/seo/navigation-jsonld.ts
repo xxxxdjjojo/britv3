@@ -1,6 +1,7 @@
 import { NAV_ITEMS } from "@/config/navigation";
+import { appBaseUrl } from "@/config/brand";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 /**
  * Resolve a representative URL for a nav item.

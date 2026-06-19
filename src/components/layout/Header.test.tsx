@@ -21,7 +21,7 @@ vi.mock("@/components/layout/MobileNav", () => ({
 
 // Mock Logo
 vi.mock("@/components/shared/Logo", () => ({
-  Logo: () => <span>Britestate</span>,
+  Logo: () => <span>TrueDeed</span>,
 }));
 
 // Stub useRole — SavedBadge calls it and would otherwise hit supabase.from()

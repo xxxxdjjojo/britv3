@@ -13,7 +13,7 @@ export function PasswordResetEmail({
   const minutes = expiresInMinutes ?? 60;
 
   return (
-    <EmailWrapper previewText="Reset your Britestate password">
+    <EmailWrapper previewText="Reset your TrueDeed password">
       <EmailHeader />
       <Section style={{ padding: "32px" }}>
         <Text
@@ -35,7 +35,7 @@ export function PasswordResetEmail({
             lineHeight: "1.6",
           }}
         >
-          Hi {firstName}, we received a request to reset the password for your Britestate account.
+          Hi {firstName}, we received a request to reset the password for your TrueDeed account.
           Click the button below to choose a new password.
         </Text>
 
@@ -77,7 +77,7 @@ export function PasswordResetEmail({
           {resetUrl}
         </Link>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

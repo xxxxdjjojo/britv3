@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { brandConfig } from "@/config/brand";
 
 export function generateMetadata(): Metadata {
   return {
-    title: "Review Policy | Britestate",
+    title: `Review Policy | ${brandConfig.displayName}`,
     description:
-      "Our review policy explains how reviews are moderated, verified, and managed on Britestate. Learn about incentivised review disclosure, defamation complaints, and your rights under UK law.",
+      `Our review policy explains how reviews are moderated, verified, and managed on ${brandConfig.displayName}. Learn about incentivised review disclosure, defamation complaints, and your rights under UK law.`,
   };
 }
 
@@ -14,7 +15,7 @@ export default function ReviewPolicyPage() {
       <article className="prose prose-neutral dark:prose-invert">
         <h1>Review Policy</h1>
         <p className="lead">
-          Britestate is committed to maintaining honest, transparent reviews
+          {brandConfig.displayName} is committed to maintaining honest, transparent reviews
           that help consumers make informed decisions. This policy explains how
           reviews are managed on our platform, in accordance with the Consumer
           Protection from Unfair Trading Regulations 2008, the Digital Markets,
@@ -26,7 +27,7 @@ export default function ReviewPolicyPage() {
         </p>
 
         <h2>Review Guidelines</h2>
-        <p>All reviews submitted on Britestate must:</p>
+        <p>All reviews submitted on {brandConfig.displayName} must:</p>
         <ul>
           <li>Be honest and based on a genuine experience with the service provider.</li>
           <li>Avoid personal attacks, threats, or abusive language.</li>
@@ -41,12 +42,12 @@ export default function ReviewPolicyPage() {
 
         <h2>Verification Tiers</h2>
         <p>
-          Reviews on Britestate carry one of two verification statuses:
+          Reviews on {brandConfig.displayName} carry one of two verification statuses:
         </p>
         <ul>
           <li>
             <strong>Verified</strong> — The review is linked to a completed
-            booking on the Britestate platform. These reviews have been
+            booking on the {brandConfig.displayName} platform. These reviews have been
             confirmed as relating to a genuine transaction between the reviewer
             and the service provider.
           </li>
@@ -76,7 +77,7 @@ export default function ReviewPolicyPage() {
           Under the Consumer Protection from Unfair Trading Regulations 2008 and
           the Digital Markets, Competition and Consumers Act 2024, any review
           written in exchange for a discount, free service, gift, or other
-          incentive <strong>must be disclosed</strong>. On Britestate,
+          incentive <strong>must be disclosed</strong>. On {brandConfig.displayName},
           incentivised reviews are clearly labelled with an
           &ldquo;Incentivised&rdquo; badge.
         </p>
@@ -104,7 +105,7 @@ export default function ReviewPolicyPage() {
             <strong>Report the review</strong> — Use the &ldquo;Report&rdquo;
             button on the review and select &ldquo;Defamatory&rdquo; as the
             reason, or contact our support team directly at{" "}
-            <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a>.
+            <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a>.
           </li>
           <li>
             <strong>Acknowledgement</strong> — We will acknowledge your complaint
@@ -139,9 +140,9 @@ export default function ReviewPolicyPage() {
         <h2>Account Deletion</h2>
         <p>
           In accordance with UK GDPR (specifically the right to erasure under
-          Article 17), when a reviewer deletes their Britestate account, their
+          Article 17), when a reviewer deletes their {brandConfig.displayName} account, their
           reviews are <strong>anonymised</strong> rather than deleted. This means
-          the review content is retained but attributed to &ldquo;A Britestate
+          the review content is retained but attributed to &ldquo;A {brandConfig.displayName}
           user&rdquo; instead of the original reviewer&rsquo;s name.
         </p>
         <p>
@@ -152,7 +153,7 @@ export default function ReviewPolicyPage() {
 
         <h2>Professional Responses</h2>
         <p>
-          Service providers who have been reviewed on Britestate may post a
+          Service providers who have been reviewed on {brandConfig.displayName} may post a
           single public response to each review. Responses must be:
         </p>
         <ul>
@@ -170,7 +171,7 @@ export default function ReviewPolicyPage() {
         <p>
           If you have questions about this review policy or wish to report a
           concern, please contact us at{" "}
-          <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a>.
+          <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a>.
         </p>
       </article>
     </main>

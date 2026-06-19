@@ -109,7 +109,7 @@ export default async function BillingPage({
               {hasActivePlan ? (
                 <>
                   <p className="font-semibold text-gray-900 dark:text-gray-100">
-                    {subscription!.plan_name ?? "Britestate Plan"}{" "}
+                    {subscription!.plan_name ?? "TrueDeed Plan"}{" "}
                     <Badge className="ml-1 text-xs font-medium">{cfg.label}</Badge>
                   </p>
                   <p className="mt-0.5 text-sm text-gray-600 dark:text-gray-400">
@@ -130,7 +130,7 @@ export default async function BillingPage({
                     No active plan
                   </p>
                   <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-                    Subscribe to start listing properties and managing clients on Britestate.
+                    Subscribe to start listing properties and managing clients on TrueDeed.
                   </p>
                 </>
               )}

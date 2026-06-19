@@ -12,7 +12,7 @@ export default function PaymentConfirmationPage() {
   const params = useParams<{ role: string }>();
   const confettiFired = useRef(false);
 
-  const plan = searchParams.get("plan") ?? "Britestate Plan";
+  const plan = searchParams.get("plan") ?? "TrueDeed Plan";
   const amount = searchParams.get("amount");
   const sessionId = searchParams.get("session_id");
 
@@ -139,8 +139,8 @@ export default function PaymentConfirmationPage() {
           </div>
           <p className="text-xs text-gray-400 dark:text-gray-600">
             Questions? Contact us at{" "}
-            <a href="mailto:support@britestate.co.uk" className="underline">
-              support@britestate.co.uk
+            <a href="mailto:support@truedeed.co.uk" className="underline">
+              support@truedeed.co.uk
             </a>
           </p>
         </div>
@@ -219,8 +219,8 @@ export default function PaymentConfirmationPage() {
 
         <p className="text-xs text-gray-400 dark:text-gray-600">
           Questions? Contact us at{" "}
-          <a href="mailto:support@britestate.co.uk" className="underline">
-            support@britestate.co.uk
+          <a href="mailto:support@truedeed.co.uk" className="underline">
+            support@truedeed.co.uk
           </a>
         </p>
       </div>

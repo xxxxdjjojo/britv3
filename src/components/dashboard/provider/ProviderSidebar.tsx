@@ -30,6 +30,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { brandConfig } from "@/config/brand";
 
 type NavItem = {
   label: string;
@@ -131,7 +132,7 @@ function SidebarInner(props: Readonly<{ pathname: string }>) {
         <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary text-white">
           <Building2 className="size-5" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-brand-primary dark:text-white">BRITESTATE</h1>
+        <h1 className="text-xl font-bold tracking-tight text-brand-primary dark:text-white">{brandConfig.displayName.toUpperCase()}</h1>
       </div>
 
       {/* Nav groups */}

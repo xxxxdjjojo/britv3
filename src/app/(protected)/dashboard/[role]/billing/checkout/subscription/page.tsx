@@ -208,7 +208,7 @@ function PlanSelectionView() {
 
       <div className="mt-4 text-center">
         <Link href="/" className="text-sm text-muted-foreground hover:underline">
-          Skip for now — explore Britestate first
+          Skip for now — explore TrueDeed first
         </Link>
       </div>
 

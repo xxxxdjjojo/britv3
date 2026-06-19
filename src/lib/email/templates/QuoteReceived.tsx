@@ -14,6 +14,7 @@ import {
   Button,
   Section,
 } from "@react-email/components";
+import { appUrl, brandConfig } from "@/config/brand";
 
 type QuoteReceivedProps = Readonly<{
   recipientName: string;
@@ -26,18 +27,20 @@ export default function QuoteReceived({
   recipientName = "there",
   providerName = "A service provider",
   quoteAmount = "",
-  quoteUrl = "https://britestate.com/quotes",
+  quoteUrl = appUrl("/quotes"),
 }: QuoteReceivedProps) {
+  const brandName = brandConfig.displayName;
+
   return (
     <Html>
       <Head />
       <Preview>
-        {providerName} sent you a quote for {quoteAmount} on Britestate
+        {providerName} sent you a quote for {quoteAmount} on {brandName}
       </Preview>
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logoText}>Britestate</Heading>
+            <Heading style={logoText}>{brandName}</Heading>
           </Section>
           <Section style={content}>
             <Text style={greeting}>Hi {recipientName},</Text>
@@ -54,7 +57,7 @@ export default function QuoteReceived({
           </Section>
           <Text style={footer}>
             You received this email because of your notification preferences on
-            Britestate.
+            {brandName}.
           </Text>
         </Container>
       </Body>

@@ -10,6 +10,7 @@ import { Resend } from "resend";
 import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { captureException } from "@/lib/observability/capture-exception";
+import { brandConfig } from "@/config/brand";
 
 // Lazy-initialize so the Resend SDK does not throw at module evaluation time.
 let _resend: Resend | null = null;
@@ -19,7 +20,7 @@ function getResend(): Resend {
   }
   return _resend;
 }
-const FROM = `${process.env.RESEND_FROM_NAME ?? "Britestate"} <${process.env.RESEND_FROM_ADDRESS ?? "hello@britestate.co.uk"}>`;
+const FROM = `${process.env.RESEND_FROM_NAME ?? brandConfig.displayName} <${process.env.RESEND_FROM_ADDRESS ?? brandConfig.fromEmail}>`;
 
 export const truedeedHashAnchor = inngest.createFunction(
   {

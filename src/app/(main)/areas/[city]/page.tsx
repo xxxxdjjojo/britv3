@@ -32,9 +32,9 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   const { city } = await params;
   const data = await getCityData(city);
   if (!data) {
-    return { title: "Area Not Found | Britestate" };
+    return { title: "Area Not Found | TrueDeed" };
   }
-  const title = `${data.name} Property Guide — House Prices, Schools & Area Info | Britestate`;
+  const title = `${data.name} Property Guide — House Prices, Schools & Area Info | TrueDeed`;
   const description = `Explore ${data.name} property market data. Average price ${data.avgPriceFormatted} (${data.yoyChangeFormatted} YoY), ${data.activeListings.toLocaleString()} active listings. Schools, transport and local area info.`;
   return {
     title,

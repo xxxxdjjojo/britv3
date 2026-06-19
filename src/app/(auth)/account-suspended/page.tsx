@@ -40,10 +40,10 @@ function AccountSuspendedContent() {
       {/* Actions */}
       <div className="flex flex-col gap-3">
         <Button asChild size="lg" className="w-full">
-          <a href="mailto:support@britestate.co.uk">Contact Support</a>
+          <a href="mailto:support@truedeed.co.uk">Contact Support</a>
         </Button>
         <Button asChild variant="outline" size="lg" className="w-full">
-          <a href="mailto:appeals@britestate.co.uk">Appeal This Decision</a>
+          <a href="mailto:appeals@truedeed.co.uk">Appeal This Decision</a>
         </Button>
       </div>
 

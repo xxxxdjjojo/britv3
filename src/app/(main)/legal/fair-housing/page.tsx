@@ -4,9 +4,10 @@ import { Scale, Users, Accessibility, Megaphone } from "lucide-react";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LabeledGrid } from "@/components/legal/LabeledGrid";
 import { NumberedSteps } from "@/components/legal/NumberedSteps";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "16 June 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "our-commitment", label: "Our Commitment" },
@@ -16,13 +17,13 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Fair Housing Policy | Britestate",
+  title: `Fair Housing Policy | ${brandConfig.displayName}`,
   description:
-    "Britestate's commitment to equal access to housing and a discrimination-free experience for all buyers, renters, sellers, and landlords under the Equality Act 2010.",
+    `${brandConfig.displayName}'s commitment to equal access to housing and a discrimination-free experience for all buyers, renters, sellers, and landlords under the Equality Act 2010.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/fair-housing` },
   openGraph: {
-    title: "Fair Housing Policy | Britestate",
+    title: `Fair Housing Policy | ${brandConfig.displayName}`,
     description: "Our commitment to equality and inclusion in the UK property market.",
   },
 };
@@ -45,7 +46,7 @@ export default function FairHousingPage() {
       <p className="mb-8 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       <div className="mb-8 rounded-lg border border-amber-100 bg-amber-50 p-4 text-sm text-amber-800">
-        This policy statement is drafted for clarity and is pending final review by Britestate&rsquo;s
+        This policy statement is drafted for clarity and is pending final review by {brandConfig.displayName}&rsquo;s
         legal team. Specific statutory references should be confirmed before publication.
       </div>
 
@@ -55,7 +56,7 @@ export default function FairHousingPage() {
             <Users className="text-primary" size={22} /> Our Commitment
           </h2>
           <p>
-            Britestate believes every individual deserves equal access to housing. This policy sets
+            {brandConfig.displayName} believes every individual deserves equal access to housing. This policy sets
             out our commitment to equality, diversity, and inclusion across every part of our
             property platform &mdash; search, listings, messaging, offers, and the services
             marketplace.
@@ -63,7 +64,7 @@ export default function FairHousingPage() {
           <p>
             We act in line with the <strong>Equality Act 2010</strong> and the{" "}
             <strong>Human Rights Act 1998</strong>, and we expect the estate agents, landlords, and
-            service providers operating on Britestate to do the same.
+            service providers operating on {brandConfig.displayName} to do the same.
           </p>
         </section>
 
@@ -98,7 +99,7 @@ export default function FairHousingPage() {
             <h3 className="text-xl font-bold font-heading">Reasonable adjustments</h3>
             <p className="mt-3 text-sm leading-relaxed text-white/90">
               We aim to ensure disabled users are not put at a substantial disadvantage compared to
-              non-disabled users. If you need an adjustment to use Britestate or to engage with a
+              non-disabled users. If you need an adjustment to use {brandConfig.displayName} or to engage with a
               listing, we will do our best to help.
             </p>
             <Link
@@ -121,7 +122,7 @@ export default function FairHousingPage() {
           <h2 className="flex items-center gap-3 text-2xl font-bold font-heading">
             <Megaphone className="text-primary" size={22} /> Reporting Procedures
           </h2>
-          <p>If you believe you have experienced discrimination on Britestate, please:</p>
+          <p>If you believe you have experienced discrimination on {brandConfig.displayName}, please:</p>
           <NumberedSteps
             steps={[
               {
@@ -133,8 +134,8 @@ export default function FairHousingPage() {
                 body: (
                   <>
                     Contact our team at{" "}
-                    <a href="mailto:support@britestate.co.uk" className="text-primary underline hover:no-underline">
-                      support@britestate.co.uk
+                    <a href={`mailto:${brandConfig.emails.support}`} className="text-primary underline hover:no-underline">
+                      {brandConfig.emails.support}
                     </a>{" "}
                     or through our{" "}
                     <Link href="/legal/complaints" className="text-primary underline hover:no-underline">

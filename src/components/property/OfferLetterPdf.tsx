@@ -142,7 +142,7 @@ export function OfferLetterPdf(props: Readonly<{ data: OfferLetterData }>) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.brand}>Britestate</Text>
+          <Text style={styles.brand}>TrueDeed</Text>
           <Text style={styles.tagline}>
             Property Offer Letter
           </Text>
@@ -216,7 +216,7 @@ export function OfferLetterPdf(props: Readonly<{ data: OfferLetterData }>) {
         </View>
 
         <Text style={styles.footer}>
-          Generated via Britestate Property Portal
+          Generated via TrueDeed Property Portal
         </Text>
       </Page>
     </Document>

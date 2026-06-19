@@ -213,7 +213,7 @@ export default function PlatformMetricsPage() {
       <AdminPageHeader
         eyebrow="Analytics"
         title="Platform Metrics"
-        description="Real-time aggregate statistics from the Britestate platform database."
+        description="Real-time aggregate statistics from the TrueDeed platform database."
       />
       <Suspense fallback={<MetricsSkeleton />}>
         <PlatformMetricsContent />

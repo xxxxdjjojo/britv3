@@ -9,6 +9,7 @@ import { CommandPaletteLazy } from "@/components/layout/CommandPaletteLazy";
 import { DevBreakpointIndicator } from "@/components/responsive/DevBreakpointIndicator";
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/organization-jsonld";
 import { safeJsonLd } from "@/lib/seo/safe-json-ld";
+import { appBaseUrl, brandConfig } from "@/config/brand";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -32,21 +33,21 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"),
+  metadataBase: new URL(appBaseUrl()),
   title: {
-    template: "%s | Britestate",
-    default: "Britestate | UK Property Portal",
+    template: `%s | ${brandConfig.displayName}`,
+    default: `${brandConfig.displayName} | UK Property Portal`,
   },
   description:
     "Find your perfect UK property. Search, compare, and transact with AI-powered matching, verified agents, and trusted tradespeople.",
   openGraph: {
     type: "website",
-    siteName: "Britestate",
+    siteName: brandConfig.displayName,
     locale: "en_GB",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@britestate",
+    site: brandConfig.social.twitterHandle,
   },
 };
 

@@ -38,7 +38,7 @@ import {
 const data = {
   user: {
     name: "James Mitchell",
-    email: "james@britestate.com",
+    email: "james@truedeed.co.uk",
     avatar: "",
   },
   navMain: [
@@ -190,7 +190,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               render={<Link href="/" />}
             >
               <MapPinIcon className="size-5! text-emerald-600" />
-              <span className="text-base font-semibold">Britestate</span>
+              <span className="text-base font-semibold">TrueDeed</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

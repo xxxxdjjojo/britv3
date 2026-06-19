@@ -112,7 +112,7 @@ export default async function CredentialsPage() {
       {/* Help note */}
       <p className="text-xs text-neutral-400">
         Accepted formats: PDF, JPEG, PNG — max 10 MB per file. Documents are
-        securely stored and only shared with the Britestate verification team.
+        securely stored and only shared with the TrueDeed verification team.
       </p>
     </div>
   );

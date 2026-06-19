@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "scope", label: "Scope" },
   { id: "roles", label: "Roles" },
   { id: "controller-obligations", label: "Controller Obligations" },
-  { id: "britestate-obligations", label: "Britestate Obligations" },
+  { id: "britestate-obligations", label: `${brandConfig.displayName} Obligations` },
   { id: "sub-processors", label: "Sub-Processors" },
   { id: "international-transfers", label: "International Transfers" },
   { id: "audit-rights", label: "Audit Rights" },
@@ -25,14 +26,14 @@ const SUB_PROCESSORS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Data Processing Agreement | Britestate",
+  title: `Data Processing Agreement | ${brandConfig.displayName}`,
   description:
-    "Summary of the Data Processing Agreement applying when Britestate processes personal data on behalf of estate agents and service providers who are data controllers under UK GDPR.",
+    `Summary of the Data Processing Agreement applying when ${brandConfig.displayName} processes personal data on behalf of estate agents and service providers who are data controllers under UK GDPR.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/data-processing` },
   openGraph: {
-    title: "Data Processing Agreement | Britestate",
-    description: "Britestate Data Processing Agreement summary for estate agents and service providers.",
+    title: `Data Processing Agreement | ${brandConfig.displayName}`,
+    description: `${brandConfig.displayName} Data Processing Agreement summary for estate agents and service providers.`,
   },
 };
 
@@ -51,10 +52,10 @@ export default function DataProcessingPage() {
       <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
-        This is a summary of the Data Processing Agreement (&ldquo;DPA&rdquo;) that applies when Britestate processes
+        This is a summary of the Data Processing Agreement (&ldquo;DPA&rdquo;) that applies when {brandConfig.displayName} processes
         personal data on behalf of Users who are data controllers (primarily estate agents and service providers).
         The full DPA is available on request from{" "}
-        <a href="mailto:privacy@britestate.co.uk" className="underline">privacy@britestate.co.uk</a>.
+        <a href={`mailto:${brandConfig.emails.privacy}`} className="underline">{brandConfig.emails.privacy}</a>.
       </div>
 
       <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
@@ -62,14 +63,14 @@ export default function DataProcessingPage() {
           <h2 className="text-2xl font-bold font-heading">Scope</h2>
           <p>
             This DPA applies where an estate agent or service provider uploads client data to the Platform and
-            Britestate processes it on their instructions.
+            {brandConfig.displayName} processes it on their instructions.
           </p>
         </section>
 
         <section id="roles">
           <h2 className="text-2xl font-bold font-heading">Roles</h2>
           <p>
-            <strong>Britestate&rsquo;s Role:</strong> Data Processor (under Art. 28 UK GDPR).
+            <strong>{brandConfig.displayName}&rsquo;s Role:</strong> Data Processor (under Art. 28 UK GDPR).
           </p>
           <p>
             The estate agent or service provider who uploads client data acts as the <strong>Data Controller</strong>,
@@ -84,14 +85,14 @@ export default function DataProcessingPage() {
             <li>Have a lawful basis for the personal data it uploads;</li>
             <li>Have provided appropriate privacy notices to data subjects;</li>
             <li>
-              Not instruct Britestate to process data in a manner that would breach UK GDPR.
+              Not instruct {brandConfig.displayName} to process data in a manner that would breach UK GDPR.
             </li>
           </ul>
         </section>
 
         <section id="britestate-obligations">
-          <h2 className="text-2xl font-bold font-heading">Britestate Obligations</h2>
-          <p>Britestate will:</p>
+          <h2 className="text-2xl font-bold font-heading">{brandConfig.displayName} Obligations</h2>
+          <p>{brandConfig.displayName} will:</p>
           <ul>
             <li>Process data only on documented instructions from the controller;</li>
             <li>Implement appropriate technical and organisational security measures;</li>
@@ -105,7 +106,7 @@ export default function DataProcessingPage() {
         <section id="sub-processors">
           <h2 className="text-2xl font-bold font-heading">Sub-Processors</h2>
           <p className="mb-4">
-            Britestate uses the sub-processors listed in our{" "}
+            {brandConfig.displayName} uses the sub-processors listed in our{" "}
             <Link href="/legal/privacy">Privacy Policy</Link> (Section 5). We will notify controllers at least
             30 days before adding a new sub-processor. Controllers may object, and if the objection cannot be
             resolved, may terminate the DPA.
@@ -144,7 +145,7 @@ export default function DataProcessingPage() {
         <section id="audit-rights">
           <h2 className="text-2xl font-bold font-heading">Audit Rights</h2>
           <p>
-            Controllers may audit Britestate&rsquo;s compliance with this DPA with reasonable notice and during
+            Controllers may audit {brandConfig.displayName}&rsquo;s compliance with this DPA with reasonable notice and during
             business hours, subject to confidentiality obligations.
           </p>
         </section>
@@ -153,7 +154,7 @@ export default function DataProcessingPage() {
           <h2 className="text-2xl font-bold font-heading">Full DPA</h2>
           <p>
             The full Data Processing Agreement is available on request from{" "}
-            <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>.
+            <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a>.
           </p>
         </section>
       </div>
@@ -166,7 +167,7 @@ export default function DataProcessingPage() {
             "@type": "WebPage",
             name: "Data Processing Agreement",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/data-processing`,
           }),
         }}

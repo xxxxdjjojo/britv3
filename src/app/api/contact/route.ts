@@ -78,12 +78,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   // 4. Send email via Resend (graceful degradation if not configured)
   const resend = getResend();
-  const supportEmail = process.env.SUPPORT_EMAIL ?? "support@britestate.com";
+  const supportEmail = process.env.SUPPORT_EMAIL ?? "support@truedeed.co.uk";
 
   if (resend) {
     try {
       await resend.emails.send({
-        from: "Britestate <noreply@britestate.com>",
+        from: "TrueDeed <noreply@truedeed.co.uk>",
         to: supportEmail,
         replyTo: email,
         subject: `[Contact] ${subject}`,

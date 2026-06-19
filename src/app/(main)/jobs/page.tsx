@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { MapPin, Clock, Briefcase, MessageSquare } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Job Board — Find Work Near You | Britestate",
+  title: "Job Board — Find Work Near You | TrueDeed",
   description:
     "Browse open jobs and RFQs posted by homeowners. Filter by trade category and urgency.",
 };
@@ -391,7 +391,7 @@ export default async function JobBoardPage({
           </h2>
           <p className="text-white/80 mb-6 max-w-lg mx-auto text-sm">
             Create a free provider account to quote on jobs in your area and
-            grow your business with Britestate.
+            grow your business with TrueDeed.
           </p>
           <Link
             href="/auth/signup?role=service_provider"

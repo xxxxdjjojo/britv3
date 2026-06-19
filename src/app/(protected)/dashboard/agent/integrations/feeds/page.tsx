@@ -30,7 +30,7 @@ export default async function AgentFeedsPage() {
           Property Feed Integrations
         </h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Sync listings from Reapit, Alto, or Jupix directly into your Britestate account.
+          Sync listings from Reapit, Alto, or Jupix directly into your TrueDeed account.
         </p>
       </div>
       <FeedIntegrationConfig initialIntegrations={initialIntegrations} />

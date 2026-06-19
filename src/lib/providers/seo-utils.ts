@@ -5,6 +5,8 @@
  * Used by the ISR category location page at /services/[category]/[location].
  */
 
+import { brandConfig } from "@/config/brand";
+
 /**
  * Capitalises the first letter of each word and replaces hyphens with spaces.
  * "south-london" → "South London", "isleworth" → "Isleworth"
@@ -43,10 +45,10 @@ export function generateCategoryPageMeta(
   location: string,
 ): CategoryPageMeta {
   return {
-    title: `${category} in ${location} | Britestate Verified`,
+    title: `${category} in ${location} | ${brandConfig.displayName} Verified`,
     description: `Find verified ${category.toLowerCase()} in ${location}. Browse real reviews, compare prices, and get free quotes from the UK's most trusted tradespeople.`,
     h1: `Verified ${category} in ${location}`,
-    intro: `Find top-rated local ${category.toLowerCase()} for all jobs in the ${location} area. Every professional is verified by Britestate — insurance checked, qualifications confirmed.`,
+    intro: `Find top-rated local ${category.toLowerCase()} for all jobs in the ${location} area. Every professional is verified by ${brandConfig.displayName} — insurance checked, qualifications confirmed.`,
   };
 }
 
@@ -66,19 +68,19 @@ export function generateCategoryFAQs(
   return [
     {
       question: `How much does a ${category.toLowerCase()} cost in ${location}?`,
-      answer: `The cost varies by job complexity. Most ${category.toLowerCase()} in ${location} charge between £50–£150 per hour or offer fixed-price quotes for common jobs. Use Britestate to get free quotes from multiple verified professionals.`,
+      answer: `The cost varies by job complexity. Most ${category.toLowerCase()} in ${location} charge between £50–£150 per hour or offer fixed-price quotes for common jobs. Use ${brandConfig.displayName} to get free quotes from multiple verified professionals.`,
     },
     {
       question: `How do I find a reliable ${category.toLowerCase()} in ${location}?`,
-      answer: `All ${category.toLowerCase()} on Britestate are verified — we check their insurance, qualifications, and reviews. Filter by rating, response time, and price to find the right professional for your needs.`,
+      answer: `All ${category.toLowerCase()} on ${brandConfig.displayName} are verified — we check their insurance, qualifications, and reviews. Filter by rating, response time, and price to find the right professional for your needs.`,
     },
     {
-      question: `Are all ${category.toLowerCase()} on Britestate verified?`,
-      answer: `Yes. Every professional on Britestate goes through our Verification Centre: identity check, insurance verification, and qualification confirmation. Look for the Britestate Verified badge.`,
+      question: `Are all ${category.toLowerCase()} on ${brandConfig.displayName} verified?`,
+      answer: `Yes. Every professional on ${brandConfig.displayName} goes through our Verification Centre: identity check, insurance verification, and qualification confirmation. Look for the ${brandConfig.displayName} Verified badge.`,
     },
     {
       question: `How quickly can I get a ${category.toLowerCase()} in ${location}?`,
-      answer: `Many ${category.toLowerCase()} on Britestate respond within 2 hours. For emergencies, look for providers listing "Emergency callout available". Response times are displayed on each profile.`,
+      answer: `Many ${category.toLowerCase()} on ${brandConfig.displayName} respond within 2 hours. For emergencies, look for providers listing "Emergency callout available". Response times are displayed on each profile.`,
     },
   ];
 }

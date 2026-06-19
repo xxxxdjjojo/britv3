@@ -57,12 +57,12 @@ export async function generateMetadata({
   const { area } = await params;
   const areaName = area.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
   return {
-    title: `Sold Prices in ${areaName} | Britestate`,
-    description: `View recent property sold prices, market trends, and transaction data in ${areaName}. Historical land registry data powered by Britestate.`,
+    title: `Sold Prices in ${areaName} | TrueDeed`,
+    description: `View recent property sold prices, market trends, and transaction data in ${areaName}. Historical land registry data powered by TrueDeed.`,
     alternates: { canonical: `/sold-prices/${area}` },
     openGraph: {
-      title: `Sold Prices in ${areaName} | Britestate`,
-      description: `View recent property sold prices, market trends, and transaction data in ${areaName}. Historical land registry data powered by Britestate.`,
+      title: `Sold Prices in ${areaName} | TrueDeed`,
+      description: `View recent property sold prices, market trends, and transaction data in ${areaName}. Historical land registry data powered by TrueDeed.`,
       url: `/sold-prices/${area}`,
       type: "website",
     },

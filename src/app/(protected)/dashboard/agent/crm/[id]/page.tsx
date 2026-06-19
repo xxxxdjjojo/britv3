@@ -5,7 +5,7 @@ import { ClientProfile } from "@/components/dashboard/agent/crm/ClientProfile";
 import type { AgentCrmClient } from "@/types/agent";
 
 export const metadata = {
-  title: "Client Profile | Agent | Britestate",
+  title: "Client Profile | Agent | TrueDeed",
 };
 
 type Props = Readonly<{

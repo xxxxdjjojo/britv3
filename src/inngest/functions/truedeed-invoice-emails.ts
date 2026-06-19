@@ -23,6 +23,7 @@ import { Resend } from "resend";
 import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { captureException } from "@/lib/observability/capture-exception";
+import { appBaseUrl } from "@/config/brand";
 import {
   getEnglandWalesBankHolidays,
   addBusinessDays,
@@ -88,7 +89,7 @@ function addCalendarDays(iso: string, days: number): string {
 }
 
 function appUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+  return appBaseUrl();
 }
 
 // ---------------------------------------------------------------------------

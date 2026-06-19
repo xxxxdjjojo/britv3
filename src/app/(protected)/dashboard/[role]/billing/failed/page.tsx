@@ -183,7 +183,7 @@ function PaymentFailedContent() {
 
         <p className="text-xs text-gray-400 dark:text-gray-600">
           Your card was not charged. Need help?{" "}
-          <a href="mailto:support@britestate.co.uk" className="underline">
+          <a href="mailto:support@truedeed.co.uk" className="underline">
             Contact support
           </a>
         </p>

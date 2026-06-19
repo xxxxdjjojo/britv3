@@ -1,5 +1,6 @@
 
 import type { InvoiceLineItem } from "@/types/provider-dashboard";
+import { brandConfig } from "@/config/brand";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -71,13 +72,13 @@ export function InvoicePreview({
 
   return (
     <div className="rounded-xl border border-border bg-white shadow-sm dark:bg-neutral-900 print:shadow-none">
-      {/* Britestate brand header bar */}
+      {/* TrueDeed brand header bar */}
       <div
         className="flex items-center justify-between rounded-t-xl px-8 py-4"
         style={{ backgroundColor: "#1B4D3E" }}
       >
         <span className="text-lg font-bold tracking-widest text-white">
-          BRITESTATE
+          {brandConfig.displayName.toUpperCase()}
         </span>
         <span className="text-sm font-semibold uppercase tracking-wider text-white/70">
           Invoice

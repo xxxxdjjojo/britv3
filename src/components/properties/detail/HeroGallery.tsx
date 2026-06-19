@@ -255,7 +255,7 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
                   <div className="flex items-center gap-1.5">
                     <Sparkles className="size-4 shrink-0 text-[color:var(--color-brand-secondary)]" />
                     <span className="text-xs font-medium text-teal-200">
-                      Britestate AI Highlight
+                      TrueDeed AI Highlight
                     </span>
                   </div>
                   <p className="mt-1 text-sm italic text-white/90">

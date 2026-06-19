@@ -12,9 +12,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { MarketMapExplorerLoader } from "@/components/market-map/MarketMapExplorerLoader";
+import { brandConfig } from "@/config/brand";
 
 export const metadata: Metadata = {
-  title: "Property Price Map — UK Median Sold Prices | Britestate",
+  title: `Property Price Map — UK Median Sold Prices | ${brandConfig.displayName}`,
   description:
     "Explore median sold prices across the UK by area. Colour-coded choropleth map based on registered Land Registry transactions.",
 };

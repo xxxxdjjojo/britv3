@@ -1,6 +1,7 @@
 import type { CityData, NeighbourhoodData } from "@/types/areas";
+import { appBaseUrl } from "@/config/brand";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 export function cityPlaceJsonLd(city: CityData) {
   return {

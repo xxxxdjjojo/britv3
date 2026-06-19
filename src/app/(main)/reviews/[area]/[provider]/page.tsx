@@ -74,7 +74,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const areaCode = area.toUpperCase();
 
   return {
-    title: `${name} Reviews in ${areaCode} | Britestate`,
+    title: `${name} Reviews in ${areaCode} | TrueDeed`,
     description: `Read verified customer reviews for ${name}, a service provider in the ${areaCode} area. See ratings, feedback, and provider responses.`,
   };
 }

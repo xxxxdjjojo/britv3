@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { brandConfig } from "@/config/brand";
 import Link from "next/link";
 
 const sizeMap = {
@@ -57,7 +58,7 @@ export function Logo({
           variant === "default" ? "text-brand-primary" : "text-white",
         )}
       >
-        Britestate
+        {brandConfig.displayName}
       </span>
     </Link>
   );

@@ -15,6 +15,7 @@ import { advanceReferralStatus } from "@/services/referrals/unified-referral-ser
 import { TIER_CONFIGS } from "@/lib/referral-tiers";
 import type { ReferralTier } from "@/types/referrals";
 import { captureException } from "@/lib/observability/capture-exception";
+import { appBaseUrl } from "@/config/brand";
 
 export type StripeEventProcessResult = Readonly<{
   userId: string | null;
@@ -436,7 +437,7 @@ export async function processStripeEvent(
               amount: (invoice.amount_due ?? 0) / 100,
               description: invoice.description ?? "Subscription payment",
               failedAt: new Date().toISOString(),
-              retryUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/dashboard/billing`,
+              retryUrl: `${appBaseUrl()}/dashboard/billing`,
             });
           } catch (emailErr) {
             captureException(emailErr, {

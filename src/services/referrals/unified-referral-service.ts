@@ -15,8 +15,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { nanoid } from "nanoid";
 import type { Referral, ReferralStats, ReferralStatus } from "@/types/referrals";
 import { getTierForCount, getNextTier } from "@/lib/referral-tiers";
+import { appBaseUrl } from "@/config/brand";
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const SITE_URL = appBaseUrl();
 const DEFAULT_REFERRAL_LIMIT = 20;
 
 // ============================================================================

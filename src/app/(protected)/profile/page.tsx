@@ -3,8 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { ProfilePageClient } from "./ProfilePageClient";
 
 export const metadata: Metadata = {
-  title: "Profile | Britestate",
-  description: "Manage your Britestate profile, avatar, and settings.",
+  title: "Profile | TrueDeed",
+  description: "Manage your TrueDeed profile, avatar, and settings.",
 };
 
 export default async function ProfilePage() {

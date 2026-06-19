@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 import { Resend } from "resend";
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
+import { brandConfig } from "@/config/brand";
 
 // Zod schema — mirrors GdprRequestForm fields
 const GdprRequestSchema = z.object({
@@ -86,8 +87,8 @@ export async function POST(request: Request) {
 
   // Send admin notification
   await resend.emails.send({
-    from: "Britestate Privacy <privacy@britestate.co.uk>",
-    to: "privacy@britestate.co.uk",
+    from: `${brandConfig.displayName} Privacy <${brandConfig.emails.privacy}>`,
+    to: brandConfig.emails.privacy,
     subject: `[SAR] ${rightType} request — ${reference}`,
     text: [
       `Reference: ${reference}`,
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
 
   // Send confirmation to requester
   await resend.emails.send({
-    from: "Britestate Privacy <privacy@britestate.co.uk>",
+    from: `${brandConfig.displayName} Privacy <${brandConfig.emails.privacy}>`,
     to: email,
     subject: `Your data subject request — ${reference}`,
     text: [
@@ -118,9 +119,9 @@ export async function POST(request: Request) {
       "",
       "We will respond within 30 calendar days. In complex cases we may extend by up to 2 months and will notify you.",
       "",
-      "If you have any questions, reply to this email or contact privacy@britestate.co.uk.",
+      `If you have any questions, reply to this email or contact ${brandConfig.emails.privacy}.`,
       "",
-      "Britestate Privacy Team",
+      `${brandConfig.displayName} Privacy Team`,
     ].join("\n"),
   });
 

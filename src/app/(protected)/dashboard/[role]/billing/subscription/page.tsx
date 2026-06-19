@@ -65,7 +65,7 @@ export default async function SubscriptionPage({
           <AlertCircle className="mx-auto mb-3 text-orange-500" size={32} />
           <p className="font-semibold text-orange-900 dark:text-orange-100">No active subscription</p>
           <p className="mt-1 text-sm text-orange-700 dark:text-orange-300">
-            Subscribe to unlock Britestate&apos;s full feature set.
+            Subscribe to unlock TrueDeed&apos;s full feature set.
           </p>
           <Button className="mt-4 bg-brand-primary text-white hover:bg-brand-primary-light" asChild>
             <Link href={`${basePath}/checkout/subscription`}>Choose a plan</Link>
@@ -102,7 +102,7 @@ export default async function SubscriptionPage({
                 <div>
                   <p className="text-xs text-neutral-400">Plan</p>
                   <p className="font-heading text-2xl font-bold text-brand-primary-dark">
-                    {subscription.plan_name ?? "Britestate Plan"}
+                    {subscription.plan_name ?? "TrueDeed Plan"}
                   </p>
                 </div>
 

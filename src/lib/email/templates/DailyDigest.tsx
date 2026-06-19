@@ -14,6 +14,7 @@ import {
   Button,
   Section,
 } from "@react-email/components";
+import { appUrl, brandConfig } from "@/config/brand";
 
 type DigestEvent = Readonly<{
   title: string;
@@ -32,16 +33,18 @@ export default function DailyDigest({
   events = [],
   dateRange = "today",
 }: DailyDigestProps) {
+  const brandName = brandConfig.displayName;
+
   return (
     <Html>
       <Head />
       <Preview>
-        {`Your daily digest: ${String(events.length)} update${events.length === 1 ? "" : "s"} on Britestate`}
+        {`Your daily digest: ${String(events.length)} update${events.length === 1 ? "" : "s"} on ${brandName}`}
       </Preview>
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logoText}>Britestate</Heading>
+            <Heading style={logoText}>{brandName}</Heading>
           </Section>
           <Section style={content}>
             <Text style={greeting}>Hi {recipientName},</Text>
@@ -61,15 +64,15 @@ export default function DailyDigest({
             <Section style={ctaSection}>
               <Button
                 style={ctaButton}
-                href="https://britestate.com/notifications"
+                href={appUrl("/notifications")}
               >
-                View All on Britestate
+                View All on {brandName}
               </Button>
             </Section>
           </Section>
           <Text style={footer}>
             You received this digest because of your notification preferences on
-            Britestate.
+            {brandName}.
           </Text>
         </Container>
       </Body>

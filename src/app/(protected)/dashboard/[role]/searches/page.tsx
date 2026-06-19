@@ -74,7 +74,7 @@ const RECOMMENDED: readonly RecommendedProperty[] = [
 ];
 
 export const metadata = {
-  title: "Saved Searches & Alerts - Britestate",
+  title: "Saved Searches & Alerts - TrueDeed",
   description: "Manage your saved property searches and alerts",
 };
 

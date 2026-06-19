@@ -97,7 +97,7 @@ export default function DecisionPage({ params }: Props) {
                 Accept Application
               </CardTitle>
               <CardDescription>
-                This will approve the applicant and send them a confirmation email via Britestate.
+                This will approve the applicant and send them a confirmation email via TrueDeed.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

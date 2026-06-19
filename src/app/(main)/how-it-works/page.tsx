@@ -264,7 +264,7 @@ export default function HowItWorksPage() {
           How It Works
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
-          Britestate simplifies every step of the property journey. Choose your
+          TrueDeed simplifies every step of the property journey. Choose your
           role to see how it works for you.
         </p>
       </div>

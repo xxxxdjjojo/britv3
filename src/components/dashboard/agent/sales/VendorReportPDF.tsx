@@ -118,7 +118,7 @@ export function VendorReportDownload({
             </View>
 
             <Text style={styles.footer}>
-              Generated {new Date().toLocaleDateString("en-GB")} — Britestate
+              Generated {new Date().toLocaleDateString("en-GB")} — TrueDeed
               Vendor Report
             </Text>
           </Page>
@@ -298,7 +298,7 @@ export function VendorReportList({
                   </div>
                   <VendorReportDownload
                     reportData={(report.data as Record<string, unknown>) ?? {}}
-                    agencyName="Britestate"
+                    agencyName="TrueDeed"
                   />
                 </div>
               ))}

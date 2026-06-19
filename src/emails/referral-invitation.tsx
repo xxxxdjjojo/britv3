@@ -12,7 +12,7 @@ export function ReferralInvitationEmail({
   rewardDescription,
 }: Readonly<ReferralInvitationEmailProps>) {
   return (
-    <EmailWrapper previewText={`${referrerName} has invited you to Britestate`}>
+    <EmailWrapper previewText={`${referrerName} has invited you to TrueDeed`}>
       <EmailHeader />
       <Section style={{ padding: "32px" }}>
         <Text
@@ -24,7 +24,7 @@ export function ReferralInvitationEmail({
             lineHeight: "1.3",
           }}
         >
-          You&apos;ve been invited to Britestate
+          You&apos;ve been invited to TrueDeed
         </Text>
         <Text
           style={{
@@ -35,7 +35,7 @@ export function ReferralInvitationEmail({
           }}
         >
           <strong style={{ color: "#0A0A0B" }}>{referrerName}</strong> thinks you&apos;d love
-          Britestate &mdash; the UK&apos;s most trusted property portal.
+          TrueDeed &mdash; the UK&apos;s most trusted property portal.
         </Text>
 
         {rewardDescription && (
@@ -77,7 +77,7 @@ export function ReferralInvitationEmail({
           Accept Invitation
         </EmailButton>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

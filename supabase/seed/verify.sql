@@ -1,4 +1,4 @@
--- Britestate Demo Data Verification
+-- TrueDeed Demo Data Verification
 -- Run after seeding to verify data is accessible
 
 -- =========================================

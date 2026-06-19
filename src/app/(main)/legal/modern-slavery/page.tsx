@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "introduction", label: "1. Introduction" },
@@ -17,14 +18,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Modern Slavery Statement | Britestate",
+  title: `Modern Slavery Statement | ${brandConfig.displayName}`,
   description:
-    "Britestate&rsquo;s statement on preventing modern slavery and human trafficking, made pursuant to Section 54 of the Modern Slavery Act 2015.",
+    `${brandConfig.displayName}&rsquo;s statement on preventing modern slavery and human trafficking, made pursuant to Section 54 of the Modern Slavery Act 2015.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/modern-slavery` },
   openGraph: {
-    title: "Modern Slavery Statement | Britestate",
-    description: "Britestate Modern Slavery Statement under the Modern Slavery Act 2015.",
+    title: `Modern Slavery Statement | ${brandConfig.displayName}`,
+    description: `${brandConfig.displayName} Modern Slavery Statement under the Modern Slavery Act 2015.`,
   },
 };
 
@@ -52,7 +53,7 @@ export default function ModernSlaveryPage() {
       {/* Yellow info callout */}
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
         This statement is made pursuant to Section 54 of the Modern Slavery Act 2015 and sets out
-        the steps Britestate Ltd has taken to ensure modern slavery and human trafficking are not
+        the steps {brandConfig.displayName} Ltd has taken to ensure modern slavery and human trafficking are not
         taking place in our business or supply chains. Financial year ending: [DATE].
       </div>
 
@@ -60,7 +61,7 @@ export default function ModernSlaveryPage() {
         <section id="introduction">
           <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
           <p>
-            Britestate Ltd is committed to preventing modern slavery and human trafficking in our
+            {brandConfig.displayName} Ltd is committed to preventing modern slavery and human trafficking in our
             business and supply chains. We have a zero-tolerance approach to any form of modern
             slavery.
           </p>
@@ -69,7 +70,7 @@ export default function ModernSlaveryPage() {
         <section id="our-business">
           <h2 className="text-2xl font-bold font-heading">2. Our Business</h2>
           <p>
-            Britestate is a property technology platform connecting homebuyers, renters, sellers,
+            {brandConfig.displayName} is a property technology platform connecting homebuyers, renters, sellers,
             landlords, estate agents, and service providers across the United Kingdom. We are a
             digital business with [NUMBER] employees, headquartered in England.
           </p>
@@ -130,7 +131,7 @@ export default function ModernSlaveryPage() {
         <section id="approval">
           <h2 className="text-2xl font-bold font-heading">8. Approval</h2>
           <p>
-            This statement has been approved by the Board of Directors of Britestate Ltd and is
+            This statement has been approved by the Board of Directors of {brandConfig.displayName} Ltd and is
             signed by [NAME], [TITLE]. It will be reviewed annually.
           </p>
         </section>
@@ -145,7 +146,7 @@ export default function ModernSlaveryPage() {
             "@type": "WebPage",
             name: "Modern Slavery Statement",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/modern-slavery`,
           }),
         }}

@@ -187,7 +187,7 @@ export function ViewingConfirmationEmail({
           </EmailButton>
         )}
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

@@ -1,5 +1,6 @@
 /* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import { Resend } from "resend";
+import { appUrl, emailFromHeader } from "@/config/brand";
 import { createClient } from "@/lib/supabase/server";
 import type {
   PropertyAlertEmailProps,
@@ -16,8 +17,8 @@ function getResend(): Resend {
   }
   return _resend;
 }
-const FROM = `${process.env.RESEND_FROM_NAME ?? "Britestate"} <${process.env.RESEND_FROM_ADDRESS ?? "hello@britestate.co.uk"}>`;
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const FROM = emailFromHeader();
+const BASE_URL = appUrl();
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -121,7 +122,7 @@ export async function sendWelcome(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: `Welcome to Britestate, ${name}!`,
+      subject: `Welcome to TrueDeed, ${name}!`,
       html,
     });
 
@@ -167,7 +168,7 @@ export async function sendVerification(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: "Verify your Britestate email address",
+      subject: "Verify your TrueDeed email address",
       html,
     });
 
@@ -213,7 +214,7 @@ export async function sendPasswordReset(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: "Reset your Britestate password",
+      subject: "Reset your TrueDeed password",
       html,
     });
 
@@ -1067,7 +1068,7 @@ export async function sendPaymentConfirmation(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: "Payment confirmed – Britestate",
+      subject: "Payment confirmed – TrueDeed",
       html,
     });
 
@@ -1332,7 +1333,7 @@ export async function sendWeeklyDigest(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: `Your Britestate weekly digest – w/c ${params.weekStarting}`,
+      subject: `Your TrueDeed weekly digest – w/c ${params.weekStarting}`,
       html,
     });
 
@@ -1383,7 +1384,7 @@ export async function sendAccountDeletion(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: "Your Britestate account has been deleted",
+      subject: "Your TrueDeed account has been deleted",
       html,
     });
 
@@ -1445,7 +1446,7 @@ export async function sendReferralInvitation(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: `${params.referrerName} invited you to Britestate`,
+      subject: `${params.referrerName} invited you to TrueDeed`,
       html,
     });
 
@@ -1539,7 +1540,7 @@ export async function sendReEngagement(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: `We miss you, ${name} – here's what's new on Britestate`,
+      subject: `We miss you, ${name} – here's what's new on TrueDeed`,
       html,
     });
 
@@ -1592,7 +1593,7 @@ export async function sendRefundConfirmation(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: "Your refund has been processed – Britestate",
+      subject: "Your refund has been processed – TrueDeed",
       html,
     });
 
@@ -1645,7 +1646,7 @@ export async function sendRefundRejected(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: "Refund request update – Britestate",
+      subject: "Refund request update – TrueDeed",
       html,
     });
 

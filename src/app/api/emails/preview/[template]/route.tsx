@@ -31,16 +31,16 @@ type TemplateName = keyof typeof templateMap;
 const mockProps: Record<TemplateName, Record<string, unknown>> = {
   welcome: {
     firstName: "Sarah",
-    loginUrl: "https://britestate.co.uk/dashboard",
+    loginUrl: "https://truedeed.co.uk/dashboard",
   },
   verification: {
     firstName: "Sarah",
-    verificationUrl: "https://britestate.co.uk/auth/verify?token=mock-token-abc123",
+    verificationUrl: "https://truedeed.co.uk/auth/verify?token=mock-token-abc123",
     expiresInHours: 24,
   },
   "password-reset": {
     firstName: "Sarah",
-    resetUrl: "https://britestate.co.uk/auth/reset-password?token=mock-token-xyz",
+    resetUrl: "https://truedeed.co.uk/auth/reset-password?token=mock-token-xyz",
     expiresInMinutes: 60,
   },
   "property-alert": {
@@ -53,7 +53,7 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
         price: 650000,
         bedrooms: 2,
         imageUrl: undefined,
-        listingUrl: "https://britestate.co.uk/properties/prop-1",
+        listingUrl: "https://truedeed.co.uk/properties/prop-1",
       },
       {
         id: "prop-2",
@@ -61,10 +61,10 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
         price: 725000,
         bedrooms: 2,
         imageUrl: undefined,
-        listingUrl: "https://britestate.co.uk/properties/prop-2",
+        listingUrl: "https://truedeed.co.uk/properties/prop-2",
       },
     ],
-    manageAlertsUrl: "https://britestate.co.uk/dashboard/alerts",
+    manageAlertsUrl: "https://truedeed.co.uk/dashboard/alerts",
   },
   "viewing-confirmation": {
     firstName: "Sarah",
@@ -73,7 +73,7 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
     viewingTime: "14:30",
     agentName: "James Wilson",
     agentPhone: "07700 900123",
-    propertyUrl: "https://britestate.co.uk/properties/prop-3",
+    propertyUrl: "https://truedeed.co.uk/properties/prop-3",
     calendarUrl: undefined,
   },
   "viewing-reminder": {
@@ -83,7 +83,7 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
     viewingTime: "14:30",
     agentName: "James Wilson",
     agentPhone: "07700 900123",
-    propertyUrl: "https://britestate.co.uk/properties/prop-3",
+    propertyUrl: "https://truedeed.co.uk/properties/prop-3",
   },
   "offer-received": {
     agentFirstName: "James",
@@ -91,7 +91,7 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
     offerAmount: 850000,
     buyerName: "Sarah Thompson",
     submittedAt: "2026-03-15T10:30:00Z",
-    dashboardUrl: "https://britestate.co.uk/dashboard/offers",
+    dashboardUrl: "https://truedeed.co.uk/dashboard/offers",
   },
   "offer-status": {
     firstName: "Sarah",
@@ -99,7 +99,7 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
     offerAmount: 850000,
     status: "accepted",
     message: "We are delighted to accept your offer. Our solicitors will be in touch shortly.",
-    nextStepsUrl: "https://britestate.co.uk/dashboard/offers",
+    nextStepsUrl: "https://truedeed.co.uk/dashboard/offers",
   },
   "new-enquiry": {
     providerFirstName: "Michael",
@@ -108,7 +108,7 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
     enquirerPhone: "07700 900456",
     serviceType: "Plumbing",
     message: "I need an emergency plumber for a burst pipe. Can you come today?",
-    dashboardUrl: "https://britestate.co.uk/dashboard/enquiries",
+    dashboardUrl: "https://truedeed.co.uk/dashboard/enquiries",
   },
   "review-received": {
     recipientFirstName: "Michael",
@@ -116,40 +116,40 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
     rating: 5,
     comment: "Excellent service! Highly professional and arrived on time. Would definitely recommend.",
     propertyAddress: "42 Notting Hill Gate, London, W11 3HX",
-    reviewUrl: "https://britestate.co.uk/dashboard/reviews",
+    reviewUrl: "https://truedeed.co.uk/dashboard/reviews",
   },
   "compliance-warning": {
     firstName: "James",
     documentName: "EPC Certificate",
     expiryDate: "2026-04-01",
     daysUntilExpiry: 17,
-    uploadUrl: "https://britestate.co.uk/dashboard/compliance",
+    uploadUrl: "https://truedeed.co.uk/dashboard/compliance",
   },
   "payment-confirmation": {
     firstName: "Sarah",
     amount: 2999,
     currency: "GBP",
-    description: "Britestate Pro — Monthly Subscription",
+    description: "TrueDeed Pro — Monthly Subscription",
     transactionId: "txn_1A2B3C4D5E6F7G8H",
     paidAt: "2026-03-15T09:00:00Z",
-    receiptUrl: "https://britestate.co.uk/billing/receipts/txn-abc",
+    receiptUrl: "https://truedeed.co.uk/billing/receipts/txn-abc",
   },
   "payment-failed": {
     firstName: "Sarah",
     amount: 2999,
     currency: "GBP",
-    description: "Britestate Pro — Monthly Subscription",
+    description: "TrueDeed Pro — Monthly Subscription",
     failedAt: "2026-03-15T09:00:00Z",
-    retryUrl: "https://britestate.co.uk/billing/retry",
-    supportUrl: "https://britestate.co.uk/support",
+    retryUrl: "https://truedeed.co.uk/billing/retry",
+    supportUrl: "https://truedeed.co.uk/support",
   },
   "renewal-reminder": {
     firstName: "Sarah",
-    planName: "Britestate Pro",
+    planName: "TrueDeed Pro",
     renewalDate: "2026-04-15",
     amount: 2999,
     currency: "GBP",
-    manageSubscriptionUrl: "https://britestate.co.uk/billing",
+    manageSubscriptionUrl: "https://truedeed.co.uk/billing",
   },
   "weekly-digest": {
     firstName: "Sarah",
@@ -161,7 +161,7 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
         topProperty: {
           address: "14 Hoxton Square, London, N1 6NT",
           price: 650000,
-          listingUrl: "https://britestate.co.uk/properties/prop-1",
+          listingUrl: "https://truedeed.co.uk/properties/prop-1",
         },
       },
     ],
@@ -173,18 +173,18 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
       },
     ],
     unreadMessages: 2,
-    dashboardUrl: "https://britestate.co.uk/dashboard",
+    dashboardUrl: "https://truedeed.co.uk/dashboard",
   },
   "account-deletion": {
     firstName: "Sarah",
     deletedAt: "2026-03-15T12:00:00Z",
     dataRetentionDays: 30,
-    supportUrl: "https://britestate.co.uk/support",
+    supportUrl: "https://truedeed.co.uk/support",
   },
   "referral-invitation": {
     referrerName: "James Wilson",
     recipientEmail: "friend@example.com",
-    inviteUrl: "https://britestate.co.uk/signup?ref=mock-ref-token",
+    inviteUrl: "https://truedeed.co.uk/signup?ref=mock-ref-token",
     rewardDescription: "get 1 month free on any paid plan",
   },
   "re-engagement": {
@@ -194,16 +194,16 @@ const mockProps: Record<TemplateName, Record<string, unknown>> = {
       {
         address: "14 Hoxton Square, London, N1 6NT",
         price: 650000,
-        listingUrl: "https://britestate.co.uk/properties/prop-1",
+        listingUrl: "https://truedeed.co.uk/properties/prop-1",
       },
       {
         address: "8 Redchurch Street, London, E2 7DP",
         price: 725000,
-        listingUrl: "https://britestate.co.uk/properties/prop-2",
+        listingUrl: "https://truedeed.co.uk/properties/prop-2",
       },
     ],
-    loginUrl: "https://britestate.co.uk/dashboard",
-    unsubscribeUrl: "https://britestate.co.uk/unsubscribe?token=mock",
+    loginUrl: "https://truedeed.co.uk/dashboard",
+    unsubscribeUrl: "https://truedeed.co.uk/unsubscribe?token=mock",
   },
 };
 

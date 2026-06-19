@@ -27,7 +27,7 @@ export default async function AuthLayout({
             <span className="font-heading text-base font-bold text-white">B</span>
           </div>
           <span className="font-heading text-xl font-bold text-neutral-900">
-            Britestate
+            TrueDeed
           </span>
         </Link>
 

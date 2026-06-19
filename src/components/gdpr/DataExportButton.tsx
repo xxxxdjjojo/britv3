@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { brandConfig } from "@/config/brand";
 
 /**
  * Button that triggers a GDPR data export download.
@@ -32,7 +33,7 @@ export function DataExportButton() {
         response.headers
           .get("Content-Disposition")
           ?.split("filename=")[1]
-          ?.replace(/"/g, "") || "britestate-data-export.json";
+          ?.replace(/"/g, "") || `${brandConfig.lowercaseToken}-data-export.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

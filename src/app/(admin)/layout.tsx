@@ -5,7 +5,7 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import type { AdminRole } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
-  title: "Admin - Britestate",
+  title: "Admin - TrueDeed",
 };
 
 export default async function AdminLayout({

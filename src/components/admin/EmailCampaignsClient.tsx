@@ -197,7 +197,7 @@ export function EmailCampaignsClient({ campaigns }: Props) {
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, subject: e.target.value }))
                 }
-                placeholder="Here's what's new on Britestate"
+                placeholder="Here's what's new on TrueDeed"
               />
             </div>
           </div>

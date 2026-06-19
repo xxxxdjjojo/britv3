@@ -4,8 +4,8 @@ import { getCurrentSubscription } from "@/services/agent/agent-billing-service";
 import { SubscriptionBilling } from "@/components/dashboard/agent/billing/SubscriptionBilling";
 
 export const metadata = {
-  title: "Billing - Britestate Agent",
-  description: "Manage your Britestate subscription",
+  title: "Billing - TrueDeed Agent",
+  description: "Manage your TrueDeed subscription",
 };
 
 export default async function AgentBillingPage() {

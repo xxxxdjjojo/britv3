@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
-  title: "Properties | Landlord Dashboard | Britestate",
+  title: "Properties | Landlord Dashboard | TrueDeed",
 };
 
 async function PropertiesContent() {

@@ -20,7 +20,7 @@ const TIMELINES = [
   { label: "12+ months", value: "12_plus_months" },
 ];
 const AGENT_PREFS = [
-  { label: "Use Britestate", value: "britestate" },
+  { label: "Use TrueDeed", value: "britestate" },
   { label: "Have an agent", value: "have_agent" },
   { label: "Undecided", value: "undecided" },
 ];

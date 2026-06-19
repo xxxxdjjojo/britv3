@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 
 export async function generateMetadata(props: Readonly<{ params: Promise<{ id: string }> }>) {
   const { id } = await props.params;
-  return { title: `Property ${id} | Landlord Dashboard | Britestate` };
+  return { title: `Property ${id} | Landlord Dashboard | TrueDeed` };
 }
 
 async function PropertyDetailContent(props: Readonly<{ id: string }>) {

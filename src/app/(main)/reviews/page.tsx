@@ -5,7 +5,7 @@ import { ArrowRight, MapPin, ShieldCheck, Star } from "lucide-react";
 export const metadata: Metadata = {
   title: "Property Service Reviews",
   description:
-    "Browse verified reviews for estate agents, mortgage brokers, conveyancers, surveyors, and tradespeople on Britestate.",
+    "Browse verified reviews for estate agents, mortgage brokers, conveyancers, surveyors, and tradespeople on TrueDeed.",
 };
 
 const REVIEW_AREAS = [

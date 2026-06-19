@@ -1,8 +1,11 @@
 import { Hr, Section, Text, Link } from "@react-email/components";
+import { brandConfig, brandUrl } from "@/config/brand";
 
-type Props = Readonly<{ unsubscribeUrl: string; userId?: string }>;
+type Props = Readonly<{ unsubscribeUrl?: string; userId?: string }>;
 
 export function EmailFooter({ unsubscribeUrl }: Props) {
+  const unsubscribeHref = unsubscribeUrl ?? brandUrl("/unsubscribe?token=placeholder");
+
   return (
     <>
       <Hr
@@ -25,7 +28,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
             lineHeight: "1.5",
           }}
         >
-          Britestate Ltd, 123 Property Lane, London, EC1A 1BB
+          {brandConfig.displayName}, {brandConfig.canonicalDomain}
         </Text>
         <Text
           style={{
@@ -36,7 +39,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
           }}
         >
           <Link
-            href="https://britestate.co.uk/privacy"
+            href={brandUrl("/privacy")}
             style={{
               color: "#5E5E6A",
               fontSize: "12px",
@@ -47,7 +50,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
           </Link>
           {" | "}
           <Link
-            href="https://britestate.co.uk/terms"
+            href={brandUrl("/terms")}
             style={{
               color: "#5E5E6A",
               fontSize: "12px",
@@ -58,7 +61,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
           </Link>
           {" | "}
           <Link
-            href={unsubscribeUrl}
+            href={unsubscribeHref}
             style={{
               color: "#5E5E6A",
               fontSize: "12px",
@@ -76,7 +79,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
             lineHeight: "1.5",
           }}
         >
-          &copy; 2026 Britestate Ltd. All rights reserved.
+          &copy; 2026 {brandConfig.displayName}. All rights reserved.
         </Text>
       </Section>
     </>

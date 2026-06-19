@@ -158,7 +158,7 @@ export default function FindAgentPage() {
               </p>
               <p className="mt-1 text-sm text-muted-foreground/70">
                 Check back soon — verified letting agents will appear here once
-                they register on Britestate.
+                they register on TrueDeed.
               </p>
             </div>
           </CardContent>

@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { ProviderInvoice, InvoiceLineItem } from "@/types/provider-dashboard";
+import { brandConfig } from "@/config/brand";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -92,7 +93,7 @@ function buildHtmlInvoice(invoice: ProviderInvoice, providerName: string): strin
 </head>
 <body>
   <div class="header">
-    <span class="brand">BRITESTATE</span>
+    <span class="brand">${brandConfig.displayName.toUpperCase()}</span>
     <span class="label">Invoice</span>
   </div>
   <div class="body">
@@ -249,7 +250,7 @@ export async function GET(
         React.createElement(
           View,
           { style: styles.header },
-          React.createElement(Text, { style: styles.headerBrand }, "BRITESTATE"),
+          React.createElement(Text, { style: styles.headerBrand }, brandConfig.displayName.toUpperCase()),
           React.createElement(Text, { style: styles.headerLabel }, "INVOICE"),
         ),
         // Meta

@@ -28,13 +28,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const provider = await fetchProviderBySlug(slug);
   if (!provider) {
-    return { title: "Surveyor Not Found | Britestate" };
+    return { title: "Surveyor Not Found | TrueDeed" };
   }
   return {
-    title: `${provider.business_name} | Surveyor | Britestate`,
+    title: `${provider.business_name} | Surveyor | TrueDeed`,
     description:
       provider.description ??
-      `View ${provider.business_name}'s surveyor profile, RICS credentials, survey types, and reviews on Britestate.`,
+      `View ${provider.business_name}'s surveyor profile, RICS credentials, survey types, and reviews on TrueDeed.`,
     openGraph: {
       title: `${provider.business_name} | Surveyor`,
       description: provider.description ?? undefined,

@@ -44,7 +44,7 @@ export function ReviewPublishedEmail({
           View Your Review
         </EmailButton>
       </Section>
-      <EmailFooter unsubscribeUrl="https://britestate.co.uk/unsubscribe?token=placeholder" />
+      <EmailFooter />
     </EmailWrapper>
   );
 }

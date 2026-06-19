@@ -7,7 +7,7 @@ import type { AgentPublicProfile } from "@/types/providers";
 import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
 
 export const metadata: Metadata = {
-  title: "Find an Estate Agent Near You | Britestate",
+  title: "Find an Estate Agent Near You | TrueDeed",
   description:
     "Compare local estate agents — check sold prices, reviews, and fees before choosing your agent.",
 };
@@ -365,7 +365,7 @@ export default async function AgentsPage({ searchParams }: Props) {
         <div className="bg-gradient-to-r from-brand-primary-dark to-brand-primary rounded-2xl p-10 text-center text-white">
           <h2 className="font-heading text-3xl font-bold mb-3">Are you an estate agent?</h2>
           <p className="text-white/80 text-lg mb-6">
-            Join Britestate and showcase your listings, team and reviews.
+            Join TrueDeed and showcase your listings, team and reviews.
           </p>
           <Link
             href="/register"

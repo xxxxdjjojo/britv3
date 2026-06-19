@@ -86,7 +86,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category, location } = await params;
   return {
-    title: `${toTitleCase(category)} in ${toTitleCase(location)} | Britestate`,
+    title: `${toTitleCase(category)} in ${toTitleCase(location)} | TrueDeed`,
     description: `Find trusted ${toTitleCase(category).toLowerCase()} in ${toTitleCase(location)}. Compare reviews, prices and get free quotes.`,
   };
 }
@@ -105,23 +105,23 @@ function FaqSection({
   const faqs = [
     {
       q: `How much does a ${categoryDisplay.toLowerCase()} cost in ${locationDisplay}?`,
-      a: `Prices for ${categoryDisplay.toLowerCase()} in ${locationDisplay} vary depending on the scope of work, materials, and the individual tradesperson. We recommend getting at least 3 quotes to compare. Use Britestate to request free, no-obligation quotes from verified local tradespeople.`,
+      a: `Prices for ${categoryDisplay.toLowerCase()} in ${locationDisplay} vary depending on the scope of work, materials, and the individual tradesperson. We recommend getting at least 3 quotes to compare. Use TrueDeed to request free, no-obligation quotes from verified local tradespeople.`,
     },
     {
       q: `Are ${categoryDisplay.toLowerCase()}s in ${locationDisplay} insured?`,
-      a: `All Britestate-verified ${categoryDisplay.toLowerCase()}s carry public liability insurance as a minimum. Look for the "Insured" badge on provider profiles to confirm their insurance status has been checked by our team.`,
+      a: `All TrueDeed-verified ${categoryDisplay.toLowerCase()}s carry public liability insurance as a minimum. Look for the "Insured" badge on provider profiles to confirm their insurance status has been checked by our team.`,
     },
     {
       q: `How do I find a reliable ${categoryDisplay.toLowerCase()} in ${locationDisplay}?`,
-      a: `Use Britestate to search verified ${categoryDisplay.toLowerCase()}s in ${locationDisplay}, read genuine customer reviews, check qualifications and insurance, then request quotes directly. Our verification process ensures only trusted tradespeople appear in results.`,
+      a: `Use TrueDeed to search verified ${categoryDisplay.toLowerCase()}s in ${locationDisplay}, read genuine customer reviews, check qualifications and insurance, then request quotes directly. Our verification process ensures only trusted tradespeople appear in results.`,
     },
     {
       q: `How long does it typically take to hire a ${categoryDisplay.toLowerCase()} in ${locationDisplay}?`,
-      a: `Response times vary, but most verified ${categoryDisplay.toLowerCase()}s on Britestate respond within 24 hours. For urgent jobs, filter by availability or contact providers directly through their profile page.`,
+      a: `Response times vary, but most verified ${categoryDisplay.toLowerCase()}s on TrueDeed respond within 24 hours. For urgent jobs, filter by availability or contact providers directly through their profile page.`,
     },
     {
       q: `What qualifications should a ${categoryDisplay.toLowerCase()} in ${locationDisplay} have?`,
-      a: `Qualification requirements depend on the trade. Britestate verifies qualifications and accreditations for all listed professionals. Check each provider's profile for their specific certifications, trade body memberships, and verification badges.`,
+      a: `Qualification requirements depend on the trade. TrueDeed verifies qualifications and accreditations for all listed professionals. Check each provider's profile for their specific certifications, trade body memberships, and verification badges.`,
     },
   ];
 

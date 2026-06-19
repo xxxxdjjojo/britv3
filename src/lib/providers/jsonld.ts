@@ -7,6 +7,7 @@
 
 import type { ServiceProviderPublicProfile, AgentPublicProfile, AgentPublicStats } from "@/types/providers";
 import type { SpecialistType } from "@/components/providers/SpecialistHero";
+import { brandUrl } from "@/config/brand";
 
 /**
  * Builds a schema.org LocalBusiness JSON-LD object for a service provider.
@@ -19,7 +20,7 @@ export function buildProviderJsonLd(
   provider: ServiceProviderPublicProfile,
   category: string,
 ): Record<string, unknown> {
-  const url = `https://britestate.co.uk/services/${category}/${provider.slug}`;
+  const url = brandUrl(`/services/${category}/${provider.slug}`);
 
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -66,7 +67,7 @@ export function buildAgentJsonLd(
   stats: AgentPublicStats,
 ): Record<string, unknown> {
   const agencyName = agency.agency?.name ?? agency.display_name;
-  const url = `https://britestate.co.uk/agents/${agency.slug}`;
+  const url = brandUrl(`/agents/${agency.slug}`);
 
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -122,7 +123,7 @@ export function buildSpecialistJsonLd(
   specialistType: SpecialistType,
   routePrefix: string,
 ): Record<string, unknown> {
-  const url = `https://britestate.co.uk/${routePrefix}/${provider.slug}`;
+  const url = brandUrl(`/${routePrefix}/${provider.slug}`);
 
   const TYPE_MAP: Record<SpecialistType, string> = {
     mortgage_broker: "FinancialService",

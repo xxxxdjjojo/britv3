@@ -6,7 +6,7 @@ import type { ServiceCategory } from "@/types/marketplace";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 
 export const metadata: Metadata = {
-  title: "Find a Surveyor Near You | Britestate",
+  title: "Find a Surveyor Near You | TrueDeed",
   description:
     "Compare RICS-accredited surveyors. Building surveys, valuations, and homebuyer reports across the UK.",
 };

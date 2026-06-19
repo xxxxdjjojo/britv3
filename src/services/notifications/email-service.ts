@@ -5,6 +5,7 @@
  */
 
 import { Resend } from "resend";
+import { appUrl, brandConfig, emailFromHeader } from "@/config/brand";
 import { createRateLimiter } from "@/lib/cache/redis";
 import type {
   EventType,
@@ -80,7 +81,7 @@ export function shouldSendEmail(
 // Critical email dispatch
 // ---------------------------------------------------------------------------
 
-const FROM_ADDRESS = "Britestate <notifications@britestate.com>";
+const FROM_ADDRESS = emailFromHeader();
 
 export type SendEmailResult = Readonly<{
   sent: boolean;
@@ -149,7 +150,7 @@ export async function sendDailyDigest(
     await resend.emails.send({
       from: FROM_ADDRESS,
       to,
-      subject: `Your daily digest - ${events.length} updates on Britestate`,
+      subject: `Your daily digest - ${events.length} update${events.length === 1 ? "" : "s"} on ${brandConfig.displayName}`,
       html: renderDailyDigestHtml(recipientName, events),
     });
 
@@ -174,7 +175,7 @@ function renderCriticalEmailHtml(event: PlatformEvent): string {
 <body style="margin:0;padding:0;background-color:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
 <div style="max-width:600px;margin:0 auto;padding:20px;">
   <div style="background-color:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
-    <h1 style="color:#ffffff;margin:0;font-size:20px;">Britestate</h1>
+    <h1 style="color:#ffffff;margin:0;font-size:20px;">${brandConfig.displayName}</h1>
   </div>
   <div style="background-color:#ffffff;padding:32px;border-radius:0 0 8px 8px;">
     <p style="font-size:16px;color:#333;margin:0 0 8px 0;font-weight:600;">${title}</p>
@@ -184,7 +185,7 @@ function renderCriticalEmailHtml(event: PlatformEvent): string {
     </a>
   </div>
   <p style="text-align:center;font-size:12px;color:#999;margin-top:16px;">
-    You received this email because of your notification preferences on Britestate.
+    You received this email because of your notification preferences on ${brandConfig.displayName}.
   </p>
 </div>
 </body>
@@ -215,7 +216,7 @@ function renderDailyDigestHtml(
 <body style="margin:0;padding:0;background-color:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
 <div style="max-width:600px;margin:0 auto;padding:20px;">
   <div style="background-color:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
-    <h1 style="color:#ffffff;margin:0;font-size:20px;">Britestate</h1>
+    <h1 style="color:#ffffff;margin:0;font-size:20px;">${brandConfig.displayName}</h1>
   </div>
   <div style="background-color:#ffffff;padding:32px;border-radius:0 0 8px 8px;">
     <p style="font-size:16px;color:#333;margin:0 0 4px 0;">Hi ${recipientName},</p>
@@ -224,13 +225,13 @@ function renderDailyDigestHtml(
       ${eventListHtml}
     </table>
     <div style="margin-top:24px;text-align:center;">
-      <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.com"}/notifications" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;">
-        View all on Britestate
+      <a href="${appUrl("/notifications")}" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;">
+        View all on ${brandConfig.displayName}
       </a>
     </div>
   </div>
   <p style="text-align:center;font-size:12px;color:#999;margin-top:16px;">
-    You received this digest because of your notification preferences on Britestate.
+    You received this digest because of your notification preferences on ${brandConfig.displayName}.
   </p>
 </div>
 </body>
@@ -241,7 +242,7 @@ function getEventContent(event: PlatformEvent): {
   title: string;
   cta: { label: string; url: string };
 } {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.com";
+  const baseUrl = appUrl();
 
   switch (event.event_type) {
     case "new_message":
@@ -297,7 +298,7 @@ function getEventContent(event: PlatformEvent): {
     default:
       return {
         title: "New notification",
-        cta: { label: "View on Britestate", url: `${baseUrl}/notifications` },
+        cta: { label: `View on ${brandConfig.displayName}`, url: `${baseUrl}/notifications` },
       };
   }
 }

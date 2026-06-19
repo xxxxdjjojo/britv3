@@ -1,5 +1,5 @@
 /**
- * Currency utilities for Britestate.
+ * Currency utilities for TrueDeed.
  *
  * Offer amounts, property prices and monetary values are stored in pence
  * (integer) in the database to avoid floating-point rounding issues.

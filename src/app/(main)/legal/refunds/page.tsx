@@ -3,9 +3,10 @@ import Link from "next/link";
 import { ReceiptText, Clock, Ban, BadgePoundSterling } from "lucide-react";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { NumberedSteps } from "@/components/legal/NumberedSteps";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "16 June 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "scope", label: "Scope & Eligibility" },
@@ -16,14 +17,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Refund & Cancellation Policy | Britestate",
+  title: `Refund & Cancellation Policy | ${brandConfig.displayName}`,
   description:
-    "How refunds and cancellations work for Britestate subscriptions and platform fees, including your statutory cooling-off rights and how to request a refund.",
+    `How refunds and cancellations work for ${brandConfig.displayName} subscriptions and platform fees, including your statutory cooling-off rights and how to request a refund.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/refunds` },
   openGraph: {
-    title: "Refund & Cancellation Policy | Britestate",
-    description: "Refunds, cancellations, and your cooling-off rights on Britestate.",
+    title: `Refund & Cancellation Policy | ${brandConfig.displayName}`,
+    description: `Refunds, cancellations, and your cooling-off rights on ${brandConfig.displayName}.`,
   },
 };
 
@@ -44,7 +45,7 @@ export default function RefundsPage() {
       <p className="mb-8 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       <div className="mb-8 rounded-lg border border-amber-100 bg-amber-50 p-4 text-sm text-amber-800">
-        This policy is drafted for clarity and is pending final review by Britestate&rsquo;s legal
+        This policy is drafted for clarity and is pending final review by {brandConfig.displayName}&rsquo;s legal
         team. Statutory cooling-off periods and fee-specific terms should be confirmed before
         publication.
       </div>
@@ -55,7 +56,7 @@ export default function RefundsPage() {
             <ReceiptText className="text-primary" size={22} /> Scope &amp; Eligibility
           </h2>
           <p>
-            This policy covers paid Britestate products: subscription plans and platform/listing
+            This policy covers paid {brandConfig.displayName} products: subscription plans and platform/listing
             fees. Charges levied by third parties you engage through the marketplace (for example,
             conveyancers or surveyors) are governed by that provider&rsquo;s own terms. Our platform
             fees are described in our{" "}
@@ -102,8 +103,8 @@ export default function RefundsPage() {
                 body: (
                   <>
                     Email{" "}
-                    <a href="mailto:support@britestate.co.uk" className="text-primary underline hover:no-underline">
-                      support@britestate.co.uk
+                    <a href={`mailto:${brandConfig.emails.support}`} className="text-primary underline hover:no-underline">
+                      {brandConfig.emails.support}
                     </a>{" "}
                     from the address on your account, with your invoice or order reference.
                   </>

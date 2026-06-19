@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { RFQCreateForm } from "@/components/marketplace/RFQCreateForm";
 
 export const metadata: Metadata = {
-  title: "Post a Job — Get Free Quotes | Britestate",
+  title: "Post a Job — Get Free Quotes | TrueDeed",
   description:
     "Describe your job and get matched with verified tradespeople. Compare quotes and choose the best fit — free service.",
 };
@@ -130,7 +130,7 @@ export default async function PostAJobPage() {
           {/* Trust sidebar — right 1/3 */}
           <aside className="space-y-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Why Britestate?
+              Why TrueDeed?
             </h2>
             {TRUST_SIGNALS.map((signal) => {
               const Icon = signal.icon;

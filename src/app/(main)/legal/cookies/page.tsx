@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { CookiePreferencesInlineButton } from "@/components/legal/CookiePreferencesInlineButton";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "what-are-cookies", label: "1. What Are Cookies" },
@@ -24,7 +25,7 @@ const COOKIE_TABLE = [
   },
   {
     name: "brite_cookie_consent",
-    provider: "Britestate",
+    provider: brandConfig.displayName,
     purpose: "Stores your cookie consent choices",
     duration: "1 year",
     category: "Strictly Necessary",
@@ -45,14 +46,14 @@ const COOKIE_TABLE = [
   },
   {
     name: "brite_theme",
-    provider: "Britestate",
+    provider: brandConfig.displayName,
     purpose: "Dark/light mode preference",
     duration: "1 year",
     category: "Functional",
   },
   {
     name: "brite_search_prefs",
-    provider: "Britestate",
+    provider: brandConfig.displayName,
     purpose: "Saved search filter defaults",
     duration: "1 year",
     category: "Functional",
@@ -95,9 +96,9 @@ const COOKIE_TABLE = [
 ];
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Britestate",
+  title: `Cookie Policy | ${brandConfig.displayName}`,
   description:
-    "Details of cookies Britestate uses and how to manage your preferences. DUAA 2025 compliant.",
+    `Details of cookies ${brandConfig.displayName} uses and how to manage your preferences. DUAA 2025 compliant.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/cookies` },
 };
@@ -207,7 +208,7 @@ export default function CookiesPage() {
         <section id="how-to-manage">
           <h2 className="text-2xl font-bold font-heading">4. How to Manage Your Preferences</h2>
           <p>
-            4.1. <strong>On Britestate:</strong> Click &ldquo;Manage Cookie Preferences&rdquo; in
+            4.1. <strong>On {brandConfig.displayName}:</strong> Click &ldquo;Manage Cookie Preferences&rdquo; in
             the footer or use the button below to open your cookie settings. You can toggle
             Analytics and Marketing cookies on or off at any time.
           </p>
@@ -276,7 +277,7 @@ export default function CookiesPage() {
             "@type": "WebPage",
             name: "Cookie Policy",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/cookies`,
           }),
         }}

@@ -1,4 +1,6 @@
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+import { appBaseUrl } from "@/config/brand";
+
+const BASE_URL = appBaseUrl();
 
 export function buildBreadcrumbJsonLd(items: { name: string; path: string }[]) {
   return {

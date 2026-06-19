@@ -63,7 +63,7 @@ export default function RoleSelectPage() {
     <div className="space-y-6">
       <div className="text-center">
         <h1 className="font-heading text-2xl font-bold text-neutral-900">
-          Welcome to Britestate
+          Welcome to TrueDeed
         </h1>
         <p className="mt-2 text-sm text-neutral-500">
           Select your professional type

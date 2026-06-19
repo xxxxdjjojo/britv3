@@ -4,7 +4,7 @@ import { listPendingCandidates } from "@/services/truedeed/candidate-review-serv
 import type { CandidateReviewItem } from "@/types/truedeed";
 
 export const metadata = {
-  title: "Truedeed Invoice Candidates - Admin - Britestate",
+  title: "Truedeed Invoice Candidates - Admin - TrueDeed",
 };
 
 // The queue is live moderation state — never serve a cached render. (The

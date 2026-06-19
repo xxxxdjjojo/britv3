@@ -198,7 +198,7 @@ export default function CreateListingPage(
             Create Rental Listing
           </h1>
           <p className="mt-1 text-slate-500 dark:text-slate-400">
-            Publish this property as a rental listing on Britestate.
+            Publish this property as a rental listing on TrueDeed.
           </p>
         </div>
 

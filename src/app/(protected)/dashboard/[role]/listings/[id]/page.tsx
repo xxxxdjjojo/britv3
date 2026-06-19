@@ -8,7 +8,7 @@ import type { ListingWithProperty } from "@/types/property";
 const ALLOWED_ROLES: UserRole[] = ["agent", "seller"];
 
 export const metadata = {
-  title: "Edit Listing - Britestate",
+  title: "Edit Listing - TrueDeed",
   description: "Edit your property listing",
 };
 

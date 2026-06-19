@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { brandConfig, appBaseUrl } from "@/config/brand";
 
 const LAST_UPDATED = "24 March 2026";
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
+const BASE_URL = appBaseUrl();
 
 const SECTIONS = [
   { id: "no-professional-advice", label: "1. No Professional Advice" },
@@ -19,14 +20,14 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Disclaimer | Britestate",
+  title: `Disclaimer | ${brandConfig.displayName}`,
   description:
-    "Important information on the limitations of advice and information provided on Britestate, covering listings, valuations, AI content, maps, and platform intermediary status.",
+    `Important information on the limitations of advice and information provided on ${brandConfig.displayName}, covering listings, valuations, AI content, maps, and platform intermediary status.`,
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/disclaimer` },
   openGraph: {
-    title: "Disclaimer | Britestate",
-    description: "Limitations on advice and information provided by Britestate.",
+    title: `Disclaimer | ${brandConfig.displayName}`,
+    description: `Limitations on advice and information provided by ${brandConfig.displayName}.`,
   },
 };
 
@@ -51,7 +52,7 @@ export default function DisclaimerPage() {
 
       {/* Yellow info callout */}
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
-        Nothing on Britestate constitutes professional advice. Always consult a qualified
+        Nothing on {brandConfig.displayName} constitutes professional advice. Always consult a qualified
         professional before making property-related decisions. See our{" "}
         <Link href="/legal/terms" className="underline hover:no-underline">
           Terms of Service
@@ -63,7 +64,7 @@ export default function DisclaimerPage() {
         <section id="no-professional-advice">
           <h2 className="text-2xl font-bold font-heading">1. No Professional Advice</h2>
           <p>
-            1.1. Nothing on the Britestate platform constitutes legal, financial, mortgage,
+            1.1. Nothing on the {brandConfig.displayName} platform constitutes legal, financial, mortgage,
             surveying, investment, tax, or valuation advice. All content is provided for general
             informational purposes only.
           </p>
@@ -81,7 +82,7 @@ export default function DisclaimerPage() {
           </h2>
           <p>
             2.1. Property listings, descriptions, photographs, floor plans, and virtual tours are
-            provided by third parties (estate agents, landlords, sellers). Britestate does not
+            provided by third parties (estate agents, landlords, sellers). {brandConfig.displayName} does not
             independently verify this content and does not guarantee its accuracy, completeness, or
             currency.
           </p>
@@ -117,7 +118,7 @@ export default function DisclaimerPage() {
         <section id="ai-generated-content">
           <h2 className="text-2xl font-bold font-heading">5. AI-Generated Content</h2>
           <p>
-            5.1. Certain features on Britestate use artificial intelligence to generate property
+            5.1. Certain features on {brandConfig.displayName} use artificial intelligence to generate property
             descriptions, recommendations, and insights. AI-generated content may contain
             inaccuracies or omissions. It is labelled as AI-generated and should be treated as a
             starting point, not a definitive source. See our{" "}
@@ -141,7 +142,7 @@ export default function DisclaimerPage() {
         <section id="third-party-links">
           <h2 className="text-2xl font-bold font-heading">7. Third-Party Links</h2>
           <p>
-            7.1. The platform may contain links to third-party websites and services. Britestate is
+            7.1. The platform may contain links to third-party websites and services. {brandConfig.displayName} is
             not responsible for the content, privacy practices, or availability of those sites.
             Inclusion of a link does not constitute endorsement.
           </p>
@@ -150,7 +151,7 @@ export default function DisclaimerPage() {
         <section id="intermediary-status">
           <h2 className="text-2xl font-bold font-heading">8. Platform Intermediary Status</h2>
           <p>
-            8.1. Britestate acts as a technology platform intermediary. We facilitate connections
+            8.1. {brandConfig.displayName} acts as a technology platform intermediary. We facilitate connections
             between buyers, sellers, landlords, tenants, estate agents, and service providers, but
             we are not a party to any transaction.
           </p>
@@ -164,7 +165,7 @@ export default function DisclaimerPage() {
         <section id="liability">
           <h2 className="text-2xl font-bold font-heading">9. Limitation of Liability</h2>
           <p>
-            9.1. To the maximum extent permitted by applicable law, Britestate Ltd excludes all
+            9.1. To the maximum extent permitted by applicable law, {brandConfig.displayName} Ltd excludes all
             liability for any loss or damage arising from your use of the platform or your reliance
             on information provided by third parties through the platform.
           </p>
@@ -198,7 +199,7 @@ export default function DisclaimerPage() {
             "@type": "WebPage",
             name: "Disclaimer",
             dateModified: LAST_UPDATED,
-            publisher: { "@type": "Organization", name: "Britestate Ltd" },
+            publisher: { "@type": "Organization", name: `${brandConfig.displayName} Ltd` },
             url: `${BASE_URL}/legal/disclaimer`,
           }),
         }}

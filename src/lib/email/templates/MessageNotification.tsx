@@ -14,6 +14,7 @@ import {
   Button,
   Section,
 } from "@react-email/components";
+import { appUrl, brandConfig } from "@/config/brand";
 
 type MessageNotificationProps = Readonly<{
   recipientName: string;
@@ -26,16 +27,18 @@ export default function MessageNotification({
   recipientName = "there",
   senderName = "Someone",
   messagePreview = "",
-  conversationUrl = "https://britestate.com/inbox",
+  conversationUrl = appUrl("/inbox"),
 }: MessageNotificationProps) {
+  const brandName = brandConfig.displayName;
+
   return (
     <Html>
       <Head />
-      <Preview>{senderName} sent you a message on Britestate</Preview>
+      <Preview>{senderName} sent you a message on {brandName}</Preview>
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logoText}>Britestate</Heading>
+            <Heading style={logoText}>{brandName}</Heading>
           </Section>
           <Section style={content}>
             <Text style={greeting}>Hi {recipientName},</Text>
@@ -53,7 +56,7 @@ export default function MessageNotification({
           </Section>
           <Text style={footer}>
             You received this email because of your notification preferences on
-            Britestate.
+            {brandName}.
           </Text>
         </Container>
       </Body>

@@ -86,7 +86,7 @@ export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
         </div>
       </div>
 
-      {/* Britestate protection trust card */}
+      {/* TrueDeed protection trust card */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
         <div className="flex items-start gap-3">
           <div className="shrink-0 w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center">
@@ -94,10 +94,10 @@ export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
           </div>
           <div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              Britestate Protection
+              TrueDeed Protection
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-              Book through Britestate to be eligible for our £1,000 Satisfaction Guarantee
+              Book through TrueDeed to be eligible for our £1,000 Satisfaction Guarantee
             </p>
           </div>
         </div>

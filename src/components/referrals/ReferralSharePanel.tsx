@@ -27,12 +27,12 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
   }, [referralUrl, referralCode]);
 
   const whatsappText = encodeURIComponent(
-    `Hey, I've been using Britestate and it's brilliant for getting quality leads. Join using my link and we both get a month free: ${referralUrl}`,
+    `Hey, I've been using TrueDeed and it's brilliant for getting quality leads. Join using my link and we both get a month free: ${referralUrl}`,
   );
 
-  const emailSubject = encodeURIComponent("Join Britestate — we both get a free month");
+  const emailSubject = encodeURIComponent("Join TrueDeed — we both get a free month");
   const emailBody = encodeURIComponent(
-    `Hi,\n\nI've been using Britestate to grow my trade business and it's been great — verified leads, no bidding wars, fixed monthly pricing.\n\nIf you sign up using my referral link, we both get 1 month free:\n${referralUrl}\n\nHope to see you there!`,
+    `Hi,\n\nI've been using TrueDeed to grow my trade business and it's been great — verified leads, no bidding wars, fixed monthly pricing.\n\nIf you sign up using my referral link, we both get 1 month free:\n${referralUrl}\n\nHope to see you there!`,
   );
 
   const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`;

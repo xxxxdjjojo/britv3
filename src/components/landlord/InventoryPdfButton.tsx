@@ -188,7 +188,7 @@ function CheckInDocument({
         )}
 
         <View style={styles.footer}>
-          <Text>Britestate — Landlord Inventory Report</Text>
+          <Text>TrueDeed — Landlord Inventory Report</Text>
           <Text>{propertyAddress}</Text>
         </View>
       </Page>
@@ -279,7 +279,7 @@ function CheckOutDocument({
         )}
 
         <View style={styles.footer}>
-          <Text>Britestate — Landlord Inventory Report</Text>
+          <Text>TrueDeed — Landlord Inventory Report</Text>
           <Text>{propertyAddress}</Text>
         </View>
       </Page>

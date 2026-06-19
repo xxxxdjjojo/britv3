@@ -5,7 +5,7 @@ import { TeamMemberList } from "@/components/dashboard/agent/team/TeamMemberList
 import type { AgentTeamMember, AgentBranch } from "@/types/agent";
 
 export const metadata = {
-  title: "Team Members | Agent | Britestate",
+  title: "Team Members | Agent | TrueDeed",
 };
 
 export default async function AgentTeamPage() {
