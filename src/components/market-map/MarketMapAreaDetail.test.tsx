@@ -53,7 +53,7 @@ describe("MarketMapAreaDetail — flat/house breakdown", () => {
       { median: 600_000, transaction_count: 30, confidence: "High", latest_transaction_date: "2025-12-15" },
     );
     render(
-      <MarketMapAreaDetail properties={properties} scaleMode="national" detail={detail} />,
+      <MarketMapAreaDetail properties={properties} detail={detail} />,
     );
 
     const breakdown = screen.getByTestId("area-detail-breakdown");
@@ -70,7 +70,7 @@ describe("MarketMapAreaDetail — flat/house breakdown", () => {
       { median: 400_000, transaction_count: 12, confidence: "Medium", latest_transaction_date: "2025-08-15" },
     );
     render(
-      <MarketMapAreaDetail properties={properties} scaleMode="local" detail={detail} />,
+      <MarketMapAreaDetail properties={properties} detail={detail} />,
     );
 
     const breakdown = screen.getByTestId("area-detail-breakdown");
@@ -83,7 +83,30 @@ describe("MarketMapAreaDetail — flat/house breakdown", () => {
   });
 
   it("omits the breakdown section entirely when no detail is loaded yet", () => {
-    render(<MarketMapAreaDetail properties={properties} scaleMode="national" />);
+    render(<MarketMapAreaDetail properties={properties} />);
     expect(screen.queryByTestId("area-detail-breakdown")).toBeNull();
+  });
+});
+
+describe("MarketMapAreaDetail — normal-user copy + links", () => {
+  it("renders a link to the area's full price page", () => {
+    render(<MarketMapAreaDetail properties={properties} />);
+    const link = screen.getByRole("link", { name: /full price report|price details/i });
+    expect(link).toHaveAttribute("href", "/search/market-map/ZZS01");
+  });
+
+  it("humanizes a raw ONS code in the header (never shows the code)", () => {
+    render(
+      <MarketMapAreaDetail
+        properties={{ ...properties, area_name: "E02000244", geography_level: "msoa" }}
+      />,
+    );
+    expect(screen.queryByText("E02000244")).not.toBeInTheDocument();
+    expect(screen.getByText("Neighbourhood")).toBeInTheDocument();
+  });
+
+  it("drops the meaningless national/local 'Scale' row", () => {
+    render(<MarketMapAreaDetail properties={properties} />);
+    expect(screen.queryByText("Scale")).not.toBeInTheDocument();
   });
 });

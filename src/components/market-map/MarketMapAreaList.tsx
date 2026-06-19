@@ -2,13 +2,17 @@
  * MarketMapAreaList — ranked list of areas cheapest → most expensive.
  *
  * Per spec: sortable by median_price; click selects (drives map highlight).
- * Insufficient-data areas shown greyed at the bottom.
+ * Each row also exposes a real link to that area's own price page so the panel
+ * is navigable, not just a map controller. Insufficient-data areas are shown
+ * greyed at the bottom. Area names are humanized — never a raw ONS code.
  */
 
 "use client";
 
 import { useMemo } from "react";
+import { ChevronRight } from "lucide-react";
 import { colourForBucket, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
+import { humanizeAreaName, areaHref } from "@/lib/market-map/labels";
 import { cn } from "@/lib/utils";
 import type { MarketMapFeatureProperties } from "@/services/market-map/types";
 
@@ -57,6 +61,7 @@ export function MarketMapAreaList({ features, selectedAreaId, onSelect }: Props)
 
   function Row({ feature, rank }: { feature: MarketMapFeatureProperties; rank?: number }) {
     const isSelected = feature.area_id === selectedAreaId;
+    const name = humanizeAreaName(feature.area_name, feature.geography_level);
     const chipColour =
       feature.colour_bucket !== null
         ? colourForBucket(feature.colour_bucket)
@@ -64,58 +69,68 @@ export function MarketMapAreaList({ features, selectedAreaId, onSelect }: Props)
     const isInsufficient = feature.confidence === "Insufficient";
 
     return (
-      <button
-        type="button"
-        onClick={() => onSelect(feature)}
-        aria-pressed={isSelected}
+      <div
         className={cn(
-          "flex w-full items-center gap-3 rounded-[var(--radius-md)] px-3 py-2.5 text-left",
-          "transition-colors duration-150",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-1",
-          isSelected
-            ? "bg-[#E8F5EE] ring-1 ring-[#1B4D3E]"
-            : "hover:bg-[#F1F1F5]",
+          "flex items-center rounded-[var(--radius-md)] transition-colors duration-150",
+          isSelected ? "bg-[#E8F5EE] ring-1 ring-[#1B4D3E]" : "hover:bg-[#F1F1F5]",
           isInsufficient && "opacity-50",
         )}
       >
-        {/* Rank */}
-        {rank !== undefined && (
-          <span className="w-5 shrink-0 font-sans text-[10px] font-bold text-[#858593]">
-            {rank}
-          </span>
-        )}
-
-        {/* Colour chip */}
-        <span
-          className="inline-block h-3 w-3 shrink-0 rounded-sm"
-          style={{ backgroundColor: chipColour, opacity: isInsufficient ? 0.5 : 1 }}
-          aria-hidden="true"
-        />
-
-        {/* Area name */}
-        <span className="min-w-0 flex-1 truncate font-sans text-sm font-medium text-[#2E2E33]">
-          {feature.area_name ?? feature.area_id}
-        </span>
-
-        {/* Confidence dot */}
-        <span
+        <button
+          type="button"
+          onClick={() => onSelect(feature)}
+          aria-pressed={isSelected}
+          aria-label={`Select ${name}`}
           className={cn(
-            "inline-block h-2 w-2 shrink-0 rounded-full",
-            CONFIDENCE_DOT[feature.confidence] ?? "bg-[#9E9EAB]",
+            "flex min-w-0 flex-1 items-center gap-3 px-3 py-2.5 text-left",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-1",
           )}
-          aria-label={`Confidence: ${feature.confidence}`}
-        />
+        >
+          {rank !== undefined && (
+            <span className="w-5 shrink-0 font-sans text-[10px] font-bold text-[#858593]">
+              {rank}
+            </span>
+          )}
 
-        {/* Median price */}
-        <span className="shrink-0 font-sans text-sm font-bold text-[#003629]">
-          {isInsufficient ? "—" : formatPrice(feature.median_price)}
-        </span>
+          <span
+            className="inline-block h-3 w-3 shrink-0 rounded-sm"
+            style={{ backgroundColor: chipColour, opacity: isInsufficient ? 0.5 : 1 }}
+            aria-hidden="true"
+          />
 
-        {/* Txn count */}
-        <span className="shrink-0 font-sans text-[10px] text-[#7A7A88]">
-          {feature.transaction_count.toLocaleString("en-GB")}
-        </span>
-      </button>
+          <span className="min-w-0 flex-1 truncate font-sans text-sm font-medium text-[#2E2E33]">
+            {name}
+          </span>
+
+          <span
+            className={cn(
+              "inline-block h-2 w-2 shrink-0 rounded-full",
+              CONFIDENCE_DOT[feature.confidence] ?? "bg-[#9E9EAB]",
+            )}
+            aria-label={`Confidence: ${feature.confidence}`}
+          />
+
+          <span className="shrink-0 font-sans text-sm font-bold text-[#003629]">
+            {isInsufficient ? "—" : formatPrice(feature.median_price)}
+          </span>
+
+          <span className="shrink-0 font-sans text-[10px] text-[#7A7A88]">
+            {feature.transaction_count.toLocaleString("en-GB")}
+          </span>
+        </button>
+
+        <a
+          href={areaHref(feature.area_id)}
+          aria-label={`View ${name} price details`}
+          className={cn(
+            "mr-1 flex shrink-0 items-center rounded p-1.5 text-[#7A7A88]",
+            "hover:bg-white hover:text-[#1B4D3E]",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]",
+          )}
+        >
+          <ChevronRight className="size-4" aria-hidden="true" />
+        </a>
+      </div>
     );
   }
 

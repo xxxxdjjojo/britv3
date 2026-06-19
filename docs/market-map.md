@@ -19,7 +19,9 @@
 
 ## Overview
 
-The property price map is a multi-scale choropleth visualisation of median registered sold prices across England and Wales. It draws on HM Land Registry Price Paid Data (PPD) joined to ONS geography boundaries, and renders at five resolution levels that swap automatically as the user zooms.
+The property price map is a multi-scale choropleth visualisation of median registered sold prices across England and Wales. It draws on HM Land Registry Price Paid Data (PPD) joined to ONS geography boundaries, and renders at four resolution levels that swap automatically as the user zooms. (A fifth `street` / H3 micro-area level was specced but never populated — it is intentionally not served; see [Street / Micro-Area Layer](#street--micro-area-layer).)
+
+The page is a 50/50 split on desktop: the map fills the left half, and a scrollable panel on the right holds the search bar (sticky), filters, and either the selected area's price detail or the ranked "areas in view" list. Area names and search results are shown in plain English — never raw ONS codes (`E02000244`) or jargon (`MSOA`, `local authority`) — via the humanizer in `src/lib/market-map/labels.ts`.
 
 ---
 
@@ -89,10 +91,9 @@ The map automatically selects the appropriate geography level based on the curre
 | z4–6 (< 7) | `local_authority` | Local authority districts (LAD) — country / region view |
 | z7–9 (7–9) | `postcode_district` | Postcode districts (e.g. SW1, M1) — city / borough view |
 | z10–12 (10–12) | `msoa` | Middle Layer Super Output Areas — neighbourhood view |
-| z13–15 (13–15) | `lsoa` | Lower Layer Super Output Areas — local pocket view |
-| z16+ (≥ 16) | `street` | H3 hexagonal micro-area cells — street-level view |
+| z13+ (≥ 13) | `lsoa` | Lower Layer Super Output Areas — local pocket view (finest level with data) |
 
-The layer swap is automatic on every zoom change; no user action is required.
+The layer swap is automatic on every zoom change; no user action is required. `lsoa` is the finest level returned — MapLibre overzooms the z16 LSOA vector tile beyond zoom 16, so colour persists as the user keeps zooming in. `geographyLevelForZoom` never returns `street`.
 
 ---
 
@@ -144,9 +145,18 @@ Both scales use the same log-clamped 9-bucket approach; they differ only in whic
 
 ## Street / Micro-Area Layer
 
-At zoom 16 and above, the map switches to the `street` layer. Because no street-level polygon boundaries are available in the ONS open dataset, this layer uses **H3 hexagonal grid cells** (Uber H3 library, resolution 8) instead of administrative polygons.
+> **Status: not active.** This H3 micro-area layer was designed but its data was
+> never populated — `/api/market-map?geography_level=street` returns **0
+> features** and the `market_map_tile` RPC caps geometry at LSOA. While
+> `geographyLevelForZoom` still returned `street` at zoom ≥16, deep zoom blanked
+> the choropleth (no colour, empty area list, "NO DATA" legend) and broke
+> hover/click enrichment (street uses H3 ids, tiles use LSOA ids). The zoom
+> mapping now caps at `lsoa`; `street` is no longer requested. The design below
+> is retained for if/when the H3 pipeline is built and the cells are populated.
 
-Key facts about this layer:
+The intended design: at zoom 16 and above, the map would switch to the `street` layer. Because no street-level polygon boundaries are available in the ONS open dataset, this layer uses **H3 hexagonal grid cells** (Uber H3 library, resolution 8) instead of administrative polygons.
+
+Key facts about this layer (when active):
 
 - Label in the UI and API metadata: **"micro-area sold-price band"** (not "street valuation", not "£/m²").
 - A cell is only coloured when it contains **≥ 5 transactions** in the selected date window; cells with fewer transactions appear grey.
@@ -393,10 +403,11 @@ src/lib/market-map/                  Pure utilities (no IO, fully unit-tested)
   colour.ts                          Bucket assignment, colourForBucket, priceColour
   confidence.ts                      confidenceFor (transaction count → level)
   fit-bounds.ts                      fitBoundsFor (search result → MapLibre params)
-  geography.ts                       geographyLevelForZoom, GEOGRAPHY_LEVELS
+  geography.ts                       geographyLevelForZoom (caps at lsoa), GEOGRAPHY_LEVELS
+  labels.ts                          Humanizer: LEVEL_LABEL, isOnsCode, humanizeAreaName, areaHref
   postcode.ts                        Postcode normalisation / validation helpers
   stats.ts                           computeClampBounds, percentile helpers
-  street.ts                          H3 cell helpers for micro-area layer
+  street.ts                          H3 cell helpers for micro-area layer (layer not active)
 
 supabase/migrations/                 Database schema
   2026061600000[1-6]_*.sql           Six market-map migrations (see above)
@@ -425,8 +436,8 @@ src/components/market-map/
   MarketMapFilters.tsx               Property type / date window / metric / scale filter panel
   MarketMapLegend.tsx                Floating legend pill (gradient + swatch + disclaimer)
   MarketMapDisclaimer.tsx            Mandatory verbatim disclaimer text
-  MarketMapAreaDetail.tsx            Selected-area detail card (bottom-right, desktop)
-  MarketMapAreaList.tsx              Scrollable list of areas in view (left panel)
+  MarketMapAreaDetail.tsx            Selected-area detail card (right panel; "View full price report" link)
+  MarketMapAreaList.tsx              Ranked areas in view (right panel); each row links to the area page
   MarketMapSummaryCards.tsx          KPI cards for the selected area
   MarketMapTooltip.tsx               Hover popup content
 
