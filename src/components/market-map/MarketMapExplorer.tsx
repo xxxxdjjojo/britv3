@@ -544,12 +544,15 @@ export function MarketMapExplorer({
           {GRANULARITY_LABELS[activeGranularity]}
         </div>
 
-        {/* Legend — centred top, z-30 */}
-        <div className="pointer-events-none absolute inset-x-0 top-6 z-30 flex justify-center px-4">
-          <div className="pointer-events-auto">
-            <MarketMapLegend loPrice={loPrice} hiPrice={hiPrice} />
+        {/* Legend — centred top, z-30. Hidden at street zoom (>=14), where the
+            sold-parcel £/m² layer takes over and renders its own legend. */}
+        {currentZoom < 14 && (
+          <div className="pointer-events-none absolute inset-x-0 top-6 z-30 flex justify-center px-4">
+            <div className="pointer-events-auto">
+              <MarketMapLegend loPrice={loPrice} hiPrice={hiPrice} />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Mobile: floating filters pill + search bar */}
         <div className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2 lg:hidden">

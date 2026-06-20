@@ -25,7 +25,15 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useMarketMap } from "@/hooks/useMarketMap";
 import { useMarketMapVersion } from "@/hooks/useMarketMapVersion";
 import { MarketMapTooltip } from "./MarketMapTooltip";
+import { SoldParcelPopup } from "./SoldParcelPopup";
 import { colourForBucket, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
+import {
+  colourForSoldBucket,
+  SOLD_RAMP,
+  SOLD_INSUFFICIENT_COLOUR,
+  parseSoldParcelProperties,
+  type SoldParcel,
+} from "@/lib/market-map/sold-colour";
 import type { MarketMapFeatureProperties, MarketMapScaleMode, MarketMapMetadata } from "@/services/market-map/types";
 import type { FitBoundsParams } from "@/lib/market-map/fit-bounds";
 import { cn } from "@/lib/utils";
@@ -79,6 +87,67 @@ type TileFeatureProperties = {
   bucket?: number | null;
   median_price_pence?: number;
   transaction_count?: number;
+};
+
+// ---------------------------------------------------------------------------
+// Sold-properties layer — individual real Land-Registry sales snapped to their
+// HM Land Registry INSPIRE title parcel, coloured by £/m². High zoom only
+// (z >= 14): the area choropleth carries the map below street level, the sold
+// parcels take over above it. Served by /api/market-map/sold (sold_parcels MVT).
+// ---------------------------------------------------------------------------
+
+const SOLD_SOURCE_ID = "sold-parcels";
+const SOLD_TILE_LAYER = "sold_parcels";
+const SOLD_FILL_LAYER_ID = "sold-parcels-fill";
+const SOLD_STROKE_LAYER_ID = "sold-parcels-stroke";
+/** Tiles + fill only appear at street zoom. Matches the RPC's z>=14 gate. */
+const SOLD_MINZOOM = 14;
+
+/** fill-color: baked £/m² bucket (1..9) → warm ramp; absent/null → neutral grey. */
+const SOLD_FILL_COLOUR_EXPRESSION = [
+  "match",
+  ["get", "bucket"],
+  1, colourForSoldBucket(1),
+  2, colourForSoldBucket(2),
+  3, colourForSoldBucket(3),
+  4, colourForSoldBucket(4),
+  5, colourForSoldBucket(5),
+  6, colourForSoldBucket(6),
+  7, colourForSoldBucket(7),
+  8, colourForSoldBucket(8),
+  9, colourForSoldBucket(9),
+  SOLD_INSUFFICIENT_COLOUR,
+] as const;
+
+/**
+ * Choropleth fill-opacity by zoom: full below street level, faded back once the
+ * sold-parcel layer takes over (z>=14) so individual sales read clearly.
+ */
+const CHOROPLETH_FADE_OPACITY = [
+  "interpolate", ["linear"], ["zoom"],
+  13, 0.65,
+  14, 0.45,
+  16, 0.15,
+] as const;
+
+/** Sold-fill opacity: fades IN as the choropleth fades out. */
+const SOLD_FILL_OPACITY = [
+  "interpolate", ["linear"], ["zoom"],
+  13.5, 0,
+  14.5, 0.8,
+] as const;
+
+/** Required OGL attributions shown whenever HMLR/OS/EPC data is on screen. */
+const SOLD_ATTRIBUTIONS = [
+  "Contains HM Land Registry data © Crown copyright and database right 2026. Licensed under the Open Government Licence v3.0.",
+  "© Crown copyright and database rights 2026 Ordnance Survey AC0000851063.",
+  "Energy Performance of Buildings Data © Crown copyright 2026.",
+].join(" | ");
+
+type SoldPopupState = {
+  longitude: number;
+  latitude: number;
+  parcel: SoldParcel;
 };
 
 // ---------------------------------------------------------------------------
@@ -153,6 +222,9 @@ export function MarketMap({
 
   // Hover tooltip state
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+
+  // Sold-parcel click popup (street zoom only)
+  const [soldPopup, setSoldPopup] = useState<SoldPopupState | null>(null);
 
   // Selected area id (for highlight layer filter)
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
@@ -249,6 +321,10 @@ export function MarketMap({
     setViewport({ zoom, bbox });
     onViewportChange?.({ zoom, bbox });
     if (fitToRef.current) applyFit(fitToRef.current);
+    // Test handle: lets E2E drive the live map (fly + queryRenderedFeatures).
+    if (typeof window !== "undefined") {
+      (window as unknown as { __marketMapRef?: unknown }).__marketMapRef = map.getMap();
+    }
   }, [onViewportChange, applyFit]);
 
   // ---------------------------------------------------------------------------
@@ -297,7 +373,10 @@ export function MarketMap({
 
   const handleMouseMove = useCallback(
     (e: MapLayerMouseEvent) => {
-      const feature = e.features?.[0] as (MapGeoJSONFeature & { properties: TileFeatureProperties }) | undefined;
+      // Hover tooltip is the choropleth's; the sold layer uses click-to-popup.
+      const feature = e.features?.find((f) => f.layer?.id === FILL_LAYER_ID) as
+        | (MapGeoJSONFeature & { properties: TileFeatureProperties })
+        | undefined;
       if (!feature?.properties?.area_id) {
         setTooltip(null);
         return;
@@ -317,7 +396,21 @@ export function MarketMap({
 
   const handleClick = useCallback(
     (e: MapLayerMouseEvent) => {
-      const feature = e.features?.[0] as (MapGeoJSONFeature & { properties: TileFeatureProperties }) | undefined;
+      // Sold parcels take click priority at street zoom: show the sale popup.
+      const soldFeature = e.features?.find((f) => f.layer?.id === SOLD_FILL_LAYER_ID);
+      if (soldFeature?.properties) {
+        const parcel = parseSoldParcelProperties(
+          soldFeature.properties as Record<string, unknown>,
+        );
+        if (parcel) {
+          setSoldPopup({ longitude: e.lngLat.lng, latitude: e.lngLat.lat, parcel });
+          return;
+        }
+      }
+
+      const feature = e.features?.find((f) => f.layer?.id === FILL_LAYER_ID) as
+        | (MapGeoJSONFeature & { properties: TileFeatureProperties })
+        | undefined;
       if (!feature?.properties?.area_id) {
         setSelectedAreaId(null);
         onAreaSelect?.(null);
@@ -354,6 +447,7 @@ export function MarketMap({
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const tileUrl = `${origin}/api/market-map/tiles/{z}/{x}/{y}?v=${dataVersion}`;
+  const soldTileUrl = `${origin}/api/market-map/sold/{z}/{x}/{y}?v=${dataVersion}`;
 
   // ---------------------------------------------------------------------------
   // Render
@@ -369,7 +463,8 @@ export function MarketMap({
           latitude: UK_CENTER[1],
           zoom: DEFAULT_ZOOM,
         }}
-        interactiveLayerIds={[FILL_LAYER_ID]}
+        attributionControl={{ customAttribution: SOLD_ATTRIBUTIONS }}
+        interactiveLayerIds={[SOLD_FILL_LAYER_ID, FILL_LAYER_ID]}
         onMoveEnd={handleMoveEnd}
         onZoomEnd={handleMoveEnd}
         onLoad={handleLoad}
@@ -405,7 +500,7 @@ export function MarketMap({
             source-layer={TILE_SOURCE_LAYER}
             paint={{
               "fill-color": FILL_COLOUR_EXPRESSION as unknown as string,
-              "fill-opacity": 0.65,
+              "fill-opacity": CHOROPLETH_FADE_OPACITY as unknown as number,
             }}
           />
 
@@ -442,6 +537,43 @@ export function MarketMap({
           />
         </Source>
 
+        {/*
+         * Sold-properties source — individual Land-Registry sales snapped to
+         * their INSPIRE parcel, cached MVT from /api/market-map/sold (z>=14).
+         * Sparse, so tiles are tiny. The full sale list rides in each feature
+         * (`sales`), so the click popup needs no extra fetch.
+         */}
+        <Source
+          id={SOLD_SOURCE_ID}
+          type="vector"
+          tiles={[soldTileUrl]}
+          minzoom={SOLD_MINZOOM}
+          maxzoom={TILE_MAXZOOM}
+        >
+          <Layer
+            id={SOLD_FILL_LAYER_ID}
+            type="fill"
+            source={SOLD_SOURCE_ID}
+            source-layer={SOLD_TILE_LAYER}
+            minzoom={SOLD_MINZOOM}
+            paint={{
+              "fill-color": SOLD_FILL_COLOUR_EXPRESSION as unknown as string,
+              "fill-opacity": SOLD_FILL_OPACITY as unknown as number,
+            }}
+          />
+          <Layer
+            id={SOLD_STROKE_LAYER_ID}
+            type="line"
+            source={SOLD_SOURCE_ID}
+            source-layer={SOLD_TILE_LAYER}
+            minzoom={SOLD_MINZOOM}
+            paint={{
+              "line-color": "rgba(40,20,10,0.55)",
+              "line-width": ["interpolate", ["linear"], ["zoom"], 14, 0.3, 18, 1.2] as unknown as number,
+            }}
+          />
+        </Source>
+
         {/* Hover tooltip */}
         {tooltip !== null && (
           <Popup
@@ -455,7 +587,56 @@ export function MarketMap({
             <MarketMapTooltip properties={tooltip.properties} />
           </Popup>
         )}
+
+        {/* Sold-parcel click popup (street zoom) */}
+        {soldPopup !== null && (
+          <Popup
+            longitude={soldPopup.longitude}
+            latitude={soldPopup.latitude}
+            closeButton
+            closeOnClick={false}
+            anchor="bottom"
+            maxWidth="320px"
+            onClose={() => setSoldPopup(null)}
+          >
+            <SoldParcelPopup parcel={soldPopup.parcel} />
+          </Popup>
+        )}
       </MapGL>
+
+      {/* Street-zoom legend for the sold-parcel £/m² ramp (only while active). */}
+      {viewport.zoom >= SOLD_MINZOOM && (
+        <div
+          role="img"
+          aria-label="Sold price per square metre legend, low to high"
+          className="pointer-events-none absolute bottom-4 left-4 rounded-lg bg-white/95 px-3 py-2 shadow-md ring-1 ring-black/5 backdrop-blur"
+        >
+          <p className="text-xs font-semibold text-neutral-800">Sold £/m²</p>
+          <p className="mb-1 text-[10px] text-neutral-500">Each parcel = real sales</p>
+          <div className="flex h-2 w-40 overflow-hidden rounded-full">
+            {SOLD_RAMP.map((hex) => (
+              <span
+                key={hex}
+                className="flex-1"
+                style={{ backgroundColor: hex }}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+          <div className="mt-0.5 flex justify-between text-[10px] text-neutral-500">
+            <span>Lower</span>
+            <span>Higher</span>
+          </div>
+          <div className="mt-1 flex items-center gap-1.5">
+            <span
+              className="size-2.5 rounded-sm"
+              style={{ backgroundColor: SOLD_INSUFFICIENT_COLOUR }}
+              aria-hidden="true"
+            />
+            <span className="text-[10px] text-neutral-500">No floor area</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

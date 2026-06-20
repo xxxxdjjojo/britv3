@@ -72,6 +72,8 @@ export type EpcCertificate = {
   constructionAgeBand: string | null;
   tenure: string | null;
   mainFuel: string | null;
+  /** ONS LAD code (e.g. "E09000030"). Filter-only — not persisted. */
+  localAuthority: string | null;
   /** Inspection date as "YYYY-MM-DD" (the dedup key — keep latest per property). */
   inspectionDate: string | null;
 };
@@ -174,6 +176,7 @@ export function parseEpcRow(
     constructionAgeBand: clean(at("construction_age_band")),
     tenure: clean(at("tenure")),
     mainFuel: clean(at("main_fuel")),
+    localAuthority: clean(at("local_authority")),
     inspectionDate: cleanDate(at("inspection_date")),
   };
 }
