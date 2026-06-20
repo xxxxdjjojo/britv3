@@ -15,7 +15,9 @@
  *   node --experimental-strip-types scripts/ingest-epc.ts --year 2026
  *   node --experimental-strip-types scripts/ingest-epc.ts --commit --year 2026
  *   node --experimental-strip-types scripts/ingest-epc.ts --commit          # all years
- * Flags: --dir <path> --year YYYY --limit N (cap rows, for quick test slices).
+ * Flags: --dir <path> --year YYYY --limit N (cap rows, for quick test slices)
+ *        --lad CODE (only rows whose local_authority ONS LAD code matches, to
+ *        densify a single borough; filter-only — not written to the DB).
  */
 import { createReadStream, readFileSync, readdirSync } from "node:fs";
 import { createInterface } from "node:readline";
@@ -42,6 +44,7 @@ function argValue(flag: string): string | null {
 const DIR = argValue("--dir") ?? DEFAULT_DIR;
 const YEAR = argValue("--year");
 const LIMIT = argValue("--limit") ? Number(argValue("--limit")) : null;
+const LAD = argValue("--lad");
 
 // ---------------------------------------------------------------------------
 // Env + TLS (shared shape with the other ingest scripts)
@@ -239,6 +242,10 @@ async function streamFile(
     if (line.trim() === "") continue;
     const cert = parseEpcRow(line, header);
     if (!cert) {
+      stats.skipped++;
+      continue;
+    }
+    if (LAD && cert.localAuthority !== LAD) {
       stats.skipped++;
       continue;
     }

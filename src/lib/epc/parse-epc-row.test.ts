@@ -39,6 +39,7 @@ describe("parseEpcRow", () => {
       totalFloorArea: 60,
       constructionAgeBand: "England and Wales: 1950-1966",
       tenure: "owner-occupied",
+      localAuthority: "E07000211",
       inspectionDate: "2026-02-05",
     });
   });
