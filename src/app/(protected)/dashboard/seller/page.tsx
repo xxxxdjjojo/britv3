@@ -144,7 +144,7 @@ export default async function SellerDashboardHome() {
         <h2 className="font-semibold text-slate-900 mb-4 font-['Plus_Jakarta_Sans']">Upcoming Viewings</h2>
         {viewings.data && viewings.data.length > 0 ? (
           <ul className="space-y-3">
-            {viewings.data.map((v: any) => (
+            {viewings.data.map((v: { id: string; buyer_name: string; viewing_datetime: string; viewing_type: string }) => (
               <li key={v.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
                 <div>
                   <p className="text-sm font-semibold text-slate-900">{v.buyer_name}</p>

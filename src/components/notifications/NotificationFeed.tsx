@@ -23,6 +23,26 @@ export default function NotificationFeed({
     compact ? undefined : cursor,
   );
 
+  const notifications = data?.notifications ?? [];
+  const displayItems = compact ? notifications.slice(0, 5) : notifications;
+
+  // Track new notifications for screen reader announcement
+  const prevCountRef = useRef(displayItems.length);
+  const [liveAnnouncement, setLiveAnnouncement] = useState("");
+
+  useEffect(() => {
+    const newCount = displayItems.length - prevCountRef.current;
+    if (newCount > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- accessibility announcement; needs to fire when the notification list changes
+      setLiveAnnouncement(
+        newCount === 1
+          ? "1 new notification"
+          : `${newCount} new notifications`,
+      );
+    }
+    prevCountRef.current = displayItems.length;
+  }, [displayItems.length]);
+
   if (isLoading) {
     return (
       <div className="space-y-1 p-2">
@@ -46,25 +66,6 @@ export default function NotificationFeed({
       </div>
     );
   }
-
-  const notifications = data?.notifications ?? [];
-  const displayItems = compact ? notifications.slice(0, 5) : notifications;
-
-  // Track new notifications for screen reader announcement
-  const prevCountRef = useRef(displayItems.length);
-  const [liveAnnouncement, setLiveAnnouncement] = useState("");
-
-  useEffect(() => {
-    const newCount = displayItems.length - prevCountRef.current;
-    if (newCount > 0) {
-      setLiveAnnouncement(
-        newCount === 1
-          ? "1 new notification"
-          : `${newCount} new notifications`,
-      );
-    }
-    prevCountRef.current = displayItems.length;
-  }, [displayItems.length]);
 
   if (displayItems.length === 0) {
     return (

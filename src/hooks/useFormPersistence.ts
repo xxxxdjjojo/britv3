@@ -73,9 +73,11 @@ export function useFormPersistence<T extends Record<string, unknown>>(
   // we re-derive on each render via the ref below.
   const key = buildKey(formName, userId);
   const keyRef = useRef(key);
+  // eslint-disable-next-line react-hooks/refs -- mirror the storage key so the lazy initializer below can read it
   keyRef.current = key;
 
   // Hydrate from localStorage on first render (SSR-safe).
+  // eslint-disable-next-line react-hooks/refs -- reading the ref inside a lazy initializer runs only once
   const [values, setValuesState] = useState<T>(() => {
     if (typeof window === "undefined") return initialValues;
     const saved = safeRead<T>(keyRef.current);
@@ -93,7 +95,7 @@ export function useFormPersistence<T extends Record<string, unknown>>(
     if (saved !== null) {
       setWasRecovered(true);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);  
 
   // Debounced persist — keeps a timer ref so we can cancel on rapid changes.
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

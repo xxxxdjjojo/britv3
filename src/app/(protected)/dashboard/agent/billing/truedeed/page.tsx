@@ -118,6 +118,7 @@ export default async function AgentTruedeedBillingPage() {
   // Clause-9.5 window: server-side so the table is deterministic across
   // client clock skew.
   const holidays = await getEnglandWalesBankHolidays();
+  // eslint-disable-next-line react-hooks/purity -- server component; deterministic window calc
   const now = Date.now();
   const tableInvoices: AgentInvoiceRow[] = invoices.map((row) => {
     const issuedAt = row.issued_at;

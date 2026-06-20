@@ -34,6 +34,7 @@ export default function OfflinePage() {
   const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync browser online/offline state on mount
     setIsOnline(navigator.onLine);
     setSavedProperties(getFromStorage<SavedProperty[]>("brite:saved_properties", []));
     setRecentSearches(getFromStorage<RecentSearch[]>("brite:recent_searches", []));

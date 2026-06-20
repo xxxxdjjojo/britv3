@@ -30,6 +30,7 @@ export function ProfileTabs({ tabs }: ProfileTabsProps) {
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");
     if (tabs.some((t) => t.id === hash)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync active tab with URL hash on mount
       setActiveTab(hash);
     }
   }, [tabs]);

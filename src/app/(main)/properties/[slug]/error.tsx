@@ -27,7 +27,7 @@ export default function PropertyDetailError({
             Something went wrong
           </h1>
           <p className="text-neutral-600">
-            We couldn't load this property. This might be temporary — please try again.
+            We couldn&apos;t load this property. This might be temporary — please try again.
           </p>
 
           {/* Error Digest (debugging) */}

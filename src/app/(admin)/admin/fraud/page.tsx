@@ -41,6 +41,7 @@ function computeRiskScore(
 }
 
 export default async function FraudDetectionPage() {
+  // eslint-disable-next-line react-hooks/purity -- server component; admin report time bound is acceptable
   const now = Date.now();
   const supabase = await createClient();
 

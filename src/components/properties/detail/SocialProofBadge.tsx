@@ -137,7 +137,7 @@ export function SocialProofBadge({
             viewerVisible ? "opacity-100" : "opacity-0",
           ].join(" ")}
         >
-          {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
+          { }
           <span aria-hidden="true">🔥</span>
           <span>
             {viewerCount} {viewerCount === 1 ? "person" : "people"} viewing now

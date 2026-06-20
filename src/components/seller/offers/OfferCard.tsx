@@ -13,7 +13,7 @@ type Props = Readonly<{
 
 export function OfferCard({ offer, onUpdated }: Props) {
   const [modalAction, setModalAction] = useState<"accept" | "counter" | "reject" | null>(null);
-  const asking = (offer.listing as any)?.asking_price ?? null;
+  const asking = offer.listing?.asking_price ?? null;
   const amount = offer.amount;
   const amountPounds = `£${(amount / 100).toLocaleString("en-GB")}`;
   let amountColorClass = "text-slate-700";

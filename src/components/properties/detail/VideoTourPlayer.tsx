@@ -103,7 +103,7 @@ export function VideoTourPlayer({ videoUrl }: VideoTourPlayerProps) {
   // Generic video file
   return (
     <div className={containerClass}>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      { }
       <video
         className="absolute inset-0 w-full h-full object-contain bg-black"
         controls
