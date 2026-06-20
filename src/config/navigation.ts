@@ -194,7 +194,6 @@ export const NAV_ITEMS: NavItem[] = [
         heading: "Get Work Done",
         links: [
           { label: "Post a Job", href: "/post-a-job" },
-          { label: "Get Quotes", href: "/dashboard/rfqs/create" },
         ],
       },
       {
@@ -596,9 +595,9 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
 export const ROLE_PRIMARY_CTA: Record<UserRole, { label: string; href: string }> = {
   homebuyer: { label: "Book a Viewing", href: "/search" },
   renter: { label: "Find a Rental", href: "/search" },
-  seller: { label: "List New Property", href: "/dashboard/seller/listings/new" },
-  landlord: { label: "Add Property", href: "/dashboard/landlord/listings/new" },
-  agent: { label: "New Listing", href: "/dashboard/agent/listings/new" },
+  seller: { label: "List New Property", href: "/dashboard/seller/listings/create" },
+  landlord: { label: "Add Property", href: "/dashboard/landlord/properties/add" },
+  agent: { label: "New Listing", href: "/dashboard/agent/listings/create" },
   service_provider: { label: "Find Work", href: "/dashboard/provider/jobs/leads" },
   mortgage_broker: { label: "New Lead", href: "/dashboard/broker/leads" },
 };
