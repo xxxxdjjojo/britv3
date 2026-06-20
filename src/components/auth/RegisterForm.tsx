@@ -19,19 +19,34 @@ import { handleSupabaseError } from "@/lib/supabase-error";
 import { sanitize } from "@/lib/sanitize";
 import type { UserRole } from "@/types/auth";
 
-const registerSchema = z.object({
-  firstName: z.string().min(1, "First name is required").max(50, "First name must be 50 characters or fewer"),
-  lastName: z.string().min(1, "Last name is required").max(50, "Last name must be 50 characters or fewer"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Must contain an uppercase letter")
-    .regex(/[0-9]/, "Must contain a number"),
-  intent: z.enum(["buy", "rent"]),
-  termsAccepted: z.literal(true, "You must accept the Terms of Service and Privacy Policy"),
-  marketingConsent: z.boolean().optional(),
-});
+// Buyer/renter signup collects only email + password (+ consent). Names are
+// collected ONLY for professional roles, where they are still required —
+// professional auth is intentionally unchanged. The conditional requirement is
+// enforced by superRefine on `isProfessional`.
+const registerSchema = z
+  .object({
+    firstName: z.string().max(50, "First name must be 50 characters or fewer").optional(),
+    lastName: z.string().max(50, "Last name must be 50 characters or fewer").optional(),
+    email: z.string().email("Please enter a valid email address"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Must contain an uppercase letter")
+      .regex(/[0-9]/, "Must contain a number"),
+    intent: z.enum(["buy", "rent"]),
+    isProfessional: z.boolean(),
+    termsAccepted: z.literal(true, "You must accept the Terms of Service and Privacy Policy"),
+    marketingConsent: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.isProfessional) return;
+    if (!data.firstName || data.firstName.trim().length < 1) {
+      ctx.addIssue({ path: ["firstName"], code: "custom", message: "First name is required" });
+    }
+    if (!data.lastName || data.lastName.trim().length < 1) {
+      ctx.addIssue({ path: ["lastName"], code: "custom", message: "Last name is required" });
+    }
+  });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
@@ -65,6 +80,7 @@ export function RegisterForm() {
       email: "",
       password: "",
       intent: "buy",
+      isProfessional: false,
       termsAccepted: false as unknown as true,
       marketingConsent: false,
     },
@@ -78,9 +94,10 @@ export function RegisterForm() {
       const mappedRole = PROFESSIONAL_ROLE_MAP[professional.toLowerCase()];
       if (mappedRole) {
         setProfessionalRole(mappedRole);
+        setValue("isProfessional", true);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, setValue]);
 
   const password = watch("password");
   const intent = watch("intent");
@@ -89,7 +106,11 @@ export function RegisterForm() {
     // Bug 9: Wrap entire onSubmit in try/catch with specific error handling
     try {
       setError(null);
-      const displayName = sanitize(`${data.firstName} ${data.lastName}`.trim());
+      // Names are professional-only; consumers register without a display name
+      // (it can be set later in profile settings).
+      const displayName = professionalRole
+        ? sanitize(`${data.firstName ?? ""} ${data.lastName ?? ""}`.trim())
+        : undefined;
       const { error: authError } = await signUp(
         data.email,
         data.password,
@@ -204,39 +225,42 @@ export function RegisterForm() {
         </div>
       )}
 
-      {/* Name fields — side by side */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="space-y-2">
-          <Label htmlFor="firstName">First name</Label>
-          <Input
-            id="firstName"
-            type="text"
-            placeholder="Jane"
-            className="h-11"
-            autoComplete="given-name"
-            aria-invalid={!!errors.firstName}
-            {...register("firstName")}
-          />
-          {errors.firstName && (
-            <p className="text-xs text-error">{errors.firstName.message}</p>
-          )}
+      {/* Name fields — professional roles only; buyers/renters sign up with
+          just email + password (names can be added later in settings). */}
+      {professionalRole && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="firstName">First name</Label>
+            <Input
+              id="firstName"
+              type="text"
+              placeholder="Jane"
+              className="h-11"
+              autoComplete="given-name"
+              aria-invalid={!!errors.firstName}
+              {...register("firstName")}
+            />
+            {errors.firstName && (
+              <p className="text-xs text-error">{errors.firstName.message}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last name</Label>
+            <Input
+              id="lastName"
+              type="text"
+              placeholder="Smith"
+              className="h-11"
+              autoComplete="family-name"
+              aria-invalid={!!errors.lastName}
+              {...register("lastName")}
+            />
+            {errors.lastName && (
+              <p className="text-xs text-error">{errors.lastName.message}</p>
+            )}
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="lastName">Last name</Label>
-          <Input
-            id="lastName"
-            type="text"
-            placeholder="Smith"
-            className="h-11"
-            autoComplete="family-name"
-            aria-invalid={!!errors.lastName}
-            {...register("lastName")}
-          />
-          {errors.lastName && (
-            <p className="text-xs text-error">{errors.lastName.message}</p>
-          )}
-        </div>
-      </div>
+      )}
 
       {/* Email */}
       <div className="space-y-2">
