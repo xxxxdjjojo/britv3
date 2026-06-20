@@ -20,31 +20,32 @@ Guards now in place:
 
 ## Project Overview
 
-Britestate is an all-in-one UK property portal serving 7 user roles (homebuyer, renter, seller, landlord, estate agent, service provider, admin). This is v3.0 — a ground-up rebuild using the v2.0 PRD as specification. The codebase has authentication, property search, property detail pages, area guides, marketplace (reviews & ratings), messaging, notifications, seller/landlord/agent/provider dashboards, admin back-office, and security hardening built. Development follows the epic-by-epic roadmap in `.planning/ROADMAP.md`.
+TrueDeed (formerly Britestate) is an all-in-one UK property portal serving 7 user roles (homebuyer, renter, seller, landlord, estate agent, service provider, admin). This is v3.0 — a ground-up rebuild using the v2.0 PRD as specification. The codebase has authentication, property search, property detail pages, area guides, marketplace (reviews & ratings), messaging, notifications, seller/landlord/agent/provider dashboards, admin back-office, and security hardening built. Development follows the epic-by-epic roadmap in `.planning/ROADMAP.md`.
 
 ## Repository Structure
 
-The actual Next.js application lives in `britv3.0/` (a subdirectory within the repo root):
+The Next.js application lives at the **repo root** (not in a subdirectory). The `britv3.0/` directory is a stranded ghost from an earlier layout — do not use it.
 
 ```
-.                          # Git repo root
+.                          # Git repo root — the Next.js app lives here
+├── src/app/               # App Router pages and API routes
+├── src/components/        # React components
+├── src/services/          # Business logic by domain
+├── src/lib/               # Supabase clients, shared utilities
+├── docs/                  # Audit docs, PRD specs, architecture ADRs
+├── public/                # Static assets
 ├── .planning/             # GSD planning docs (roadmap, requirements, research)
-├── britv3.0/              # <-- The Next.js application
-│   ├── src/app/           # App Router pages and API routes
-│   ├── docs/              # PRD and epic specs from v2.0 (15 files)
-│   ├── public/            # Static assets
-│   ├── package.json       # Dependencies (pnpm)
-│   └── .env.example       # Required environment variables
+├── package.json           # Dependencies (pnpm)
+├── .env.example           # Required environment variables
 ├── skills/                # Claude Code skills
-├── britestatestyle.txt    # Design/style reference
 └── CLAUDE.md              # This file
 ```
 
-**Important:** Run all `pnpm` commands from `britv3.0/`, not the repo root.
+**Important:** Run all `pnpm` commands from the **repo root**, not from `britv3.0/`.
 
 ## Development Commands
 
-All commands run from `britv3.0/`:
+All commands run from the **repo root**:
 
 ```bash
 pnpm dev          # Start dev server (default port 3000)
@@ -60,7 +61,7 @@ pnpm test:e2e              # E2E tests (Playwright)
 
 ## Tech Stack
 
-- **Framework**: Next.js 16.2.1, React 19.2.3, TypeScript 5
+- **Framework**: Next.js 16.2.9, React 19.2.3, TypeScript 5
 - **Styling**: Tailwind CSS v4 (via `@tailwindcss/postcss`), Shadcn UI + Radix (planned)
 - **Backend**: Supabase (Auth, PostgreSQL, Realtime, Storage) — no custom backend server
 - **Package Manager**: pnpm (workspace mode)
