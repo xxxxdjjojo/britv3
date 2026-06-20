@@ -67,3 +67,6 @@ supabase/.temp/
 .codex/
 .schema-diff/
 .gstack/
+
+# MCP config contains API keys — use .mcp.example.json as template
+.mcp.json
