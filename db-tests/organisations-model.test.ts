@@ -1,6 +1,6 @@
 /**
  * Real-Postgres tests for the organisations tenancy model
- * (20260619140000/140001/140002) layered on the agent feed import ledger
+ * (20260619130001/130002/130003) layered on the agent feed import ledger
  * (20260619120003). Boots an ephemeral container, stubs the pre-existing
  * schema the migrations reference, applies the migrations, and exercises
  * membership helpers, member-visibility RLS, the org-consistency triggers,
@@ -13,9 +13,9 @@ import { applyPrerequisites, startPostgres, type DbHarness } from "./harness";
 const MIG = (file: string): string =>
   join(process.cwd(), "supabase/migrations", file);
 const LEDGER = MIG("20260619120003_agent_feed_import_ledger.sql");
-const ORG_MODEL = MIG("20260619140000_organisations_model.sql");
-const ORG_SCOPE = MIG("20260619140001_org_scope_ingestion.sql");
-const BACKFILL = MIG("20260619140002_backfill_agency_organisations.sql");
+const ORG_MODEL = MIG("20260619130001_organisations_model.sql");
+const ORG_SCOPE = MIG("20260619130002_org_scope_ingestion.sql");
+const BACKFILL = MIG("20260619130003_backfill_agency_organisations.sql");
 
 const AGENT_A = "11111111-1111-1111-1111-111111111111"; // owner of ORG_1, agent on INT_1
 const USER_B = "22222222-2222-2222-2222-222222222222"; // outsider (no membership)

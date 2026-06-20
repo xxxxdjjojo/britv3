@@ -13,7 +13,7 @@
 #   leaving the dev DB broken.
 #
 #   This runner skips db reset entirely. It uses the EXISTING migrated local DB
-#   (which is already at the org-model migrations 20260619140000/140001/140002)
+#   (which is already at the org-model migrations 20260619130001/130002/130003)
 #   and layers only the deterministic onboarding fixture on top via
 #   scripts/seed-onboarding-fixture.mjs.
 #

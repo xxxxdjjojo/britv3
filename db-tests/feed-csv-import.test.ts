@@ -56,8 +56,8 @@ const MIG = (file: string): string =>
   join(process.cwd(), "supabase/migrations", file);
 
 const LEDGER = MIG("20260619120003_agent_feed_import_ledger.sql");
-const ORG_MODEL = MIG("20260619140000_organisations_model.sql");
-const ORG_SCOPE = MIG("20260619140001_org_scope_ingestion.sql");
+const ORG_MODEL = MIG("20260619130001_organisations_model.sql");
+const ORG_SCOPE = MIG("20260619130002_org_scope_ingestion.sql");
 
 // ---------------------------------------------------------------------------
 // Test fixtures
