@@ -70,3 +70,21 @@ the canonical fix; see PR #39 for the recipe), apply new migrations manually:
 5. Verify with `supabase migration list --db-url "$SUPABASE_DB_URL"`.
 
 Phase 5 (PR #46, `bd4999f0`) shipped this way and is the working precedent.
+
+## Never drop a migration whose dependent code still ships
+
+A migration and the code that depends on it are one unit. If you remove or
+"deduplicate" a migration, you MUST remove the code that reads the schema it
+created — and vice versa. Dropping one without the other leaves the schema
+source-of-truth broken and the feature liable to fail at runtime.
+
+Real incident: PR #49 dropped the Phase 5 disputes migrations
+(`20260612000005_truedeed_disputes.sql`, `…_06_gdpr.sql`) as "duplicates", but
+`src/services/truedeed/dispute-service.ts` (and the admin disputes UI/API) kept
+querying `invoice_disputes` and the `decide_invoice_dispute` RPC. No migration
+on `main` created them — the feature would break on any fresh DB. Restored in
+PR #70.
+
+Before dropping a migration, grep the app for the objects it defines
+(table/function/view/policy names). If anything references them, keep the
+migration or land the code removal in the same PR.

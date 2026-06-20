@@ -28,7 +28,7 @@ import type {
 } from "./types";
 
 // ---------------------------------------------------------------------------
-// Raw RPC row shape (returned by market_map_features / market_map_aggregate)
+// Raw RPC row shape (returned by market_map_features)
 // ---------------------------------------------------------------------------
 
 /** Raw row from the market_map_features RPC (prices in pence). */
@@ -44,9 +44,6 @@ type RawFeatureRow = {
   property_type_mix: Record<string, number> | null;
   geojson: string | null;
 };
-
-/** Raw row from the market_map_aggregate RPC (prices in pence, no geojson). */
-type RawAggregateRow = Omit<RawFeatureRow, "geojson">;
 
 // ---------------------------------------------------------------------------
 // Extended FeatureCollection type carrying our metadata block
@@ -214,49 +211,17 @@ export async function getMarketMapFeatures(
     propertyType,
     fromDate,
     toDate,
-    scaleMode,
     bbox,
   } = filters;
 
   // ------------------------------------------------------------------
-  // National scale: fetch the full national aggregate first to compute
-  // the p5/p95 domain over all areas (no bbox filter).
-  // ------------------------------------------------------------------
-  let nationalDomain: { lo: number; hi: number } | undefined;
-
-  if (scaleMode === "national") {
-    const { data: nationalRows, error: nationalError } = await supabase.rpc(
-      "market_map_aggregate",
-      {
-        p_level: level,
-        p_property_type: propertyType,
-        p_from_date: fromDate || null,
-        p_to_date: toDate || null,
-      },
-    );
-
-    if (nationalError) {
-      console.error(
-        `[market-map-service] Failed to fetch national aggregate: ${nationalError.message}`,
-      );
-      return emptyCollection(filters);
-    }
-
-    const nationalMedians = ((nationalRows as RawAggregateRow[]) ?? [])
-      .filter((r) => r.transaction_count >= 5 && r.median_price_pence > 0)
-      .map((r) => penceToPounds(r.median_price_pence));
-
-    if (nationalMedians.length >= 2) {
-      nationalDomain = computeClampBounds(nationalMedians);
-    } else if (nationalMedians.length === 1) {
-      nationalDomain = { lo: nationalMedians[0], hi: nationalMedians[0] };
-    }
-    // If no eligible national rows, nationalDomain stays undefined and
-    // buildFeatureCollection falls back to local domain computation.
-  }
-
-  // ------------------------------------------------------------------
   // Fetch features (stats + geometry), optionally bbox-filtered.
+  //
+  // The choropleth fill is now painted client-side from baked buckets in the
+  // vector tiles, so this path no longer fetches a national aggregate to
+  // compute a per-request colour domain. buildFeatureCollection derives a
+  // local domain from the returned rows for the (non-choropleth) area list
+  // and legend.
   // ------------------------------------------------------------------
   const bboxParams =
     bbox !== undefined
@@ -292,5 +257,5 @@ export async function getMarketMapFeatures(
   }
 
   const rows = (featureRows as RawFeatureRow[]) ?? [];
-  return buildFeatureCollection(rows, filters, nationalDomain);
+  return buildFeatureCollection(rows, filters);
 }

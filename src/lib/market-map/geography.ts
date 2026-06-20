@@ -36,8 +36,16 @@ export const GEOGRAPHY_LEVELS: readonly GeographyLevel[] = [
  *   zoom <  7  → local_authority   (country / region / county / LA — z4–6)
  *   zoom <  10 → postcode_district (city / borough / postcode area or district — z7–9)
  *   zoom <  13 → msoa              (neighbourhood — z10–12)
- *   zoom <  16 → lsoa              (local pockets — z13–15)
- *   zoom ≥  16 → street            (street / micro-area — z16+)
+ *   zoom ≥  13 → lsoa              (local pockets — z13+, finest level with data)
+ *
+ * The "street" / micro-area regime is intentionally never returned. Its data
+ * pipeline is empty (the street service returns 0 features) and the vector
+ * tiles cap geometry at LSOA, so resolving "street" at high zoom blanked the
+ * choropleth — no colour, empty "areas in view" list, a "NO DATA" legend — and
+ * broke hover/click enrichment (street uses H3 ids, tiles use LSOA ids, so the
+ * area_id lookup always missed). Capping at `lsoa` keeps the finest real data
+ * on screen; MapLibre overzooms the z16 LSOA tile beyond zoom 16, so the colour
+ * fill persists as the user keeps zooming in.
  *
  * Fractional zooms are handled naturally by the numeric comparisons.
  * Zooms below the minimum usable level (< 7) — including negative values — are
@@ -51,6 +59,5 @@ export function geographyLevelForZoom(zoom: number): GeographyLevel {
   if (zoom < 7) return "local_authority";
   if (zoom < 10) return "postcode_district";
   if (zoom < 13) return "msoa";
-  if (zoom < 16) return "lsoa";
-  return "street";
+  return "lsoa";
 }

@@ -113,7 +113,7 @@ describe("fitBoundsFor", () => {
     expect(params.geographyLevel).toBe("lsoa");
   });
 
-  it("default_zoom=17 → geographyLevel 'street' (zoom ≥ 16)", () => {
+  it("default_zoom=17 → geographyLevel 'lsoa' (street regime removed; finest level with data)", () => {
     const result: MarketSearchResult = {
       id: "street-1",
       name: "Example Street",
@@ -124,7 +124,7 @@ describe("fitBoundsFor", () => {
     };
 
     const params: FitBoundsParams = fitBoundsFor(result);
-    expect(params.geographyLevel).toBe("street");
+    expect(params.geographyLevel).toBe("lsoa");
   });
 
   // -------------------------------------------------------------------------

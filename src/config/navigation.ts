@@ -121,6 +121,7 @@ export const NAV_ITEMS: NavItem[] = [
         links: [
           { label: "Sold Prices", href: "/sold-prices" },
           { label: "UK Sold Price Map", href: "/search/map" },
+          { label: "Area Prices", href: "/area-prices" },
           { label: "Market Trends", href: "/market-trends" },
         ],
       },
@@ -675,6 +676,7 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   { label: "Sold Prices", href: "/sold-prices", section: "Data", keywords: ["sold", "prices", "history", "data"] },
   { label: "Market Trends", href: "/market-trends", section: "Data", keywords: ["market", "trends", "data", "analytics"] },
   { label: "UK Sold Price Map", href: "/search/map", section: "Data", keywords: ["map", "heatmap", "median", "sold", "price", "area", "national", "postcode", "borough", "lsoa"] },
+  { label: "Area Prices", href: "/area-prices", section: "Data", keywords: ["area", "prices", "postcode", "my area", "flat", "house", "average", "sold", "what is my area worth"] },
 
   // Public — Tools & Valuations
   { label: "Free Instant Valuation", href: "/valuation", section: "Tools", keywords: ["valuation", "value", "estimate", "free"] },

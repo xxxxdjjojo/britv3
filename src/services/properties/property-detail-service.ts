@@ -7,6 +7,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { isFeatureEnabled } from "@/lib/features";
+import { Constants } from "@/types/database.types";
+
+// Statuses for which the property-detail page is viewable. Derived from the
+// generated DB `listing_status` enum (minus draft/archived) so the query can
+// never reference a value the enum lacks — passing an unknown value makes
+// PostgREST reject the whole query with 22P02, which 404s every property page.
+// (Regression: "sold_stc" was hard-coded here but never existed in the enum.)
+export const DETAIL_VIEWABLE_STATUSES =
+  Constants.public.Enums.listing_status.filter(
+    (status) => status !== "draft" && status !== "archived",
+  );
 
 // -- Types -------------------------------------------------------------------
 
@@ -52,6 +63,8 @@ export type PropertyDetail = {
     features: Record<string, unknown>;
     epcRating: string | null;
     epcScore: number | null;
+    epcPotentialRating: string | null;
+    epcPotentialScore: number | null;
     tenure: string | null;
     leaseRemainingYears: number | null;
     councilTaxBand: string | null;
@@ -223,6 +236,8 @@ function getMockPropertyBySlug(slug: string): PropertyDetail | null {
       features: { items: ["Central heating", "Double glazing", "Garden", "Parking"] },
       epcRating: mock.epc_rating,
       epcScore: mock.epc_rating ? { A: 95, B: 85, C: 72, D: 58, E: 42, F: 28, G: 12 }[mock.epc_rating] ?? null : null,
+      epcPotentialRating: null,
+      epcPotentialScore: null,
       tenure: mock.tenure,
       leaseRemainingYears: mock.tenure === "leasehold" ? 95 : null,
       councilTaxBand: ["A", "B", "C", "D", "E"][Number(mock.id) % 5] ?? "C",
@@ -300,6 +315,8 @@ export async function getPropertyBySlug(
         features,
         epc_rating,
         epc_score,
+        epc_potential_rating,
+        epc_potential_score,
         tenure,
         lease_remaining_years,
         council_tax_band,
@@ -312,7 +329,7 @@ export async function getPropertyBySlug(
     `,
     )
     .eq("slug", slug)
-    .in("status", ["active", "under_offer", "sold", "sold_stc", "let", "withdrawn"])
+    .in("status", DETAIL_VIEWABLE_STATUSES)
     .single();
 
   if (listingError || !listingRow) {
@@ -412,6 +429,10 @@ export async function getPropertyBySlug(
         (property.features as Record<string, unknown> | null) ?? {},
       epcRating: (property.epc_rating as string | null) ?? null,
       epcScore: (property.epc_score as number | null) ?? null,
+      epcPotentialRating:
+        (property.epc_potential_rating as string | null) ?? null,
+      epcPotentialScore:
+        (property.epc_potential_score as number | null) ?? null,
       tenure: (property.tenure as string | null) ?? null,
       leaseRemainingYears:
         (property.lease_remaining_years as number | null) ?? null,

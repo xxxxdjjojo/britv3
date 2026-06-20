@@ -26,16 +26,19 @@ import {
 } from "react";
 import dynamic from "next/dynamic";
 import { parseAsString, parseAsInteger, useQueryStates } from "nuqs";
-import { SlidersHorizontal, Search, X } from "lucide-react";
+import { SlidersHorizontal, Search, X, ArrowLeft } from "lucide-react";
 import { useMarketSearch } from "@/hooks/useMarketSearch";
 import { useMarketAreaDetail } from "@/hooks/useMarketAreaDetail";
+import { useMarketAreaCard } from "@/hooks/useMarketAreaCard";
 import { geographyLevelForZoom, type GeographyLevel } from "@/lib/market-map/geography";
+import { LEVEL_LABEL, humanizeAreaName } from "@/lib/market-map/labels";
 import { fitBoundsFor } from "@/lib/market-map/fit-bounds";
 import { cn } from "@/lib/utils";
 import { MarketMapFilters } from "./MarketMapFilters";
 import { MarketMapSummaryCards } from "./MarketMapSummaryCards";
 import { MarketMapAreaList } from "./MarketMapAreaList";
 import { MarketMapAreaDetail } from "./MarketMapAreaDetail";
+import { MarketMapPriceCard } from "./MarketMapPriceCard";
 import { MarketMapLegend } from "./MarketMapLegend";
 import {
   Drawer,
@@ -148,6 +151,16 @@ export function MarketMapExplorer({
     detailLevel,
     detailLevel ? selectedArea?.area_id ?? null : null,
     months,
+  );
+
+  // Instant headline card (flat/house bands) for the selected area. Driven
+  // entirely by the query keyed on level + areaId — independent of the flyTo
+  // side-effect in handleResultSelect, so the card and the camera move in
+  // parallel (neither awaits the other). Disabled until an area is selected.
+  const { card: areaCard, isLoading: areaCardLoading } = useMarketAreaCard(
+    selectedArea?.geography_level ?? "",
+    selectedArea?.area_id ?? "",
+    12,
   );
 
   // Current map zoom (drives the active-granularity diagnostic). Initialised to
@@ -296,7 +309,7 @@ export function MarketMapExplorer({
 
   const summaryData: SummaryCardData | null = selectedArea
     ? {
-        areaName: selectedArea.area_name,
+        areaName: humanizeAreaName(selectedArea.area_name, selectedArea.geography_level),
         medianPrice: selectedArea.median_price,
         transactionCount: selectedArea.transaction_count,
         confidence: selectedArea.confidence,
@@ -383,7 +396,7 @@ export function MarketMapExplorer({
               >
                 <span className="flex-1 font-medium">{r.name}</span>
                 <span className="shrink-0 rounded-full bg-[#F1F1F5] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#7A7A88]">
-                  {r.geography_level}
+                  {LEVEL_LABEL[r.geography_level]}
                 </span>
               </button>
             </li>
@@ -397,55 +410,102 @@ export function MarketMapExplorer({
   // Left panel content (desktop)
   // ---------------------------------------------------------------------------
 
-  const leftPanel = (
+  // Right panel content (desktop). Master/detail: filters are always on top;
+  // selecting an area swaps the area list for that area's price detail, with a
+  // "Back to all areas" control. Search sits in a sticky header.
+  const rightPanel = (
     <aside
-      className="flex h-full w-80 shrink-0 flex-col border-r border-[#E2E2E8] bg-[#F8F8FA]"
-      aria-label="Map filters and area summary"
+      className="hidden h-full min-h-0 w-1/2 max-w-[720px] shrink-0 flex-col border-l border-[#E2E2E8] bg-[#F8F8FA] lg:flex"
+      aria-label="Search, filters and area prices"
     >
-      {/* Search */}
-      <div className="border-b border-[#E2E2E8] p-4">{searchBar}</div>
-
-      {/* Filters */}
-      <div className="flex-1 overflow-y-auto">
-        <MarketMapFilters
-          propertyType={propertyType}
-          months={months}
-          scaleMode={scaleMode}
-          onPropertyTypeChange={handlePropertyTypeChange}
-          onMonthsChange={handleMonthsChange}
-          onScaleModeChange={handleScaleModeChange}
-          focusAreaName={focusAreaName}
-          onApply={() => {/* filters are applied reactively */}}
-        />
+      {/* Sticky search header */}
+      <div className="shrink-0 border-b border-[#E2E2E8] bg-white p-4">
+        {searchBar}
       </div>
 
-      {/* Summary cards */}
-      <div className="border-t border-[#E2E2E8] p-4">
-        <MarketMapSummaryCards data={summaryData} />
-      </div>
+      {/* Scrollable body. When an area is selected, its prices lead (so a click
+          is immediately visible); filters drop below. Otherwise filters lead,
+          followed by the ranked "areas in view" list. */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {selectedArea ? (
+          <>
+            {/* Detail mode — the clicked area's prices, shown first */}
+            <div className="flex flex-col gap-3 p-4">
+              <button
+                type="button"
+                onClick={() => handleAreaSelect(null)}
+                className="flex items-center gap-1.5 self-start font-sans text-xs font-medium text-[#1B4D3E] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]"
+              >
+                <ArrowLeft className="size-3.5" aria-hidden="true" />
+                Back to all areas
+              </button>
+              <MarketMapPriceCard
+                card={areaCard ?? undefined}
+                areaName={humanizeAreaName(selectedArea.area_name, selectedArea.geography_level)}
+                isLoading={areaCardLoading}
+              />
+              <MarketMapAreaDetail
+                properties={selectedArea}
+                detail={areaDetail}
+                onClose={() => handleAreaSelect(null)}
+              />
+            </div>
 
-      {/* Area list */}
-      {allFeatures.length > 0 && (
-        <div className="border-t border-[#E2E2E8] p-4">
-          <p className="mb-2 font-sans text-xs font-bold uppercase tracking-[0.08em] text-[#858593]">
-            Areas in view
-          </p>
-          <div className="max-h-64 overflow-y-auto">
-            <MarketMapAreaList
-              features={allFeatures}
-              selectedAreaId={selectedArea?.area_id}
-              onSelect={handleAreaSelect}
+            {/* Filters remain available below the detail */}
+            <div className="border-t border-[#E2E2E8]">
+              <MarketMapFilters
+                propertyType={propertyType}
+                months={months}
+                scaleMode={scaleMode}
+                onPropertyTypeChange={handlePropertyTypeChange}
+                onMonthsChange={handleMonthsChange}
+                onScaleModeChange={handleScaleModeChange}
+                focusAreaName={focusAreaName}
+                onApply={() => {/* filters are applied reactively */}}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* List mode — filters then ranked areas in view */}
+            <MarketMapFilters
+              propertyType={propertyType}
+              months={months}
+              scaleMode={scaleMode}
+              onPropertyTypeChange={handlePropertyTypeChange}
+              onMonthsChange={handleMonthsChange}
+              onScaleModeChange={handleScaleModeChange}
+              focusAreaName={focusAreaName}
+              onApply={() => {/* filters are applied reactively */}}
             />
-          </div>
-        </div>
-      )}
+            <div className="border-t border-[#E2E2E8] p-4">
+              <p className="mb-2 font-sans text-xs font-bold uppercase tracking-[0.08em] text-[#858593]">
+                {allFeatures.length > 0
+                  ? "Areas in view — tap one for details"
+                  : "Areas in view"}
+              </p>
+              {allFeatures.length > 0 ? (
+                <MarketMapAreaList
+                  features={allFeatures}
+                  selectedAreaId={null}
+                  onSelect={handleAreaSelect}
+                />
+              ) : (
+                <p className="font-sans text-xs text-[#7A7A88]">
+                  Pan or zoom the map, or search above, to see sold prices by area.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+      </div>
 
-      {/* Scale indicator */}
-      <div className="border-t border-[#E2E2E8] px-4 py-2">
+      {/* Scale indicator footer */}
+      <div className="shrink-0 border-t border-[#E2E2E8] px-4 py-2">
         <p className="font-sans text-[10px] text-[#7A7A88]">
           {metadata?.scale_mode === "local"
-            ? "Scale: Local comparison"
-            : "Scale: National comparison"}
+            ? "Colours compared within this area"
+            : "Colours compared across the country"}
         </p>
       </div>
     </aside>
@@ -456,12 +516,12 @@ export function MarketMapExplorer({
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="relative flex h-full w-full overflow-hidden">
-      {/* Desktop left panel */}
-      <div className="hidden lg:flex lg:h-full">{leftPanel}</div>
-
-      {/* Map canvas */}
-      <div className="relative flex-1">
+    <div className="relative flex h-full min-h-0 w-full overflow-hidden">
+      {/* Map canvas — left half on desktop, full width on mobile.
+          No `h-full` here: the flex parent stretches this column to full height
+          (align-items: stretch). Setting height:100% would resolve against the
+          parent's indefinite height and collapse the map to 0. */}
+      <div className="relative min-h-0 flex-1">
         <MarketMap
           propertyType={propertyType}
           months={months}
@@ -490,18 +550,6 @@ export function MarketMapExplorer({
             <MarketMapLegend loPrice={loPrice} hiPrice={hiPrice} />
           </div>
         </div>
-
-        {/* Selected area detail card — desktop, anchored bottom-right of map */}
-        {selectedArea && (
-          <div className="absolute bottom-6 right-6 z-30 hidden lg:block">
-            <MarketMapAreaDetail
-              properties={selectedArea}
-              scaleMode={scaleMode}
-              detail={areaDetail}
-              onClose={() => handleAreaSelect(null)}
-            />
-          </div>
-        )}
 
         {/* Mobile: floating filters pill + search bar */}
         <div className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2 lg:hidden">
@@ -548,12 +596,16 @@ export function MarketMapExplorer({
                   onApply={() => {/* reactive */}}
                 />
 
-                {/* Selected area detail inside sheet */}
+                {/* Selected area inside sheet — instant price card + drill-down */}
                 {selectedArea && (
-                  <div className="p-4">
+                  <div className="flex flex-col gap-3 p-4">
+                    <MarketMapPriceCard
+                      card={areaCard ?? undefined}
+                      areaName={humanizeAreaName(selectedArea.area_name, selectedArea.geography_level)}
+                      isLoading={areaCardLoading}
+                    />
                     <MarketMapAreaDetail
                       properties={selectedArea}
-                      scaleMode={scaleMode}
                       detail={areaDetail}
                       onClose={() => handleAreaSelect(null)}
                     />
@@ -578,6 +630,9 @@ export function MarketMapExplorer({
           </Drawer>
         </div>
       </div>
+
+      {/* Desktop right panel — search + filters + area prices (50/50 split) */}
+      {rightPanel}
     </div>
   );
 }

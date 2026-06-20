@@ -135,6 +135,10 @@ describe("matchesRoute — prefix matching", () => {
       expect(matchesRoute("/sold-prices", PUBLIC_ROUTES)).toBe(true);
     });
 
+    it("matches /area-prices exactly (free postcode price page is public)", () => {
+      expect(matchesRoute("/area-prices", PUBLIC_ROUTES)).toBe(true);
+    });
+
     it("matches /valuation exactly", () => {
       expect(matchesRoute("/valuation", PUBLIC_ROUTES)).toBe(true);
     });
