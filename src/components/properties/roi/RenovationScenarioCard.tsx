@@ -8,9 +8,12 @@
  */
 
 import type { ROIRenovation } from "@/services/properties/roi-estimation-service";
+import type { PdFeasibility } from "@/lib/properties/permitted-development-rules";
+import { FeasibilityBadge } from "./FeasibilityBadge";
 
 type Props = Readonly<{
   renovation: ROIRenovation;
+  feasibility?: PdFeasibility;
 }>;
 
 /** Converts snake_case renovation type to Title Case human label. */
@@ -50,7 +53,7 @@ const confidenceBadge: Record<
   },
 };
 
-export function RenovationScenarioCard({ renovation }: Props) {
+export function RenovationScenarioCard({ renovation, feasibility }: Props) {
   const { label, className } = confidenceBadge[renovation.confidence] ?? confidenceBadge.low;
 
   const costLow = formatGBP(renovation.cost_low);
@@ -92,6 +95,13 @@ export function RenovationScenarioCard({ renovation }: Props) {
           +{upliftValue}%
         </span>
       </div>
+
+      {/* Permitted-development feasibility (only when known for this scenario) */}
+      {feasibility && (
+        <div className="pt-1">
+          <FeasibilityBadge feasibility={feasibility} />
+        </div>
+      )}
     </article>
   );
 }
