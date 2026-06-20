@@ -172,6 +172,10 @@ test.describe("Connect step", () => {
     await page.goto(FEEDS_PAGE, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle");
 
+    // Snapshot the current csv row count BEFORE adding (baseline should be 0;
+    // this makes the assertion robust even if the baseline drifts).
+    const csvRowsBefore = await page.getByTestId("integration-row-csv").count();
+
     // Select CSV source
     const csvOption = page.getByTestId("source-option-csv");
     await expect(csvOption).toBeVisible();
@@ -195,9 +199,12 @@ test.describe("Connect step", () => {
     const addBtn = page.getByTestId("add-connection-btn");
     await addBtn.click();
 
-    // New CSV integration row should appear
-    const csvRow = page.getByTestId("integration-row-csv");
-    await expect(csvRow).toBeVisible({ timeout: 15_000 });
+    // Assert that exactly one NEW csv integration row appeared (count increased by 1).
+    // Using a poll-based assertion so we wait for the row to render.
+    await expect(async () => {
+      const csvRowsAfter = await page.getByTestId("integration-row-csv").count();
+      expect(csvRowsAfter).toBe(csvRowsBefore + 1);
+    }).toPass({ timeout: 15_000 });
 
     await capture(page, "connect-csv-row");
   });

@@ -100,9 +100,11 @@ echo "==> [3/4] Seeding test users + onboarding fixture"
 SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
   node --experimental-strip-types supabase/seed/seed-test-users.ts
 
-# Step 2: onboarding fixture (organisation + membership + integration for test-agent).
+# Step 2: onboarding fixture — always reset first so every run starts from a
+# deterministic baseline (0 csv integrations, 0 import runs, 0 feed listings).
+# Scoped strictly to test-agent / e2e-onboarding-agency; other users are untouched.
 SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
-  node scripts/seed-onboarding-fixture.mjs
+  node scripts/seed-onboarding-fixture.mjs --reset
 
 # Verify seed state: test-agent must exist + have an org membership.
 echo "    verifying seeded state..."
