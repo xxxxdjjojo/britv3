@@ -51,6 +51,11 @@ scripts/ingest-mobility-scores.ts
 scripts/stripe-setup/create-pricing-v2.ts
 scripts/stripe-setup/verify-pricing-v2.ts
 
+# Partner-ingestion onboarding harness — references the @britestate.test fixture
+# users (same convention as supabase/seed/seed-test-users.ts and e2e/auth.setup.ts).
+scripts/e2e-onboarding-local.sh
+scripts/seed-onboarding-fixture.mjs
+
 # Existing E2E/test fixtures with legacy cookies, users, or expected copy.
 e2e/auth.setup.ts
 e2e/auth.spec.ts
