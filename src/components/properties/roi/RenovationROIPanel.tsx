@@ -11,6 +11,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Property } from "@/types/property";
 import { estimateROI } from "@/services/properties/roi-estimation-service";
+import {
+  assessPermittedDevelopment,
+  roiTypeToPdScenario,
+} from "@/lib/properties/permitted-development-rules";
 import { RenovationScenarioCard } from "./RenovationScenarioCard";
 import { ROIConfidenceDisclosure } from "./ROIConfidenceDisclosure";
 
@@ -21,6 +25,13 @@ type Props = Readonly<{
 
 export async function RenovationROIPanel({ property, supabase }: Props) {
   const estimate = await estimateROI(property, supabase);
+
+  const pd = assessPermittedDevelopment(property.property_type);
+  const feasibilityFor = (roiType: string) => {
+    const scenario = roiTypeToPdScenario(roiType);
+    if (!scenario) return undefined;
+    return pd.scenarios.find((s) => s.scenario === scenario)?.feasibility;
+  };
 
   return (
     <section aria-labelledby="roi-heading" className="space-y-4">
@@ -53,7 +64,10 @@ export async function RenovationROIPanel({ property, supabase }: Props) {
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="list">
             {estimate.renovations.map((renovation) => (
               <li key={renovation.type}>
-                <RenovationScenarioCard renovation={renovation} />
+                <RenovationScenarioCard
+                  renovation={renovation}
+                  feasibility={feasibilityFor(renovation.type)}
+                />
               </li>
             ))}
           </ul>
