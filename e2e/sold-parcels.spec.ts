@@ -92,11 +92,11 @@ test.describe("Sold-properties parcel layer — /search/map", () => {
         if (feats.length > 0) {
           const f = feats[0];
           const c = (map.getCanvas() as HTMLCanvasElement).getBoundingClientRect();
-          const pt = map.project(
+          const ring =
             (f.geometry as GeoJSON.Polygon | GeoJSON.MultiPolygon).type === "Polygon"
               ? (f.geometry as GeoJSON.Polygon).coordinates[0][0]
-              : (f.geometry as GeoJSON.MultiPolygon).coordinates[0][0][0],
-          );
+              : (f.geometry as GeoJSON.MultiPolygon).coordinates[0][0][0];
+          const pt = map.project([ring[0], ring[1]] as [number, number]);
           return { ok: true, x: c.left + pt.x, y: c.top + pt.y };
         }
         await new Promise((r) => setTimeout(r, 500));
