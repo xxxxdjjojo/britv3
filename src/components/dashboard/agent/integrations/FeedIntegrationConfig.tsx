@@ -111,6 +111,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
   // --- test connection state ---
   const [testingConnection, setTestingConnection] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [testResultIntegrationId, setTestResultIntegrationId] = useState<string | null>(null);
 
   // --- sync/delete state ---
   const [syncingId, setSyncingId] = useState<string | null>(null);
@@ -136,6 +137,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
   async function handleTestConnection(integrationId: string) {
     setTestingConnection(true);
     setTestResult(null);
+    setTestResultIntegrationId(integrationId);
     try {
       const res = await fetch(
         `/api/agent/feeds/${encodeURIComponent(integrationId)}/test`,
@@ -323,6 +325,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
           formSubmitting={formSubmitting}
           testingConnection={testingConnection}
           testResult={testResult}
+          testResultIntegrationId={testResultIntegrationId}
           syncingId={syncingId}
           deletingId={deletingId}
           onSelectProvider={(p) => {

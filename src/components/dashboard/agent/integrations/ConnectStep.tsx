@@ -96,6 +96,7 @@ type ConnectStepProps = Readonly<{
   formSubmitting: boolean;
   testingConnection: boolean;
   testResult: { ok: boolean; message: string } | null;
+  testResultIntegrationId: string | null;
   syncingId: string | null;
   deletingId: string | null;
   onSelectProvider: (p: FeedProvider) => void;
@@ -123,6 +124,7 @@ export function ConnectStep({
   formSubmitting,
   testingConnection,
   testResult,
+  testResultIntegrationId,
   syncingId,
   deletingId,
   onSelectProvider,
@@ -389,6 +391,7 @@ export function ConnectStep({
                 syncing={syncingId === integration.id}
                 anySyncing={anySyncing}
                 deleting={deletingId === integration.id}
+                testResult={testResultIntegrationId === integration.id ? testResult : null}
                 onSyncNow={() => onSyncNow(integration.id)}
                 onTestConnection={() => onTestConnection(integration.id)}
                 onDelete={() => onConfirmDelete(integration.id)}
@@ -453,6 +456,7 @@ function IntegrationRow({
   syncing,
   anySyncing,
   deleting,
+  testResult,
   onSyncNow,
   onTestConnection,
   onDelete,
@@ -461,6 +465,7 @@ function IntegrationRow({
   syncing: boolean;
   anySyncing: boolean;
   deleting: boolean;
+  testResult: { ok: boolean; message: string } | null;
   onSyncNow: () => void;
   onTestConnection: () => void;
   onDelete: () => void;
@@ -468,58 +473,75 @@ function IntegrationRow({
   const status = STATUS_CONFIG[integration.sync_status] ?? STATUS_CONFIG.disconnected;
   const providerLabel = PROVIDER_LABEL[integration.provider] ?? integration.provider;
   return (
-    <div data-testid={`integration-row-${integration.provider}`} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-surface ring-1 ring-border">
-          <LayoutGrid className="size-4 text-muted-foreground" aria-hidden />
+    <div data-testid={`integration-row-${integration.provider}`} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-lg bg-surface ring-1 ring-border">
+            <LayoutGrid className="size-4 text-muted-foreground" aria-hidden />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">{providerLabel}</p>
+            <p className={`flex items-center gap-1.5 text-xs ${status.badgeClass}`}>
+              <span className={`inline-block size-1.5 rounded-full ${status.dotClass}`} aria-hidden />
+              {status.label}
+              {integration.last_sync_at && (
+                <span className="text-muted-foreground">
+                  · last sync {new Date(integration.last_sync_at).toLocaleString("en-GB")}
+                </span>
+              )}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-semibold text-foreground">{providerLabel}</p>
-          <p className={`flex items-center gap-1.5 text-xs ${status.badgeClass}`}>
-            <span className={`inline-block size-1.5 rounded-full ${status.dotClass}`} aria-hidden />
-            {status.label}
-            {integration.last_sync_at && (
-              <span className="text-muted-foreground">
-                · last sync {new Date(integration.last_sync_at).toLocaleString("en-GB")}
-              </span>
-            )}
-          </p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            data-testid={`test-connection-btn-${integration.provider}`}
+            onClick={onTestConnection}
+            aria-label={`Test connection for ${providerLabel}`}
+          >
+            Test connection
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            data-testid={`sync-now-btn-${integration.provider}`}
+            disabled={anySyncing || integration.sync_status === "syncing"}
+            onClick={onSyncNow}
+            aria-label={`Sync now for ${providerLabel}`}
+          >
+            <RefreshCw className={`size-3.5 ${syncing ? "animate-spin" : ""}`} aria-hidden />
+            {syncing ? "Syncing…" : "Sync now"}
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            disabled={deleting}
+            onClick={onDelete}
+            aria-label={`Delete ${providerLabel} integration`}
+          >
+            <Trash2 className="size-3.5" aria-hidden />
+          </Button>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          data-testid={`test-connection-btn-${integration.provider}`}
-          onClick={onTestConnection}
-          aria-label={`Test connection for ${providerLabel}`}
+      {testResult && (
+        <p
+          data-testid="test-connection-result"
+          className={`flex items-center gap-1.5 text-xs ${
+            testResult.ok ? "text-green-700 dark:text-green-400" : "text-destructive"
+          }`}
         >
-          Test connection
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          data-testid={`sync-now-btn-${integration.provider}`}
-          disabled={anySyncing || integration.sync_status === "syncing"}
-          onClick={onSyncNow}
-          aria-label={`Sync now for ${providerLabel}`}
-        >
-          <RefreshCw className={`size-3.5 ${syncing ? "animate-spin" : ""}`} aria-hidden />
-          {syncing ? "Syncing…" : "Sync now"}
-        </Button>
-        <Button
-          type="button"
-          variant="destructive"
-          size="sm"
-          disabled={deleting}
-          onClick={onDelete}
-          aria-label={`Delete ${providerLabel} integration`}
-        >
-          <Trash2 className="size-3.5" aria-hidden />
-        </Button>
-      </div>
+          {testResult.ok ? (
+            <CheckCircle2 className="size-3.5" aria-hidden />
+          ) : (
+            <XCircle className="size-3.5" aria-hidden />
+          )}
+          {testResult.message}
+        </p>
+      )}
     </div>
   );
 }

@@ -147,14 +147,13 @@ test.describe("Connect step", () => {
     await expect(testBtn).toBeVisible();
     await testBtn.click();
 
-    // The test-connection route either succeeds (sandbox always passes) or
-    // returns an error message. We assert a real message appears — not a
-    // specific string — because the guarantee is "not regex-mocked".
-    // The sandbox connector's testConnection returns { ok: true, message: "..." }.
-    await expect(page.locator("body")).toContainText(
-      /connected|ok|success|error|failed/i,
-      { timeout: 15_000 },
-    );
+    // Wait for the result element rendered by the real /api/agent/feeds/[id]/test
+    // endpoint. The sandbox connector's testConnection always returns:
+    //   { ok: true, message: "Sandbox fixture reachable — N listings parsed" }
+    // We assert that specific substring so a hollow body-level regex cannot pass.
+    const resultEl = page.getByTestId("test-connection-result");
+    await expect(resultEl).toBeVisible({ timeout: 15_000 });
+    await expect(resultEl).toContainText("Sandbox fixture reachable");
 
     await capture(page, "test-connection-result");
   });
