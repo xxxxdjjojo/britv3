@@ -35,6 +35,7 @@ import {
 // Wave 4 — ROI components (left column)
 import { RenovationROIPanel } from "@/components/properties/roi/RenovationROIPanel";
 import { WhatIfFloorPlan } from "@/components/properties/roi/WhatIfFloorPlan";
+import { PermittedDevelopmentSummary } from "@/components/properties/detail/PermittedDevelopmentSummary";
 
 // Wave 6 — Hero media components
 import { VirtualTourViewer } from "@/components/properties/detail/VirtualTourViewer";
@@ -623,6 +624,8 @@ export default async function PropertyPage({
                   >
                     <RenovationROIPanel property={property as unknown as import("@/types/property").Property} supabase={supabase} />
                   </Suspense>
+
+                  <PermittedDevelopmentSummary propertyType={property.propertyType} />
 
                   {/* WhatIf Floor Plan — shows overlay when a renovation type is selected */}
                   {floorPlanUrl && (
