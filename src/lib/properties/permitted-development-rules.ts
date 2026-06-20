@@ -5,8 +5,6 @@
  * per-property planning data (conservation area, Article 4, listed status are
  * not stored). England-oriented householder PD rules of thumb. Always shown
  * with the standard caveat (see PD_CAVEAT). Not legal advice.
- *
- * Future constraint-awareness hooks in via the optional `opts` arg.
  */
 
 export type PdScenario =
@@ -33,11 +31,6 @@ export type PdAssessment = {
   applicable: boolean;
   scenarios: PdScenarioAssessment[];
   headline: string;
-};
-
-export type PdAssessmentOptions = {
-  // Reserved for future per-property constraint-awareness. Unused today.
-  conservationArea?: boolean;
 };
 
 /** Canonical scenario order for display + count assertions. */
@@ -151,10 +144,7 @@ export function roiTypeToPdScenario(roiType: string): PdScenario | null {
   }
 }
 
-export function assessPermittedDevelopment(
-  propertyType: string,
-  _opts: PdAssessmentOptions = {},
-): PdAssessment {
+export function assessPermittedDevelopment(propertyType: string): PdAssessment {
   const profile = HOUSE_PROFILES[propertyType];
 
   if (!profile) {
