@@ -95,12 +95,21 @@ function MultiSale({ parcel }: Readonly<{ parcel: SoldParcel }>) {
   return (
     <div>
       <p className="font-semibold text-neutral-900">
-        {parcel.saleCount} sales in this building
+        {parcel.saleCount} recorded sales on this parcel
       </p>
       <p className="text-xs text-neutral-500">
+        Freehold title — a house sold over time, or the flats that share it.
+      </p>
+      <p className="mt-1 text-xs text-neutral-500">
         Median {formatPounds(parcel.medianPricePence)}
         {medianPpsqm ? ` · ${medianPpsqm}` : ""}
       </p>
+
+      {parcel.saleCount > parcel.sales.length ? (
+        <p className="mt-1 text-xs text-neutral-400">
+          Showing the {parcel.sales.length} most recent of {parcel.saleCount}.
+        </p>
+      ) : null}
 
       <ul className="mt-2 max-h-56 divide-y divide-neutral-100 overflow-y-auto">
         {parcel.sales.map((sale, index) => {

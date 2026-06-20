@@ -29,6 +29,7 @@ import { SoldParcelPopup } from "./SoldParcelPopup";
 import { colourForBucket, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
 import {
   colourForSoldBucket,
+  SOLD_RAMP,
   SOLD_INSUFFICIENT_COLOUR,
   parseSoldParcelProperties,
   type SoldParcel,
@@ -602,6 +603,40 @@ export function MarketMap({
           </Popup>
         )}
       </MapGL>
+
+      {/* Street-zoom legend for the sold-parcel £/m² ramp (only while active). */}
+      {viewport.zoom >= SOLD_MINZOOM && (
+        <div
+          role="img"
+          aria-label="Sold price per square metre legend, low to high"
+          className="pointer-events-none absolute bottom-4 left-4 rounded-lg bg-white/95 px-3 py-2 shadow-md ring-1 ring-black/5 backdrop-blur"
+        >
+          <p className="text-xs font-semibold text-neutral-800">Sold £/m²</p>
+          <p className="mb-1 text-[10px] text-neutral-500">Each parcel = real sales</p>
+          <div className="flex h-2 w-40 overflow-hidden rounded-full">
+            {SOLD_RAMP.map((hex) => (
+              <span
+                key={hex}
+                className="flex-1"
+                style={{ backgroundColor: hex }}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+          <div className="mt-0.5 flex justify-between text-[10px] text-neutral-500">
+            <span>Lower</span>
+            <span>Higher</span>
+          </div>
+          <div className="mt-1 flex items-center gap-1.5">
+            <span
+              className="size-2.5 rounded-sm"
+              style={{ backgroundColor: SOLD_INSUFFICIENT_COLOUR }}
+              aria-hidden="true"
+            />
+            <span className="text-[10px] text-neutral-500">No floor area</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

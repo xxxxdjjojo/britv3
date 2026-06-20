@@ -25,7 +25,14 @@ returns bytea language sql stable security invoker as $$
       s.median_price_per_sqm_pence,
       s.dominant_property_type,
       to_char(s.latest_transfer_date, 'YYYY-MM-DD') as latest_transfer_date,
-      s.sales::text as sales,
+      -- Cap the per-feature sale list to the 30 most-recent so a 400-flat tower
+      -- does not bloat the tile (sale_count keeps the true total; the popup
+      -- shows "latest 30 of N"). Stored order is transfer_date desc.
+      (
+        select coalesce(jsonb_agg(elem order by i), '[]'::jsonb)::text
+        from jsonb_array_elements(s.sales) with ordinality t(elem, i)
+        where i <= 30
+      ) as sales,
       ST_AsMVTGeom(
         ST_Transform(s.geometry, 3857),
         ST_TileEnvelope(p_z, p_x, p_y),

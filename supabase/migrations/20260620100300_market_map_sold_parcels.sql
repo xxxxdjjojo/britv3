@@ -64,45 +64,59 @@ declare
 begin
   -- 1. Sales in this LAD matched to an EPC (normalised postcode + PAON), with
   --    the best EPC per sale (SAON-consistent for flats, then latest inspection).
+  --
+  -- The PPD postcode key uses upper(replace(postcode,' ','')) — exactly the
+  -- expression behind idx_ppd_postcode_normalised — so the LAD's ~10k postcodes
+  -- probe price_paid_data by index instead of scanning all ~30M rows. EPC is
+  -- pre-filtered to the LAD's postcodes the same way before the PAON match.
   create temp table _matched on commit drop as
   with lad_pc as (
     select postcode_normalised as pc_key, latitude as pc_lat, longitude as pc_lng
     from public.postcode_geography
     where lad_cd = p_lad and latitude is not null and longitude is not null
   ),
-  ranked as (
+  th_epc as (
+    select e.uprn, e.total_floor_area, e.inspection_date, e.address1,
+           upper(replace(e.postcode, ' ', '')) as pc_key,
+           md_norm_paon(e.paon)                as paon_key
+    from public.epc_certificates e
+    join lad_pc lp on lp.pc_key = upper(replace(e.postcode, ' ', ''))
+  ),
+  th_ppd as (
     select
       pp.transaction_id,
-      (pp.price * 100)::bigint                       as price_pence,
-      pp.date_of_transfer::date                      as transfer_date,
-      upper(pp.property_type)                         as ppd_type,
+      (pp.price * 100)::bigint          as price_pence,
+      pp.date_of_transfer::date         as transfer_date,
+      upper(pp.property_type)           as ppd_type,
       pp.paon, pp.saon, pp.street,
       lp.pc_lat, lp.pc_lng,
-      md_norm_postcode(pp.postcode)                  as postcode_disp,
-      e.uprn,
-      e.total_floor_area,
-      row_number() over (
-        partition by pp.transaction_id
-        order by
-          (case when pp.saon is not null and e.address1 is not null
-                 and position(md_norm_paon(pp.saon) in md_norm_paon(e.address1)) > 0
-                then 0 else 1 end),
-          e.inspection_date desc nulls last
-      ) as rn
+      upper(replace(pp.postcode, ' ', '')) as pc_key,
+      md_norm_paon(pp.paon)                as paon_key
     from public.price_paid_data pp
-    join lad_pc lp
-      on lp.pc_key = upper(regexp_replace(pp.postcode, '\s+', '', 'g'))
-    join public.epc_certificates e
-      on upper(regexp_replace(e.postcode, '\s+', '', 'g'))
-         = upper(regexp_replace(pp.postcode, '\s+', '', 'g'))
-     and md_norm_paon(e.paon) = md_norm_paon(pp.paon)
+    join lad_pc lp on lp.pc_key = upper(replace(pp.postcode, ' ', ''))
     where pp.paon is not null
       and coalesce(pp.record_status, 'A') <> 'D'   -- exclude monthly deletions
       and coalesce(pp.ppd_category, 'A') = 'A'      -- standard price-paid only
+  ),
+  ranked as (
+    select
+      tp.transaction_id, tp.price_pence, tp.transfer_date, tp.ppd_type,
+      tp.paon, tp.saon, tp.street, tp.pc_lat, tp.pc_lng,
+      te.uprn, te.total_floor_area,
+      row_number() over (
+        partition by tp.transaction_id
+        order by
+          (case when tp.saon is not null and te.address1 is not null
+                 and position(md_norm_paon(tp.saon) in md_norm_paon(te.address1)) > 0
+                then 0 else 1 end),
+          te.inspection_date desc nulls last
+      ) as rn
+    from th_ppd tp
+    join th_epc te on te.pc_key = tp.pc_key and te.paon_key = tp.paon_key
   )
   select
     transaction_id, price_pence, transfer_date, paon, saon, street,
-    pc_lat, pc_lng, postcode_disp, uprn, total_floor_area,
+    pc_lat, pc_lng, uprn, total_floor_area,
     case upper(ppd_type)
       when 'D' then 'detached' when 'S' then 'semi-detached'
       when 'T' then 'terraced' when 'F' then 'flat' else 'other'

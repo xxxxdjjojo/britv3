@@ -87,7 +87,9 @@ describe("SoldParcelPopup", () => {
       />,
     );
 
-    expect(screen.getByText("3 sales in this building")).toBeInTheDocument();
+    expect(
+      screen.getByText("3 recorded sales on this parcel"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Flat 1")).toBeInTheDocument();
     expect(screen.getByText("Flat 2")).toBeInTheDocument();
     expect(screen.getByText("Flat 3")).toBeInTheDocument();
