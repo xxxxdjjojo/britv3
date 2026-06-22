@@ -45,6 +45,17 @@ export type PropertyDetail = {
     serviceChargeAnnual: number | null;
     groundRentAnnual: number | null;
     availableFrom: string | null;
+    // Rental listing terms (advertised, not tenancy-level)
+    depositAmount: number | null;
+    holdingDepositAmount: number | null;
+    furnishing: string | null;
+    minimumTenancyMonths: number | null;
+    maximumTenancyMonths: number | null;
+    billsIncluded: boolean | null;
+    billsIncludedDetails: string | null;
+    petsPolicy: string | null;
+    studentsPolicy: string | null;
+    depositScheme: string | null;
   };
   property: {
     id: string;
@@ -218,6 +229,17 @@ function getMockPropertyBySlug(slug: string): PropertyDetail | null {
       serviceChargeAnnual: mock.tenure === "leasehold" ? 1800 : null,
       groundRentAnnual: mock.tenure === "leasehold" ? 250 : null,
       availableFrom: mock.listing_type === "rent" ? "2026-02-01" : null,
+      // Rental listing terms (mock values for rent listings)
+      depositAmount: mock.listing_type === "rent" ? Math.round(mock.price * 5 / (52 / 12)) : null,
+      holdingDepositAmount: mock.listing_type === "rent" ? Math.round(mock.price / (52 / 12)) : null,
+      furnishing: mock.listing_type === "rent" ? (mock.id === "3" ? "furnished" : "unfurnished") : null,
+      minimumTenancyMonths: mock.listing_type === "rent" ? 12 : null,
+      maximumTenancyMonths: null,
+      billsIncluded: mock.listing_type === "rent" ? false : null,
+      billsIncludedDetails: null,
+      petsPolicy: mock.listing_type === "rent" ? "by_arrangement" : null,
+      studentsPolicy: mock.listing_type === "rent" ? "by_arrangement" : null,
+      depositScheme: mock.listing_type === "rent" ? "DPS" : null,
     },
     property: {
       id: `mock-property-${mock.id}`,
@@ -296,6 +318,16 @@ export async function getPropertyBySlug(
       service_charge_annual,
       ground_rent_annual,
       available_from,
+      deposit_amount,
+      holding_deposit_amount,
+      furnishing,
+      minimum_tenancy_months,
+      maximum_tenancy_months,
+      bills_included,
+      bills_included_details,
+      pets_policy,
+      students_policy,
+      deposit_scheme,
       user_id,
       property_id,
       properties (
@@ -410,6 +442,17 @@ export async function getPropertyBySlug(
       groundRentAnnual:
         (listingRow.ground_rent_annual as number | null) ?? null,
       availableFrom: (listingRow.available_from as string | null) ?? null,
+      // Rental listing terms (new columns — cast because Supabase types not yet regenerated)
+      depositAmount: ((listingRow as Record<string, unknown>).deposit_amount as number | null) ?? null,
+      holdingDepositAmount: ((listingRow as Record<string, unknown>).holding_deposit_amount as number | null) ?? null,
+      furnishing: ((listingRow as Record<string, unknown>).furnishing as string | null) ?? null,
+      minimumTenancyMonths: ((listingRow as Record<string, unknown>).minimum_tenancy_months as number | null) ?? null,
+      maximumTenancyMonths: ((listingRow as Record<string, unknown>).maximum_tenancy_months as number | null) ?? null,
+      billsIncluded: ((listingRow as Record<string, unknown>).bills_included as boolean | null) ?? null,
+      billsIncludedDetails: ((listingRow as Record<string, unknown>).bills_included_details as string | null) ?? null,
+      petsPolicy: ((listingRow as Record<string, unknown>).pets_policy as string | null) ?? null,
+      studentsPolicy: ((listingRow as Record<string, unknown>).students_policy as string | null) ?? null,
+      depositScheme: ((listingRow as Record<string, unknown>).deposit_scheme as string | null) ?? null,
     },
     property: {
       id: property.id as string,

@@ -155,8 +155,17 @@ export const NAV_ITEMS: NavItem[] = [
       {
         heading: "Tools",
         links: [
+          { label: "Renter Tools Hub", href: "/renter-tools" },
+          { label: "Rent Affordability", href: "/tools/rent-affordability-calculator" },
           { label: "Buy vs Rent Calculator", href: "/tools/buy-vs-rent-calculator" },
           { label: "Rental Yield Calculator", href: "/tools/rental-yield-calculator" },
+        ],
+      },
+      {
+        heading: "Your Rental",
+        links: [
+          { label: "Applications", href: "/dashboard/renter/applications" },
+          { label: "Viewings", href: "/dashboard/renter/viewings" },
         ],
       },
       {
@@ -683,6 +692,8 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   { label: "Mortgage Calculator", href: "/tools/mortgage-calculator", section: "Tools", keywords: ["mortgage", "calculator", "repayment"] },
   { label: "Stamp Duty Calculator", href: "/tools/stamp-duty-calculator", section: "Tools", keywords: ["stamp", "duty", "sdlt", "tax"] },
   { label: "Affordability Calculator", href: "/tools/affordability-calculator", section: "Tools", keywords: ["affordability", "budget", "income"] },
+  { label: "Rent Affordability Calculator", href: "/tools/rent-affordability-calculator", section: "Tools", keywords: ["rent", "affordability", "budget", "income", "tenant"] },
+  { label: "Renter Tools Hub", href: "/renter-tools", section: "Tools", keywords: ["renter", "tools", "rent", "tenant", "applications", "viewings"] },
   { label: "Buy vs Rent Calculator", href: "/tools/buy-vs-rent-calculator", section: "Tools", keywords: ["buy", "rent", "compare", "calculator"] },
   { label: "Rental Yield Calculator", href: "/tools/rental-yield-calculator", section: "Tools", keywords: ["rental", "yield", "roi", "return"] },
   { label: "Remortgage Calculator", href: "/tools/remortgage-calculator", section: "Tools", keywords: ["remortgage", "refinance", "calculator"] },

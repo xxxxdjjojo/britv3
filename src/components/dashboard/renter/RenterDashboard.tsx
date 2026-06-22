@@ -117,7 +117,7 @@ export function RenterDashboard({ data }: Readonly<{ data: RenterData }>) {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" render={<Link href="/search?listing_type=rent" />}>
+            <Button variant="outline" render={<Link href="/search?type=rent" />}>
               <Search className="mr-2 size-4" />
               Search Rentals
             </Button>
@@ -138,7 +138,7 @@ export function RenterDashboard({ data }: Readonly<{ data: RenterData }>) {
             <p className="text-muted-foreground max-w-sm text-sm">
               Browse available rental properties and apply to ones that match your needs.
             </p>
-            <Button render={<Link href="/search?listing_type=rent" />}>Browse Rentals</Button>
+            <Button render={<Link href="/search?type=rent" />}>Browse Rentals</Button>
           </CardContent>
         </Card>
       )}
