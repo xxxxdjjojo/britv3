@@ -82,17 +82,24 @@ test.describe("link health", () => {
   }) => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
 
-    // Open the Rent mega-menu by name.
-    const rentButton = page.locator("button", { hasText: "Rent" }).first();
+    // Hover over the Rent mega-menu trigger to open the panel.
+    const rentButton = page.getByRole("button", { name: "Rent", exact: true });
     await expect(rentButton).toBeVisible();
-    await rentButton.click();
+    await rentButton.hover();
 
-    // The menu should expose the new routes.
-    await expect(page.locator("a[href='/renter-tools']")).toBeVisible();
+    // Wait for the panel to render and assert the new rental links are exposed.
+    const panel = page.getByTestId("mega-menu-panel");
+    await expect(panel).toBeVisible();
+
     await expect(
-      page.locator("a[href='/tools/rent-affordability-calculator']"),
+      panel.getByRole("link", { name: "Renter Tools Hub" }),
     ).toBeVisible();
-    await expect(page.locator("a[href='/search?type=rent']")).toBeVisible();
+    await expect(
+      panel.getByRole("link", { name: "Rent Affordability" }),
+    ).toBeVisible();
+    await expect(
+      panel.getByRole("link", { name: "Rental Search" }),
+    ).toBeVisible();
   });
 
   test("critical public routes are reachable", async ({ request }) => {
