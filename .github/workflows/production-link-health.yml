@@ -1,0 +1,56 @@
+# Production link-health smoke test.
+#
+# This is the permanent guard against the failure mode that caused the
+# rental work to be invisible: code merged but routes returning 404/redirects
+# in production. It runs after every production deploy and on a daily schedule.
+#
+# It executes the same E2E spec used in CI, but pointed at the live domain.
+# Failures here alert immediately and do NOT continue-on-error.
+
+name: Production Link Health
+
+on:
+  # Trigger after Vercel production deployments complete. The deployment
+  # event fires when GitHub receives the deployment_status webhook from Vercel.
+  deployment_status:
+  workflow_dispatch:
+  schedule:
+    # Daily at 07:00 UTC — catches any drift (DNS, CDN, accidental rollbacks).
+    - cron: "0 7 * * *"
+
+jobs:
+  link-health:
+    # Only run on successful production deployments to the truedeed.co.uk domain.
+    if: github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && contains(github.event.deployment.environment, 'Production'))
+    runs-on: ubuntu-latest
+    env:
+      E2E_BASE_URL: https://www.truedeed.co.uk
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Production link-health E2E
+        run: pnpm exec playwright test e2e/link-health.spec.ts --project=chromium
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-link-health-report
+          path: playwright-report/
+          if-no-files-found: ignore

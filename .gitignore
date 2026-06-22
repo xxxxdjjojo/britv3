@@ -67,3 +67,6 @@ supabase/.temp/
 .codex/
 .schema-diff/
 .gstack/
+
+# MCP config contains API keys — never commit
+.mcp.json
