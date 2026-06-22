@@ -31,6 +31,12 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const postcode = searchParams.get("postcode");
   if (!postcode) return NextResponse.json({ error: "postcode required" }, { status: 400 });
+  // A UK postcode (full or outward code) only contains letters, digits and a
+  // single space. Reject anything else so it cannot inject extra query params
+  // into the upstream Land Registry URL.
+  if (!/^[A-Za-z0-9 ]{1,8}$/.test(postcode)) {
+    return NextResponse.json({ error: "invalid postcode" }, { status: 400 });
+  }
 
   try {
     const csv = await fetchLandRegistryCsv(postcode);

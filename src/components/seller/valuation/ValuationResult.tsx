@@ -29,6 +29,17 @@ function poundStr(pence: number): string {
 export function ValuationResult({
   postcode, estimate, rangeLow, rangeHigh, evidence, basedOn, comparables,
 }: Props) {
+  if (basedOn === 0 || comparables.length === 0) {
+    return (
+      <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+        <p className="text-sm text-amber-800 font-medium">No recent sales found</p>
+        <p className="text-xs text-amber-700 mt-1">
+          The Land Registry database may not have recent sales for this postcode area. Try a nearby postcode.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-brand-primary rounded-2xl p-8 text-white">
@@ -55,38 +66,27 @@ export function ValuationResult({
         </p>
       </div>
 
-      {comparables.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100">
-            <h3 className="font-semibold text-slate-900 font-['Plus_Jakarta_Sans']">Recent Sales Nearby</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Land Registry data (free public data)</p>
-          </div>
-          <ul className="divide-y divide-slate-50">
-            {comparables.map((comp, i) => (
-              <li key={i} className="flex items-center justify-between px-6 py-4">
-                <div>
-                  <p className="text-sm font-medium text-slate-700">{comp.address || "Address withheld"}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    {comp.property_type} · {comp.tenure} · {new Date(comp.sale_date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
-                  </p>
-                </div>
-                <p className="text-sm font-bold text-slate-900 flex-shrink-0 ml-4">
-                  {poundStr(comp.price)}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100">
+          <h3 className="font-semibold text-slate-900 font-['Plus_Jakarta_Sans']">Recent Sales Nearby</h3>
+          <p className="text-xs text-slate-400 mt-0.5">Land Registry data (free public data)</p>
+        </div>
+        <ul className="divide-y divide-slate-50">
+          {comparables.map((comp, i) => (
+            <li key={i} className="flex items-center justify-between px-6 py-4">
+              <div>
+                <p className="text-sm font-medium text-slate-700">{comp.address || "Address withheld"}</p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {comp.property_type} · {comp.tenure} · {new Date(comp.sale_date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
                 </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {comparables.length === 0 && (
-        <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-          <p className="text-sm text-amber-800 font-medium">No recent sales found</p>
-          <p className="text-xs text-amber-700 mt-1">
-            The Land Registry database may not have recent sales for this postcode area. Try a nearby postcode.
-          </p>
-        </div>
-      )}
+              </div>
+              <p className="text-sm font-bold text-slate-900 flex-shrink-0 ml-4">
+                {poundStr(comp.price)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
