@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1.0] - 2026-06-22 — Honest price & valuation surfaces
+
+Every price, valuation and sold-price surface now states only what HM Land
+Registry data actually supports. The previous pages presented fabricated
+figures — regional/national average prices, year-on-year changes, transaction
+volumes, average days-to-sell, asking-vs-sold gaps, rental yields, a hot/cold
+"heat index", first-time-buyer stats, an affordability ratio, hand-drawn trend
+lines and an invented "Chief Economist" commentary — all under a false
+"Real-time data from Land Registry & ONS" attribution. Land Registry supplies
+none of those.
+
+### Removed
+- The fabricated **Market Trends** (national + regional) and neighbourhood
+  **Sold Prices** pages now permanently redirect to `/area-prices`, the honest
+  postcode-first tool that shows genuine flat/house median sold prices from Land
+  Registry data. Their mock-data services, types and components were deleted.
+
+### Changed
+- The seller valuation page is now **"Nearby Sold Prices"**: it returns a
+  comparable-sales `estimate` with a `range_low`/`range_high` band and an
+  evidence-strength label, replacing the fake `ai_estimate`/`confidence` fields.
+- Valuation, seller-landing and AI-transparency copy no longer claims
+  "AI-powered" valuations — estimates are described as a statistical
+  comparable-sales model over recent Land Registry sold prices.
+
+### Fixed
+- **Security:** the valuation API now validates the `postcode` query parameter
+  (`/^[A-Za-z0-9 ]{1,8}$/`) before building the upstream Land Registry URL,
+  preventing extra query parameters from being injected into the request.
+- The valuation result shows an honest "No recent sales found" notice when there
+  are no comparables, instead of rendering a misleading £0 estimate.
+
+### Added
+- A `sold-price-comparables` library (CSV parsing, average, range and
+  evidence-strength classification) with full unit coverage, plus a route test
+  asserting the postcode guard rejects injection attempts.
+
 ## [0.3.0.2] - 2026-06-19 — Auth rate limiter fails closed in production
 
 `createAuthRateLimiter` now honours its documented "fails CLOSED" contract
