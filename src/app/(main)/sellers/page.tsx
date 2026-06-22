@@ -47,7 +47,8 @@ export default function SellersLanding() {
           Drone tour + floorplan, premium hero, AI story, 0.35% on completion.
         </Card>
         <Card title="Premium — £449">
-          Concierge service, AI valuation, photo/video shoot, 0.25% on completion.
+          Concierge service, comparable-sales valuation, photo/video shoot, 0.25%
+          on completion.
         </Card>
       </section>
 

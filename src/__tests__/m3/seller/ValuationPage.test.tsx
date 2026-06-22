@@ -6,10 +6,10 @@ import { makeComparable } from "./_fixtures";
 const valuationPayload = {
   postcode: "SW1A 1AA",
   comparables: [makeComparable()],
-  ai_estimate: 35000000,
-  estimate_low: 33000000,
-  estimate_high: 37000000,
-  confidence: 82,
+  estimate: 35000000,
+  range_low: 33000000,
+  range_high: 37000000,
+  evidence: "high",
   based_on: 5,
 };
 
@@ -28,9 +28,9 @@ afterEach(() => {
 });
 
 describe("InstantValuationPage — postcode input gating", () => {
-  it("disables the Get Valuation button while the postcode is empty", () => {
+  it("disables the Show Sold Prices button while the postcode is empty", () => {
     render(<InstantValuationPage />);
-    expect(screen.getByRole("button", { name: /Get Valuation/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Show Sold Prices/ })).toBeDisabled();
   });
 
   it("enables the button once a postcode is typed (and upper-cases input)", () => {
@@ -39,7 +39,7 @@ describe("InstantValuationPage — postcode input gating", () => {
     fireEvent.change(input, { target: { value: "sw1a 1aa" } });
 
     expect(input).toHaveValue("SW1A 1AA");
-    expect(screen.getByRole("button", { name: /Get Valuation/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /Show Sold Prices/ })).toBeEnabled();
   });
 });
 
@@ -50,7 +50,7 @@ describe("InstantValuationPage — loading state", () => {
 
     render(<InstantValuationPage />);
     fireEvent.change(screen.getByPlaceholderText("e.g. SW1A 1AA"), { target: { value: "SW1A1AA" } });
-    fireEvent.click(screen.getByRole("button", { name: /Get Valuation/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Show Sold Prices/ }));
 
     expect(await screen.findByText("Loading...")).toBeInTheDocument();
 
@@ -65,10 +65,10 @@ describe("InstantValuationPage — success", () => {
 
     render(<InstantValuationPage />);
     fireEvent.change(screen.getByPlaceholderText("e.g. SW1A 1AA"), { target: { value: "SW1A1AA" } });
-    fireEvent.click(screen.getByRole("button", { name: /Get Valuation/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Show Sold Prices/ }));
 
     expect(await screen.findByText("£350,000")).toBeInTheDocument();
-    expect(screen.getByText(/Estimated Value for SW1A 1AA/)).toBeInTheDocument();
+    expect(screen.getByText(/Average recent sold price near SW1A 1AA/)).toBeInTheDocument();
   });
 });
 
@@ -78,7 +78,7 @@ describe("InstantValuationPage — ERROR state", () => {
 
     render(<InstantValuationPage />);
     fireEvent.change(screen.getByPlaceholderText("e.g. SW1A 1AA"), { target: { value: "SW1A1AA" } });
-    fireEvent.click(screen.getByRole("button", { name: /Get Valuation/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Show Sold Prices/ }));
 
     expect(
       await screen.findByText(/Could not retrieve valuation data/),
@@ -90,7 +90,7 @@ describe("InstantValuationPage — ERROR state", () => {
 
     render(<InstantValuationPage />);
     fireEvent.change(screen.getByPlaceholderText("e.g. SW1A 1AA"), { target: { value: "SW1A1AA" } });
-    fireEvent.click(screen.getByRole("button", { name: /Get Valuation/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Show Sold Prices/ }));
 
     expect(
       await screen.findByText(/Could not retrieve valuation data/),

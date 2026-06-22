@@ -1,49 +1,58 @@
 
 import type { LandRegistryComparable } from "@/types/seller";
+import {
+  POUNDS_TO_PENCE,
+  type SoldPriceEvidence,
+} from "@/lib/seller/sold-price-comparables";
 
 type Props = Readonly<{
   postcode: string;
-  aiEstimate: number;
-  estimateLow: number;
-  estimateHigh: number;
-  confidence: number;
+  estimate: number;
+  rangeLow: number;
+  rangeHigh: number;
+  evidence: SoldPriceEvidence;
   basedOn: number;
   comparables: LandRegistryComparable[];
 }>;
 
+const EVIDENCE_LABEL: Record<SoldPriceEvidence, string> = {
+  unavailable: "No nearby sales",
+  low: "Few nearby sales",
+  medium: "Some nearby sales",
+  high: "Many nearby sales",
+};
+
 function poundStr(pence: number): string {
-  return `£${(pence / 100).toLocaleString("en-GB")}`;
+  return `£${(pence / POUNDS_TO_PENCE).toLocaleString("en-GB")}`;
 }
 
 export function ValuationResult({
-  postcode, aiEstimate, estimateLow, estimateHigh, confidence, basedOn, comparables,
+  postcode, estimate, rangeLow, rangeHigh, evidence, basedOn, comparables,
 }: Props) {
   return (
     <div className="space-y-6">
       <div className="bg-brand-primary rounded-2xl p-8 text-white">
-        <p className="text-white/60 text-sm font-medium">Estimated Value for {postcode}</p>
+        <p className="text-white/60 text-sm font-medium">Average recent sold price near {postcode}</p>
         <p className="text-5xl font-extrabold mt-2 font-['Plus_Jakarta_Sans']">
-          {poundStr(aiEstimate)}
+          {poundStr(estimate)}
         </p>
         <p className="text-white/70 text-sm mt-1">
-          Range: {poundStr(estimateLow)} — {poundStr(estimateHigh)}
+          Recent sales ranged {poundStr(rangeLow)} — {poundStr(rangeHigh)}
         </p>
 
-        <div className="mt-6">
-          <div className="flex items-center justify-between text-xs text-white/60 mb-2">
-            <span>Confidence</span>
-            <span className="font-semibold text-white">{confidence}%</span>
-          </div>
-          <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-white rounded-full transition-all duration-700"
-              style={{ width: `${confidence}%` }}
-            />
-          </div>
-          <p className="text-white/50 text-xs mt-2">
-            Based on {basedOn} comparable sale{basedOn !== 1 ? "s" : ""} in the area
-          </p>
+        <div className="mt-6 flex items-center gap-3">
+          <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">
+            {EVIDENCE_LABEL[evidence]}
+          </span>
+          <span className="text-white/60 text-xs">
+            Based on {basedOn} sale{basedOn !== 1 ? "s" : ""} nearby
+          </span>
         </div>
+
+        <p className="text-white/50 text-xs mt-4 leading-relaxed">
+          This is an average of nearby sold prices, not a valuation of any specific property.
+          Actual values depend on size, condition, and exact location.
+        </p>
       </div>
 
       {comparables.length > 0 && (

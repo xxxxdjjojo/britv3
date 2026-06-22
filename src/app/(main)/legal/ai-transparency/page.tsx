@@ -63,9 +63,10 @@ export default function AiTransparencyPage() {
             interested in. This is powered by vector embeddings (pgvector) and Anthropic Claude.
           </p>
           <p>
-            <strong>Valuation Estimates:</strong> We provide indicative property value estimates based
-            on comparable sales data, property attributes, and market trends. These are not formal
-            valuations and should not be relied upon for purchasing or lending decisions.
+            <strong>Valuation Estimates (not AI-based):</strong> Our indicative property value
+            estimates are calculated by a statistical comparable-sales model from recent Land
+            Registry sold prices and property attributes — not by AI. These are not formal valuations
+            and should not be relied upon for purchasing or lending decisions.
           </p>
           <p>
             <strong>Search Matching:</strong> Our search algorithm uses AI to understand
@@ -94,8 +95,8 @@ export default function AiTransparencyPage() {
           </p>
           <p>
             3.3. No solely automated decisions with legal or similarly significant effects are made
-            about you. Where AI outputs influence decisions (e.g., property valuation estimates),
-            human oversight is maintained.
+            about you. Where AI outputs influence decisions (e.g., personalised property
+            recommendations), human oversight is maintained.
           </p>
         </section>
 

@@ -48,7 +48,7 @@ const ORPHAN_ALLOWLIST = new Set<string>([
   "/legal/third-party-services",
   // Hub-linked sub-pages reached from their parent hub, not the global nav.
   "/help/contact", // linked from /help
-  "/market-trends/national", // linked from /market-trends
+  "/market-trends/national", // redirect stub → /area-prices (route file retained so the 308 fires)
   "/services/architects", // linked from /services
   "/services/conveyancers",
   "/services/mortgage-brokers",
