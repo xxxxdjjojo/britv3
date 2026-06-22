@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'britv3.0/app/**'
-      - 'britv3.0/components/**'
-      - 'britv3.0/lib/**'
+      - 'src/app/**'
+      - 'src/components/**'
+      - 'src/lib/**'
 
 jobs:
   qa:
@@ -14,9 +14,13 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: cd britv3.0 && bun install
-      - run: cd .. && bun test test/gstack/integration.test.ts
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test -- --run test/gstack/integration.test.ts
       - name: Run QA Validation
         run: |
           echo "✓ All GStack tests passed"
