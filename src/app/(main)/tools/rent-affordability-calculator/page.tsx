@@ -183,7 +183,7 @@ export default function RentAffordabilityCalculatorPage() {
                         <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
                           <div
                             className={`h-full rounded-full transition-all ${
-                              result.isStretched ? "bg-amber-400" : "bg-green-400"
+                              result.isStretched ? "bg-amber-400" : "bg-success"
                             }`}
                             style={{ width: `${Math.min(100, result.ratio * 2)}%` }}
                           />
