@@ -52,6 +52,9 @@ playwright-report/
 # git worktrees
 .worktrees/
 
+# stitch design-tool scratch output (mockups, not product surfaces)
+artifacts/stitch/
+
 # .gstack/ is tracked except for secrets
 .gstack/secrets/
 .gstack/.env.local
