@@ -71,6 +71,9 @@ export const FEED_PROVIDERS = [
   "reapit",
   "alto",
   "jupix",
+  "csv",
+  "sandbox",
+  "generic_feed",
 ] as const;
 
 export const SYNC_STATUSES = [
@@ -392,6 +395,14 @@ export type AgentFeedIntegration = Readonly<{
   created_at: string;
   updated_at: string;
 }>;
+
+export type AgentFeedIntegrationView = Omit<
+  AgentFeedIntegration,
+  "api_key_encrypted"
+> &
+  Readonly<{
+    has_secret: boolean;
+  }>;
 
 export type AgentVendorReport = Readonly<{
   id: string;

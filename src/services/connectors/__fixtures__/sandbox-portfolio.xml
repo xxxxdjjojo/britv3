@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listings>
+  <listing id="SB-001" branchId="branch-north">
+    <status>forSale</status>
+    <listingType>sale</listingType>
+    <price>425000</price>
+    <address>
+      <line1>14 Maple Close</line1>
+      <line2>Highgate Village</line2>
+      <city>London</city>
+      <postcode>N6 5JH</postcode>
+      <latitude>51.5712</latitude>
+      <longitude>-0.1462</longitude>
+    </address>
+    <property>
+      <type>semi_detached</type>
+      <bedrooms>3</bedrooms>
+      <bathrooms>2</bathrooms>
+      <receptionRooms>1</receptionRooms>
+      <floorAreaSqFt>1200</floorAreaSqFt>
+      <tenure>freehold</tenure>
+      <planningPermissionStatus>none_known</planningPermissionStatus>
+    </property>
+    <marketing>
+      <title>Charming 3-bed semi in Highgate</title>
+      <description>A beautifully presented three-bedroom semi-detached home in a sought-after North London location. Features a generous rear garden and off-street parking.</description>
+      <features>
+        <feature>South-facing garden</feature>
+        <feature>Off-street parking</feature>
+        <feature>Newly fitted kitchen</feature>
+      </features>
+    </marketing>
+    <media>
+      <item id="sb-img-1" sortOrder="1">
+        <url>https://sandbox.example.com/sb-001/front.jpg</url>
+        <caption>Front of property</caption>
+      </item>
+      <item id="sb-img-2" sortOrder="2">
+        <url>https://sandbox.example.com/sb-001/garden.jpg</url>
+        <caption>Rear garden</caption>
+      </item>
+    </media>
+  </listing>
+
+  <listing id="SB-002" branchId="branch-south">
+    <status>toLet</status>
+    <listingType>rent</listingType>
+    <price>2200</price>
+    <address>
+      <line1>7 Riverside Apartments</line1>
+      <city>Manchester</city>
+      <postcode>M1 2HY</postcode>
+      <latitude>53.4808</latitude>
+      <longitude>-2.2426</longitude>
+    </address>
+    <property>
+      <type>flat</type>
+      <bedrooms>2</bedrooms>
+      <bathrooms>1</bathrooms>
+      <floorAreaSqFt>750</floorAreaSqFt>
+      <tenure>leasehold</tenure>
+      <planningPermissionStatus>none_known</planningPermissionStatus>
+    </property>
+    <marketing>
+      <title>Modern 2-bed riverside apartment</title>
+      <description>A stunning modern apartment situated on the banks of the River Irwell. Features floor-to-ceiling windows and a private balcony overlooking the water.</description>
+    </marketing>
+    <media>
+      <item id="sb-img-3" sortOrder="1">
+        <url>https://sandbox.example.com/sb-002/lounge.jpg</url>
+        <caption>Open-plan living area</caption>
+      </item>
+    </media>
+  </listing>
+
+  <listing id="SB-003" branchId="branch-north">
+    <status>withdrawn</status>
+    <listingType>sale</listingType>
+    <price>0</price>
+    <address>
+      <line1>22 Oak Tree Lane</line1>
+      <city>London</city>
+      <postcode>N2 0AB</postcode>
+    </address>
+    <property>
+      <type>detached</type>
+      <bedrooms>4</bedrooms>
+      <bathrooms>3</bathrooms>
+      <tenure>freehold</tenure>
+      <planningPermissionStatus>none_known</planningPermissionStatus>
+    </property>
+    <marketing>
+      <title>Withdrawn — 4-bed detached</title>
+      <description>This property has been withdrawn from the market.</description>
+    </marketing>
+    <media/>
+  </listing>
+</listings>

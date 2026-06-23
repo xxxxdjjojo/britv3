@@ -116,6 +116,33 @@ describe("createListing", () => {
     );
   });
 
+  it("always starts created listings as draft even when input includes active status", async () => {
+    const { createListing } = await import(
+      "@/services/listings/listing-service"
+    );
+    const { supabase, listingChain } = createSupabaseMock();
+
+    await createListing(supabase as never, "user-001", {
+      address_line1: "123 High Street",
+      city: "London",
+      postcode: "SW1A 1AA",
+      property_type: "semi_detached" as const,
+      bedrooms: 3,
+      bathrooms: 2,
+      title: "Test property",
+      description: "A test property",
+      listing_type: "sale" as const,
+      price: 350000,
+      status: "active",
+    } as never);
+
+    expect(listingChain.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "draft",
+      }),
+    );
+  });
+
   it("geocodes postcode and stores coordinates via RPC", async () => {
     const { createListing } = await import(
       "@/services/listings/listing-service"
