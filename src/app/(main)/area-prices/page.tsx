@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function AreaPricesPage() {
   return (
-    <main className="min-h-[calc(100dvh-3.5rem)] bg-brand-primary-lighter/20">
+    <main className="min-h-[calc(100dvh-3.5rem)] bg-gradient-to-b from-brand-primary-lighter/50 via-brand-primary-lighter/15 to-transparent">
       <AreaPricesExplorer />
     </main>
   );
