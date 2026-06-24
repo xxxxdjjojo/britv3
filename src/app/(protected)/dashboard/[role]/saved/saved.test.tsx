@@ -38,6 +38,7 @@ function makeSaved(overrides: Record<string, unknown> = {}) {
       slug: "the-glass-pavilion",
       price: 4250000,
       listing_type: "sale",
+      status: "active",
       rent_frequency: null,
       favorite_count: 3,
     },
@@ -102,5 +103,127 @@ describe("SavedPropertiesPage", () => {
     render(await SavedPropertiesPage());
 
     expect(screen.getByText("Compare")).toBeInTheDocument();
+  });
+
+  // --- Regression: RLS hides under_offer/sold/withdrawn listings from non-owners,
+  //     so the embedded listing comes back null. The page must NOT crash. ---
+
+  it("does not crash when a saved listing is no longer available (null embed)", async () => {
+    getSavedPropertiesMock.mockResolvedValue([
+      makeSaved({ id: "saved-gone", listing: null, property: null }),
+    ]);
+
+    render(await SavedPropertiesPage());
+
+    // The shortlist still renders, with a graceful 'no longer available' card.
+    expect(
+      screen.getByRole("heading", { name: /saved properties/i, level: 1 }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/no longer available/i)).toBeInTheDocument();
+  });
+
+  it("renders an 'Under offer' badge for a saved listing that is under offer", async () => {
+    getSavedPropertiesMock.mockResolvedValue([
+      makeSaved({
+        listing: {
+          id: "listing-1",
+          slug: "the-glass-pavilion",
+          price: 4250000,
+          listing_type: "sale",
+          status: "under_offer",
+          rent_frequency: null,
+          favorite_count: 3,
+        },
+      }),
+    ]);
+
+    render(await SavedPropertiesPage());
+
+    expect(screen.getByText(/under offer/i)).toBeInTheDocument();
+  });
+
+  it("renders a 'Sold' badge for a saved listing that has sold", async () => {
+    getSavedPropertiesMock.mockResolvedValue([
+      makeSaved({
+        listing: {
+          id: "listing-1",
+          slug: "the-glass-pavilion",
+          price: 4250000,
+          listing_type: "sale",
+          status: "sold",
+          rent_frequency: null,
+          favorite_count: 3,
+        },
+      }),
+    ]);
+
+    render(await SavedPropertiesPage());
+
+    expect(screen.getByText(/^sold$/i)).toBeInTheDocument();
+  });
+
+  // Every non-active status must surface a badge so a saver always knows why a
+  // listing they shortlisted is no longer freely on the market. `draft` is now
+  // reachable for non-owners because saved listings are visible regardless of
+  // status (RLS migration 20260624152444).
+  it.each([
+    ["draft", /not currently listed/i],
+    ["under_offer", /under offer/i],
+    ["sold_stc", /sold stc/i],
+    ["sold", /^sold$/i],
+    ["let", /^let$/i],
+    ["withdrawn", /withdrawn/i],
+    ["archived", /archived/i],
+  ])("renders a status badge for a '%s' listing", async (status, label) => {
+    getSavedPropertiesMock.mockResolvedValue([
+      makeSaved({
+        listing: {
+          id: "listing-1",
+          slug: "the-glass-pavilion",
+          price: 4250000,
+          listing_type: "sale",
+          status,
+          rent_frequency: null,
+          favorite_count: 3,
+        },
+      }),
+    ]);
+
+    render(await SavedPropertiesPage());
+
+    expect(screen.getByText(label)).toBeInTheDocument();
+  });
+
+  it("renders no status badge for an active listing", async () => {
+    getSavedPropertiesMock.mockResolvedValue([makeSaved()]);
+    render(await SavedPropertiesPage());
+
+    // 'active' is the only status with no badge; the card still renders.
+    expect(screen.getByText("The Glass Pavilion")).toBeInTheDocument();
+    expect(screen.queryByText(/not currently listed/i)).not.toBeInTheDocument();
+  });
+
+  it("renders a working property-detail link on each available card", async () => {
+    getSavedPropertiesMock.mockResolvedValue([makeSaved()]);
+    render(await SavedPropertiesPage());
+
+    const links = screen
+      .getAllByRole("link")
+      .filter((a) =>
+        a.getAttribute("href")?.startsWith("/properties/the-glass-pavilion"),
+      );
+    expect(links.length).toBeGreaterThan(0);
+  });
+
+  it("renders mixed available and unavailable saved items together without crashing", async () => {
+    getSavedPropertiesMock.mockResolvedValue([
+      makeSaved(),
+      makeSaved({ id: "saved-gone", listing: null, property: null }),
+    ]);
+
+    render(await SavedPropertiesPage());
+
+    expect(screen.getByText("The Glass Pavilion")).toBeInTheDocument();
+    expect(screen.getByText(/no longer available/i)).toBeInTheDocument();
   });
 });

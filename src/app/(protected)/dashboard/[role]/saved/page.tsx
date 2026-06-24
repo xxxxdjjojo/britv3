@@ -15,6 +15,7 @@ import {
   List,
 } from "lucide-react";
 import { SavedPropertyRemoveButton } from "@/components/listings/SavedPropertyRemoveButton";
+import type { ListingStatus } from "@/types/property";
 
 function formatPrice(price: number): string {
   return new Intl.NumberFormat("en-GB", {
@@ -22,6 +23,34 @@ function formatPrice(price: number): string {
     currency: "GBP",
     maximumFractionDigits: 0,
   }).format(price);
+}
+
+/** Human label for a non-active listing status, or null when no badge is needed. */
+function statusBadgeLabel(status: ListingStatus): string | null {
+  switch (status) {
+    case "active":
+      return null;
+    case "draft":
+      return "Not currently listed";
+    case "under_offer":
+      return "Under offer";
+    case "sold_stc":
+      return "Sold STC";
+    case "sold":
+      return "Sold";
+    case "let":
+      return "Let";
+    case "withdrawn":
+      return "Withdrawn";
+    case "archived":
+      return "Archived";
+    default: {
+      // Exhaustiveness guard: if ListingStatus gains a value, this fails to
+      // compile rather than silently dropping the badge.
+      const _exhaustive: never = status;
+      return _exhaustive;
+    }
+  }
 }
 
 export const metadata = {
@@ -107,7 +136,45 @@ export default async function SavedPropertiesPage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {savedProperties.map((saved) => {
             const { listing, property } = saved;
+
+            // RLS hides a listing once it leaves `active` (under offer, sold,
+            // withdrawn) or is deleted, so the embed can come back null. Render a
+            // graceful placeholder instead of crashing the entire shortlist.
+            if (!listing) {
+              return (
+                <article
+                  key={saved.id}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface"
+                >
+                  <div className="relative flex aspect-[4/3] items-center justify-center bg-neutral-100 text-neutral-300">
+                    <Heart className="size-12" />
+                    <SavedPropertyRemoveButton listingId={saved.listing_id} />
+                  </div>
+                  <div className="flex flex-1 flex-col justify-center p-5 text-center">
+                    <h3 className="font-heading text-base font-bold text-brand-primary-dark">
+                      No longer available
+                    </h3>
+                    <p className="mt-1 text-sm text-neutral-500">
+                      This property has been removed or is no longer on the
+                      market.
+                    </p>
+                    <Link
+                      href="/search"
+                      className="mt-4 text-sm font-semibold text-brand-primary underline-offset-4 hover:underline"
+                    >
+                      Find similar properties
+                    </Link>
+                  </div>
+                </article>
+              );
+            }
+
             const isFeatured = listing.favorite_count > 0;
+            const statusLabel = statusBadgeLabel(listing.status);
+            const propertyHref = `/properties/${listing.slug ?? listing.id}`;
+            const addressLine = [property?.address_line1, property?.city]
+              .filter(Boolean)
+              .join(", ");
 
             return (
               <article
@@ -116,27 +183,31 @@ export default async function SavedPropertiesPage() {
               >
                 {/* Image */}
                 <div className="relative aspect-[4/3] bg-neutral-100">
-                  <Link href={`/properties/${listing.slug ?? listing.id}`}>
+                  <Link href={propertyHref}>
                     <div className="flex size-full items-center justify-center text-neutral-300">
                       <Heart className="size-12" />
                     </div>
                   </Link>
-                  {isFeatured && (
-                    <Badge className="absolute left-3 top-3 bg-brand-gold text-[10px] font-bold uppercase tracking-[0.08em] text-brand-gold-foreground">
-                      Featured
-                    </Badge>
-                  )}
+                  <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+                    {statusLabel && (
+                      <Badge className="bg-brand-primary text-[10px] font-bold uppercase tracking-[0.08em] text-white">
+                        {statusLabel}
+                      </Badge>
+                    )}
+                    {isFeatured && (
+                      <Badge className="bg-brand-gold text-[10px] font-bold uppercase tracking-[0.08em] text-brand-gold-foreground">
+                        Featured
+                      </Badge>
+                    )}
+                  </div>
                   <SavedPropertyRemoveButton listingId={listing.id} />
                 </div>
 
                 <div className="flex flex-1 flex-col p-5">
                   <div className="flex items-start justify-between gap-3">
-                    <Link
-                      href={`/properties/${listing.slug ?? listing.id}`}
-                      className="min-w-0"
-                    >
+                    <Link href={propertyHref} className="min-w-0">
                       <h3 className="truncate font-heading text-base font-bold text-brand-primary-dark transition-colors group-hover:text-brand-primary">
-                        {property.title}
+                        {property?.title ?? "View property"}
                       </h3>
                     </Link>
                     <p className="shrink-0 font-heading text-base font-bold text-brand-primary">
@@ -148,27 +219,31 @@ export default async function SavedPropertiesPage() {
                     </p>
                   </div>
 
-                  <p className="mt-1 truncate text-sm text-neutral-500">
-                    {property.address_line1}, {property.city}
-                  </p>
+                  {addressLine && (
+                    <p className="mt-1 truncate text-sm text-neutral-500">
+                      {addressLine}
+                    </p>
+                  )}
 
                   {/* Beds / baths / sqft */}
-                  <div className="mt-4 flex items-center gap-4 border-t border-border pt-4 text-sm text-neutral-600">
-                    <span className="flex items-center gap-1.5">
-                      <Bed className="size-4 text-neutral-400" />
-                      {property.bedrooms}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Bath className="size-4 text-neutral-400" />
-                      {property.bathrooms}
-                    </span>
-                    {property.square_footage != null && (
+                  {property && (
+                    <div className="mt-4 flex items-center gap-4 border-t border-border pt-4 text-sm text-neutral-600">
                       <span className="flex items-center gap-1.5">
-                        <Maximize className="size-4 text-neutral-400" />
-                        {property.square_footage.toLocaleString("en-GB")}
+                        <Bed className="size-4 text-neutral-400" />
+                        {property.bedrooms}
                       </span>
-                    )}
-                  </div>
+                      <span className="flex items-center gap-1.5">
+                        <Bath className="size-4 text-neutral-400" />
+                        {property.bathrooms}
+                      </span>
+                      {property.square_footage != null && (
+                        <span className="flex items-center gap-1.5">
+                          <Maximize className="size-4 text-neutral-400" />
+                          {property.square_footage.toLocaleString("en-GB")}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   {/* Compare */}
                   <label className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-neutral-500">
