@@ -49,6 +49,7 @@ export default function RescheduleViewingPage({
   useEffect(() => {
     if (!viewing?.listing_id) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch loading toggle
     setLoadingSlots(true);
     setSlotsError(null);
 

@@ -16,6 +16,7 @@ export default function RateLimitedPage() {
 
   useEffect(() => {
     if (secondsLeft <= 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- retry flag set once cooldown has elapsed
       setCanRetry(true);
       return;
     }

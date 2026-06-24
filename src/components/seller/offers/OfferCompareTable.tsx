@@ -4,7 +4,7 @@ type Props = Readonly<{ offers: SellerOffer[] }>;
 
 export function OfferCompareTable({ offers }: Props) {
   const displayed = offers.slice(0, 3);
-  const asking = (displayed[0]?.listing as any)?.asking_price ?? null;
+  const asking = displayed[0]?.listing?.asking_price ?? null;
 
   const rows = [
     { label: "Offer Amount", getValue: (o: SellerOffer) => `£${(o.amount / 100).toLocaleString("en-GB")}` },

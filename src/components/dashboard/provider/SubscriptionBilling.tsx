@@ -175,6 +175,7 @@ function CurrentPlanBanner(
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <div className="flex size-12 items-center justify-center rounded-xl bg-brand-primary text-white">
+            {/* eslint-disable-next-line react-hooks/static-components -- Icon is a stable lucide component resolved by plan id */}
             <Icon className="size-6" />
           </div>
           <div>

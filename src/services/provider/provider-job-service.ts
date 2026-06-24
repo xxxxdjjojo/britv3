@@ -340,7 +340,7 @@ export async function getCompletedJobs(
   try {
     const offset = (page - 1) * pageSize;
 
-    let query = supabase
+    const query = supabase
       .from("bookings")
       .select(
         `

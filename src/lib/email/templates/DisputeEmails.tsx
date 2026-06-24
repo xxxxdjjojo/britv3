@@ -147,7 +147,7 @@ export function DisputeRaisedEmail({
             </Heading>
             <Text style={mainText}>Hi {firstName},</Text>
             <Text style={mainText}>
-              We've received your dispute for invoice {invoiceNo} (completion at{" "}
+              We&apos;ve received your dispute for invoice {invoiceNo} (completion at{" "}
               {propertyAddress}).
             </Text>
 
@@ -157,7 +157,7 @@ export function DisputeRaisedEmail({
                   Because the dispute was raised inside the 10 business-day
                   window (clause 9.5), the dunning clock on this invoice is
                   paused while we resolve it. Other invoices keep their own
-                  clocks. We'll be in touch with the decision; resolution
+                  clocks. We&apos;ll be in touch with the decision; resolution
                   restarts the clock where it stopped.
                 </Text>
               </Section>
@@ -166,7 +166,7 @@ export function DisputeRaisedEmail({
                 <Text style={detailRow}>
                   The dispute was raised after the 10 business-day window
                   (clause 9.5), so the dunning clock on this invoice continues
-                  to run. We'll still consider your grounds on the merits and
+                  to run. We&apos;ll still consider your grounds on the merits and
                   come back to you — but please do not assume the dunning state
                   has paused.
                 </Text>
@@ -256,14 +256,14 @@ export function DisputeResolvedEmail({
 
             {isConceded ? (
               <Text style={mainText}>
-                We've reviewed the dispute on invoice {invoiceNo} (completion at{" "}
+                We&apos;ve reviewed the dispute on invoice {invoiceNo} (completion at{" "}
                 {propertyAddress}) and we agree with you. The invoice has been
                 cancelled and nothing is due.
               </Text>
             ) : (
               <Text style={mainText}>
-                We've reviewed the dispute on invoice {invoiceNo} (completion at{" "}
-                {propertyAddress}) and on the evidence we don't agree. The
+                We&apos;ve reviewed the dispute on invoice {invoiceNo} (completion at{" "}
+                {propertyAddress}) and on the evidence we don&apos;t agree. The
                 invoice resumes from where it was paused — the dunning clock
                 restarts where it stopped (billing flow §2).
               </Text>
@@ -340,7 +340,7 @@ export function ChargebackLetterEmail({
             </Heading>
             <Text style={mainText}>Dear {firstName},</Text>
             <Text style={mainText}>
-              We've been notified by GoCardless that the Direct Debit collection
+              We&apos;ve been notified by GoCardless that the Direct Debit collection
               on invoice {invoiceNo} for {branchName} has been clawed back under
               the Direct Debit Guarantee.
             </Text>
@@ -363,7 +363,7 @@ export function ChargebackLetterEmail({
               </Text>
               <Text style={detailRow}>
                 3. Your Network Agreement treats an unjustified Guarantee claim
-                as a material breach. We do not assume that's what's happened
+                as a material breach. We do not assume that&apos;s what&apos;s happened
                 here — we treat the chargeback as the start of a conversation,
                 not the end of one.
               </Text>
@@ -371,14 +371,14 @@ export function ChargebackLetterEmail({
 
             <Text style={mainText}>
               The dispute channel remains open for 10 business days from today.
-              If you raise a substantive dispute inside that window we'll
+              If you raise a substantive dispute inside that window we&apos;ll
               decide it on the merits exactly as if no chargeback had happened
               — the affront does not change the analysis.
             </Text>
             <Text style={mainText}>
-              For completeness: a deliberately false claim — "I never
-              authorised this" against a signed mandate and a director's
-              signature — may engage the Fraud Act 2006. We're stating that as
+              For completeness: a deliberately false claim — &quot;I never
+              authorised this&quot; against a signed mandate and a director&apos;s
+              signature — may engage the Fraud Act 2006. We&apos;re stating that as
               fact, not as a threat.
             </Text>
             <Text style={mainText}>

@@ -30,7 +30,7 @@ export async function POST(
     try {
       await startReferencing(supabase, id);
     } catch (refErr) {
-      console.error("[applications/referencing] startReferencing failed:", refErr);
+      console.warn("[applications/referencing] startReferencing failed:", refErr);
     }
     return NextResponse.json({
       status: application.status,

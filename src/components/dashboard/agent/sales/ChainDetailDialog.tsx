@@ -43,6 +43,7 @@ export function ChainDetailDialog({
 
   useEffect(() => {
     if (!open || !chainGroupId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch loading toggle
     setLoading(true);
     fetch(`/api/agent/sales/chain?groupId=${encodeURIComponent(chainGroupId)}`)
       .then((res) => res.json())

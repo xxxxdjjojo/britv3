@@ -45,6 +45,7 @@ export function BreakpointProvider({ children }: Readonly<{ children: ReactNode 
   const [bp, setBp] = useState<Breakpoint>("xl");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- seed breakpoint from viewport on mount
     setBp(resolveBreakpoint(window.innerWidth));
 
     const queries = BREAKPOINTS.map((b) =>

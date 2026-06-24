@@ -24,8 +24,8 @@ export function ViewingCard({ viewing, onUpdated }: Props) {
   const [modalAction, setModalAction] = useState<"confirm" | "cancel" | "reschedule" | null>(null);
   const statusConfig = STATUS_CONFIG[viewing.status];
   const dt = new Date(viewing.viewing_datetime);
-  const listingThumb = (viewing.listing as any)?.photos?.[0]?.url;
-  const address = [(viewing.listing as any)?.address_line_1, (viewing.listing as any)?.city].filter(Boolean).join(", ");
+  const listingThumb = viewing.listing?.photos?.[0]?.url;
+  const address = [viewing.listing?.address_line_1, viewing.listing?.city].filter(Boolean).join(", ");
 
   return (
     <>

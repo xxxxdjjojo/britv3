@@ -15,6 +15,7 @@ export default function ComparePage() {
 
   useEffect(() => {
     if (ids.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- short-circuit when the compare tray is empty
       setLoading(false);
       return;
     }

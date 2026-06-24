@@ -201,7 +201,7 @@ export function ServiceAreaMapEditor({
     const draw = terraRef.current;
 
     // Get the snapshot of all features
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const snapshot: GeoJSON.Feature[] = draw.getSnapshot() as GeoJSON.Feature[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const feature = snapshot.find((f: any) => f.id === pendingFeatureId);

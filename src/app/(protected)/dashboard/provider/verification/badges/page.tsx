@@ -31,6 +31,7 @@ export default async function BadgesPage() {
 
   const activeBadgeCount = badges.filter((b) => {
     if (!b.expires_at) return true;
+    // eslint-disable-next-line react-hooks/purity -- one-off expiry comparison in a server component
     return new Date(b.expires_at).getTime() > Date.now();
   }).length;
 
