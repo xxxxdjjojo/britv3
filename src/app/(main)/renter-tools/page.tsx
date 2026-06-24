@@ -153,8 +153,8 @@ export default function RenterToolsPage() {
           </h2>
           <p className="text-sm text-muted-foreground">
             In England, landlords must protect your deposit in a government-approved scheme
-            (DPS, TDS, or mydeposits) within 30 days. The maximum deposit is 5 weeks' rent
-            (6 weeks for annual rents over £50,000). Holding deposits are capped at 1 week's rent.
+            (DPS, TDS, or mydeposits) within 30 days. The maximum deposit is 5 weeks&apos; rent
+            (6 weeks for annual rents over £50,000). Holding deposits are capped at 1 week&apos;s rent.
             Right to Rent checks are required before a tenancy can begin.
           </p>
           <Button variant="link" size="sm" asChild className="mt-2 p-0">
