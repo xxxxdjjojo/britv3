@@ -59,7 +59,7 @@ export function RentMoveInCost({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <KeyRound className="size-4 text-brand-primary" />
+          <KeyRound className="size-4 text-brand-primary" aria-hidden="true" />
           Cost to move in
         </CardTitle>
       </CardHeader>
@@ -79,12 +79,12 @@ export function RentMoveInCost({
               </div>
               {cap.exceeds ? (
                 <p className="flex items-start gap-1 rounded-md bg-brand-gold/15 px-2 py-1 text-xs text-brand-gold-foreground">
-                  <AlertTriangle className="size-3.5 shrink-0 translate-y-px" />
+                  <AlertTriangle className="size-3.5 shrink-0 translate-y-px" aria-hidden="true" />
                   Above the {cap.capWeeks}-week cap of {gbp(cap.capAmount)}
                 </p>
               ) : (
                 <p className="flex items-center gap-1 text-xs text-success">
-                  <Check className="size-3.5 shrink-0" />
+                  <Check className="size-3.5 shrink-0" aria-hidden="true" />
                   Within the {cap.capWeeks}-week cap
                 </p>
               )}
@@ -146,7 +146,7 @@ export function RentMoveInCost({
           {hasEnteredIncome && (
             meetsRequirement ? (
               <p className="flex items-center gap-1 text-xs font-medium text-success">
-                <Check className="size-3.5 shrink-0" />
+                <Check className="size-3.5 shrink-0" aria-hidden="true" />
                 You meet the typical income requirement
               </p>
             ) : (

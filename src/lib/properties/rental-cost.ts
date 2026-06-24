@@ -9,7 +9,7 @@
 
 import { monthlyToWeekly } from "./rental-format";
 
-// ─── Re-export ───────────────────────────────────────────────────────────────
+// ─── Per-week ────────────────────────────────────────────────────────────────
 
 /**
  * Weekly rent derived from monthly rent (52/12 conversion, rounded to 2dp).

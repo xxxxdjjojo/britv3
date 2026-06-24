@@ -120,7 +120,7 @@ export function PropertySearchCard({
 
           <p className="mb-4 text-sm text-neutral-500">{model.locationLabel}</p>
 
-          <div className="flex items-center gap-4 border-b border-neutral-100 pb-5 text-xs font-semibold text-neutral-500">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-neutral-100 pb-5 text-xs font-semibold text-neutral-500">
             <span className="flex items-center gap-1.5">
               <BedDouble className="size-4" aria-hidden="true" />
               {model.beds} {model.beds === 1 ? "Bed" : "Beds"}

@@ -50,7 +50,7 @@ export function TenancyDepositExplainer({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <ShieldCheck className="size-4 text-brand-primary" />
+          <ShieldCheck className="size-4 text-brand-primary" aria-hidden="true" />
           Your deposit &amp; tenancy
         </CardTitle>
       </CardHeader>
@@ -60,7 +60,7 @@ export function TenancyDepositExplainer({
           cap.exceeds ? (
             <div className="rounded-lg bg-brand-gold/15 p-3">
               <p className="flex items-start gap-2 text-sm text-brand-gold-foreground">
-                <AlertTriangle className="size-4 shrink-0 translate-y-px" />
+                <AlertTriangle className="size-4 shrink-0 translate-y-px" aria-hidden="true" />
                 <span>
                   This deposit ({gbp(depositAmount)}) is above the Tenant Fees
                   Act {cap.capWeeks}-week cap ({gbp(cap.capAmount)}).
@@ -74,7 +74,7 @@ export function TenancyDepositExplainer({
           ) : (
             <div>
               <p className="flex items-start gap-2 text-sm text-success">
-                <Check className="size-4 shrink-0 translate-y-px" />
+                <Check className="size-4 shrink-0 translate-y-px" aria-hidden="true" />
                 <span className="text-foreground">
                   Deposit is within the Tenant Fees Act {cap.capWeeks}-week cap
                   ({gbp(cap.capAmount)}).
@@ -92,7 +92,7 @@ export function TenancyDepositExplainer({
         {depositScheme && (
           <div>
             <p className="flex items-start gap-2 text-sm">
-              <ShieldCheck className="size-4 shrink-0 translate-y-px text-brand-primary" />
+              <ShieldCheck className="size-4 shrink-0 translate-y-px text-brand-primary" aria-hidden="true" />
               <span>
                 Protected in a government-approved scheme:{" "}
                 <span className="font-medium">{depositScheme}</span>.
@@ -108,7 +108,7 @@ export function TenancyDepositExplainer({
         {hasTimeline && (
           <div>
             <p className="mb-3 flex items-center gap-2 text-sm font-medium">
-              <CalendarClock className="size-4 text-brand-primary" />
+              <CalendarClock className="size-4 text-brand-primary" aria-hidden="true" />
               Tenancy timeline
             </p>
             <ol className="relative space-y-4 border-l border-brand-primary/25 pl-5">

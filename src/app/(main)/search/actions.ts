@@ -279,6 +279,8 @@ export async function searchProperties(
         query = query.eq("students_policy", "not_accepted");
       }
       if (filters.letAgreed === "exclude") {
+        // NOTE: when enabled, use a NULL-safe form (e.g. `.or("let_agreed.is.null,let_agreed.eq.false")`)
+        // to match mock semantics — `.neq("let_agreed", true)` excludes NULL rows in Postgres.
         query = query.neq("let_agreed", true);
       }
       if (filters.availableFrom) {
