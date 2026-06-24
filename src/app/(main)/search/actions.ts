@@ -3,34 +3,16 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { isFeatureEnabled } from "@/lib/features";
+import { getMockSearchProperties, PROPERTY_TYPE_MAP, PROPERTY_TYPE_REVERSE } from "@/lib/mock-data/listings";
 import type { SoldWithin } from "@/lib/search/url-state";
 import { computeSoldSince } from "@/lib/search/sold-within";
+import type { SearchProperty } from "@/lib/search/types";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export type SearchProperty = {
-  id: string;
-  slug: string;
-  image: string | null;
-  price: number;
-  address: string;
-  city: string;
-  postcode: string;
-  beds: number;
-  baths: number;
-  sqft: number;
-  type: string;
-  listing_type: "sale" | "rent";
-  lat: number;
-  lng: number;
-  epc_rating: string | null;
-  tenure: string | null;
-  last_sold_date: string | null;
-  /** True only when the listing is genuinely verified. Never fabricated. */
-  verified?: boolean;
-};
+export type { SearchProperty } from "@/lib/search/types";
 
 export type SearchFilters = {
   listingType?: string;
@@ -45,38 +27,15 @@ export type SearchFilters = {
   maxSqft?: string;
   sort?: string;
   q?: string;
+  // --- Lettings filters (rent-only; string-typed to match SearchState values) ---
+  furnishing?: string;
+  billsIncluded?: string;
+  petsAllowed?: string;
+  studentsWelcome?: string;
+  letAgreed?: string;
+  availableFrom?: string;
+  minTenancyMonths?: string;
 };
-
-// ---------------------------------------------------------------------------
-// UI property_type label → DB enum value mapping
-// ---------------------------------------------------------------------------
-
-const PROPERTY_TYPE_MAP: Record<string, string> = {
-  "Detached": "detached",
-  "Semi-detached": "semi_detached",
-  "Terraced": "terraced",
-  "Flat": "flat",
-  "Bungalow": "bungalow",
-};
-
-const PROPERTY_TYPE_REVERSE: Record<string, string> = Object.fromEntries(
-  Object.entries(PROPERTY_TYPE_MAP).map(([k, v]) => [v, k]),
-);
-
-// ---------------------------------------------------------------------------
-// Mock fallback data (used when search_live_data feature flag is off)
-// ---------------------------------------------------------------------------
-
-const MOCK_PROPERTIES: SearchProperty[] = [
-  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794, epc_rating: "C", tenure: "freehold", last_sold_date: null, verified: true },
-  { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale", lat: 51.5392, lng: -0.1547, epc_rating: "B", tenure: "leasehold", last_sold_date: null, verified: false },
-  { id: "3", slug: "45-bermondsey-street-london-rent", image: "/images/properties/property-3.jpg", price: 1850, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat", listing_type: "rent", lat: 51.4998, lng: -0.0821, epc_rating: "D", tenure: "leasehold", last_sold_date: null },
-  { id: "4", slug: "3-highbury-park-london-sale", image: "/images/properties/property-1.jpg", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached", listing_type: "sale", lat: 51.5555, lng: -0.0984, epc_rating: "A", tenure: "freehold", last_sold_date: null },
-  { id: "5", slug: "22-canary-wharf-way-london-rent", image: "/images/properties/property-2.jpg", price: 2200, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat", listing_type: "rent", lat: 51.5054, lng: -0.0235, epc_rating: null, tenure: "leasehold", last_sold_date: null },
-  { id: "6", slug: "7-peckham-rye-lane-london-sale", image: "/images/properties/property-3.jpg", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "Terraced", listing_type: "sale", lat: 51.4691, lng: -0.0691, epc_rating: "E", tenure: "freehold", last_sold_date: null },
-  { id: "7", slug: "15-notting-hill-gate-london-commercial", image: "/images/properties/property-1.jpg", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "Detached", listing_type: "sale", lat: 51.5095, lng: -0.1963, epc_rating: "C", tenure: null, last_sold_date: null },
-  { id: "8", slug: "31-borough-market-close-london-sale", image: "/images/properties/property-2.jpg", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "Flat", listing_type: "sale", lat: 51.5055, lng: -0.0910, epc_rating: "F", tenure: "leasehold", last_sold_date: null },
-];
 
 // ---------------------------------------------------------------------------
 // Client-side filter for mock data (mirrors the Supabase query logic)
@@ -97,7 +56,7 @@ function rankBeds(value: string | undefined): number | null {
 }
 
 function filterMockProperties(filters: SearchFilters): SearchProperty[] {
-  let results = [...MOCK_PROPERTIES];
+  let results = getMockSearchProperties();
 
   // Listing type
   if (filters.listingType && filters.listingType !== "all") {
@@ -159,6 +118,54 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
     if (!isNaN(max)) results = results.filter((p) => p.sqft <= max);
   }
 
+  // Lettings filters — rent-only. Each predicate applies only when its filter
+  // value is set/non-neutral, so an untouched lettings panel narrows nothing.
+  if (filters.listingType === "rent") {
+    if (filters.furnishing && filters.furnishing !== "any") {
+      results = results.filter((p) => p.furnishing === filters.furnishing);
+    }
+    if (filters.billsIncluded === "yes") {
+      results = results.filter((p) => p.bills_included === true);
+    } else if (filters.billsIncluded === "no") {
+      results = results.filter((p) => p.bills_included === false);
+    }
+    if (filters.petsAllowed === "yes") {
+      results = results.filter(
+        (p) => p.pets_policy === "allowed" || p.pets_policy === "by_arrangement",
+      );
+    } else if (filters.petsAllowed === "no") {
+      results = results.filter((p) => p.pets_policy === "not_allowed");
+    }
+    if (filters.studentsWelcome === "yes") {
+      results = results.filter(
+        (p) =>
+          p.students_policy === "accepted" ||
+          p.students_policy === "by_arrangement",
+      );
+    } else if (filters.studentsWelcome === "no") {
+      results = results.filter((p) => p.students_policy === "not_accepted");
+    }
+    if (filters.letAgreed === "exclude") {
+      results = results.filter((p) => p.let_agreed !== true);
+    }
+    if (filters.availableFrom) {
+      // ISO date strings compare lexicographically (correct for YYYY-MM-DD):
+      // keep lets available on or before the chosen date.
+      const by = filters.availableFrom;
+      results = results.filter(
+        (p) => p.available_from != null && p.available_from <= by,
+      );
+    }
+    const maxTenancy = Number(filters.minTenancyMonths);
+    if (filters.minTenancyMonths && maxTenancy > 0) {
+      results = results.filter(
+        (p) =>
+          p.minimum_tenancy_months != null &&
+          p.minimum_tenancy_months <= maxTenancy,
+      );
+    }
+  }
+
   // Sort — every option deterministically reorders mock results (ids are
   // numeric, standing in for the recency/popularity the mock set lacks).
   if (filters.sort === "price_asc") {
@@ -184,6 +191,13 @@ export async function searchProperties(
   // Feature flag gate — return empty results when live data is disabled.
   // Do NOT fabricate mock listings (data integrity per master prompt §HARD RULES).
   if (!isFeatureEnabled("search_live_data")) {
+    // Dev/demo only: when search_mock_data is on (never in production), serve the
+    // canonical mock dataset so the search grid is populated for local QA. With
+    // both flags off (production default) we return EMPTY and never fabricate
+    // listings for real users — preserving the data-integrity rule.
+    if (isFeatureEnabled("search_mock_data")) {
+      return { data: filterMockProperties(filters), error: null };
+    }
     return { data: [], error: null };
   }
 
@@ -237,6 +251,45 @@ export async function searchProperties(
     if (filters.maxSqft) {
       const max = Number(filters.maxSqft);
       if (!isNaN(max)) query = query.lte("square_footage", max);
+    }
+
+    // Lettings filters — flagged OFF by default. These columns are not in the
+    // search_listings MV yet, so search_rental_filters stays OFF until the MV
+    // carries them; with the flag off the live query is byte-for-byte unchanged.
+    if (
+      isFeatureEnabled("search_rental_filters") &&
+      filters.listingType === "rent"
+    ) {
+      if (filters.furnishing && filters.furnishing !== "any") {
+        query = query.eq("furnishing", filters.furnishing);
+      }
+      if (filters.billsIncluded === "yes") {
+        query = query.eq("bills_included", true);
+      } else if (filters.billsIncluded === "no") {
+        query = query.eq("bills_included", false);
+      }
+      if (filters.petsAllowed === "yes") {
+        query = query.in("pets_policy", ["allowed", "by_arrangement"]);
+      } else if (filters.petsAllowed === "no") {
+        query = query.eq("pets_policy", "not_allowed");
+      }
+      if (filters.studentsWelcome === "yes") {
+        query = query.in("students_policy", ["accepted", "by_arrangement"]);
+      } else if (filters.studentsWelcome === "no") {
+        query = query.eq("students_policy", "not_accepted");
+      }
+      if (filters.letAgreed === "exclude") {
+        // NOTE: when enabled, use a NULL-safe form (e.g. `.or("let_agreed.is.null,let_agreed.eq.false")`)
+        // to match mock semantics — `.neq("let_agreed", true)` excludes NULL rows in Postgres.
+        query = query.neq("let_agreed", true);
+      }
+      if (filters.availableFrom) {
+        query = query.lte("available_from", filters.availableFrom);
+      }
+      const maxTenancy = Number(filters.minTenancyMonths);
+      if (filters.minTenancyMonths && maxTenancy > 0) {
+        query = query.lte("minimum_tenancy_months", maxTenancy);
+      }
     }
 
     // Property type (cast enum to text for .in() filter)

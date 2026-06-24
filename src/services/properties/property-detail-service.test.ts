@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { DETAIL_VIEWABLE_STATUSES } from "./property-detail-service";
+import { DETAIL_VIEWABLE_STATUSES, getPropertyBySlug } from "./property-detail-service";
 import { Constants } from "@/types/database.types";
 
 /**
@@ -30,5 +30,33 @@ describe("DETAIL_VIEWABLE_STATUSES", () => {
 
   it("includes active so live listings resolve", () => {
     expect(DETAIL_VIEWABLE_STATUSES).toContain("active");
+  });
+});
+
+describe("getPropertyBySlug (mock path)", () => {
+  it("returns a deterministic viewCount — same slug yields same value twice", async () => {
+    const a = await getPropertyBySlug("45-bermondsey-street-london-rent");
+    const b = await getPropertyBySlug("45-bermondsey-street-london-rent");
+    expect(a).not.toBeNull();
+    expect(b).not.toBeNull();
+    expect(Number.isFinite(a!.listing.viewCount)).toBe(true);
+    expect(a!.listing.viewCount).toBe(b!.listing.viewCount);
+  });
+
+  it("known RENT slug yields populated rental fields", async () => {
+    const result = await getPropertyBySlug("45-bermondsey-street-london-rent");
+    expect(result).not.toBeNull();
+    const { listing } = result!;
+    expect(listing.listingType).toBe("rent");
+    expect(listing.furnishing).toBe("furnished");
+    expect(listing.depositScheme).toBe("DPS");
+    expect(listing.depositAmount).toBeGreaterThan(0);
+  });
+
+  it("known SALE slug yields sale listing with null furnishing", async () => {
+    const result = await getPropertyBySlug("12-kensington-gardens-london-sale");
+    expect(result).not.toBeNull();
+    expect(result!.listing.listingType).toBe("sale");
+    expect(result!.listing.furnishing).toBeNull();
   });
 });

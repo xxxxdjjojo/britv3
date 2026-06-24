@@ -87,6 +87,13 @@ function toSearchFilters(state: SearchState): SearchFilters {
     mustHaves: state.mustHaves,
     sort: state.sort,
     q: state.q || undefined,
+    furnishing: state.furnishing,
+    billsIncluded: state.billsIncluded,
+    petsAllowed: state.petsAllowed,
+    studentsWelcome: state.studentsWelcome,
+    letAgreed: state.letAgreed,
+    availableFrom: state.availableFrom || undefined,
+    minTenancyMonths: state.minTenancyMonths || undefined,
   };
 }
 

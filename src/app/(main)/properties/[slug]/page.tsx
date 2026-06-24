@@ -45,6 +45,10 @@ import { VideoTourPlayer } from "@/components/properties/detail/VideoTourPlayer"
 import { LocalAreaSection } from "@/components/properties/detail/LocalAreaSection";
 import { EPCDisplay } from "@/components/properties/detail/EPCDisplay";
 import { RentalLettingDetails } from "@/components/properties/detail/RentalLettingDetails";
+import { TenancyDepositExplainer } from "@/components/properties/detail/TenancyDepositExplainer";
+import { RentMoveInCost } from "@/components/properties/detail/RentMoveInCost";
+import { perWeek, perRoom } from "@/lib/properties/rental-cost";
+import { formatWeeklyRent } from "@/lib/properties/rental-format";
 
 // Wave 6 — Sidebar calculators
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
@@ -189,6 +193,21 @@ export default async function PropertyPage({
     ? ` ${listing.rentFrequency === "weekly" ? "pw" : "pcm"}`
     : "";
   const priceFormatted = `£${listing.price.toLocaleString("en-GB")}${rentSuffix}`;
+
+  // Monthly rent — derived for weekly listings (mirrors RentalLettingDetails).
+  const monthlyRent =
+    listing.rentFrequency === "weekly"
+      ? Math.round(listing.price * (52 / 12))
+      : listing.price;
+
+  // Per-week / per-room sub-line under the price (rent only). Each part omitted
+  // when null; joined with " · ".
+  const perWeekStr = formatWeeklyRent(perWeek(monthlyRent));
+  const perRoomValue = property.bedrooms >= 1 ? perRoom(monthlyRent, property.bedrooms) : null;
+  const perRoomStr =
+    perRoomValue != null ? `£${perRoomValue.toLocaleString("en-GB")} pcm / room` : "";
+  const rentSubline = [perWeekStr, perRoomStr].filter(Boolean).join(" · ");
+
   const sqft = property.squareFootage ?? 0;
   const propertyTypeLabel = formatPropertyType(property.propertyType);
   const epc: EpcRating | "N/A" = (property.epcRating as EpcRating | null) ?? "N/A";
@@ -349,7 +368,15 @@ export default async function PropertyPage({
         <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b mb-6 lg:static lg:bg-transparent lg:backdrop-blur-none lg:border-0 lg:px-0 lg:py-0 lg:mb-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-2xl font-bold text-primary">{priceFormatted}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-2xl font-bold text-primary">{priceFormatted}</p>
+                {listing.listingType === "rent" && listing.letAgreed && (
+                  <Badge className="bg-brand-primary text-white">Let agreed</Badge>
+                )}
+              </div>
+              {listing.listingType === "rent" && rentSubline && (
+                <p className="text-xs text-muted-foreground mt-0.5">{rentSubline}</p>
+              )}
               {priceReduced && originalPrice != null && (
                 <Badge variant="secondary" className="text-xs bg-success/10 text-success dark:bg-success/20 dark:text-success">
                   Reduced from £{originalPrice.toLocaleString("en-GB")}
@@ -484,6 +511,18 @@ export default async function PropertyPage({
                 depositScheme={listing.depositScheme}
                 councilTaxBand={property.councilTaxBand}
                 epcRating={property.epcRating}
+              />
+            )}
+
+            {/* Deposit cap, scheme protection & tenancy timeline — rent only */}
+            {listing.listingType === "rent" && (
+              <TenancyDepositExplainer
+                monthlyRent={monthlyRent}
+                depositAmount={listing.depositAmount}
+                depositScheme={listing.depositScheme}
+                availableFrom={listing.availableFrom}
+                minimumTenancyMonths={listing.minimumTenancyMonths}
+                maximumTenancyMonths={listing.maximumTenancyMonths}
               />
             )}
 
@@ -713,6 +752,17 @@ export default async function PropertyPage({
             >
               <AgentCardSidebar agentId={agentId} propertyId={property.id} />
             </Suspense>
+
+            {/* Cost to move in — LEADS the rent sidebar (where sale leads with
+                the mortgage calculator). Prominent, above Apply-to-Rent. */}
+            {listing.listingType === "rent" && (
+              <RentMoveInCost
+                monthlyRent={monthlyRent}
+                depositAmount={listing.depositAmount}
+                holdingDepositAmount={listing.holdingDepositAmount}
+                beds={property.bedrooms}
+              />
+            )}
 
             {/* Apply to Rent — visible only for rental listings.
                 Authenticated users get a direct link; unauthenticated route through /login. */}

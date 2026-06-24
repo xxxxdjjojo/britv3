@@ -7,7 +7,7 @@
  * One tested utility for derivation — no stored weekly price column needed.
  */
 
-/** weeks per month (52/52 * 12) — standard UK lettings conversion */
+/** weeks per month (52 / 12) — standard UK lettings conversion */
 export const WEEKS_PER_MONTH = 52 / 12; // ≈ 4.3333
 
 /**

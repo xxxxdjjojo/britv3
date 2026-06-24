@@ -9,7 +9,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { BedDouble, Bath, Square, BadgeCheck } from "lucide-react";
+import { BedDouble, Bath, Square, BadgeCheck, KeyRound } from "lucide-react";
 import { SaveButton } from "@/components/properties/SaveButton";
 import { LocalSupportChips } from "./LocalSupportChips";
 import { toCardModel } from "@/lib/search/card-model";
@@ -51,6 +51,12 @@ export function PropertySearchCard({
           <span className="flex items-center gap-1 rounded bg-white/90 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-brand-primary backdrop-blur-sm">
             <BadgeCheck className="size-3" aria-hidden="true" />
             Verified
+          </span>
+        )}
+        {model.isLetAgreed && (
+          <span className="flex items-center gap-1 rounded bg-brand-primary px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+            <KeyRound className="size-3" aria-hidden="true" />
+            Let agreed
           </span>
         )}
       </div>
@@ -98,14 +104,23 @@ export function PropertySearchCard({
                 model.title
               )}
             </h3>
-            <span className="shrink-0 text-lg font-extrabold text-brand-primary">
-              {model.priceLabel}
-            </span>
+            <div className="shrink-0 text-right">
+              <span className="text-lg font-extrabold text-brand-primary">
+                {model.priceLabel}
+              </span>
+              {model.isRent && (model.perWeekLabel || model.perRoomLabel) && (
+                <p className="mt-0.5 text-[11px] font-medium text-neutral-400">
+                  {[model.perWeekLabel, model.perRoomLabel]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              )}
+            </div>
           </div>
 
           <p className="mb-4 text-sm text-neutral-500">{model.locationLabel}</p>
 
-          <div className="flex items-center gap-4 border-b border-neutral-100 pb-5 text-xs font-semibold text-neutral-500">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-neutral-100 pb-5 text-xs font-semibold text-neutral-500">
             <span className="flex items-center gap-1.5">
               <BedDouble className="size-4" aria-hidden="true" />
               {model.beds} {model.beds === 1 ? "Bed" : "Beds"}
@@ -121,6 +136,11 @@ export function PropertySearchCard({
               </span>
             ) : (
               <span className="text-neutral-400">Floor area unavailable</span>
+            )}
+            {model.furnishingLabel && (
+              <span className="rounded-full border border-brand-primary/30 bg-brand-primary/5 px-2.5 py-0.5 text-[10px] font-semibold text-brand-primary">
+                {model.furnishingLabel}
+              </span>
             )}
           </div>
 
