@@ -7,7 +7,7 @@ service providers, and admins.
 
 Production: **https://www.truedeed.co.uk**
 
-> Internal name: `britv3` (formerly Britestate). This is the v3 ground-up rebuild.
+> Internal name: `britv3`. This is the v3 ground-up rebuild.
 
 ---
 

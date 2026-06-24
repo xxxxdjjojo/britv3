@@ -14,7 +14,7 @@ diving into any one corner.
 
 ## 1. What this is
 
-TrueDeed (formerly Britestate) is an all-in-one UK property portal. One codebase
+TrueDeed is an all-in-one UK property portal. One codebase
 serves **7 user roles**: homebuyer, renter, seller, landlord, estate agent,
 service provider, and admin. It covers property search and detail pages, a national
 sold-price market map, area guides, a services marketplace (RFQ → quote → booking),
