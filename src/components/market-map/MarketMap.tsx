@@ -16,7 +16,7 @@
  * fall back to a minimal record synthesised from the tile feature props.
  */
 
-import { useRef, useState, useCallback, useEffect, useMemo } from "react";
+import { useRef, useState, useCallback, useEffect, useMemo, type ReactNode } from "react";
 import { Map as MapGL, Source, Layer, Popup, NavigationControl } from "@vis.gl/react-maplibre";
 import type { MapRef, ViewStateChangeEvent, MapLayerMouseEvent } from "@vis.gl/react-maplibre";
 import type { MapGeoJSONFeature } from "maplibre-gl";
@@ -161,7 +161,21 @@ export type MarketMapProps = Readonly<{
   /** When non-null, the map flies/fits to these bounds. */
   fitTo?: FitBoundsParams | null;
   onViewportChange?: (v: { zoom: number; bbox: [number, number, number, number] }) => void;
-  onAreaSelect?: (props: MarketMapFeatureProperties | null) => void;
+  onAreaSelect?: (
+    props: MarketMapFeatureProperties | null,
+    anchor?: { longitude: number; latitude: number },
+  ) => void;
+  /**
+   * Optional on-map popup anchored at a coordinate (the clicked area). Rendered
+   * as a MapLibre <Popup> so it tracks the map. The parent owns the content
+   * (the area's price card) and the close handler.
+   */
+  areaPopup?: {
+    longitude: number;
+    latitude: number;
+    children: ReactNode;
+    onClose?: () => void;
+  } | null;
   /** Surfaces metadata (scale_mode, band_label) to parent. */
   onMetadata?: (m: MarketMapMetadata) => void;
   /**
@@ -208,6 +222,7 @@ export function MarketMap({
   fitTo,
   onViewportChange,
   onAreaSelect,
+  areaPopup,
   onMetadata,
   onFeatures,
   className,
@@ -417,7 +432,10 @@ export function MarketMap({
         return;
       }
       setSelectedAreaId(feature.properties.area_id);
-      onAreaSelect?.(resolveProperties(feature.properties));
+      onAreaSelect?.(resolveProperties(feature.properties), {
+        longitude: e.lngLat.lng,
+        latitude: e.lngLat.lat,
+      });
     },
     [onAreaSelect, resolveProperties],
   );
@@ -600,6 +618,22 @@ export function MarketMap({
             onClose={() => setSoldPopup(null)}
           >
             <SoldParcelPopup parcel={soldPopup.parcel} />
+          </Popup>
+        )}
+
+        {/* Area click popup — the clicked area's price card, anchored on the map.
+            Content + close handler are owned by the parent (the Explorer). */}
+        {areaPopup != null && (
+          <Popup
+            longitude={areaPopup.longitude}
+            latitude={areaPopup.latitude}
+            closeButton
+            closeOnClick={false}
+            anchor="bottom"
+            maxWidth="340px"
+            onClose={areaPopup.onClose}
+          >
+            {areaPopup.children}
           </Popup>
         )}
       </MapGL>
