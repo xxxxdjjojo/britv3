@@ -153,29 +153,30 @@ export function AreaPricesExplorer() {
   const hasResult = status === "ready" || status === "empty";
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:py-16">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-12 sm:px-6 lg:gap-16 lg:py-20">
       {/* Hero + search */}
-      <header className="flex flex-col gap-4 text-center">
-        <p className="font-sans text-sm font-semibold uppercase tracking-wide text-brand-primary">
+      <header className="flex flex-col items-center gap-5 text-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-gold/20 px-3.5 py-1.5 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-brand-gold-foreground ring-1 ring-inset ring-brand-gold/40">
           Free · No sign-up
-        </p>
-        <h1 className="font-heading text-4xl font-bold text-brand-primary-dark sm:text-5xl">
-          What do homes sell for in your area?
+        </span>
+        <h1 className="font-heading text-[2.75rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-brand-primary-dark sm:text-6xl">
+          What do homes sell for
+          <br className="hidden sm:block" /> in your area?
         </h1>
-        <p className="mx-auto max-w-2xl font-sans text-base text-muted-foreground sm:text-lg">
+        <p className="mx-auto max-w-2xl font-sans text-base leading-relaxed text-brand-primary-dark/65 sm:text-lg">
           Enter your postcode for the typical (median) sold price near you — split
           by flats and houses — straight from HM Land Registry data.
         </p>
 
         <form
           onSubmit={handleSubmit}
-          className="mx-auto mt-2 w-full max-w-xl"
+          className="mx-auto mt-3 w-full max-w-xl"
           role="search"
           aria-label="Find area sold prices by postcode"
         >
           <div ref={boxRef} className="relative">
-            <div className="flex items-center gap-2 rounded-[var(--radius-lg)] border border-brand-primary/20 bg-white p-1.5 shadow-[var(--shadow-lg)] focus-within:border-brand-primary">
-              <Search className="ml-2 size-5 shrink-0 text-brand-primary" aria-hidden="true" />
+            <div className="flex items-center gap-2 rounded-2xl border border-brand-primary/15 bg-white p-2 shadow-[0_2px_4px_-1px_rgba(27,77,62,0.06),0_20px_44px_-16px_rgba(27,77,62,0.28)] transition-colors focus-within:border-brand-primary/40 focus-within:ring-2 focus-within:ring-brand-primary/15">
+              <Search className="ml-2.5 size-5 shrink-0 text-brand-primary" aria-hidden="true" />
               <label htmlFor="area-postcode" className="sr-only">
                 Enter your address or postcode
               </label>
@@ -192,11 +193,11 @@ export function AreaPricesExplorer() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => suggestions.length > 0 && setOpen(true)}
-                className="min-w-0 flex-1 bg-transparent px-1 py-2 font-sans text-base text-brand-primary-dark outline-none placeholder:text-muted-foreground/70"
+                className="min-w-0 flex-1 bg-transparent px-1 py-2.5 font-sans text-base text-brand-primary-dark outline-none placeholder:text-brand-primary-dark/40"
               />
               <button
                 type="submit"
-                className="shrink-0 rounded-[var(--radius-md)] bg-brand-primary px-5 py-2.5 font-sans text-sm font-semibold text-white transition-colors hover:bg-brand-primary-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                className="shrink-0 rounded-xl bg-brand-primary px-6 py-3 font-sans text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-brand-primary-dark hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
               >
                 {status === "loading" ? (
                   <Loader2 className="size-4 animate-spin" aria-label="Searching" />
@@ -210,16 +211,16 @@ export function AreaPricesExplorer() {
               <ul
                 id="area-postcode-listbox"
                 role="listbox"
-                className="absolute z-10 mt-1 w-full overflow-hidden rounded-[var(--radius-md)] border border-brand-primary/15 bg-white text-left shadow-[var(--shadow-lg)]"
+                className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-brand-primary/10 bg-white py-1 text-left shadow-[0_2px_4px_-1px_rgba(27,77,62,0.06),0_16px_36px_-12px_rgba(27,77,62,0.24)]"
               >
                 {suggestions.map((s) => (
                   <li key={s.postcode} role="option" aria-selected="false">
                     <button
                       type="button"
                       onClick={() => handleSelect(s)}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 font-sans text-sm text-brand-primary-dark hover:bg-brand-primary-lighter/40 focus:bg-brand-primary-lighter/40 focus:outline-none"
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 font-sans text-sm text-brand-primary-dark transition-colors hover:bg-brand-primary-lighter/50 focus:bg-brand-primary-lighter/50 focus:outline-none"
                     >
-                      <MapPin className="size-4 text-brand-primary" aria-hidden="true" />
+                      <MapPin className="size-4 shrink-0 text-brand-primary" aria-hidden="true" />
                       {s.label}
                     </button>
                   </li>
@@ -227,13 +228,18 @@ export function AreaPricesExplorer() {
               </ul>
             )}
           </div>
+
+          {/* Trust line */}
+          <p className="mt-3.5 font-sans text-xs text-brand-primary-dark/50">
+            Median sold prices · HM Land Registry · England &amp; Wales
+          </p>
         </form>
       </header>
 
       {/* Status messages */}
       {status === "invalid" && (
-        <p className="text-center font-sans text-sm text-muted-foreground" role="status">
-          Enter a full UK postcode, e.g. <span className="font-semibold">M1 1AE</span>.
+        <p className="text-center font-sans text-sm text-brand-primary-dark/60" role="status">
+          Enter a full UK postcode, e.g. <span className="font-semibold text-brand-primary-dark">M1 1AE</span>.
         </p>
       )}
       {status === "error" && (
@@ -246,24 +252,28 @@ export function AreaPricesExplorer() {
       {hasResult && card && (
         <section
           aria-label="Area sold prices"
-          className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,22rem)_1fr]"
+          className="grid grid-cols-1 gap-7 lg:grid-cols-[minmax(0,23rem)_1fr] lg:items-start"
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-5">
             <div>
-              <h2 className="font-heading text-2xl font-bold text-brand-primary-dark">
+              <div className="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.1em] text-brand-primary">
+                <MapPin className="size-3.5" aria-hidden="true" />
+                Sold prices
+              </div>
+              <h2 className="mt-2 font-heading text-3xl font-bold tracking-[-0.02em] text-brand-primary-dark">
                 {locationHeadline(card.location) || "Your area"}
               </h2>
-              <p className="mt-1 font-sans text-sm text-muted-foreground">
+              <p className="mt-1.5 font-sans text-sm text-brand-primary-dark/60">
                 Typical sold prices for the surrounding area.
               </p>
             </div>
 
             {status === "empty" ? (
-              <div className="rounded-[var(--radius-lg)] border border-brand-primary/15 bg-white p-5 shadow-[var(--shadow-lg)]">
-                <p className="font-sans text-sm font-semibold text-brand-primary-dark">
+              <div className="rounded-2xl border border-brand-primary/10 bg-white p-6 shadow-[0_2px_4px_-1px_rgba(27,77,62,0.05),0_16px_36px_-16px_rgba(27,77,62,0.20)]">
+                <p className="font-heading text-base font-bold text-brand-primary-dark">
                   Not enough recent sales nearby
                 </p>
-                <p className="mt-1 font-sans text-sm text-muted-foreground">
+                <p className="mt-1.5 font-sans text-sm leading-relaxed text-brand-primary-dark/60">
                   {card.found
                     ? "There weren’t enough registered sales in the last 12 months to show a reliable figure here."
                     : "We have sold-price data for England & Wales. Try a postcode there."}
@@ -280,13 +290,15 @@ export function AreaPricesExplorer() {
               />
             )}
 
-            <p className="font-sans text-xs leading-relaxed text-muted-foreground">
+            <p className="font-sans text-xs leading-relaxed text-brand-primary-dark/45">
               {METHODOLOGY_NOTE}
             </p>
           </div>
 
-          <div className="h-[360px] overflow-hidden rounded-[var(--radius-lg)] border border-brand-primary/15 shadow-[var(--shadow-lg)] lg:h-[520px]">
-            <MarketMap propertyType="all" months={12} scaleMode="national" fitTo={fitTo} />
+          <div className="h-[380px] overflow-hidden rounded-3xl bg-white p-1.5 shadow-[0_2px_6px_-1px_rgba(27,77,62,0.06),0_28px_56px_-20px_rgba(27,77,62,0.30)] ring-1 ring-inset ring-brand-primary/10 lg:h-[560px]">
+            <div className="h-full w-full overflow-hidden rounded-[1.25rem]">
+              <MarketMap propertyType="all" months={12} scaleMode="national" fitTo={fitTo} />
+            </div>
           </div>
         </section>
       )}

@@ -21,6 +21,7 @@ export function DevBreakpointIndicator() {
   const [width, setWidth] = useState<number | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- read viewport width once on mount
     setWidth(window.innerWidth);
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);

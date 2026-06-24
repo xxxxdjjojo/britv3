@@ -48,6 +48,7 @@ export default function BookViewingPage({
   useEffect(() => {
     if (!listingId) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch loading toggle
     setLoadingSlots(true);
     setSlotsError(null);
 

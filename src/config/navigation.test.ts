@@ -7,6 +7,7 @@ import {
   ROLE_NAV_ITEMS,
   TAB_CONFIG,
   COMMAND_PALETTE_ROUTES,
+  ROLE_PRIMARY_CTA,
   navLinkClasses,
   footerLinkClasses,
 } from "./navigation";
@@ -406,3 +407,31 @@ describe("footerLinkClasses", () => {
     expect(classes).toContain("hover:text-white");
   });
 });
+
+// ---------------------------------------------------------------------------
+// ROLE_PRIMARY_CTA — sidebar CTAs must point to real static routes, not
+// /listings/new (which only resolves via the [role] catch-all and redirects
+// landlords away). Regression test for the 2026-06-20 dead-CTA fix.
+// ---------------------------------------------------------------------------
+describe("ROLE_PRIMARY_CTA", () => {
+  it("seller CTA points to the static listings/create route", () => {
+    expect(ROLE_PRIMARY_CTA.seller.href).toBe("/dashboard/seller/listings/create");
+  });
+
+  it("landlord CTA points to the static properties/add route", () => {
+    expect(ROLE_PRIMARY_CTA.landlord.href).toBe("/dashboard/landlord/properties/add");
+  });
+
+  it("agent CTA points to the static listings/create route", () => {
+    expect(ROLE_PRIMARY_CTA.agent.href).toBe("/dashboard/agent/listings/create");
+  });
+
+  it("no CTA points to /listings/new (dead catch-all route)", () => {
+    const allHrefs = Object.values(ROLE_PRIMARY_CTA).map((cta) => cta.href);
+    for (const href of allHrefs) {
+      expect(href).not.toContain("/listings/new");
+    }
+  });
+});
+
+

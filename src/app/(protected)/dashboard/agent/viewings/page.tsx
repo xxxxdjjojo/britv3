@@ -23,7 +23,7 @@ export default async function AgentViewingsPage() {
   const end = new Date(start);
   end.setMonth(end.getMonth() + 1);
 
-  let slots = await getAgentViewingSlots(supabase, user.id, undefined, {
+  const slots = await getAgentViewingSlots(supabase, user.id, undefined, {
     start: start.toISOString(),
     end: end.toISOString(),
   }).catch(() => []);

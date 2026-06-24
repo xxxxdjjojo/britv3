@@ -128,7 +128,7 @@ export function DisputeInvoiceModal({
             The 10-business-day window for this invoice has passed. We will
             still review the dispute on the merits, but the dunning clock will
             <strong> not </strong>
-            pause while we do — please don't assume it has.
+            pause while we do — please don&apos;t assume it has.
           </div>
         )}
 
@@ -159,7 +159,7 @@ export function DisputeInvoiceModal({
           />
           <p className="text-xs text-muted-foreground">
             Anything that supports your grounds — portal lead emails, CRM
-            export, your fall-through record, your buyer's identity (D3).
+            export, your fall-through record, your buyer&apos;s identity (D3).
           </p>
         </div>
 

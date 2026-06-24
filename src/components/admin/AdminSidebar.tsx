@@ -167,6 +167,7 @@ function CollapsibleGroup({
   useEffect(() => {
     const shouldBeOpen = isGroupActive(group, pathname);
     if (shouldBeOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- auto-expand the active nav group
       setOpen(true); // auto-expand when navigating into this group
       // Don't auto-collapse — let user control closing
     }

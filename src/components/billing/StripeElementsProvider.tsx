@@ -35,6 +35,7 @@ export function StripeElementsProvider({ children, clientSecret, appearance }: P
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- SSR guard; Stripe.js is browser-only
     setIsClient(true);
   }, []);
 

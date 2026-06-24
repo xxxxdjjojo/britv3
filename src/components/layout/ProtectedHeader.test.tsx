@@ -1,6 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { ProtectedHeader } from "./ProtectedHeader";
+
+const signOut = vi.fn().mockResolvedValue(undefined);
 
 // Mock next/link
 vi.mock("next/link", () => ({
@@ -27,13 +29,14 @@ vi.mock("@/hooks/useBreakpoint", () => ({
   useBreakpoint: () => ({ isMobile: false, isTablet: false }),
 }));
 
-// Mock useAuth (for avatar initials)
+// Mock useAuth (avatar initials + signOut)
 vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({
     user: {
       email: "test@example.com",
       user_metadata: { display_name: "Test User" },
     },
+    signOut,
   }),
 }));
 
@@ -49,15 +52,17 @@ vi.mock("@/components/messaging/UnreadBadge", () => ({
   default: () => <span data-testid="unread-badge">0</span>,
 }));
 
-// Mock Avatar
-vi.mock("@/components/ui/avatar", () => ({
-  Avatar: ({ children, ...props }: { children: React.ReactNode; size?: string }) => (
-    <div {...props}>{children}</div>
-  ),
-  AvatarFallback: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
-}));
+// NOTE: the real `dropdown-menu` (Base UI) is intentionally NOT mocked here.
+// A previous version mocked it and masked a runtime crash
+// ("MenuGroupRootContext is missing") caused by a DropdownMenuLabel placed
+// outside a DropdownMenuGroup — the menu never opened in the browser even
+// though mocked tests passed. Rendering the real primitive guards against that.
 
 describe("ProtectedHeader", () => {
+  beforeEach(() => {
+    signOut.mockClear();
+  });
+
   it("renders the brand logo linking to the home page", () => {
     render(<ProtectedHeader />);
     const home = screen.getAllByRole("link").find((a) => a.getAttribute("href") === "/");
@@ -70,11 +75,29 @@ describe("ProtectedHeader", () => {
     expect(screen.getByTestId("unread-badge")).toBeInTheDocument();
   });
 
-  it("renders the account avatar link to settings", () => {
+  it("opens the profile menu on click and shows Profile, Settings, Help links", () => {
     render(<ProtectedHeader />);
-    expect(screen.getByLabelText(/account|profile|settings/i)).toHaveAttribute(
+    fireEvent.click(screen.getByRole("button", { name: /open profile menu/i }));
+
+    const menu = screen.getByRole("menu");
+    expect(within(menu).getByRole("menuitem", { name: /profile/i })).toHaveAttribute(
+      "href",
+      "/profile",
+    );
+    expect(within(menu).getByRole("menuitem", { name: /settings/i })).toHaveAttribute(
       "href",
       "/settings",
     );
+    expect(within(menu).getByRole("menuitem", { name: /help/i })).toHaveAttribute(
+      "href",
+      "/help",
+    );
+  });
+
+  it("logs the user out when Log out is clicked", () => {
+    render(<ProtectedHeader />);
+    fireEvent.click(screen.getByRole("button", { name: /open profile menu/i }));
+    fireEvent.click(screen.getByRole("menuitem", { name: /log out/i }));
+    expect(signOut).toHaveBeenCalledTimes(1);
   });
 });

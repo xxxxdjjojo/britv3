@@ -4,13 +4,14 @@ function getSupabase() {
   return createClient();
 }
 
-export async function signUp(email: string, password: string, displayName: string) {
+export async function signUp(email: string, password: string, displayName?: string) {
   const supabase = getSupabase();
   return supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { display_name: displayName },
+      // Buyers/renters sign up without a name; only set display_name when given.
+      data: displayName ? { display_name: displayName } : {},
       emailRedirectTo: `${window.location.origin}/auth/callback`,
     },
   });
