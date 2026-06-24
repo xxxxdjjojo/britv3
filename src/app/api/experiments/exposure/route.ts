@@ -17,6 +17,7 @@ import { createRateLimiter } from "@/lib/cache/redis";
 // up event-based billing.
 const KNOWN_FLAGS = new Set([
   "sellers_default_tier",
+  "coming_soon_headline",
 ]);
 
 // 30 req/min/IP. Fails open if Redis is unavailable (telemetry endpoint —

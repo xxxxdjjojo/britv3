@@ -26,6 +26,29 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 
 // ---------------------------------------------------------------------------
+// Default next/navigation stub so client components that call useRouter()
+// render in unit tests without an App Router provider. Per-file vi.mock calls
+// override this, so existing suites keep their tailored mocks.
+// ---------------------------------------------------------------------------
+
+vi.mock("next/navigation", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("next/navigation")>();
+  return {
+    ...actual,
+    useRouter: () => ({
+      push: vi.fn(),
+      replace: vi.fn(),
+      refresh: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      prefetch: vi.fn(),
+    }),
+    usePathname: () => "/",
+    useSearchParams: () => new URLSearchParams(),
+  };
+});
+
+// ---------------------------------------------------------------------------
 // IntersectionObserver stub (happy-dom does not implement it).
 // Used by LegalRightToc scroll-spy in legal page render tests.
 // ---------------------------------------------------------------------------

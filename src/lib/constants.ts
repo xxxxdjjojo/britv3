@@ -231,6 +231,9 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/market-trends",
   "/area-prices",
   "/reviews",
+  // Pre-launch coming-soon splash + referral queue (public, unauthenticated)
+  "/coming-soon",
+  "/queue",
   // System/error state pages — always publicly accessible
   "/forbidden",
   "/maintenance",
