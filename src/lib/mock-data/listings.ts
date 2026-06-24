@@ -819,6 +819,7 @@ export function getMockSearchProperties(): SearchProperty[] {
     pets_policy: row.petsPolicy,
     students_policy: row.studentsPolicy,
     deposit_amount: row.depositAmount,
+    minimum_tenancy_months: row.minimumTenancyMonths,
   }));
 }
 

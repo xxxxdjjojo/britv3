@@ -33,4 +33,5 @@ export type SearchProperty = {
   pets_policy?: string | null;       // enum value, e.g. "allowed" | "not_allowed" | "by_arrangement"
   students_policy?: string | null;
   deposit_amount?: number | null;
+  minimum_tenancy_months?: number | null;
 };

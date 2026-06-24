@@ -13,6 +13,9 @@ export type ListingType = "all" | "sale" | "rent" | "new_build";
 export type SortOption = "most_recent" | "price_asc" | "price_desc" | "most_popular";
 export type ViewMode = "list" | "map";
 export type SoldWithin = "3m" | "6m" | "12m" | "all";
+export type Furnishing = "any" | "furnished" | "unfurnished" | "part_furnished";
+export type TriState = "any" | "yes" | "no";
+export type LetAgreed = "include" | "exclude";
 
 export const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"] as const;
 export type BedroomOption = (typeof BEDROOM_OPTIONS)[number];
@@ -32,6 +35,16 @@ export type SearchState = {
   sort: SortOption;
   view: ViewMode;
   page: number;
+  // --- Lettings filters ---
+  furnishing: Furnishing;
+  billsIncluded: TriState;
+  petsAllowed: TriState;
+  studentsWelcome: TriState;
+  letAgreed: LetAgreed;
+  /** ISO date "YYYY-MM-DD"; empty string means no filter. */
+  availableFrom: string;
+  /** Positive integer string; empty string means no filter. */
+  minTenancyMonths: string;
 };
 
 export const DEFAULT_SEARCH_STATE: SearchState = {
@@ -49,6 +62,13 @@ export const DEFAULT_SEARCH_STATE: SearchState = {
   sort: "most_recent",
   view: "list",
   page: 1,
+  furnishing: "any",
+  billsIncluded: "any",
+  petsAllowed: "any",
+  studentsWelcome: "any",
+  letAgreed: "include",
+  availableFrom: "",
+  minTenancyMonths: "",
 };
 
 const VALID_SORTS: ReadonlySet<SortOption> = new Set([
@@ -63,6 +83,17 @@ const VALID_VIEWS: ReadonlySet<ViewMode> = new Set(["list", "map"]);
 const VALID_BEDS: ReadonlySet<BedroomOption> = new Set(BEDROOM_OPTIONS);
 
 const VALID_SOLD_WITHIN: ReadonlySet<SoldWithin> = new Set(["3m", "6m", "12m", "all"]);
+
+const VALID_FURNISHING: ReadonlySet<Furnishing> = new Set([
+  "any",
+  "furnished",
+  "unfurnished",
+  "part_furnished",
+]);
+
+const VALID_TRISTATE: ReadonlySet<TriState> = new Set(["any", "yes", "no"]);
+
+const VALID_LET_AGREED: ReadonlySet<LetAgreed> = new Set(["include", "exclude"]);
 
 /**
  * Serialize search state into a URLSearchParams query string.
@@ -93,6 +124,14 @@ export function serializeSearchState(state: SearchState): string {
   if (state.sort !== DEFAULT_SEARCH_STATE.sort) params.set("sort", state.sort);
   if (state.view !== DEFAULT_SEARCH_STATE.view) params.set("view", state.view);
   if (state.page > 1) params.set("page", String(state.page));
+  // Lettings filters — only emit when non-default
+  if (state.furnishing !== "any") params.set("furnishing", state.furnishing);
+  if (state.billsIncluded !== "any") params.set("bills", state.billsIncluded);
+  if (state.petsAllowed !== "any") params.set("pets", state.petsAllowed);
+  if (state.studentsWelcome !== "any") params.set("students", state.studentsWelcome);
+  if (state.letAgreed === "exclude") params.set("letAgreed", "exclude");
+  if (state.availableFrom) params.set("availableFrom", state.availableFrom);
+  if (state.minTenancyMonths) params.set("minTenancy", state.minTenancyMonths);
 
   return params.toString();
 }
@@ -117,6 +156,32 @@ function parseSoldWithin(raw: string | null): SoldWithin {
   return raw && VALID_SOLD_WITHIN.has(raw as SoldWithin)
     ? (raw as SoldWithin)
     : DEFAULT_SEARCH_STATE.soldWithin;
+}
+
+function parseFurnishing(raw: string | null): Furnishing {
+  return raw && VALID_FURNISHING.has(raw as Furnishing) ? (raw as Furnishing) : "any";
+}
+
+function parseTriState(raw: string | null): TriState {
+  return raw && VALID_TRISTATE.has(raw as TriState) ? (raw as TriState) : "any";
+}
+
+function parseLetAgreed(raw: string | null): LetAgreed {
+  return raw && VALID_LET_AGREED.has(raw as LetAgreed) ? (raw as LetAgreed) : "include";
+}
+
+/** Accept only YYYY-MM-DD; reject structurally invalid dates (e.g. month 13). */
+function parseAvailableFrom(raw: string | null): string {
+  if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return "";
+  const [, mm, dd] = raw.split("-").map(Number);
+  if (mm < 1 || mm > 12 || dd < 1 || dd > 31) return "";
+  return raw;
+}
+
+/** Accept only positive integer strings. */
+function parseMinTenancy(raw: string | null): string {
+  if (!raw || !/^\d+$/.test(raw)) return "";
+  return Number(raw) > 0 ? raw : "";
 }
 
 /**
@@ -145,5 +210,12 @@ export function parseSearchState(params: URLSearchParams): SearchState {
     sort: sortRaw && VALID_SORTS.has(sortRaw) ? sortRaw : DEFAULT_SEARCH_STATE.sort,
     view: viewRaw && VALID_VIEWS.has(viewRaw) ? viewRaw : DEFAULT_SEARCH_STATE.view,
     page,
+    furnishing: parseFurnishing(params.get("furnishing")),
+    billsIncluded: parseTriState(params.get("bills")),
+    petsAllowed: parseTriState(params.get("pets")),
+    studentsWelcome: parseTriState(params.get("students")),
+    letAgreed: parseLetAgreed(params.get("letAgreed")),
+    availableFrom: parseAvailableFrom(params.get("availableFrom")),
+    minTenancyMonths: parseMinTenancy(params.get("minTenancy")),
   };
 }
