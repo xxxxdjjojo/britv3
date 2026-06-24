@@ -1,5 +1,38 @@
 # TODOs
 
+> The bulk of this file is a live backlog (mostly P2/P3 and vision items). The
+> section below records items verified as **shipped** during the 2026-06-24 doc
+> audit, with evidence, so the backlog below can be read as still-open. Items not
+> listed here were not re-verified and should be treated as open.
+
+## ✅ Resolved (verified 2026-06-24)
+
+- **Install + configure Playwright** — done. `playwright.config.ts` + 68 E2E specs
+  in `e2e/`; `pnpm test:e2e` exists. (The `cd britv3.0` hint below is stale — the
+  app is at the repo root.)
+- **Performance budget enforcement** — done (report-only): `.github/workflows/perf-budget.yml`.
+- **Inngest webhook signing key** (CSO P1, BRIT-S010) — `signingKey` is wired in
+  `src/inngest/client.ts` and `INNGEST_SIGNING_KEY` is in the `src/env.ts` schema.
+- **HTML injection in contact form** (CSO P1) — `escapeHtml()` (`src/lib/escape-html.ts`)
+  applied to user fields in `src/app/api/contact/route.ts`.
+- **Agent description endpoint bypasses `callClaude`** + **missing rate limit** +
+  **prompt injection** (CSO P1) — the endpoint now imports and uses
+  `callClaude` from `src/services/ai/claude-service.ts` (rate limit, spend cap, and
+  sanitization handled centrally).
+- **Brand-guard `bg-green-400` in rent-affordability calculator** (P0 test) — fixed;
+  the off-brand class is gone.
+- **CODEOWNERS** (CSO P2) — `.github/CODEOWNERS` exists.
+- **Remaining Inngest functions** (partial) — the function count is now **20** (was
+  4); several named functions in the backlog item exist. The list is no longer
+  "4 functions"; treat the specific named ones as a checklist against
+  `src/inngest/functions/`.
+
+**Still open (re-confirmed):** subscription gate still **fails open** in
+`src/proxy.ts` (CSO P2 / BRIT-S013). The "searchProperties mock-path" P0 test
+(below) was not re-run — verify before assuming fixed.
+
+---
+
 ## Wave 1 Pricing Foundation — Deferred TODOs
 
 ### Error logging in getUserEntitlements

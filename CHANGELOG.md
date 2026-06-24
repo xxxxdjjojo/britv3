@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.2.0] - 2026-06-24 — Email-confirmation signup, crash & link fixes, lint gate
+
+Four changes that merged after 0.3.1.0.
+
+### Added
+- **Email-confirmation signup flow** (#98). New users must confirm their email
+  before signing in, and the account role is assigned **on confirmation** (the
+  intended role rides in `role_intent` metadata and is applied atomically via
+  `assign_role_atomic` in the auth callback) rather than at signup. The `(auth)`
+  layout no longer redirects already-authenticated users mid-flow. Note:
+  enabling confirmation in production is a Supabase dashboard toggle; `config.toml`
+  only flips the local stack.
+
+### Fixed
+- **Saved Properties no longer crashes** (#97). RLS hides non-active listings from
+  users who saved them, which produced a null embed and crashed the page on
+  `listing.favorite_count`. Added an app-layer null guard plus status badges, and
+  an additive RLS migration so savers can see their saved listings regardless of
+  status.
+- **11 dashboard links that 404'd are repointed** (#96). Provider, landlord and
+  seller dashboard components had hard-coded hrefs pointing at non-existent routes.
+  Fixed the targets and added a `dashboard-link-integrity` test that resolves every
+  component href against the route tree so this can't regress.
+
+### Changed
+- **CI now gates lint** (#95). The lint step flipped from `continue-on-error` to a
+  hard gate, and husky + lint-staged pre-commit guardrails were added so lint errors
+  are caught before they reach CI.
+
 ## [0.3.1.0] - 2026-06-22 — Honest price & valuation surfaces
 
 Every price, valuation and sold-price surface now states only what HM Land
