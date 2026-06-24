@@ -62,6 +62,22 @@ describe("getMockSearchProperties", () => {
     const semi = getMockSearchProperties().find((p) => p.id === "2");
     expect(semi?.type).toBe("Semi-detached");
   });
+
+  it("normalizes weekly-rent price to monthly (pcm) on the search card", () => {
+    const weeklyRow = MOCK_LISTINGS.find((r) => r.rentFrequency === "weekly")!;
+    const sp = getMockSearchProperties().find((p) => p.slug === weeklyRow.slug)!;
+    const expectedMonthly = Math.round(weeklyRow.price * (52 / 12));
+    expect(sp.price).toBe(expectedMonthly);
+    expect(sp.price).toBeGreaterThan(weeklyRow.price);
+  });
+
+  it("leaves non-weekly rent prices unchanged", () => {
+    const monthlyRow = MOCK_LISTINGS.find(
+      (r) => r.slug === "45-bermondsey-street-london-rent",
+    )!;
+    const sp = getMockSearchProperties().find((p) => p.slug === monthlyRow.slug)!;
+    expect(sp.price).toBe(monthlyRow.price);
+  });
 });
 
 describe("rental vs sale field integrity", () => {

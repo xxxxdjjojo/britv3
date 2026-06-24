@@ -796,7 +796,8 @@ export function getMockSearchProperties(): SearchProperty[] {
     id: row.id,
     slug: row.slug,
     image: row.image,
-    price: row.price,
+    // Weekly rows store `price` as a weekly figure; search treats price as pcm, so normalize to monthly.
+    price: row.rentFrequency === "weekly" ? Math.round(row.price * (52 / 12)) : row.price,
     address: row.address,
     city: row.city,
     postcode: row.postcode,
