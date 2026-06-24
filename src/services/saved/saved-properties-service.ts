@@ -7,15 +7,22 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SavedProperty, Listing, Property } from "@/types/property";
 
-/** A saved property record with joined listing and property data */
+/**
+ * A saved property record with joined listing and property data.
+ *
+ * `listing` / `property` are nullable: Row-Level Security hides a listing from a
+ * non-owner once it leaves `active` (under offer, sold, withdrawn) or is deleted,
+ * so the embedded relation can legitimately come back null. Consumers must handle
+ * the "no longer available" case rather than assuming a listing is always present.
+ */
 export type SavedPropertyWithDetails = {
   id: string;
   user_id: string;
   listing_id: string;
   notes: string | null;
   created_at: string;
-  listing: Listing;
-  property: Property;
+  listing: Listing | null;
+  property: Property | null;
 };
 
 /**
@@ -99,15 +106,21 @@ export async function getSavedProperties(
     throw new Error(`Failed to get saved properties: ${error.message}`);
   }
 
-  return (data ?? []).map((row: Record<string, unknown>) => ({
-    id: row.id as string,
-    user_id: row.user_id as string,
-    listing_id: row.listing_id as string,
-    notes: row.notes as string | null,
-    created_at: row.created_at as string,
-    listing: (row.listings as Record<string, unknown>) as unknown as Listing,
-    property: ((row.listings as Record<string, unknown>)?.properties ?? {}) as unknown as Property,
-  }));
+  return (data ?? []).map((row: Record<string, unknown>) => {
+    const listing = (row.listings as Record<string, unknown> | null) ?? null;
+    const property =
+      (listing?.properties as Record<string, unknown> | null) ?? null;
+
+    return {
+      id: row.id as string,
+      user_id: row.user_id as string,
+      listing_id: row.listing_id as string,
+      notes: row.notes as string | null,
+      created_at: row.created_at as string,
+      listing: listing as unknown as Listing | null,
+      property: property as unknown as Property | null,
+    };
+  });
 }
 
 /**
