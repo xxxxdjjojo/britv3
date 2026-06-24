@@ -5,32 +5,13 @@ import { createClient } from "@/lib/supabase/server";
 import { isFeatureEnabled } from "@/lib/features";
 import type { SoldWithin } from "@/lib/search/url-state";
 import { computeSoldSince } from "@/lib/search/sold-within";
+import type { SearchProperty } from "@/lib/search/types";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export type SearchProperty = {
-  id: string;
-  slug: string;
-  image: string | null;
-  price: number;
-  address: string;
-  city: string;
-  postcode: string;
-  beds: number;
-  baths: number;
-  sqft: number;
-  type: string;
-  listing_type: "sale" | "rent";
-  lat: number;
-  lng: number;
-  epc_rating: string | null;
-  tenure: string | null;
-  last_sold_date: string | null;
-  /** True only when the listing is genuinely verified. Never fabricated. */
-  verified?: boolean;
-};
+export type { SearchProperty } from "@/lib/search/types";
 
 export type SearchFilters = {
   listingType?: string;

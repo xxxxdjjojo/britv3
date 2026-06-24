@@ -50,6 +50,18 @@ describe("features", () => {
     );
   });
 
+  it("contains search_rental_filters key", () => {
+    const result = features();
+    expect(result).toHaveProperty("search_rental_filters");
+    expect(typeof result.search_rental_filters).toBe("boolean");
+  });
+
+  it("contains search_mock_data key", () => {
+    const result = features();
+    expect(result).toHaveProperty("search_mock_data");
+    expect(typeof result.search_mock_data).toBe("boolean");
+  });
+
   it("returns boolean values for all keys", () => {
     const result = features();
     for (const value of Object.values(result)) {
