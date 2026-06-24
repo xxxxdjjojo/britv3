@@ -106,10 +106,11 @@ async function main() {
       return;
     }
 
-    const boundaries = new Map(); // `${level}|${area_id}` -> { level, area_id, name, lats[], lngs[] }
-    function addBoundaryPoint(level, area_id, name, lat, lng) {
+    const boundaries = new Map(); // `${level}|${area_id}` -> { level, area_id, name, displayName, lats[], lngs[] }
+    function addBoundaryPoint(level, area_id, name, lat, lng, displayName = null) {
       const key = `${level}|${area_id}`;
-      if (!boundaries.has(key)) boundaries.set(key, { level, area_id, name, lats: [], lngs: [] });
+      if (!boundaries.has(key))
+        boundaries.set(key, { level, area_id, name, displayName, lats: [], lngs: [] });
       const b = boundaries.get(key);
       b.lats.push(lat);
       b.lngs.push(lng);
@@ -157,8 +158,10 @@ async function main() {
       addBoundaryPoint("local_authority", g.lad_cd, g.lad_name, g.lat, g.lng);
       addBoundaryPoint("postcode_district", g.district, g.district, g.lat, g.lng);
       addBoundaryPoint("postcode_sector", g.sector, g.sector, g.lat, g.lng);
-      addBoundaryPoint("msoa", g.msoa, g.msoaName, g.lat, g.lng);
-      addBoundaryPoint("lsoa", g.lsoa, g.lsoaName, g.lat, g.lng);
+      // MSOA/LSOA carry a human "<district> · <borough>" display_name, mirroring
+      // the 20260624180000 backfill (so contract tests see the same shape).
+      addBoundaryPoint("msoa", g.msoa, g.msoaName, g.lat, g.lng, `${g.district} · ${g.lad_name}`);
+      addBoundaryPoint("lsoa", g.lsoa, g.lsoaName, g.lat, g.lng, `${g.district} · ${g.lad_name}`);
     }
 
     // Per-level box half-widths (degrees) — coarser levels get bigger boxes.
@@ -168,10 +171,10 @@ async function main() {
       const cLng = b.lngs.reduce((a, v) => a + v, 0) / b.lngs.length;
       const h = HALF[b.level];
       await client.query(
-        `insert into public.geography_boundaries (level, area_id, area_name, geometry)
-         values ($1,$2,$3,
-           ST_Multi(ST_MakeEnvelope($4,$5,$6,$7,4326)))`,
-        [b.level, b.area_id, b.name, cLng - h, cLat - h, cLng + h, cLat + h],
+        `insert into public.geography_boundaries (level, area_id, area_name, display_name, geometry)
+         values ($1,$2,$3,$4,
+           ST_Multi(ST_MakeEnvelope($5,$6,$7,$8,4326)))`,
+        [b.level, b.area_id, b.name, b.displayName, cLng - h, cLat - h, cLng + h, cLat + h],
       );
     }
 

@@ -61,6 +61,14 @@ describe("humanizeAreaName", () => {
     expect(humanizeAreaName("", "lsoa")).toBe("Local area");
   });
 
+  it("shows a '<district> · <borough>' label verbatim at neighbourhood levels", () => {
+    // market_map_features now resolves MSOA/LSOA area_name to this human label
+    // (geography_boundaries.display_name) instead of the raw ONS code, so it
+    // must pass straight through rather than hit the generic fallback.
+    expect(humanizeAreaName("UB6 · Ealing", "msoa")).toBe("UB6 · Ealing");
+    expect(humanizeAreaName("UB6 · Ealing", "lsoa")).toBe("UB6 · Ealing");
+  });
+
   it("never returns a raw ONS code", () => {
     expect(humanizeAreaName("E02000244", "msoa")).not.toMatch(/^[EWSNK]\d{8}$/);
   });
