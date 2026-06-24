@@ -4,6 +4,7 @@
   "packageManager": "pnpm@10.18.3",
   "private": true,
   "scripts": {
+    "prepare": "husky",
     "predev": "node scripts/dev-guard.mjs",
     "dev": "next dev",
     "check:stale-branches": "bash scripts/check-stale-branches.sh",
@@ -117,6 +118,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "happy-dom": "^20.8.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
     "pg": "^8.13.1",
     "pg-copy-streams": "^6.0.6",
     "tailwindcss": "^4",
@@ -124,5 +127,8 @@
     "vite": "^7.3.5",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.9"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix"
   }
 }

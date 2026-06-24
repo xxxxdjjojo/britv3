@@ -1,6 +1,8 @@
-# Multiple steps marked continue-on-error for Sprint 1 ship; pre-existing issues
-# tracked as Sprint 2 cleanup. Real ship gate is post-deploy Playwright smoke test
-# against the live Vercel URL (see e2e/production-smoke.spec.ts).
+# Type check, Lint, Unit tests, and Build are GATING (a failure fails the PR).
+# Lint became gating once main reached 0 ESLint errors (PR #83) — see the Lint step.
+# The Link E2E step stays continue-on-error (flaky env deps); the real end-to-end
+# ship gate is the post-deploy Playwright smoke test against the live Vercel URL
+# (see e2e/production-smoke.spec.ts).
 name: App CI
 
 on:
@@ -46,9 +48,11 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
+      # Gating: main is at 0 ESLint errors as of PR #83. Keep it that way —
+      # a non-gating lint step is how 48 errors silently accumulated before.
+      # `pnpm lint` fails only on errors; the ~111 existing warnings stay non-blocking.
       - name: Lint
         run: pnpm lint
-        continue-on-error: true
 
       - name: Unit tests
         run: pnpm test -- --run
