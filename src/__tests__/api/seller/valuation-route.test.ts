@@ -52,7 +52,7 @@ describe("GET /api/seller/valuation — postcode guard", () => {
   });
 
   it("accepts a valid postcode and never injects extra query params upstream", async () => {
-    const fetchSpy = vi.fn(async () => new Response("", { status: 200 }));
+    const fetchSpy = vi.fn(async (..._args: unknown[]) => new Response("", { status: 200 }));
     vi.stubGlobal("fetch", fetchSpy);
 
     const res = await callRoute("?postcode=SW1A%201AA");
