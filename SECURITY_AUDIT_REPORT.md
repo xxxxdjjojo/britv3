@@ -7,6 +7,56 @@
 
 ---
 
+## 0. Reconciliation Update — 2026-06-24
+
+Static re-scan of the current codebase against the 2026-06-16 findings below. This
+section is additive; the original findings are preserved unchanged for history.
+
+**Now resolved (verified in source):**
+- **BRIT-S003 (HSTS)** — `Strict-Transport-Security` is now set in `src/proxy.ts`.
+- **BRIT-S004 (OAuth open redirect)** — replaced with an allow-list:
+  `resolveSafeNext()` in `src/lib/auth/safe-redirect.ts`, used by `auth/callback`.
+- **BRIT-S005 (Sentry PII)** — `sendDefaultPii: false` in `sentry.server.config.ts`
+  and `src/instrumentation-client.ts`; replay masking
+  (`maskAllText: true, blockAllMedia: true`) is configured.
+- **BRIT-S010 (Inngest signing key)** — `INNGEST_SIGNING_KEY` is now in the
+  `src/env.ts` server schema.
+- **BRIT-S017 (middleware → proxy rename)** — done. `src/middleware.ts` is gone;
+  the gate is `src/proxy.ts`. (Note: every reference to `src/middleware.ts` in the
+  findings below now means `src/proxy.ts`.)
+
+**Still open — verify and prioritise:**
+- **BRIT-S001 (cascade delete on `profiles(id)`)** — the 7 `ON DELETE CASCADE` FKs
+  are still present in `supabase/migrations/002_marketplace.sql`. Confirm whether a
+  later migration converted them to `RESTRICT`; if not, this is still the headline gap.
+- **BRIT-S002 (dependency advisories)** — the 2026-06-16 `pnpm audit` snapshot is
+  stale. **Re-run `pnpm audit`** to get a current count before drawing conclusions;
+  Next.js and the toolchain have moved since.
+
+**New findings from the 2026-06-24 scan:**
+- **[HIGH] `console.log` in production code paths** — `api/settings/privacy`,
+  `api/settings/mfa/unenroll`, `api/properties/[id]/report`,
+  `services/properties/roi-estimation-service.ts`. Route through
+  `lib/observability/capture-exception.ts` / the logger. (`no-console` lints these
+  in most of the tree; these slipped the net.)
+- **[HIGH] Email in `localStorage`** — `app/(auth)/verify-email/*` stores the pending
+  signup email in `localStorage` (XSS-readable). Use `sessionStorage` or drop it.
+- **[HIGH] Missing rate limit** — `api/provider/quotes/suggest-items` has a TODO
+  rate-limit; add the Upstash limiter before wide use.
+- **[HIGH] `target="_blank"` without `rel="noopener noreferrer"`** — several landlord
+  dashboard components. Add the rel attribute (and a lint rule).
+- **[MEDIUM] Admin audit-log fail-open** — `lib/audited-admin-action.ts` lets the
+  action proceed if the audit write fails (Sentry-observed). Consider fail-closed for
+  `ban_users` / `manage_gdpr` / `manage_roles`.
+- **[MEDIUM] JWT-claims fast path has no revocation** — `src/proxy.ts` reads
+  role/plan/is_admin from the JWT when the flag is on; a DB role change isn't seen
+  until the token refreshes. Short TTL mitigates; consider a revocation list.
+
+The §4 "Verified-Secure Areas", §5 OWASP mapping, and §8 punch list below predate
+this update — read them through this reconciliation.
+
+---
+
 ## 1. Executive Summary
 
 **Overall rating: MUST NOT LAUNCH TO EARLY USERS AS-IS.**

@@ -12,6 +12,15 @@ in this configuration.
 > Measurement-first changed the conclusions. Several static-analysis hypotheses were **debunked**
 > by real numbers (see §6). Confirmed findings and debunked ones are kept separate on purpose.
 
+> **Status note (2026-06-24):** the §9 fixes have landed on `main` and are live in
+> production — the `/properties/[slug]` 500 is fixed (route serves 200) and Recharts
+> is code-split off the detail route's first load. The `perf-budget.yml` CI gate is
+> in place (report-only). Still **deferred**: AVIF (R5), long-lived cache headers
+> (R8), static/ISR for public pages (R4), and the live-data DB path (R7) — the last
+> now matters more since `search_live_data` is enabled in production. Re-baseline
+> against live data when convenient. (App is on Next 16.2.9; the 16.2.1 references
+> below are from the original engagement.)
+
 ---
 
 ## 1. Executive summary

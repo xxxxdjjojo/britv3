@@ -22,6 +22,10 @@ Guards now in place:
 
 TrueDeed (formerly Britestate) is an all-in-one UK property portal serving 7 user roles (homebuyer, renter, seller, landlord, estate agent, service provider, admin). This is v3.0 — a ground-up rebuild using the v2.0 PRD as specification. The codebase has authentication, property search, property detail pages, area guides, marketplace (reviews & ratings), messaging, notifications, seller/landlord/agent/provider dashboards, admin back-office, and security hardening built. Development follows the epic-by-epic roadmap in `.planning/ROADMAP.md`.
 
+For the system map (routes, API/services, data model, integrations, background
+jobs) see [ARCHITECTURE.md](ARCHITECTURE.md). For setup and the dev/landing workflow
+see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Repository Structure
 
 The Next.js application lives at the **repo root** (not in a subdirectory). The `britv3.0/` directory is a stranded ghost from an earlier layout — do not use it.
@@ -55,7 +59,7 @@ pnpm lint         # ESLint (flat config, ESLint 9)
 ```
 
 ```bash
-pnpm test                  # Unit tests (Vitest — 1400+ tests)
+pnpm test                  # Unit tests (Vitest — 493 test files, ~3,800 cases)
 pnpm test:e2e              # E2E tests (Playwright)
 ```
 
@@ -75,7 +79,7 @@ pnpm test:e2e              # E2E tests (Playwright)
 
 **Pattern:** Next.js App Router monolith with Supabase BaaS
 
-**Layers** (target structure in `britv3.0/src/`):
+**Layers** (in `src/`):
 
 | Layer | Location | Purpose |
 |-------|----------|---------|
@@ -156,7 +160,8 @@ The property page's "Local area" section (`src/components/properties/detail/Loca
 
 ## Environment Variables
 
-Copy `britv3.0/.env.example` to `.env.local`. Key variables:
+Copy `.env.example` to `.env.local`. `.env.example` documents ~89 variables,
+validated by `src/env.ts` (`@t3-oss/env-nextjs`). Key variables:
 
 | Variable | Context | Required |
 |----------|---------|----------|
@@ -195,7 +200,7 @@ Planning docs in `.planning/`:
 
 ## Database
 
-- Supabase PostgreSQL with 266 tables across 7 domains (Users, Properties, Marketplace, Transactions, Communication, Analytics, Admin)
+- Supabase PostgreSQL across 7 domains (Users, Properties, Marketplace, Transactions, Communication, Analytics, Admin). The 131 migrations create ~181 tables; the generated `src/types/database.types.ts` types only ~57 (partial — regenerate after schema changes). The "266 tables" figure is the v2 PRD spec count, not the live schema.
 - Migrations in `supabase/migrations/`
 - Local-area reference tables (public-read RLS, populated by ingest scripts): `transport_stops` (PostGIS), `broadband_coverage` (by postcode), `mobility_scores` (by property). See the Local Area data layers note above.
 - **Always create migrations with `supabase migration new <description>`** (full 14-digit UTC `YYYYMMDDHHMMSS_*` prefix); never hand-pick short numeric prefixes, and keep one logical change per file. Colliding version prefixes break `db reset`/`db push` — see `supabase/migrations/README.md`. CI guards this via `pnpm check:migrations`.
@@ -205,7 +210,7 @@ Planning docs in `.planning/`:
 ## Verification Protocol
 
 Before claiming any change is complete:
-1. Run the build: `pnpm build` (from `britv3.0/`)
+1. Run the build: `pnpm build`
 2. Run linting: `pnpm lint`
 3. Run relevant tests
 4. Manually verify the feature works as expected
