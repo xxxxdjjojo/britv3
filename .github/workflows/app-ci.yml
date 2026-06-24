@@ -60,7 +60,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Link E2E
-        run: pnpm exec playwright test e2e/homepage-link-audit.spec.ts e2e/navigation.spec.ts e2e/dashboard-navigation.spec.ts --project=chromium
+        run: pnpm exec playwright test e2e/link-health.spec.ts e2e/homepage-link-audit.spec.ts e2e/navigation.spec.ts e2e/dashboard-navigation.spec.ts --project=chromium
         continue-on-error: true
 
       - name: Upload Playwright report

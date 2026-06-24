@@ -51,6 +51,16 @@ function makeListing(overrides: Partial<Listing> = {}): Listing {
     serviceChargeAnnual: null,
     groundRentAnnual: null,
     availableFrom: null,
+    depositAmount: null,
+    holdingDepositAmount: null,
+    furnishing: null,
+    minimumTenancyMonths: null,
+    maximumTenancyMonths: null,
+    billsIncluded: null,
+    billsIncludedDetails: null,
+    petsPolicy: null,
+    studentsPolicy: null,
+    depositScheme: null,
     ...overrides,
   };
 }

@@ -181,9 +181,10 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
 export async function searchProperties(
   filters: SearchFilters,
 ): Promise<{ data: SearchProperty[]; error: string | null }> {
-  // Feature flag gate — fall back to mock data when disabled
+  // Feature flag gate — return empty results when live data is disabled.
+  // Do NOT fabricate mock listings (data integrity per master prompt §HARD RULES).
   if (!isFeatureEnabled("search_live_data")) {
-    return { data: filterMockProperties(filters), error: null };
+    return { data: [], error: null };
   }
 
   try {
@@ -264,8 +265,7 @@ export async function searchProperties(
 
     if (error) {
       console.error("[searchProperties] Supabase error:", error.message);
-      // Fall back to mock data on error
-      return { data: filterMockProperties(filters), error: error.message };
+      return { data: [], error: error.message };
     }
 
     // Map DB rows to SearchProperty shape

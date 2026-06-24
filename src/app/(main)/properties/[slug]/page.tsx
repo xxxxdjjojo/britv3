@@ -44,6 +44,7 @@ import { VideoTourPlayer } from "@/components/properties/detail/VideoTourPlayer"
 // Local area — real-data section (self-gates per layer; widgets degrade to null)
 import { LocalAreaSection } from "@/components/properties/detail/LocalAreaSection";
 import { EPCDisplay } from "@/components/properties/detail/EPCDisplay";
+import { RentalLettingDetails } from "@/components/properties/detail/RentalLettingDetails";
 
 // Wave 6 — Sidebar calculators
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
@@ -465,6 +466,27 @@ export default async function PropertyPage({
               </section>
             )}
 
+            {/* Rental letting details — only for rent listings */}
+            {listing.listingType === "rent" && (
+              <RentalLettingDetails
+                price={listing.price}
+                rentFrequency={listing.rentFrequency}
+                availableFrom={listing.availableFrom}
+                depositAmount={listing.depositAmount}
+                holdingDepositAmount={listing.holdingDepositAmount}
+                furnishing={listing.furnishing}
+                minimumTenancyMonths={listing.minimumTenancyMonths}
+                maximumTenancyMonths={listing.maximumTenancyMonths}
+                billsIncluded={listing.billsIncluded}
+                billsIncludedDetails={listing.billsIncludedDetails}
+                petsPolicy={listing.petsPolicy}
+                studentsPolicy={listing.studentsPolicy}
+                depositScheme={listing.depositScheme}
+                councilTaxBand={property.councilTaxBand}
+                epcRating={property.epcRating}
+              />
+            )}
+
             {/* Photos by room — only when captions provide real room metadata */}
             {roomGroups && (
               <section>
@@ -723,15 +745,17 @@ export default async function PropertyPage({
               </div>
             )}
 
-            {/* Mortgage Calculator (Wave 6) */}
-            <div className="rounded-xl border bg-card p-4">
-              <MortgageCalculator initialPrice={listing.price} />
-            </div>
-
-            {/* SDLT Calculator (Wave 6) */}
-            <div className="rounded-xl border bg-card p-4">
-              <SdltCalculator initialPrice={listing.price} />
-            </div>
+            {/* Mortgage & SDLT Calculators — sale listings only */}
+            {listing.listingType !== "rent" && (
+              <>
+                <div className="rounded-xl border bg-card p-4">
+                  <MortgageCalculator initialPrice={listing.price} />
+                </div>
+                <div className="rounded-xl border bg-card p-4">
+                  <SdltCalculator initialPrice={listing.price} />
+                </div>
+              </>
+            )}
 
             {/* Similar Properties in sidebar for desktop visibility */}
             <Suspense fallback={null}>

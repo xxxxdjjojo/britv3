@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createMockSupabaseClient } from "../mocks/supabase";
 import { MOCK_SEARCH_RESULTS } from "../fixtures/search-results";
 import { buildSearchQuery } from "@/lib/search/query-builder";
@@ -56,6 +56,18 @@ describe("search filters (basic)", () => {
 });
 
 describe("searchProperties (mock path) — bedrooms min/max", () => {
+  // Enable the search_live_data flag so searchProperties gets past the
+  // data-integrity gate (flag OFF correctly returns [] — never fabricated
+  // listings). With the flag ON, the mocked Supabase client makes the query
+  // throw, so the action falls back to filterMockProperties — the "mock path"
+  // these tests exercise.
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_SEARCH_LIVE_DATA", "true");
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("Any/Any returns all rows", async () => {
     const { data } = await searchProperties({
       bedsMin: "Any",
@@ -98,6 +110,14 @@ describe("searchProperties (mock path) — bedrooms min/max", () => {
 });
 
 describe("searchProperties (mock path) — soldWithin", () => {
+  // See note above: enable the flag so the action reaches the mock fallback.
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_SEARCH_LIVE_DATA", "true");
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("'all' returns all rows (mock has no LR data)", async () => {
     const { data } = await searchProperties({ soldWithin: "all" });
     expect(data.length).toBe(8);

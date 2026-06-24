@@ -1,18 +1,48 @@
 /**
  * Agent feed integration service.
  * Manages CRM feed provider integrations (Reapit, Alto, Jupix).
- * API keys are base64-encoded as a placeholder for real encryption.
+ * API keys are not stored locally; only a server-side secret reference is persisted.
  * All functions accept a Supabase client as first parameter for testability.
  */
 
+import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AgentFeedIntegration, FeedProvider } from "@/types/agent";
+import type {
+  AgentFeedIntegration,
+  AgentFeedIntegrationView,
+  FeedProvider,
+} from "@/types/agent";
 
-/**
- * Encode an API key using base64 (placeholder for Supabase Vault encryption).
- */
-function encryptApiKey(key: string): string {
-  return Buffer.from(key).toString("base64");
+const FEED_INTEGRATION_PUBLIC_COLUMNS = [
+  "id",
+  "agent_id",
+  "provider",
+  "webhook_url",
+  "sync_status",
+  "last_sync_at",
+  "field_mapping",
+  "error_log",
+  "created_at",
+  "updated_at",
+].join(", ");
+
+type AgentFeedIntegrationRow = AgentFeedIntegrationView &
+  Partial<Pick<AgentFeedIntegration, "api_key_encrypted">>;
+
+function createSecretReference(agentId: string, provider: string): string {
+  return `vault://${agentId}/${provider}/${randomUUID()}`;
+}
+
+function toFeedIntegrationView(
+  row: AgentFeedIntegrationRow,
+): AgentFeedIntegrationView {
+  const { api_key_encrypted: apiKeyEncrypted, ...view } = row;
+
+  return {
+    ...view,
+    has_secret:
+      apiKeyEncrypted === undefined ? true : Boolean(apiKeyEncrypted),
+  };
 }
 
 /**
@@ -21,10 +51,10 @@ function encryptApiKey(key: string): string {
 export async function getFeedIntegrations(
   supabase: SupabaseClient,
   agentId: string,
-): Promise<AgentFeedIntegration[]> {
+): Promise<AgentFeedIntegrationView[]> {
   const { data, error } = await supabase
     .from("agent_feed_integrations")
-    .select("*")
+    .select(FEED_INTEGRATION_PUBLIC_COLUMNS)
     .eq("agent_id", agentId)
     .order("created_at", { ascending: false });
 
@@ -32,7 +62,9 @@ export async function getFeedIntegrations(
     throw new Error(`Failed to get feed integrations: ${error.message}`);
   }
 
-  return (data ?? []) as AgentFeedIntegration[];
+  return ((data ?? []) as unknown as AgentFeedIntegrationRow[]).map(
+    toFeedIntegrationView,
+  );
 }
 
 /**
@@ -45,27 +77,31 @@ export async function createFeedIntegration(
   agentId: string,
   input: {
     provider: FeedProvider;
-    api_key: string;
+    api_key?: string;
     field_mapping?: Record<string, string>;
   },
-): Promise<AgentFeedIntegration> {
+): Promise<AgentFeedIntegrationView> {
   const { data, error } = await supabase
     .from("agent_feed_integrations")
     .insert({
       agent_id: agentId,
       provider: input.provider,
-      api_key_encrypted: encryptApiKey(input.api_key),
+      // Only store a secret reference when a credential is actually supplied.
+      // Sandbox and CSV providers need no credential.
+      ...(input.api_key != null && {
+        api_key_encrypted: createSecretReference(agentId, input.provider),
+      }),
       sync_status: "disconnected",
       field_mapping: input.field_mapping ?? null,
     })
-    .select()
+    .select(FEED_INTEGRATION_PUBLIC_COLUMNS)
     .single();
 
   if (error) {
     throw new Error(`Failed to create feed integration: ${error.message}`);
   }
 
-  return data as AgentFeedIntegration;
+  return toFeedIntegrationView(data as unknown as AgentFeedIntegrationRow);
 }
 
 /**
@@ -79,19 +115,15 @@ export async function updateFeedIntegration(
   input: Partial<{
     api_key: string;
     field_mapping: Record<string, string>;
-    sync_status: string;
   }>,
-): Promise<AgentFeedIntegration> {
+): Promise<AgentFeedIntegrationView> {
   const updatePayload: Record<string, unknown> = {};
 
   if (input.api_key !== undefined) {
-    updatePayload.api_key_encrypted = encryptApiKey(input.api_key);
+    updatePayload.api_key_encrypted = createSecretReference(agentId, "feed");
   }
   if (input.field_mapping !== undefined) {
     updatePayload.field_mapping = input.field_mapping;
-  }
-  if (input.sync_status !== undefined) {
-    updatePayload.sync_status = input.sync_status;
   }
 
   const { data, error } = await supabase
@@ -99,14 +131,43 @@ export async function updateFeedIntegration(
     .update(updatePayload)
     .eq("id", integrationId)
     .eq("agent_id", agentId)
-    .select()
+    .select(FEED_INTEGRATION_PUBLIC_COLUMNS)
     .single();
 
   if (error) {
     throw new Error(`Failed to update feed integration: ${error.message}`);
   }
 
-  return data as AgentFeedIntegration;
+  return toFeedIntegrationView(data as unknown as AgentFeedIntegrationRow);
+}
+
+export async function setFeedIntegrationSyncStatus(
+  supabase: SupabaseClient,
+  integrationId: string,
+  agentId: string,
+  input: {
+    sync_status: "connected" | "syncing" | "error";
+    last_sync_at?: string | null;
+    error_log?: Record<string, unknown>[] | null;
+  },
+): Promise<AgentFeedIntegrationView> {
+  const { data, error } = await supabase
+    .from("agent_feed_integrations")
+    .update({
+      sync_status: input.sync_status,
+      last_sync_at: input.last_sync_at ?? new Date().toISOString(),
+      error_log: input.error_log ?? null,
+    })
+    .eq("id", integrationId)
+    .eq("agent_id", agentId)
+    .select(FEED_INTEGRATION_PUBLIC_COLUMNS)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update feed sync status: ${error.message}`);
+  }
+
+  return toFeedIntegrationView(data as unknown as AgentFeedIntegrationRow);
 }
 
 /**
