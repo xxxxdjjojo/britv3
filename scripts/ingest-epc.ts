@@ -33,6 +33,7 @@ import {
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const COMMIT = process.argv.includes("--commit");
+const FORCE = process.argv.includes("--force");
 const DEFAULT_DIR = "/Users/jojominime/Downloads/domestic-csv";
 const BATCH_SIZE = 1500;
 
@@ -45,6 +46,14 @@ const DIR = argValue("--dir") ?? DEFAULT_DIR;
 const YEAR = argValue("--year");
 const LIMIT = argValue("--limit") ? Number(argValue("--limit")) : null;
 const LAD = argValue("--lad");
+// --lads E09000001,E09000002,... densifies many LADs in a SINGLE pass over the
+// year files (vs re-scanning ~21GB per LAD). Union of --lad and --lads.
+const LAD_SET: Set<string> | null = (() => {
+  const codes = [LAD, ...(argValue("--lads")?.split(",") ?? [])]
+    .map((c) => c?.trim())
+    .filter((c): c is string => !!c);
+  return codes.length > 0 ? new Set(codes) : null;
+})();
 
 // ---------------------------------------------------------------------------
 // Env + TLS (shared shape with the other ingest scripts)
@@ -245,7 +254,7 @@ async function streamFile(
       stats.skipped++;
       continue;
     }
-    if (LAD && cert.localAuthority !== LAD) {
+    if (LAD_SET && (!cert.localAuthority || !LAD_SET.has(cert.localAuthority))) {
       stats.skipped++;
       continue;
     }
@@ -325,13 +334,18 @@ async function main(): Promise<void> {
 
       // commit path
       const sha = await sha256File(file.path);
-      const done = await client!.query(
-        `select 1 from public.epc_ingest_runs where file_sha256 = $1 and status = 'succeeded' limit 1`,
-        [sha],
-      );
-      if (done.rowCount && done.rowCount > 0) {
-        console.log(`  ${file.label}: already ingested (sha match) — skipping.`);
-        continue;
+      // --force re-processes files even if a prior run marked the sha succeeded.
+      // Needed when a previous run was LAD-filtered (so the file is only
+      // partially ingested) and we now want a different/wider LAD set.
+      if (!FORCE) {
+        const done = await client!.query(
+          `select 1 from public.epc_ingest_runs where file_sha256 = $1 and status = 'succeeded' limit 1`,
+          [sha],
+        );
+        if (done.rowCount && done.rowCount > 0) {
+          console.log(`  ${file.label}: already ingested (sha match) — skipping.`);
+          continue;
+        }
       }
       const run = await client!.query(
         `insert into public.epc_ingest_runs (file_label, file_sha256) values ($1, $2) returning id`,
