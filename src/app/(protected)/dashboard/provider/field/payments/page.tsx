@@ -116,7 +116,7 @@ export default async function FieldPaymentsPage() {
                     </div>
 
                     <Link
-                      href={`/dashboard/provider/payments/invoices/${invoice.id}`}
+                      href={`/dashboard/provider/payments/${invoice.id}`}
                       className="min-h-10 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-[#163d31]"
                     >
                       Collect

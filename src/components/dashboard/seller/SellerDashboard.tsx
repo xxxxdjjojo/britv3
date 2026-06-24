@@ -257,7 +257,7 @@ export function SellerDashboard({ data }: Readonly<{ data: SellerData }>) {
             <InsightPanel
               eyebrow="Market Insight"
               title="Demand is outpacing supply"
-              action={{ label: "Learn more", href: "/dashboard/seller/insights" }}
+              action={{ label: "Learn more", href: "/dashboard/seller/analytics" }}
             >
               Demand for boutique-inspired architecture in your area has risen
               by 18.5% this month.

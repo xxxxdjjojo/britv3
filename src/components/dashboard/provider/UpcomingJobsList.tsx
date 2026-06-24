@@ -45,7 +45,7 @@ export function UpcomingJobsList({ jobs }: UpcomingJobsListProps) {
         return (
           <li key={job.id} className="py-3 first:pt-0 last:pb-0">
             <Link
-              href={`/dashboard/provider/jobs/active/${job.id}`}
+              href={`/dashboard/provider/jobs/${job.id}`}
               className="flex items-start gap-3 rounded-lg transition-colors hover:bg-surface -mx-2 px-2"
             >
               <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-[#E8F5EE] text-brand-primary">

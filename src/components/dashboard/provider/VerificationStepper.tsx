@@ -14,8 +14,8 @@ const STEP_LINKS: Record<string, string> = {
   id_check: "/dashboard/provider/verification/credentials",
   insurance: "/dashboard/provider/verification/credentials",
   qualifications: "/dashboard/provider/verification/credentials",
-  client_references: "/dashboard/provider/verification/references/client",
-  peer_references: "/dashboard/provider/verification/references/peer",
+  client_references: "/dashboard/provider/verification/client-references",
+  peer_references: "/dashboard/provider/verification/peer-references",
 };
 
 const STEP_ICONS: Record<string, React.ElementType> = {
