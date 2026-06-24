@@ -27,6 +27,14 @@ export type SearchFilters = {
   maxSqft?: string;
   sort?: string;
   q?: string;
+  // --- Lettings filters (rent-only; string-typed to match SearchState values) ---
+  furnishing?: string;
+  billsIncluded?: string;
+  petsAllowed?: string;
+  studentsWelcome?: string;
+  letAgreed?: string;
+  availableFrom?: string;
+  minTenancyMonths?: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -108,6 +116,54 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
   if (filters.maxSqft) {
     const max = Number(filters.maxSqft);
     if (!isNaN(max)) results = results.filter((p) => p.sqft <= max);
+  }
+
+  // Lettings filters — rent-only. Each predicate applies only when its filter
+  // value is set/non-neutral, so an untouched lettings panel narrows nothing.
+  if (filters.listingType === "rent") {
+    if (filters.furnishing && filters.furnishing !== "any") {
+      results = results.filter((p) => p.furnishing === filters.furnishing);
+    }
+    if (filters.billsIncluded === "yes") {
+      results = results.filter((p) => p.bills_included === true);
+    } else if (filters.billsIncluded === "no") {
+      results = results.filter((p) => p.bills_included === false);
+    }
+    if (filters.petsAllowed === "yes") {
+      results = results.filter(
+        (p) => p.pets_policy === "allowed" || p.pets_policy === "by_arrangement",
+      );
+    } else if (filters.petsAllowed === "no") {
+      results = results.filter((p) => p.pets_policy === "not_allowed");
+    }
+    if (filters.studentsWelcome === "yes") {
+      results = results.filter(
+        (p) =>
+          p.students_policy === "accepted" ||
+          p.students_policy === "by_arrangement",
+      );
+    } else if (filters.studentsWelcome === "no") {
+      results = results.filter((p) => p.students_policy === "not_accepted");
+    }
+    if (filters.letAgreed === "exclude") {
+      results = results.filter((p) => p.let_agreed !== true);
+    }
+    if (filters.availableFrom) {
+      // ISO date strings compare lexicographically (correct for YYYY-MM-DD):
+      // keep lets available on or before the chosen date.
+      const by = filters.availableFrom;
+      results = results.filter(
+        (p) => p.available_from != null && p.available_from <= by,
+      );
+    }
+    const maxTenancy = Number(filters.minTenancyMonths);
+    if (filters.minTenancyMonths && maxTenancy > 0) {
+      results = results.filter(
+        (p) =>
+          p.minimum_tenancy_months != null &&
+          p.minimum_tenancy_months <= maxTenancy,
+      );
+    }
   }
 
   // Sort — every option deterministically reorders mock results (ids are
@@ -195,6 +251,43 @@ export async function searchProperties(
     if (filters.maxSqft) {
       const max = Number(filters.maxSqft);
       if (!isNaN(max)) query = query.lte("square_footage", max);
+    }
+
+    // Lettings filters — flagged OFF by default. These columns are not in the
+    // search_listings MV yet, so search_rental_filters stays OFF until the MV
+    // carries them; with the flag off the live query is byte-for-byte unchanged.
+    if (
+      isFeatureEnabled("search_rental_filters") &&
+      filters.listingType === "rent"
+    ) {
+      if (filters.furnishing && filters.furnishing !== "any") {
+        query = query.eq("furnishing", filters.furnishing);
+      }
+      if (filters.billsIncluded === "yes") {
+        query = query.eq("bills_included", true);
+      } else if (filters.billsIncluded === "no") {
+        query = query.eq("bills_included", false);
+      }
+      if (filters.petsAllowed === "yes") {
+        query = query.in("pets_policy", ["allowed", "by_arrangement"]);
+      } else if (filters.petsAllowed === "no") {
+        query = query.eq("pets_policy", "not_allowed");
+      }
+      if (filters.studentsWelcome === "yes") {
+        query = query.in("students_policy", ["accepted", "by_arrangement"]);
+      } else if (filters.studentsWelcome === "no") {
+        query = query.eq("students_policy", "not_accepted");
+      }
+      if (filters.letAgreed === "exclude") {
+        query = query.neq("let_agreed", true);
+      }
+      if (filters.availableFrom) {
+        query = query.lte("available_from", filters.availableFrom);
+      }
+      const maxTenancy = Number(filters.minTenancyMonths);
+      if (filters.minTenancyMonths && maxTenancy > 0) {
+        query = query.lte("minimum_tenancy_months", maxTenancy);
+      }
     }
 
     // Property type (cast enum to text for .in() filter)

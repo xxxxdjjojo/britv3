@@ -160,3 +160,103 @@ describe("searchProperties (mock path) — rental fields + listing type", () => 
     expect(data.every((p) => p.listing_type === "sale")).toBe(true);
   });
 });
+
+describe("searchProperties (mock path) — lettings filters", () => {
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_SEARCH_MOCK_DATA", "true");
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  const rentCount = () =>
+    getMockSearchProperties().filter((p) => p.listing_type === "rent").length;
+
+  it("furnishing=furnished narrows to furnished rent rows", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      furnishing: "furnished",
+    });
+    expect(data.every((p) => p.furnishing === "furnished")).toBe(true);
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.length).toBeLessThan(rentCount());
+  });
+
+  it("billsIncluded=yes keeps only bills-included rows", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      billsIncluded: "yes",
+    });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => p.bills_included === true)).toBe(true);
+  });
+
+  it("petsAllowed=no keeps only not-allowed rows", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      petsAllowed: "no",
+    });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => p.pets_policy === "not_allowed")).toBe(true);
+  });
+
+  it("studentsWelcome=yes keeps accepted/by_arrangement rows", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      studentsWelcome: "yes",
+    });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data.every(
+        (p) =>
+          p.students_policy === "accepted" ||
+          p.students_policy === "by_arrangement",
+      ),
+    ).toBe(true);
+  });
+
+  it("letAgreed=exclude drops let-agreed rows", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      letAgreed: "exclude",
+    });
+    expect(data.every((p) => p.let_agreed !== true)).toBe(true);
+    expect(data.length).toBeLessThan(rentCount());
+  });
+
+  it("minTenancyMonths=6 keeps rows requiring <= 6 months", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      minTenancyMonths: "6",
+    });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data.every(
+        (p) =>
+          p.minimum_tenancy_months != null && p.minimum_tenancy_months <= 6,
+      ),
+    ).toBe(true);
+  });
+
+  it("availableFrom=2026-03-01 keeps rows available by that date", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      availableFrom: "2026-03-01",
+    });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data.every(
+        (p) => p.available_from != null && p.available_from <= "2026-03-01",
+      ),
+    ).toBe(true);
+  });
+
+  it("lettings filters do not affect sale results", async () => {
+    const { data: baseline } = await searchProperties({ listingType: "sale" });
+    const { data: withFurnishing } = await searchProperties({
+      listingType: "sale",
+      furnishing: "furnished",
+    });
+    expect(withFurnishing.length).toBe(baseline.length);
+  });
+});

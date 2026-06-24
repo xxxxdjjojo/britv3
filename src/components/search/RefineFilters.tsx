@@ -8,7 +8,13 @@
 
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { BedroomOption, SearchState, SoldWithin } from "@/lib/search/url-state";
+import type {
+  BedroomOption,
+  Furnishing,
+  SearchState,
+  SoldWithin,
+  TriState,
+} from "@/lib/search/url-state";
 import { BEDROOM_OPTIONS } from "@/lib/search/url-state";
 
 export const PROPERTY_TYPE_OPTIONS = [
@@ -24,6 +30,19 @@ const SOLD_WITHIN_OPTIONS: ReadonlyArray<{ value: SoldWithin; label: string }> =
   { value: "6m", label: "6 months" },
   { value: "12m", label: "12 months" },
   { value: "all", label: "Show all" },
+];
+
+const FURNISHING_OPTIONS: ReadonlyArray<{ value: Furnishing; label: string }> = [
+  { value: "any", label: "Any" },
+  { value: "furnished", label: "Furnished" },
+  { value: "unfurnished", label: "Unfurnished" },
+  { value: "part_furnished", label: "Part furnished" },
+];
+
+const TRI_STATE_OPTIONS: ReadonlyArray<{ value: TriState; label: string }> = [
+  { value: "any", label: "Any" },
+  { value: "yes", label: "Yes" },
+  { value: "no", label: "No" },
 ];
 
 type RefineFiltersProps = Readonly<{
@@ -58,12 +77,57 @@ function clampBedrooms(
     : { bedsMin: min, bedsMax: max };
 }
 
+type TriStateGroupProps = Readonly<{
+  legend: string;
+  name: string;
+  value: TriState;
+  onSelect: (value: TriState) => void;
+}>;
+
+/** Any / Yes / No radio group, styled like the Sold-within group. */
+function TriStateGroup({ legend, name, value, onSelect }: TriStateGroupProps) {
+  return (
+    <fieldset className="space-y-3">
+      <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+        {legend}
+      </legend>
+      <div className="grid grid-cols-3 gap-2">
+        {TRI_STATE_OPTIONS.map((opt) => {
+          const active = value === opt.value;
+          return (
+            <label
+              key={opt.value}
+              className={cn(
+                "flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold transition-colors",
+                active
+                  ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
+                  : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300",
+              )}
+            >
+              <input
+                type="radio"
+                name={name}
+                value={opt.value}
+                checked={active}
+                onChange={() => onSelect(opt.value)}
+                className="size-4 accent-brand-primary"
+              />
+              <span>{opt.label}</span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
+
 export function RefineFilters({
   state,
   onChange,
   onSubmit,
   onClear,
 }: RefineFiltersProps) {
+  const isRent = state.listingType === "rent";
   return (
     <form
       data-testid="refine-filters"
@@ -135,38 +199,150 @@ export function RefineFilters({
         </div>
       </fieldset>
 
-      {/* Sold within the last few — Land Registry */}
-      <fieldset className="space-y-3">
-        <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
-          Sold within the last few
-        </legend>
-        <div className="grid grid-cols-2 gap-2">
-          {SOLD_WITHIN_OPTIONS.map(({ value, label }) => {
-            const active = state.soldWithin === value;
-            return (
-              <label
-                key={value}
-                className={cn(
-                  "flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold transition-colors",
-                  active
-                    ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
-                    : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300",
-                )}
-              >
-                <input
-                  type="radio"
-                  name="refine-sold-within"
-                  value={value}
-                  checked={active}
-                  onChange={() => onChange({ soldWithin: value })}
-                  className="size-4 accent-brand-primary"
-                />
-                <span>{label}</span>
-              </label>
-            );
-          })}
-        </div>
-      </fieldset>
+      {/* Sold within the last few — Land Registry (sale-oriented; hidden for rent) */}
+      {!isRent && (
+        <fieldset className="space-y-3">
+          <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+            Sold within the last few
+          </legend>
+          <div className="grid grid-cols-2 gap-2">
+            {SOLD_WITHIN_OPTIONS.map(({ value, label }) => {
+              const active = state.soldWithin === value;
+              return (
+                <label
+                  key={value}
+                  className={cn(
+                    "flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold transition-colors",
+                    active
+                      ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
+                      : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="refine-sold-within"
+                    value={value}
+                    checked={active}
+                    onChange={() => onChange({ soldWithin: value })}
+                    className="size-4 accent-brand-primary"
+                  />
+                  <span>{label}</span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+      )}
+
+      {/* Lettings — rent-only, in the same slot the Sold-within group occupies for sale */}
+      {isRent && (
+        <fieldset className="space-y-6">
+          <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+            Lettings
+          </legend>
+
+          {/* Furnishing */}
+          <div className="space-y-3">
+            <label
+              htmlFor="refine-furnishing"
+              className="block text-[11px] font-bold uppercase tracking-widest text-neutral-500"
+            >
+              Furnishing
+            </label>
+            <select
+              id="refine-furnishing"
+              value={state.furnishing}
+              onChange={(e) =>
+                onChange({ furnishing: e.target.value as Furnishing })
+              }
+              className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            >
+              {FURNISHING_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Bills included */}
+          <TriStateGroup
+            legend="Bills included"
+            name="refine-bills-included"
+            value={state.billsIncluded}
+            onSelect={(value) => onChange({ billsIncluded: value })}
+          />
+
+          {/* Pets */}
+          <TriStateGroup
+            legend="Pets"
+            name="refine-pets-allowed"
+            value={state.petsAllowed}
+            onSelect={(value) => onChange({ petsAllowed: value })}
+          />
+
+          {/* Students */}
+          <TriStateGroup
+            legend="Students"
+            name="refine-students-welcome"
+            value={state.studentsWelcome}
+            onSelect={(value) => onChange({ studentsWelcome: value })}
+          />
+
+          {/* Available from */}
+          <div className="space-y-3">
+            <label
+              htmlFor="refine-available-from"
+              className="block text-[11px] font-bold uppercase tracking-widest text-neutral-500"
+            >
+              Available from
+            </label>
+            <input
+              id="refine-available-from"
+              type="date"
+              value={state.availableFrom}
+              onChange={(e) => onChange({ availableFrom: e.target.value })}
+              className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            />
+          </div>
+
+          {/* Max. minimum tenancy */}
+          <div className="space-y-2">
+            <label
+              htmlFor="refine-min-tenancy"
+              className="block text-[11px] font-bold uppercase tracking-widest text-neutral-500"
+            >
+              Max. minimum tenancy (months)
+            </label>
+            <input
+              id="refine-min-tenancy"
+              type="number"
+              inputMode="numeric"
+              min="1"
+              value={state.minTenancyMonths}
+              onChange={(e) => onChange({ minTenancyMonths: e.target.value })}
+              placeholder="No max"
+              className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            />
+            <p className="text-xs font-medium text-neutral-500">
+              Show lets requiring no more than this many months.
+            </p>
+          </div>
+
+          {/* Let agreed */}
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-3 text-sm font-bold text-neutral-600 transition-colors hover:border-neutral-300">
+            <input
+              type="checkbox"
+              checked={state.letAgreed === "exclude"}
+              onChange={(e) =>
+                onChange({ letAgreed: e.target.checked ? "exclude" : "include" })
+              }
+              className="size-4 accent-brand-primary"
+            />
+            <span>Hide let-agreed listings</span>
+          </label>
+        </fieldset>
+      )}
 
       {/* Price Range */}
       <fieldset className="space-y-3">
