@@ -119,7 +119,7 @@ describe("getUser", () => {
 });
 
 describe("signUp", () => {
-  it("forwards display_name and emailRedirectTo to supabase", async () => {
+  it("forwards display_name, role_intent, and confirmation emailRedirectTo to supabase", async () => {
     // Arrange
     authMock.signUp.mockResolvedValueOnce({
       data: { user: { id: "user-new" }, session: null },
@@ -128,7 +128,7 @@ describe("signUp", () => {
 
     // Act
     const { signUp } = await import("../auth-service");
-    await signUp("new@example.com", "secretpw", "Ada Lovelace");
+    await signUp("new@example.com", "secretpw", "Ada Lovelace", "agent");
 
     // Assert
     expect(authMock.signUp).toHaveBeenCalledWith(
@@ -136,8 +136,10 @@ describe("signUp", () => {
         email: "new@example.com",
         password: "secretpw",
         options: expect.objectContaining({
-          data: { display_name: "Ada Lovelace" },
-          emailRedirectTo: expect.stringContaining("/auth/callback"),
+          data: { display_name: "Ada Lovelace", role_intent: "agent" },
+          emailRedirectTo: expect.stringContaining(
+            "/auth/callback?next=%2Fverify-email%2Fconfirmed",
+          ),
         }),
       }),
     );

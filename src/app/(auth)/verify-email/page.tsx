@@ -6,6 +6,10 @@ import { Mail, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import {
+  browserAuthCallbackUrl,
+  PENDING_SIGNUP_EMAIL_KEY,
+} from "@/lib/auth/signup-confirmation";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -16,6 +20,12 @@ export default function VerifyEmailPage() {
   const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
+    const pendingEmail = window.localStorage.getItem(PENDING_SIGNUP_EMAIL_KEY);
+    if (pendingEmail) {
+      setEmail(pendingEmail);
+      return;
+    }
+
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
       setEmail(data?.user?.email ?? null);
@@ -39,6 +49,9 @@ export default function VerifyEmailPage() {
       await supabase.auth.resend({
         type: "signup",
         email,
+        options: {
+          emailRedirectTo: browserAuthCallbackUrl(),
+        },
       });
       setResendSuccess(true);
       setCooldown(RESEND_COOLDOWN_SECONDS);

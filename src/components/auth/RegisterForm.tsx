@@ -17,6 +17,7 @@ import { signUp } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
 import { handleSupabaseError } from "@/lib/supabase-error";
 import { sanitize } from "@/lib/sanitize";
+import { PENDING_SIGNUP_EMAIL_KEY } from "@/lib/auth/signup-confirmation";
 import type { UserRole } from "@/types/auth";
 
 // Buyer/renter signup collects only email + password (+ consent). Names are
@@ -111,36 +112,28 @@ export function RegisterForm() {
       const displayName = professionalRole
         ? sanitize(`${data.firstName ?? ""} ${data.lastName ?? ""}`.trim())
         : undefined;
+      // Role travels as signup metadata (role_intent); the email-confirmation
+      // callback assigns it once the user confirms — there is no authenticated
+      // session at this point to call assign_role_atomic against.
+      const role: UserRole = professionalRole
+        ? professionalRole
+        : data.intent === "rent"
+          ? "renter"
+          : "homebuyer";
       const { error: authError } = await signUp(
         data.email,
         data.password,
         displayName,
+        role,
       );
       if (authError) {
         setError(handleSupabaseError(authError).message);
         return;
       }
 
-      // Assign role atomically via RPC (avoids importing server-only role-service)
-      try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const role: UserRole = professionalRole
-            ? professionalRole
-            : data.intent === "rent"
-              ? "renter"
-              : "homebuyer";
-          await supabase.rpc("assign_role_atomic", {
-            p_user_id: user.id,
-            p_role: role,
-          });
-        }
-      } catch {
-        // Non-blocking: role can be set later via callback
-      }
+      // Remember which email is awaiting confirmation so /verify-email can
+      // surface it and offer a resend.
+      window.localStorage.setItem(PENDING_SIGNUP_EMAIL_KEY, data.email);
 
       // Trigger referral attribution.
       // The API reads the httpOnly britestate_ref cookie server-side (eng review 6A).

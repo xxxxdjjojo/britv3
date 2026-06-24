@@ -13,6 +13,22 @@ const VALID_PROFESSIONAL_ROLES: Record<string, UserRole> = {
   service_provider: "service_provider",
 };
 
+const VALID_SIGNUP_ROLE_INTENTS: Record<string, UserRole> = {
+  homebuyer: "homebuyer",
+  renter: "renter",
+  seller: "seller",
+  landlord: "landlord",
+  agent: "agent",
+  provider: "service_provider",
+  service_provider: "service_provider",
+  mortgage_broker: "mortgage_broker",
+};
+
+function safeRoleIntent(value: unknown): UserRole | null {
+  if (typeof value !== "string") return null;
+  return VALID_SIGNUP_ROLE_INTENTS[value] ?? null;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
@@ -40,6 +56,7 @@ export async function GET(request: NextRequest) {
   let redirectPath = next;
 
   if (user) {
+    const signupRoleIntent = safeRoleIntent(user.user_metadata?.role_intent);
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role")
@@ -47,18 +64,17 @@ export async function GET(request: NextRequest) {
 
     // If no roles, assign the intended role (or default to homebuyer)
     if (!roles || roles.length === 0) {
-      const role = intendedRole ?? "homebuyer";
+      const role = intendedRole ?? signupRoleIntent ?? "homebuyer";
 
-      await supabase
-        .from("user_roles")
-        .insert({ user_id: user.id, role });
-      await supabase
-        .from("profiles")
-        .update({ active_role: role })
-        .eq("id", user.id);
+      const { error: roleError } = await supabase.rpc("assign_role_atomic", {
+        p_user_id: user.id,
+        p_role: role,
+      });
 
       // Route to the correct onboarding flow
-      if (intendedRole) {
+      if (roleError) {
+        redirectPath = "/register/role-select";
+      } else if (intendedRole && redirectPath !== "/verify-email/confirmed") {
         // Map role back to URL slug for onboarding
         const roleSlugMap: Record<string, string> = {
           service_provider: "provider",

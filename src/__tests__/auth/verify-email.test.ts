@@ -1,10 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createMockSupabaseClient } from "../mocks/supabase";
 
+const { sendWelcomeMock } = vi.hoisted(() => ({
+  sendWelcomeMock: vi.fn(),
+}));
+
 // Mock the server client for the callback route
 const mockServerClient = createMockSupabaseClient();
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => mockServerClient),
+}));
+
+vi.mock("@/services/email/email-service", () => ({
+  sendWelcome: sendWelcomeMock,
 }));
 
 // Mock next/navigation redirect
@@ -76,5 +84,35 @@ describe("Auth callback route (PKCE code exchange)", () => {
 
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toContain("/settings");
+  });
+
+  it("assigns the signup role intent after email confirmation", async () => {
+    mockServerClient.auth.exchangeCodeForSession.mockResolvedValueOnce({
+      data: { user: { id: "user-1" }, session: { access_token: "token" } },
+      error: null,
+    });
+    mockServerClient.auth.getUser.mockResolvedValueOnce({
+      data: {
+        user: {
+          id: "user-1",
+          email: "user@example.com",
+          user_metadata: { display_name: "User Example", role_intent: "seller" },
+        },
+      },
+      error: null,
+    });
+
+    const request = new NextRequest(
+      "http://localhost:3000/auth/callback?code=test-code&next=/verify-email/confirmed",
+    );
+
+    const response = await GET(request);
+
+    expect(mockServerClient.rpc).toHaveBeenCalledWith("assign_role_atomic", {
+      p_user_id: "user-1",
+      p_role: "seller",
+    });
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toContain("/verify-email/confirmed");
   });
 });

@@ -7,12 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/Logo";
 import { createClient } from "@/lib/supabase/client";
 import { ROLE_TO_ROUTE } from "@/lib/constants";
+import { PENDING_SIGNUP_EMAIL_KEY } from "@/lib/auth/signup-confirmation";
 
 export default function VerifyEmailConfirmedPage() {
   const [onboardingUrl, setOnboardingUrl] = useState("/dashboard");
   const [roleName, setRoleName] = useState("");
 
   useEffect(() => {
+    window.localStorage.removeItem(PENDING_SIGNUP_EMAIL_KEY);
+
     async function fetchRole() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();

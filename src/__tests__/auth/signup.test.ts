@@ -19,21 +19,21 @@ describe("signUp", () => {
     });
   });
 
-  it("calls supabase.auth.signUp with email, password, and display_name metadata", async () => {
+  it("calls supabase.auth.signUp with email, password, display_name, role intent, and confirmation redirect", async () => {
     const mockUser = { id: "user-1", email: "test@example.com" };
     mockClient.auth.signUp.mockResolvedValueOnce({
       data: { user: mockUser, session: null },
       error: null,
     });
 
-    const result = await signUp("test@example.com", "Password123!", "Test User");
+    const result = await signUp("test@example.com", "Password123!", "Test User", "seller");
 
     expect(mockClient.auth.signUp).toHaveBeenCalledWith({
       email: "test@example.com",
       password: "Password123!",
       options: {
-        data: { display_name: "Test User" },
-        emailRedirectTo: "http://localhost:3000/auth/callback",
+        data: { display_name: "Test User", role_intent: "seller" },
+        emailRedirectTo: "http://localhost:3000/auth/callback?next=%2Fverify-email%2Fconfirmed",
       },
     });
     expect(result.data?.user).toEqual(mockUser);
