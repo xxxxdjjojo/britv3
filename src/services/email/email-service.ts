@@ -11,10 +11,14 @@ import type {
 // Lazy-initialize so the Resend SDK does not throw at module evaluation time
 // (during `next build` static page collection the env var may be absent).
 let _resend: Resend | null = null;
-function getResend(): Resend {
-  if (!_resend) {
-    _resend = new Resend(process.env.RESEND_API_KEY);
+function getResend(): Resend | null {
+  if (_resend) return _resend;
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("[email-service] RESEND_API_KEY not set — emails will be skipped");
+    return null;
   }
+  _resend = new Resend(apiKey);
   return _resend;
 }
 const FROM = emailFromHeader();
@@ -24,12 +28,16 @@ const BASE_URL = appUrl();
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-async function resendSend(payload: Parameters<ReturnType<typeof getResend>["emails"]["send"]>[0]) {
+async function resendSend(payload: Parameters<Resend["emails"]["send"]>[0]) {
+  const client = getResend();
+  if (!client) {
+    return { data: null, error: new Error("RESEND_API_KEY not set") };
+  }
   let lastError: Error | null = null;
   for (let attempt = 0; attempt < 3; attempt++) {
     if (attempt > 0) await new Promise((r) => setTimeout(r, 500 * attempt));
     try {
-      const result = await getResend().emails.send(payload);
+      const result = await client.emails.send(payload);
       if (result.error) {
         const statusCode = (result.error as { statusCode?: number }).statusCode;
         if (statusCode === 422) return result; // don't retry invalid address
