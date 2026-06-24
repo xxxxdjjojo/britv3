@@ -17,6 +17,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { MarketMapExplorerLoader } from "@/components/market-map/MarketMapExplorerLoader";
+import { resolveAreaName } from "@/services/market-map/area-name-service";
 import { brandConfig } from "@/config/brand";
 
 // ---------------------------------------------------------------------------
@@ -27,10 +28,9 @@ type RouteParams = { params: Promise<{ areaId: string }> };
 
 export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
   const { areaId } = await params;
-  // Decode and humanise: "kensington-and-chelsea" → "Kensington And Chelsea"
-  const humanName = decodeURIComponent(areaId)
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  // Resolve the area_id to its human name ("UB6 · Ealing", "Ealing", "SW1A"),
+  // falling back to a humanised slug when no boundary row matches.
+  const humanName = await resolveAreaName(areaId);
 
   return {
     title: `${humanName} Property Prices — Median Sold Prices | ${brandConfig.displayName}`,
@@ -45,9 +45,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
 export default async function AreaMapPage({ params }: RouteParams) {
   const { areaId } = await params;
 
-  const humanName = decodeURIComponent(areaId)
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const humanName = await resolveAreaName(areaId);
 
   return (
     <main
