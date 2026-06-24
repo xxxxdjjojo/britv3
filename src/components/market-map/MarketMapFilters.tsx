@@ -1,19 +1,17 @@
 /**
  * MarketMapFilters — controlled filter panel for the price map.
  *
- * Controls per DESIGN.md §3:
- * - Property type chip group (all / detached / semi-detached / terraced / flat)
- * - Date window chip group (12 / 24 / 36 / 60 months)
- * - Metric dropdown (static, disabled — "Median sold price" only)
- * - Scale toggle (Local / National) with active-scale indicator
+ * Slimmed to a single user-facing control: the property-type chip group
+ * (all / detached / semi-detached / terraced / flat). The date window, metric,
+ * and scale controls were removed — the map queries a fixed window (24 months)
+ * and national scale, set by the Explorer and no longer surfaced here.
  *
- * Excluded per DESIGN.md §3.3: square footage, price range, bedrooms, amenities.
+ * Excluded by design: square footage, price range, bedrooms, amenities.
  */
 
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { MarketMapScaleMode } from "@/services/market-map/types";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -26,16 +24,16 @@ export type PropertyTypeFilter =
   | "terraced"
   | "flat";
 
+/**
+ * Retained for the Explorer's internal (no-longer-user-facing) date-window
+ * value that still parameterises the map query.
+ */
 export type DateWindowMonths = 12 | 24 | 36 | 60;
 
 type Props = Readonly<{
   propertyType: PropertyTypeFilter;
-  months: DateWindowMonths;
-  scaleMode: MarketMapScaleMode;
   onPropertyTypeChange: (v: PropertyTypeFilter) => void;
-  onMonthsChange: (v: DateWindowMonths) => void;
-  onScaleModeChange: (v: MarketMapScaleMode) => void;
-  /** When true, show "Exploring: <areaName>" header instead of generic header. */
+  /** When set, show "Exploring: <areaName>" header instead of generic header. */
   focusAreaName?: string | null;
   /** Callback for Apply Filters button. */
   onApply?: () => void;
@@ -51,13 +49,6 @@ const PROPERTY_TYPE_OPTIONS: { value: PropertyTypeFilter; label: string }[] = [
   { value: "semi-detached", label: "Semi-detached" },
   { value: "terraced", label: "Terraced" },
   { value: "flat", label: "Flat / apartment" },
-];
-
-const DATE_WINDOW_OPTIONS: { value: DateWindowMonths; label: string }[] = [
-  { value: 12, label: "Last 12 months" },
-  { value: 24, label: "Last 24 months" },
-  { value: 36, label: "Last 3 years" },
-  { value: 60, label: "Last 5 years" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -108,11 +99,7 @@ function FilterHeading({ children }: Readonly<{ children: React.ReactNode }>) {
 
 export function MarketMapFilters({
   propertyType,
-  months,
-  scaleMode,
   onPropertyTypeChange,
-  onMonthsChange,
-  onScaleModeChange,
   focusAreaName,
   onApply,
 }: Props) {
@@ -154,83 +141,6 @@ export function MarketMapFilters({
               ))}
             </div>
           </fieldset>
-
-          {/* Date Window */}
-          <fieldset>
-            <legend className="mb-3">
-              <FilterHeading>Date Window</FilterHeading>
-            </legend>
-            <div
-              className="flex flex-wrap gap-2"
-              role="group"
-              aria-label="Date window"
-            >
-              {DATE_WINDOW_OPTIONS.map((opt) => (
-                <ChipButton
-                  key={opt.value}
-                  active={months === opt.value}
-                  onClick={() => onMonthsChange(opt.value)}
-                >
-                  {opt.label}
-                </ChipButton>
-              ))}
-            </div>
-          </fieldset>
-
-          {/* Metric — static, disabled */}
-          <div>
-            <FilterHeading>Metric</FilterHeading>
-            <div className="mt-3">
-              <div
-                className={cn(
-                  "flex w-full items-center justify-between rounded-[var(--radius-md)] border border-[#E2E2E8]",
-                  "cursor-not-allowed bg-white px-4 py-2.5 text-sm text-[#46464F] opacity-70",
-                )}
-                aria-disabled="true"
-                title="Only median sold price is available. Floor-area metrics are not yet available."
-              >
-                <span className="font-medium">Median sold price</span>
-                <span className="text-xs text-[#7A7A88]">Only option</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Scale */}
-          <div>
-            <FilterHeading>Scale</FilterHeading>
-            <p className="mt-0.5 font-sans text-xs text-[#7A7A88]">
-              How colour buckets are computed
-            </p>
-            <div
-              className="mt-3 flex rounded-[var(--radius-md)] border border-[#E2E2E8] bg-white p-1"
-              role="group"
-              aria-label="Scale mode"
-            >
-              {(["local", "national"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => onScaleModeChange(mode)}
-                  aria-pressed={scaleMode === mode}
-                  className={cn(
-                    "flex-1 rounded-[calc(var(--radius-md)-2px)] px-3 py-1.5 text-sm font-medium capitalize",
-                    "transition-all duration-300",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-1",
-                    scaleMode === mode
-                      ? "bg-[#1B4D3E] text-white shadow-[var(--shadow-sm)]"
-                      : "text-[#46464F] hover:text-[#003629]",
-                  )}
-                >
-                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                </button>
-              ))}
-            </div>
-            {/* Active scale indicator */}
-            <p className="mt-2 font-sans text-xs font-medium text-[#1B4D3E]">
-              Scale:{" "}
-              {scaleMode === "national" ? "National" : "Local"} comparison
-            </p>
-          </div>
         </div>
       </div>
 

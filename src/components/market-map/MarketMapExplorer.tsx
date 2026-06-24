@@ -137,6 +137,10 @@ export function MarketMapExplorer({
   const [metadata, setMetadata] = useState<MarketMapMetadata | null>(null);
   const [selectedArea, setSelectedArea] =
     useState<MarketMapFeatureProperties | null>(null);
+  // Click coordinate for the selected area, anchoring the on-map price popup.
+  const [areaAnchor, setAreaAnchor] = useState<
+    { longitude: number; latitude: number } | null
+  >(null);
   const [allFeatures, setAllFeatures] = useState<MarketMapFeatureProperties[]>([]);
 
   // Flat/house breakdown for the selected area (lazy-loaded on selection).
@@ -219,13 +223,13 @@ export function MarketMapExplorer({
   }, []);
 
   const handleAreaSelect = useCallback(
-    (props: MarketMapFeatureProperties | null) => {
+    (
+      props: MarketMapFeatureProperties | null,
+      anchor?: { longitude: number; latitude: number },
+    ) => {
       setSelectedArea(props);
-      if (props) {
-        void setUrlParams({ area_id: props.area_id });
-      } else {
-        void setUrlParams({ area_id: null });
-      }
+      setAreaAnchor(props ? anchor ?? null : null);
+      void setUrlParams({ area_id: props ? props.area_id : null });
     },
     [setUrlParams],
   );
@@ -293,16 +297,6 @@ export function MarketMapExplorer({
     [setUrlParams],
   );
 
-  const handleMonthsChange = useCallback(
-    (v: DateWindowMonths) => void setUrlParams({ months: v }),
-    [setUrlParams],
-  );
-
-  const handleScaleModeChange = useCallback(
-    (v: MarketMapScaleMode) => void setUrlParams({ scale_mode: v }),
-    [setUrlParams],
-  );
-
   // ---------------------------------------------------------------------------
   // Summary card data from selected area
   // ---------------------------------------------------------------------------
@@ -317,6 +311,30 @@ export function MarketMapExplorer({
         periodTo: selectedArea.date_to,
       }
     : null;
+
+  // ---------------------------------------------------------------------------
+  // On-map price popup for the clicked area (reuses the already-fetched area
+  // card — no extra request). Rendered by MarketMap as a MapLibre <Popup>.
+  // ---------------------------------------------------------------------------
+
+  const areaPopup =
+    selectedArea && areaAnchor
+      ? {
+          longitude: areaAnchor.longitude,
+          latitude: areaAnchor.latitude,
+          onClose: () => handleAreaSelect(null),
+          children: (
+            <MarketMapPriceCard
+              card={areaCard ?? undefined}
+              areaName={humanizeAreaName(
+                selectedArea.area_name,
+                selectedArea.geography_level,
+              )}
+              isLoading={areaCardLoading}
+            />
+          ),
+        }
+      : null;
 
   // ---------------------------------------------------------------------------
   // Shared search bar
@@ -455,11 +473,7 @@ export function MarketMapExplorer({
             <div className="border-t border-[#E2E2E8]">
               <MarketMapFilters
                 propertyType={propertyType}
-                months={months}
-                scaleMode={scaleMode}
                 onPropertyTypeChange={handlePropertyTypeChange}
-                onMonthsChange={handleMonthsChange}
-                onScaleModeChange={handleScaleModeChange}
                 focusAreaName={focusAreaName}
                 onApply={() => {/* filters are applied reactively */}}
               />
@@ -470,11 +484,7 @@ export function MarketMapExplorer({
             {/* List mode — filters then ranked areas in view */}
             <MarketMapFilters
               propertyType={propertyType}
-              months={months}
-              scaleMode={scaleMode}
               onPropertyTypeChange={handlePropertyTypeChange}
-              onMonthsChange={handleMonthsChange}
-              onScaleModeChange={handleScaleModeChange}
               focusAreaName={focusAreaName}
               onApply={() => {/* filters are applied reactively */}}
             />
@@ -530,6 +540,7 @@ export function MarketMapExplorer({
           onViewportChange={(v) => setCurrentZoom(v.zoom)}
           onFeatures={handleFeatures}
           onAreaSelect={handleAreaSelect}
+          areaPopup={areaPopup}
           onMetadata={handleMetadata}
           className="h-full w-full"
         />
@@ -590,11 +601,7 @@ export function MarketMapExplorer({
 
                 <MarketMapFilters
                   propertyType={propertyType}
-                  months={months}
-                  scaleMode={scaleMode}
                   onPropertyTypeChange={handlePropertyTypeChange}
-                  onMonthsChange={handleMonthsChange}
-                  onScaleModeChange={handleScaleModeChange}
                   focusAreaName={focusAreaName}
                   onApply={() => {/* reactive */}}
                 />
