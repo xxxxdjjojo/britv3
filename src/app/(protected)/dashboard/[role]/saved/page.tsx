@@ -28,6 +28,10 @@ function formatPrice(price: number): string {
 /** Human label for a non-active listing status, or null when no badge is needed. */
 function statusBadgeLabel(status: ListingStatus): string | null {
   switch (status) {
+    case "active":
+      return null;
+    case "draft":
+      return "Not currently listed";
     case "under_offer":
       return "Under offer";
     case "sold_stc":
@@ -40,8 +44,12 @@ function statusBadgeLabel(status: ListingStatus): string | null {
       return "Withdrawn";
     case "archived":
       return "Archived";
-    default:
-      return null;
+    default: {
+      // Exhaustiveness guard: if ListingStatus gains a value, this fails to
+      // compile rather than silently dropping the badge.
+      const _exhaustive: never = status;
+      return _exhaustive;
+    }
   }
 }
 

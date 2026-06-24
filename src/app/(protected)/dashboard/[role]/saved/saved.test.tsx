@@ -162,6 +162,47 @@ describe("SavedPropertiesPage", () => {
     expect(screen.getByText(/^sold$/i)).toBeInTheDocument();
   });
 
+  // Every non-active status must surface a badge so a saver always knows why a
+  // listing they shortlisted is no longer freely on the market. `draft` is now
+  // reachable for non-owners because saved listings are visible regardless of
+  // status (RLS migration 20260624152444).
+  it.each([
+    ["draft", /not currently listed/i],
+    ["under_offer", /under offer/i],
+    ["sold_stc", /sold stc/i],
+    ["sold", /^sold$/i],
+    ["let", /^let$/i],
+    ["withdrawn", /withdrawn/i],
+    ["archived", /archived/i],
+  ])("renders a status badge for a '%s' listing", async (status, label) => {
+    getSavedPropertiesMock.mockResolvedValue([
+      makeSaved({
+        listing: {
+          id: "listing-1",
+          slug: "the-glass-pavilion",
+          price: 4250000,
+          listing_type: "sale",
+          status,
+          rent_frequency: null,
+          favorite_count: 3,
+        },
+      }),
+    ]);
+
+    render(await SavedPropertiesPage());
+
+    expect(screen.getByText(label)).toBeInTheDocument();
+  });
+
+  it("renders no status badge for an active listing", async () => {
+    getSavedPropertiesMock.mockResolvedValue([makeSaved()]);
+    render(await SavedPropertiesPage());
+
+    // 'active' is the only status with no badge; the card still renders.
+    expect(screen.getByText("The Glass Pavilion")).toBeInTheDocument();
+    expect(screen.queryByText(/not currently listed/i)).not.toBeInTheDocument();
+  });
+
   it("renders a working property-detail link on each available card", async () => {
     getSavedPropertiesMock.mockResolvedValue([makeSaved()]);
     render(await SavedPropertiesPage());
