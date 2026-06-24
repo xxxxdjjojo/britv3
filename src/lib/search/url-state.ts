@@ -125,11 +125,11 @@ export function serializeSearchState(state: SearchState): string {
   if (state.view !== DEFAULT_SEARCH_STATE.view) params.set("view", state.view);
   if (state.page > 1) params.set("page", String(state.page));
   // Lettings filters — only emit when non-default
-  if (state.furnishing !== "any") params.set("furnishing", state.furnishing);
-  if (state.billsIncluded !== "any") params.set("bills", state.billsIncluded);
-  if (state.petsAllowed !== "any") params.set("pets", state.petsAllowed);
-  if (state.studentsWelcome !== "any") params.set("students", state.studentsWelcome);
-  if (state.letAgreed === "exclude") params.set("letAgreed", "exclude");
+  if (state.furnishing !== DEFAULT_SEARCH_STATE.furnishing) params.set("furnishing", state.furnishing);
+  if (state.billsIncluded !== DEFAULT_SEARCH_STATE.billsIncluded) params.set("bills", state.billsIncluded);
+  if (state.petsAllowed !== DEFAULT_SEARCH_STATE.petsAllowed) params.set("pets", state.petsAllowed);
+  if (state.studentsWelcome !== DEFAULT_SEARCH_STATE.studentsWelcome) params.set("students", state.studentsWelcome);
+  if (state.letAgreed !== DEFAULT_SEARCH_STATE.letAgreed) params.set("letAgreed", state.letAgreed);
   if (state.availableFrom) params.set("availableFrom", state.availableFrom);
   if (state.minTenancyMonths) params.set("minTenancy", state.minTenancyMonths);
 
