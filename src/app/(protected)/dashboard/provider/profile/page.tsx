@@ -17,8 +17,10 @@ export default async function ProviderProfilePage() {
   const profile = await getProviderProfile(supabase, user.id).catch(() => null);
 
   if (!profile) {
-    // Provider hasn't set up their profile yet — redirect to setup
-    redirect("/dashboard/provider/profile/setup");
+    // Provider hasn't completed onboarding yet — send them to the onboarding
+    // flow (the same destination the provider layout uses when no provider
+    // identity resolves). There is no standalone /profile/setup route.
+    redirect("/register/onboarding/provider");
   }
 
   return (

@@ -63,7 +63,7 @@ const MOCK_COMPLIANCE_ALERTS = [
 const MOCK_QUICK_MANAGEMENT = [
   { id: "1", icon: Search, label: "Find Tradesperson", href: "/dashboard/landlord/maintenance" },
   { id: "2", icon: FileText, label: "Generate Report", href: "/dashboard/landlord/finance/expenses" },
-  { id: "3", icon: Mail, label: "Email All Tenants", href: "/dashboard/landlord/messages" },
+  { id: "3", icon: Mail, label: "Email All Tenants", href: "/inbox" },
 ];
 
 const MOCK_RENT_COLLECTION = [

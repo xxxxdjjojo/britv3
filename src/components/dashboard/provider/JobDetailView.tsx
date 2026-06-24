@@ -227,7 +227,7 @@ function QuoteSummary({
         <div className="space-y-3">
           <p className="text-xs text-neutral-500">No quote submitted yet.</p>
           <Link
-            href={`/dashboard/provider/quotes/new?jobId=${jobId}`}
+            href={`/dashboard/provider/quotes/builder?jobId=${jobId}`}
             className="inline-flex items-center justify-center rounded-lg bg-brand-gold px-4 py-2.5 text-sm font-semibold text-brand-gold-foreground hover:brightness-95 transition w-full"
           >
             Create Quote
@@ -283,7 +283,7 @@ function InvoicePanel({
         <div className="space-y-3">
           <p className="text-xs text-neutral-500">Job complete — no invoice yet.</p>
           <Link
-            href={`/dashboard/provider/jobs/${jobId}/invoice/new`}
+            href={`/dashboard/provider/payments?jobId=${jobId}`}
             className="inline-flex items-center justify-center rounded-lg bg-brand-gold px-4 py-2.5 text-sm font-semibold text-brand-gold-foreground hover:brightness-95 transition w-full"
           >
             Generate Invoice
@@ -362,8 +362,7 @@ function ReviewPanel({
 
 function ClientContactCard({
   name,
-  jobId,
-}: Readonly<{ name: string; jobId: string }>) {
+}: Readonly<{ name: string }>) {
   return (
     <div className="rounded-xl border border-border bg-white p-5 shadow-sm space-y-4">
       {/* Avatar + name */}
@@ -401,13 +400,13 @@ function ClientContactCard({
       {/* Action buttons */}
       <div className="flex gap-2 pt-1">
         <Link
-          href={`/dashboard/provider/jobs/${jobId}/call`}
+          href="/inbox"
           className="flex-1 rounded-lg border border-border bg-white px-3 py-2 text-center text-xs font-semibold text-neutral-700 hover:bg-surface transition"
         >
           Call
         </Link>
         <Link
-          href={`/dashboard/provider/jobs/${jobId}/message`}
+          href="/inbox"
           className="flex-1 rounded-lg bg-brand-primary px-3 py-2 text-center text-xs font-semibold text-white hover:bg-brand-primary-dark transition"
         >
           Message
@@ -660,7 +659,7 @@ export function JobDetailView({
         {/* ── Right sidebar ─────────────────────────────────────────────── */}
         <div className="space-y-4">
           {/* Client contact */}
-          <ClientContactCard name={job.client.name} jobId={job.id} />
+          <ClientContactCard name={job.client.name} />
 
           {/* Job location */}
           <div className="rounded-xl border border-border bg-white overflow-hidden shadow-sm">
