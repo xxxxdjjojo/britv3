@@ -45,6 +45,7 @@ function makeListing(overrides: Partial<Listing> = {}): Listing {
     status: "active",
     price: 500000,
     rentFrequency: null,
+    letAgreed: false,
     priceQualifier: null,
     listedDate: "2026-01-15",
     viewCount: 0,

@@ -40,6 +40,7 @@ export type PropertyDetail = {
     status: ListingStatus;
     price: number;
     rentFrequency: string | null;
+    letAgreed: boolean;
     priceQualifier: string | null;
     listedDate: string;
     viewCount: number;
@@ -310,6 +311,7 @@ export async function getPropertyBySlug(
       status: listingRow.status as ListingStatus,
       price: listingRow.price as number,
       rentFrequency: (listingRow.rent_frequency as string | null) ?? null,
+      letAgreed: ((listingRow as Record<string, unknown>).let_agreed as boolean | null) ?? false,
       priceQualifier: (listingRow.price_qualifier as string | null) ?? null,
       listedDate: listingRow.listed_date as string,
       viewCount: (listingRow.view_count as number) ?? 0,

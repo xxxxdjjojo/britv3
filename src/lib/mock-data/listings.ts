@@ -887,6 +887,7 @@ export function toPropertyDetail(row: MockListingRow): PropertyDetail {
       status: "active",
       price: row.price,
       rentFrequency: row.rentFrequency,
+      letAgreed: row.letAgreed,
       priceQualifier: null,
       listedDate: "2026-01-15",
       viewCount: deterministicViewCount(row.id),
