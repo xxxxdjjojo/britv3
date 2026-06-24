@@ -1,18 +1,29 @@
 import { createClient } from "@/lib/supabase/client";
+import { browserAuthCallbackUrl } from "@/lib/auth/signup-confirmation";
+import type { UserRole } from "@/types/auth";
 
 function getSupabase() {
   return createClient();
 }
 
-export async function signUp(email: string, password: string, displayName?: string) {
+export async function signUp(
+  email: string,
+  password: string,
+  displayName?: string,
+  roleIntent: UserRole = "homebuyer",
+) {
   const supabase = getSupabase();
   return supabase.auth.signUp({
     email,
     password,
     options: {
       // Buyers/renters sign up without a name; only set display_name when given.
-      data: displayName ? { display_name: displayName } : {},
-      emailRedirectTo: `${window.location.origin}/auth/callback`,
+      // role_intent is always recorded so the confirmation callback can assign the role.
+      data: {
+        ...(displayName ? { display_name: displayName } : {}),
+        role_intent: roleIntent,
+      },
+      emailRedirectTo: browserAuthCallbackUrl(),
     },
   });
 }
