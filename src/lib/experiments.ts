@@ -89,3 +89,30 @@ export function reportExperimentExposure(
 export function __resetExperimentCacheForTests(): void {
   exposureCache.clear();
 }
+
+// ----------------------------------------------------------------------------
+// Coming Soon headline A/B (waitlist splash)
+// ----------------------------------------------------------------------------
+
+export const COMING_SOON_HEADLINE_EXPERIMENT = {
+  key: "coming_soon_headline",
+  variants: ["A", "B", "C"] as const,
+  controlVariant: "B" as const,
+} as const;
+
+export type ComingSoonHeadlineVariant =
+  (typeof COMING_SOON_HEADLINE_EXPERIMENT.variants)[number];
+
+export function resolveComingSoonHeadline(
+  client: MinimalPostHogClient | null | undefined,
+): ComingSoonHeadlineVariant {
+  const fallback = COMING_SOON_HEADLINE_EXPERIMENT.controlVariant;
+  if (!client?.getFeatureFlag) return fallback;
+  const raw = client.getFeatureFlag(COMING_SOON_HEADLINE_EXPERIMENT.key);
+  if (typeof raw !== "string") return fallback;
+  return COMING_SOON_HEADLINE_EXPERIMENT.variants.includes(
+    raw as ComingSoonHeadlineVariant,
+  )
+    ? (raw as ComingSoonHeadlineVariant)
+    : fallback;
+}

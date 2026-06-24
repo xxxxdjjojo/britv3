@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { NextRequest } from "next/server";
 import {
   getQueueStatus,
   joinWaitlist,
@@ -31,8 +32,8 @@ import { GET } from "@/app/api/waitlist/[code]/route";
 const mockJoinWaitlist = vi.mocked(joinWaitlist);
 const mockGetQueueStatus = vi.mocked(getQueueStatus);
 
-function postRequest(body: unknown): Request {
-  return new Request("http://localhost/api/waitlist", {
+function postRequest(body: unknown): NextRequest {
+  return new NextRequest("http://localhost/api/waitlist", {
     method: "POST",
     body: JSON.stringify(body),
     headers: { "content-type": "application/json" },
@@ -74,8 +75,8 @@ describe("GET /api/waitlist/[code]", () => {
     vi.clearAllMocks();
   });
 
-  function getRequest(): Request {
-    return new Request("http://localhost/api/waitlist/ABC");
+  function getRequest(): NextRequest {
+    return new NextRequest("http://localhost/api/waitlist/ABC");
   }
 
   it("returns 200 with the queue status when the code exists", async () => {
