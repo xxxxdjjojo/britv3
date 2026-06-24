@@ -8,14 +8,14 @@ Run this identically before and after every perf change so numbers are comparabl
 ```bash
 cd britv3
 pnpm build                 # webpack; exit 0 expected (warnings ok)
-PORT=3004 pnpm start       # production server
+PORT=3000 pnpm start       # production server
 ```
 
 ## 2. Quick server-timing sanity (curl)
 
 ```bash
 for r in "/" "/properties/modern-2-bed-flat-clifton-bristol-sale" "/search?type=buy"; do
-  curl -s -o /dev/null -w "%{http_code}  %{time_total}s  $r\n" "http://localhost:3004$r"
+  curl -s -o /dev/null -w "%{http_code}  %{time_total}s  $r\n" "http://localhost:3000$r"
 done
 ```
 Acceptance: every route returns **200** (a 500 on `/properties/[slug]` is the known
@@ -37,7 +37,7 @@ Budgets: LCP < 2500 ms, CLS < 0.1, TBT < 200 ms.
 ```bash
 curl -s -H "Accept: image/avif,image/webp,image/*" -o /dev/null \
   -w "ctype=%{content_type} bytes=%{size_download}\n" \
-  "http://localhost:3004/_next/image?url=%2Fimages%2Fhero%2Fhero-bg.jpg&w=1200&q=75"
+  "http://localhost:3000/_next/image?url=%2Fimages%2Fhero%2Fhero-bg.jpg&w=1200&q=75"
 ```
 
 ## 5. JS bundle (recharts in detail route?)

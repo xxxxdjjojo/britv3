@@ -6,10 +6,10 @@ import { test, expect } from "@playwright/test";
  * /properties/[slug] returned HTTP 500 (DYNAMIC_SERVER_USAGE) because an
  * SSG-marked route rendered with cookies()-backed Supabase auth.
  *
- * Target the prod server: PERF_BASE_URL=http://localhost:3004 (next start).
+ * Target the prod server: PERF_BASE_URL=http://localhost:3000 (next start).
  * Uses absolute URLs so it ignores the dev webServer baseURL.
  */
-const BASE = process.env.PERF_BASE_URL ?? "http://localhost:3004";
+const BASE = process.env.PERF_BASE_URL ?? "http://localhost:3000";
 
 // A slug guaranteed to resolve in mock mode (search_live_data off).
 const MOCK_SLUG = "modern-2-bed-flat-clifton-bristol-sale";
