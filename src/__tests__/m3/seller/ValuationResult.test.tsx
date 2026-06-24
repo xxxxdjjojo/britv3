@@ -5,39 +5,41 @@ import { makeComparable } from "./_fixtures";
 
 const baseProps = {
   postcode: "SW1A 1AA",
-  aiEstimate: 35000000, // £350,000
-  estimateLow: 33000000,
-  estimateHigh: 37000000,
-  confidence: 82,
+  estimate: 35000000, // £350,000
+  rangeLow: 33000000,
+  rangeHigh: 37000000,
+  evidence: "high" as const,
   basedOn: 5,
   comparables: [makeComparable()],
 };
 
 describe("ValuationResult render-with-data", () => {
-  it("renders the headline estimate and postcode", () => {
+  it("renders the headline average and postcode", () => {
     render(<ValuationResult {...baseProps} />);
     expect(screen.getByText("£350,000")).toBeInTheDocument();
-    expect(screen.getByText(/Estimated Value for SW1A 1AA/)).toBeInTheDocument();
+    expect(screen.getByText(/Average recent sold price near SW1A 1AA/)).toBeInTheDocument();
   });
 
-  it("renders the low–high range", () => {
+  it("renders the low–high range as actual recent sales", () => {
     render(<ValuationResult {...baseProps} />);
     expect(screen.getByText(/£330,000 — £370,000/)).toBeInTheDocument();
   });
 
-  it("renders confidence percentage", () => {
+  it("states this is an average, not a property valuation", () => {
     render(<ValuationResult {...baseProps} />);
-    expect(screen.getByText("82%")).toBeInTheDocument();
+    expect(
+      screen.getByText(/not a valuation of any specific property/),
+    ).toBeInTheDocument();
   });
 
-  it("pluralises the comparable-sales count", () => {
+  it("pluralises the nearby-sales count", () => {
     render(<ValuationResult {...baseProps} basedOn={5} />);
-    expect(screen.getByText("Based on 5 comparable sales in the area")).toBeInTheDocument();
+    expect(screen.getByText("Based on 5 sales nearby")).toBeInTheDocument();
   });
 
-  it("uses singular wording for exactly one comparable sale", () => {
+  it("uses singular wording for exactly one nearby sale", () => {
     render(<ValuationResult {...baseProps} basedOn={1} />);
-    expect(screen.getByText("Based on 1 comparable sale in the area")).toBeInTheDocument();
+    expect(screen.getByText("Based on 1 sale nearby")).toBeInTheDocument();
   });
 
   it("lists comparable sales with formatted price", () => {

@@ -4,18 +4,19 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { ValuationResult } from "@/components/seller/valuation/ValuationResult";
 import type { LandRegistryComparable } from "@/types/seller";
+import type { SoldPriceEvidence } from "@/lib/seller/sold-price-comparables";
 
 type ValuationData = Readonly<{
   postcode: string;
   comparables: LandRegistryComparable[];
-  ai_estimate: number;
-  estimate_low: number;
-  estimate_high: number;
-  confidence: number;
+  estimate: number;
+  range_low: number;
+  range_high: number;
+  evidence: SoldPriceEvidence;
   based_on: number;
 }>;
 
-export default function InstantValuationPage() {
+export default function NearbySoldPricesPage() {
   const [postcode, setPostcode] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ValuationData | null>(null);
@@ -40,9 +41,9 @@ export default function InstantValuationPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Instant Valuation</h1>
+        <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Nearby Sold Prices</h1>
         <p className="text-slate-500 mt-1">
-          Get an instant estimate based on real Land Registry sold prices in your area
+          See the average of recent Land Registry sold prices near a postcode
         </p>
       </div>
 
@@ -68,7 +69,7 @@ export default function InstantValuationPage() {
             ) : (
               <Search size={16} />
             )}
-            {loading ? "Loading..." : "Get Valuation"}
+            {loading ? "Loading..." : "Show Sold Prices"}
           </button>
         </div>
         {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
@@ -77,10 +78,10 @@ export default function InstantValuationPage() {
       {result && (
         <ValuationResult
           postcode={result.postcode}
-          aiEstimate={result.ai_estimate}
-          estimateLow={result.estimate_low}
-          estimateHigh={result.estimate_high}
-          confidence={result.confidence}
+          estimate={result.estimate}
+          rangeLow={result.range_low}
+          rangeHigh={result.range_high}
+          evidence={result.evidence}
           basedOn={result.based_on}
           comparables={result.comparables}
         />

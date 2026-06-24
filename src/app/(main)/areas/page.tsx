@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MapPin, TrendingUp, ArrowRight, Search } from "lucide-react";
-import { getMarketKPIs } from "@/services/areas/market-trends-service";
 
 export const metadata: Metadata = {
   title: "Browse UK Property Areas | TrueDeed",
@@ -133,9 +132,7 @@ const FEATURED_AREAS = [
   { slug: "edinburgh/leith", name: "Leith", city: "Edinburgh", avgPrice: "285,000", tag: "Regeneration" },
 ] as const;
 
-export default async function AreasPage() {
-  const kpis = await getMarketKPIs();
-
+export default function AreasPage() {
   return (
     <>
       {/* ── Hero ── */}
@@ -253,40 +250,23 @@ export default async function AreasPage() {
           </div>
         </section>
 
-        {/* ── Market Overview Banner ── */}
-        <section className="bg-brand-primary rounded-3xl p-8 md:p-12 grid md:grid-cols-2 gap-8 items-center overflow-hidden relative">
+        {/* ── Real sold-price tool CTA ── */}
+        <section className="bg-brand-primary rounded-3xl p-8 md:p-12 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -mr-36 -mt-36" />
           <div className="absolute bottom-0 left-1/2 w-48 h-48 bg-white/5 rounded-full -mb-24" />
-          <div className="relative z-10">
+          <div className="relative z-10 max-w-2xl">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 font-heading">
-              UK Property Market Report 2026
+              See real sold prices for any postcode
             </h2>
             <p className="text-white/80 mb-6 leading-relaxed">
-              National prices up 4.8% year-on-year. Northern cities outperforming London for capital growth. Rental demand at record highs.
+              Median flat and house sale prices straight from HM Land Registry — search any UK postcode and compare it against the surrounding area.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/market-trends"
-                className="inline-flex items-center gap-2 bg-white text-brand-primary px-6 py-3 rounded-xl font-bold hover:bg-neutral-100 transition-colors"
-              >
-                View Market Trends <ArrowRight className="size-4" />
-              </Link>
-              <Link
-                href="/sold-prices"
-                className="inline-flex items-center gap-2 bg-white/10 text-white border border-white/30 px-6 py-3 rounded-xl font-bold hover:bg-white/20 transition-colors"
-              >
-                Sold Prices <ArrowRight className="size-4" />
-              </Link>
-            </div>
-          </div>
-          <div className="relative z-10 grid grid-cols-2 gap-4">
-            {kpis.map((kpi) => (
-              <div key={kpi.label} className="bg-white/10 rounded-xl p-4">
-                <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-1">{kpi.label}</p>
-                <p className="text-white text-xl font-bold">{kpi.value}</p>
-                <p className="text-white/70 text-xs mt-0.5">{kpi.change}</p>
-              </div>
-            ))}
+            <Link
+              href="/area-prices"
+              className="inline-flex items-center gap-2 bg-white text-brand-primary px-6 py-3 rounded-xl font-bold hover:bg-neutral-100 transition-colors"
+            >
+              Explore sold prices <ArrowRight className="size-4" />
+            </Link>
           </div>
         </section>
 

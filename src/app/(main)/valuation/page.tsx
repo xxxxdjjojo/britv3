@@ -6,7 +6,7 @@ import { TrackedLink } from "@/components/valuation/TrackedLink";
 export const metadata: Metadata = {
   title: "Free Property Valuation | TrueDeed",
   description:
-    "Get an instant, AI-powered property valuation for any UK address. Accurate estimates based on recent sold prices, market trends, and local data.",
+    "Get an instant property valuation for any UK address, based on recent Land Registry sold prices and local market data.",
 };
 
 const VALUATION_FEATURES = [
@@ -42,8 +42,8 @@ export default function ValuationPage() {
           Get a Free Property Valuation
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
-          Find out what your property is worth with our AI-powered valuation
-          tool. Instant, accurate, and completely free.
+          Get an indicative estimate from our comparable-sales valuation tool,
+          based on recent Land Registry sold prices. Instant and completely free.
         </p>
       </div>
 

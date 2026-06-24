@@ -614,3 +614,33 @@ _From /cso daily audit. 4 findings, all VERIFIED. Report at `.gstack/security-re
 **What:** Build a UI banner that prompts existing users to re-accept updated Terms when material changes are published.
 **Where:** Global layout or middleware + user profile `terms_accepted_at` timestamp
 **Why:** Updated ToS section 17 promises 14-day notice + continued use = acceptance, but a re-acceptance banner is stronger evidence of informed consent.
+
+## Test Suite — Pre-existing failures on main (noticed by /ship 2026-06-22)
+
+> `main` is currently red on 4 tests across 2 files. None are caused by the
+> `fix/price-honesty-surfaces` branch — both the test files and the code under
+> test are byte-identical to `origin/main`, surfaced only when that branch merged
+> `origin/main`. Authored by the same developer; recorded here rather than
+> blocking an unrelated PR.
+
+### searchProperties mock-path returns 0 rows for soldWithin / bedrooms filters
+**What:** Fix `searchProperties` so the mock (no-Supabase) path returns all mock rows when `soldWithin: "all"` and when bedrooms min/max are `Any/Any` or `bedsMax: "5+"`.
+
+**Why:** 3 tests in `src/__tests__/search/filters.test.ts` fail — they expect 8 mock rows but get 0 (`expect(data.length).toBe(8)`). The sold-within / bedrooms filtering introduced in PR #61 drops every row on the mock path, so search returns empty in any environment without live Land Registry data.
+
+**Context:** Failures are `searchProperties (mock path) — soldWithin > 'all' returns all rows`, and `bedrooms min/max > Any/Any returns all rows` + `bedsMax=5+ applies no upper bound`. Source under test: `src/app/(main)/search/actions.ts` and `src/services/search/search-service.ts` (both unchanged since `57e14684`). Start by checking how `soldWithin`/`bedsMax` predicates are applied when the mock fixture lacks LR sold data — the filter should treat "all"/"Any"/"5+" as no-ops.
+
+**Effort:** S
+**Priority:** P0
+**Depends on:** None
+
+### Brand-guard: off-brand `bg-green-400` in rent-affordability calculator
+**What:** Replace the hardcoded `bg-green-400` Tailwind class at `src/app/(main)/tools/rent-affordability-calculator/page.tsx:186` with a brand token (brand-primary / brand greens / `success`).
+
+**Why:** `src/__tests__/brand/public-brand-guard.test.ts` scans all `(main)` source for off-brand colour tokens and fails on this single "weird-green" class — keeping the public marketing brand-guard suite red.
+
+**Context:** Line 186 is the affordability progress bar: `result.isStretched ? "bg-amber-400" : "bg-green-400"`. Swap the green for the approved brand/success token (the amber is allowed). Introduced in `023a1c6b`.
+
+**Effort:** S
+**Priority:** P0
+**Depends on:** None

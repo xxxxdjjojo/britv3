@@ -195,6 +195,7 @@ export type SellerDashboardKPIs = Readonly<{
 export type LandRegistryComparable = Readonly<{
   address: string;
   postcode: string;
+  /** Sale price in PENCE (Land Registry quotes pounds; scaled by POUNDS_TO_PENCE on ingest). */
   price: number;
   sale_date: string;
   property_type: string;
