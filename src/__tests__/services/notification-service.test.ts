@@ -57,6 +57,29 @@ function mockListResult(data: Record<string, unknown>[], count?: number) {
   };
 }
 
+/**
+ * A standalone chainable query builder whose terminal `.single()` and awaited
+ * `.then()` resolutions can be set independently. Used to route different
+ * tables (platform_events vs profiles) to distinct results — actor names are
+ * resolved via a separate `profiles` query (actor_id FKs to auth.users, so the
+ * relationship cannot be embedded).
+ */
+function makeTableBuilder(opts: { single?: unknown; then?: unknown }) {
+  const builder: Record<string, ReturnType<typeof vi.fn>> = {};
+  for (const m of [
+    "select", "insert", "update", "upsert", "delete", "eq", "neq", "gt",
+    "gte", "lt", "lte", "like", "ilike", "is", "in", "order", "limit",
+  ]) {
+    builder[m] = vi.fn().mockReturnValue(builder);
+  }
+  builder.single = vi.fn().mockResolvedValue(opts.single ?? mockSingleResult({}));
+  builder.maybeSingle = vi.fn().mockResolvedValue(opts.single ?? mockSingleResult({}));
+  builder.then = vi.fn((resolve: (v: unknown) => void) =>
+    resolve(opts.then ?? mockListResult([])),
+  );
+  return builder;
+}
+
 // ---------------------------------------------------------------------------
 // createPlatformEvent tests
 // ---------------------------------------------------------------------------
@@ -69,7 +92,7 @@ describe("createPlatformEvent", () => {
     vi.clearAllMocks();
   });
 
-  it("inserts a single row (O(1) operation)", async () => {
+  it("inserts a single row (O(1) operation) and resolves the actor name", async () => {
     const mockEvent = {
       id: 1,
       event_type: "new_message",
@@ -78,11 +101,15 @@ describe("createPlatformEvent", () => {
       actor_id: "user-1",
       metadata: {},
       created_at: new Date().toISOString(),
-      profiles: { display_name: "John" },
     };
 
-    const builder = supabase.from("platform_events");
-    builder.single.mockResolvedValue(mockSingleResult(mockEvent));
+    const eventsBuilder = makeTableBuilder({ single: mockSingleResult(mockEvent) });
+    const profilesBuilder = makeTableBuilder({
+      then: mockListResult([{ id: "user-1", display_name: "John" }]),
+    });
+    supabase.from.mockImplementation((table: string) =>
+      table === "profiles" ? profilesBuilder : eventsBuilder,
+    );
 
     const result = await createPlatformEvent(supabase as never, {
       event_type: "new_message",
@@ -93,9 +120,10 @@ describe("createPlatformEvent", () => {
 
     // Verify single INSERT call
     expect(supabase.from).toHaveBeenCalledWith("platform_events");
-    expect(builder.insert).toHaveBeenCalledTimes(1);
+    expect(eventsBuilder.insert).toHaveBeenCalledTimes(1);
     expect(result.id).toBe(1);
     expect(result.event_type).toBe("new_message");
+    // actor_name resolved via the separate profiles lookup
     expect(result.actor_name).toBe("John");
   });
 
@@ -191,13 +219,15 @@ describe("getNotificationFeed", () => {
         actor_id: "other-user",
         metadata: {},
         created_at: new Date().toISOString(),
-        profiles: { display_name: "Other" },
       },
     ];
 
-    const builder = supabase.from("platform_events");
-    builder.then.mockImplementation((resolve: (v: unknown) => void) =>
-      resolve(mockListResult(mockEvents)),
+    const eventsBuilder = makeTableBuilder({ then: mockListResult(mockEvents) });
+    const profilesBuilder = makeTableBuilder({
+      then: mockListResult([{ id: "other-user", display_name: "Other" }]),
+    });
+    supabase.from.mockImplementation((table: string) =>
+      table === "profiles" ? profilesBuilder : eventsBuilder,
     );
 
     const result = await getNotificationFeed(
@@ -207,9 +237,10 @@ describe("getNotificationFeed", () => {
     );
 
     expect(supabase.from).toHaveBeenCalledWith("platform_events");
-    expect(builder.in).toHaveBeenCalledWith("entity_id", ["conv-1", "conv-2"]);
-    expect(builder.neq).toHaveBeenCalledWith("actor_id", "my-user-id");
+    expect(eventsBuilder.in).toHaveBeenCalledWith("entity_id", ["conv-1", "conv-2"]);
+    expect(eventsBuilder.neq).toHaveBeenCalledWith("actor_id", "my-user-id");
     expect(result).toHaveLength(1);
+    // actor_name resolved via the separate profiles lookup
     expect(result[0].actor_name).toBe("Other");
   });
 

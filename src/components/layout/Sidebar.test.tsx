@@ -43,6 +43,11 @@ vi.mock("@/components/messaging/UnreadBadge", () => ({
   default: () => <span data-testid="unread-badge">0</span>,
 }));
 
+// Mock NotificationBadge (uses useNotificationCount → useQuery)
+vi.mock("@/components/notifications/NotificationBadge", () => ({
+  default: () => <span data-testid="notification-badge">0</span>,
+}));
+
 // Mock Avatar components
 vi.mock("@/components/ui/avatar", () => ({
   Avatar: ({ children, ...props }: { children: React.ReactNode; size?: string }) => (

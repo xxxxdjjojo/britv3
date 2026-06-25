@@ -13,9 +13,11 @@ import {
   getMessages,
   sendMessage,
   sendMessageSchema,
+  MessagingAuthorizationError,
 } from "@/services/messaging/message-service";
 import { createRateLimiter } from "@/lib/cache/redis";
 import { captureListingMessageIntroduction } from "@/lib/truedeed/capture-message";
+import { notifyNewMessage } from "@/services/messaging/message-notifications";
 
 /** 10 messages per minute per user — shared across message endpoints. */
 const messageRateLimiter = createRateLimiter(10, "1 m");
@@ -94,8 +96,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       conversationId,
     });
 
+    // Notify the recipient (in-app feed + away email) — fire-and-forget
+    await notifyNewMessage({ conversationId, senderId: user.id });
+
     return NextResponse.json({ message: msg }, { status: 201 });
   } catch (err) {
+    if (err instanceof MessagingAuthorizationError) {
+      return NextResponse.json({ error: err.message }, { status: 403 });
+    }
     console.error("[POST /api/messages/conversationId]", err);
     return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   }

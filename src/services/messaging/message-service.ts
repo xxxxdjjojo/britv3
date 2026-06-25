@@ -19,6 +19,17 @@ import { sanitizeText } from "@/lib/validation/sanitize";
 // Role-relationship validation for messaging (BUG-5)
 // ---------------------------------------------------------------------------
 
+/**
+ * Thrown when two users are not permitted to message each other. Routes map
+ * this to a 403 with the user-facing message (not a generic 500).
+ */
+export class MessagingAuthorizationError extends Error {
+  constructor(message = "You cannot message this user type") {
+    super(message);
+    this.name = "MessagingAuthorizationError";
+  }
+}
+
 /** Allowed messaging pairs — sorted alphabetically so lookup is direction-agnostic. */
 const ALLOWED_MESSAGING_PAIRS = new Set<string>([
   "agent:homebuyer",
@@ -61,13 +72,13 @@ async function validateMessagingRoles(
   const recipientRole = recipientProfile?.active_role;
 
   if (!senderRole || !recipientRole) {
-    throw new Error("You cannot message this user type");
+    throw new MessagingAuthorizationError();
   }
 
   const pairKey = [senderRole, recipientRole].sort().join(":");
 
   if (!ALLOWED_MESSAGING_PAIRS.has(pairKey)) {
-    throw new Error("You cannot message this user type");
+    throw new MessagingAuthorizationError();
   }
 }
 

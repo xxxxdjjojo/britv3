@@ -7,6 +7,7 @@ import {
   getOrCreateConversation,
   updateReadStatus,
   getUnreadCount,
+  MessagingAuthorizationError,
 } from "@/services/messaging/message-service";
 import { validateAttachment } from "@/services/messaging/attachment-service";
 
@@ -318,6 +319,29 @@ describe("getOrCreateConversation", () => {
     expect(result.id).toBe("conv-existing");
     // Validation + lookup = 2 from() calls (no insert needed)
     expect(client.from).toHaveBeenCalledTimes(2);
+  });
+
+  it("throws MessagingAuthorizationError for a disallowed role pair", async () => {
+    // homebuyer <-> seller is not an allowed messaging pair
+    const client = {
+      from: vi.fn(() =>
+        createBuilder({
+          data: [
+            { id: "user-aaa", active_role: "homebuyer" },
+            { id: "user-bbb", active_role: "seller" },
+          ],
+          error: null,
+        }),
+      ),
+    } as unknown as SupabaseClient;
+
+    await expect(
+      getOrCreateConversation(client, "user-aaa", "user-bbb", "general"),
+    ).rejects.toBeInstanceOf(MessagingAuthorizationError);
+
+    // Rejected before any conversation lookup/insert — only the profiles read ran
+    expect(client.from).toHaveBeenCalledTimes(1);
+    expect(client.from).toHaveBeenCalledWith("profiles");
   });
 });
 

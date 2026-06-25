@@ -77,6 +77,13 @@ export type OfferReceivedEmailProps = {
   dashboardUrl: string;
 };
 
+export type NewMessageEmailProps = {
+  recipientFirstName: string;
+  senderName: string;
+  messagePreview: string;
+  conversationUrl: string;
+};
+
 export type OfferStatusEmailProps = {
   firstName: string;
   propertyAddress: string;
@@ -251,6 +258,7 @@ export type AnyEmailProps =
   | ViewingReminderEmailProps
   | OfferReceivedEmailProps
   | OfferStatusEmailProps
+  | NewMessageEmailProps
   | NewEnquiryEmailProps
   | ReviewReceivedEmailProps
   | ReviewPublishedEmailProps
