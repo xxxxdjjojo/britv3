@@ -8,6 +8,7 @@ import {
   listApplications,
   getApplicationById,
   updateApplicationStatus,
+  addApplicationAsLandlord,
 } from "@/services/landlord/tenant-application-service";
 import type { TenantApplication } from "@/types/landlord";
 
@@ -84,9 +85,15 @@ describe("tenant-application-service", () => {
       await expect(acceptApplication(supabase as never, "app-1")).resolves.not.toThrow();
     });
 
-    it("rejects invalid status transition (e.g. received -> approved directly)", async () => {
+    it("allows direct approval from 'received' (landlords can accept without the full pipeline)", async () => {
       const receivedApp: TenantApplication = { ...mockApplication, status: "received" };
       const supabase = createSupabaseMock(receivedApp);
+      await expect(acceptApplication(supabase as never, "app-1")).resolves.not.toThrow();
+    });
+
+    it("still refuses to accept an already-terminal application (approved -> approved)", async () => {
+      const approvedApp: TenantApplication = { ...mockApplication, status: "approved" };
+      const supabase = createSupabaseMock(approvedApp);
       await expect(acceptApplication(supabase as never, "app-1")).rejects.toThrow(/invalid.*transition/i);
     });
 
@@ -182,6 +189,71 @@ describe("tenant-application-service", () => {
       await expect(
         updateApplicationStatus(supabase as never, "app-1", "referencing"),
       ).resolves.not.toThrow();
+    });
+  });
+
+  describe("addApplicationAsLandlord", () => {
+    // Mock that returns an owned listing for the ownership check, then the new app.
+    function createAddMock(ownsProperty: boolean) {
+      const insertedRows: Record<string, unknown>[] = [];
+      const supabase = {
+        auth: {
+          getUser: vi.fn().mockResolvedValue({ data: { user: { id: "landlord-1" } }, error: null }),
+        },
+        from: vi.fn((table: string) => {
+          if (table === "listings") {
+            return {
+              select: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockReturnThis(),
+              limit: vi.fn().mockReturnThis(),
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: ownsProperty ? { id: "listing-1" } : null, error: null }),
+            };
+          }
+          return {
+            insert: vi.fn((payload: Record<string, unknown>) => {
+              insertedRows.push(payload);
+              return {
+                select: vi.fn().mockReturnValue({
+                  single: vi
+                    .fn()
+                    .mockResolvedValue({ data: { id: "app-1", ...payload }, error: null }),
+                }),
+              };
+            }),
+          };
+        }),
+      };
+      return { supabase, insertedRows };
+    }
+
+    const input = {
+      property_id: "prop-1",
+      applicant_name: "Jane Smith",
+      applicant_email: "jane@example.com",
+      monthly_income: 3000,
+      employment_status: "Employed (full-time)",
+    };
+
+    it("inserts an application with property_id + landlord_id + status 'received'", async () => {
+      const { supabase, insertedRows } = createAddMock(true);
+      const result = await addApplicationAsLandlord(supabase as never, "landlord-1", input);
+      expect(result.id).toBe("app-1");
+      expect(insertedRows[0]).toMatchObject({
+        property_id: "prop-1",
+        landlord_id: "landlord-1",
+        applicant_name: "Jane Smith",
+        applicant_email: "jane@example.com",
+        status: "received",
+      });
+    });
+
+    it("refuses when the property is not one the landlord owns", async () => {
+      const { supabase } = createAddMock(false);
+      await expect(
+        addApplicationAsLandlord(supabase as never, "landlord-1", input),
+      ).rejects.toThrow(/not found|not owned/i);
     });
   });
 });
