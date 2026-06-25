@@ -100,7 +100,9 @@ export async function createPortfolioProperty(
       user_id: userId,
       listing_type: "rent",
       price: input.monthly_rent ?? 0,
-      rent_frequency: "month",
+      // Must be one of weekly|monthly|yearly (listings_rent_frequency_check) and
+      // non-null for rent listings (valid_rent_freq).
+      rent_frequency: "monthly",
       status: "draft",
     })
     .select("id")

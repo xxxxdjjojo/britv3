@@ -81,6 +81,8 @@ describe("createPortfolioProperty", () => {
     });
     // price is NOT NULL on listings — must always be set
     expect(listing!.payload.price).toBe(2200);
+    // rent_frequency must satisfy listings_rent_frequency_check + valid_rent_freq
+    expect(["weekly", "monthly", "yearly"]).toContain(listing!.payload.rent_frequency);
   });
 
   it("defaults listing price to 0 when no rent is given (price is NOT NULL)", async () => {
