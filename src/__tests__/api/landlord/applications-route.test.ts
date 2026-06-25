@@ -42,7 +42,7 @@ function postRequest(body: unknown): NextRequest {
 }
 
 const validBody = {
-  property_id: "11111111-1111-1111-1111-111111111111",
+  property_id: "11111111-1111-4111-8111-111111111111",
   applicant_name: "Jane Smith",
   applicant_email: "jane@example.com",
   monthly_income: 3000,
@@ -69,7 +69,7 @@ describe("POST /api/landlord/applications", () => {
       expect.anything(),
       "landlord-1",
       expect.objectContaining({
-        property_id: "11111111-1111-1111-1111-111111111111",
+        property_id: "11111111-1111-4111-8111-111111111111",
         applicant_name: "Jane Smith",
       }),
     );

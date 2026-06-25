@@ -8,7 +8,10 @@ import { z } from "zod";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ChevronLeft, Loader2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import {
+  LANDLORD_PROPERTY_TYPES,
+  PROPERTY_TYPE_LABELS,
+} from "@/services/landlord/property-service";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -27,21 +30,18 @@ const addPropertySchema = z.object({
   postcode: z
     .string()
     .regex(/^[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}$/i, "Valid UK postcode required"),
-  property_type: z.enum(["house", "flat", "bungalow", "studio", "room"]),
+  property_type: z.enum(LANDLORD_PROPERTY_TYPES),
   bedrooms: z.coerce.number().min(0).max(20),
   bathrooms: z.coerce.number().min(1).max(10),
-  purchase_price: z.coerce.number().positive().optional().or(z.literal(undefined)),
+  monthly_rent: z.coerce.number().min(0).optional().or(z.literal(undefined)),
 });
 
 type AddPropertyFormData = z.infer<typeof addPropertySchema>;
 
-const PROPERTY_TYPES = [
-  { value: "house", label: "House" },
-  { value: "flat", label: "Flat" },
-  { value: "bungalow", label: "Bungalow" },
-  { value: "studio", label: "Studio" },
-  { value: "room", label: "Room" },
-];
+const PROPERTY_TYPES = LANDLORD_PROPERTY_TYPES.map((value) => ({
+  value,
+  label: PROPERTY_TYPE_LABELS[value],
+}));
 
 export default function AddPropertyPage() {
   const router = useRouter();
@@ -64,42 +64,20 @@ export default function AddPropertyPage() {
   const onSubmit = async (data: AddPropertyFormData) => {
     setIsSubmitting(true);
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+      const res = await fetch("/api/landlord/properties", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-      if (authError || !user) {
-        toast.error("You must be logged in to add a property.");
-        return;
-      }
-
-      const { data: newProperty, error } = await supabase
-        .from("listings")
-        .insert({
-          user_id: user.id,
-          address_line_1: data.address_line_1,
-          address_line_2: data.address_line_2 || null,
-          city: data.city,
-          postcode: data.postcode.toUpperCase(),
-          property_type: data.property_type,
-          bedrooms: data.bedrooms,
-          bathrooms: data.bathrooms,
-          purchase_price: data.purchase_price ?? null,
-          listing_type: "rental",
-          is_rental: true,
-          status: "draft",
-        })
-        .select("id")
-        .single();
-
-      if (error || !newProperty) {
-        throw new Error(error?.message ?? "Failed to create property");
+      if (!res.ok) {
+        const payload = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(payload.error ?? "Failed to add property");
       }
 
       toast.success("Property added to your portfolio.");
-      router.push(`/dashboard/landlord/properties/${newProperty.id}`);
+      router.push("/dashboard/landlord/properties");
+      router.refresh();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong.";
       toast.error(message);
@@ -242,24 +220,24 @@ export default function AddPropertyPage() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="purchase_price">Purchase Price (optional)</Label>
+                <Label htmlFor="monthly_rent">Monthly Rent (optional)</Label>
                 <div className="relative mt-1">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">£</span>
                   <Input
-                    id="purchase_price"
+                    id="monthly_rent"
                     type="number"
                     min={0}
-                    step={1000}
+                    step={50}
                     placeholder="0"
-                    {...register("purchase_price")}
+                    {...register("monthly_rent")}
                     className="pl-7"
                   />
                 </div>
-                {errors.purchase_price && (
-                  <p className="mt-1 text-xs text-red-600">{errors.purchase_price.message}</p>
+                {errors.monthly_rent && (
+                  <p className="mt-1 text-xs text-red-600">{errors.monthly_rent.message}</p>
                 )}
                 <p className="mt-1 text-xs text-slate-500">
-                  Used to calculate gross yield. Can be added later.
+                  The advertised monthly rent. Can be added or changed later.
                 </p>
               </div>
             </div>

@@ -14,6 +14,15 @@ vi.mock("@/lib/supabase/server", () => ({
 
 vi.mock("@/services/landlord/property-service", () => ({
   createPortfolioProperty: vi.fn(),
+  LANDLORD_PROPERTY_TYPES: [
+    "flat",
+    "terraced",
+    "semi_detached",
+    "detached",
+    "bungalow",
+    "studio",
+    "maisonette",
+  ],
 }));
 
 import { createClient } from "@/lib/supabase/server";
