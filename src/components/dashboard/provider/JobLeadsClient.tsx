@@ -188,17 +188,18 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
           const newLead: ProviderLead = {
             id: row["id"] as string,
             clientName: "Client",
-            serviceCategory: (row["category"] as string | undefined) ?? "General",
+            serviceCategory:
+              (row["service_category"] as string | undefined) ?? "General",
             description: (row["description"] as string | undefined) ?? "",
-            location: (row["postcode"] as string | undefined) ?? "",
+            location: (row["property_postcode"] as string | undefined) ?? "",
             status: "new",
             budgetMinPence:
-              row["budget_range_min"] != null
-                ? Math.round((row["budget_range_min"] as number) * 100)
+              row["budget_min"] != null
+                ? Math.round((row["budget_min"] as number) * 100)
                 : null,
             budgetMaxPence:
-              row["budget_range_max"] != null
-                ? Math.round((row["budget_range_max"] as number) * 100)
+              row["budget_max"] != null
+                ? Math.round((row["budget_max"] as number) * 100)
                 : null,
             createdAt,
             expiresAt,
@@ -273,15 +274,6 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
                 ))}
               </div>
             )}
-          </div>
-        )}
-
-        {/* Load more — presentational footer */}
-        {filtered.length > 0 && (
-          <div className="flex items-center justify-center border-t border-neutral-100 pt-4">
-            <button className="text-sm font-medium text-brand-primary hover:underline">
-              Load More Opportunities
-            </button>
           </div>
         )}
 

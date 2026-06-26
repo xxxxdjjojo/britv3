@@ -285,7 +285,7 @@ export default async function JobBoardPage({
               return (
                 <Link
                   key={job.id}
-                  href={`/post-a-job/quote/${job.id}`}
+                  href={`/dashboard/provider/quotes/builder?request_id=${job.id}`}
                   className="group flex flex-col gap-3 bg-white dark:bg-slate-900 rounded-xl border border-border dark:border-slate-700 p-5 hover:border-brand-primary hover:shadow-md transition-all"
                 >
                   {/* Title + badges row */}
@@ -394,7 +394,7 @@ export default async function JobBoardPage({
             grow your business with TrueDeed.
           </p>
           <Link
-            href="/auth/signup?role=service_provider"
+            href="/signup?role=service_provider"
             className="inline-block px-8 py-3 bg-white text-brand-primary font-semibold rounded-lg hover:bg-surface transition-colors"
           >
             Join as a Tradesperson

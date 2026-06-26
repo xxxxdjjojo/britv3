@@ -23,11 +23,13 @@ import type { QuoteStatus } from "@/types/marketplace";
 type QuoteRow = {
   id: string;
   quote_number: string;
-  rfq_title: string;
-  rfq_id: string;
   total_amount: number;
   status: QuoteStatus;
   created_at: string;
+  service_request: {
+    id: string;
+    title: string;
+  } | null;
 };
 
 const STATUS_COLORS: Record<QuoteStatus, string> = {
@@ -58,7 +60,7 @@ export default function ProviderQuotesPage() {
     setLoading(true);
     try {
       const qs = filter !== "all" ? `?status=${filter}` : "";
-      const res = await fetch(`/api/providers/quotes${qs}`);
+      const res = await fetch(`/api/provider/quotes${qs}`);
       if (res.ok) {
         const data = await res.json();
         setQuotes(data.quotes ?? data.data ?? []);
@@ -129,15 +131,19 @@ export default function ProviderQuotesPage() {
                       {quote.quote_number}
                     </TableCell>
                     <TableCell>
-                      <Link
-                        href={`/dashboard/rfqs/${quote.rfq_id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {quote.rfq_title}
-                      </Link>
+                      {quote.service_request ? (
+                        <Link
+                          href={`/dashboard/rfqs/${quote.service_request.id}`}
+                          className="text-primary hover:underline"
+                        >
+                          {quote.service_request.title}
+                        </Link>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {quote.total_amount.toLocaleString("en-GB", {
+                      {(quote.total_amount / 100).toLocaleString("en-GB", {
                         style: "currency",
                         currency: "GBP",
                       })}

@@ -298,7 +298,7 @@ export async function getQuotesByProvider(
       service_requests (
         id,
         title,
-        category,
+        service_category,
         status
       )
     `,
@@ -337,7 +337,7 @@ export async function getQuotesByProvider(
         ? {
             id: sr["id"] as string,
             title: (sr["title"] as string | undefined) ?? "",
-            category: (sr["category"] as string | undefined) ?? "",
+            category: (sr["service_category"] as string | undefined) ?? "",
             status: (sr["status"] as string | undefined) ?? "",
           }
         : null,
