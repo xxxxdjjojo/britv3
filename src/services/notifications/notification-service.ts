@@ -52,6 +52,8 @@ export async function createPlatformEvent(
   supabase: SupabaseClient,
   input: CreateEventInput,
 ): Promise<PlatformEvent> {
+  // NB: actor_id FKs to auth.users, not profiles, so PostgREST cannot embed
+  // `profiles` off that constraint — the display name is resolved separately.
   const { data, error } = await supabase
     .from("platform_events")
     .insert({
@@ -61,12 +63,14 @@ export async function createPlatformEvent(
       actor_id: input.actor_id,
       metadata: input.metadata ?? {},
     })
-    .select("*, profiles!platform_events_actor_id_fkey(display_name)")
+    .select("*")
     .single();
 
   if (error) {
     throw new Error(`Failed to create platform event: ${error.message}`);
   }
+
+  const actorNames = await resolveActorNames(supabase, [data.actor_id]);
 
   const event: PlatformEvent = {
     id: data.id,
@@ -76,7 +80,7 @@ export async function createPlatformEvent(
     actor_id: data.actor_id,
     metadata: data.metadata ?? {},
     created_at: new Date(data.created_at),
-    actor_name: data.profiles?.display_name ?? null,
+    actor_name: actorNames.get(data.actor_id) ?? null,
   };
 
   // Fire-and-forget critical email (do not block event creation)
@@ -106,7 +110,7 @@ export async function getNotificationFeed(
 
   let query = supabase
     .from("platform_events")
-    .select("*, profiles!platform_events_actor_id_fkey(display_name)")
+    .select("*")
     .in("entity_id", userEntityIds)
     .neq("actor_id", userId)
     .order("created_at", { ascending: false })
@@ -122,7 +126,13 @@ export async function getNotificationFeed(
     throw new Error(`Failed to fetch notification feed: ${error.message}`);
   }
 
-  return (data ?? []).map((row) => ({
+  const rows = data ?? [];
+  const actorNames = await resolveActorNames(
+    supabase,
+    rows.map((r) => r.actor_id),
+  );
+
+  return rows.map((row) => ({
     id: row.id,
     event_type: row.event_type,
     entity_type: row.entity_type,
@@ -130,8 +140,29 @@ export async function getNotificationFeed(
     actor_id: row.actor_id,
     metadata: row.metadata ?? {},
     created_at: new Date(row.created_at),
-    actor_name: row.profiles?.display_name ?? null,
+    actor_name: actorNames.get(row.actor_id) ?? null,
   }));
+}
+
+/**
+ * Resolve actor display names from `profiles`. Kept separate from the
+ * platform_events query because actor_id FKs to auth.users, not profiles, so
+ * PostgREST cannot embed the relationship. Best-effort: a missing/unreadable
+ * profile yields no entry (rendered as "Someone" downstream).
+ */
+async function resolveActorNames(
+  supabase: SupabaseClient,
+  actorIds: string[],
+): Promise<Map<string, string | null>> {
+  const unique = [...new Set(actorIds)].filter(Boolean);
+  if (unique.length === 0) return new Map();
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, display_name")
+    .in("id", unique);
+
+  return new Map((data ?? []).map((p) => [p.id, p.display_name ?? null]));
 }
 
 /**

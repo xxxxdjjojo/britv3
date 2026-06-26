@@ -531,6 +531,72 @@ export async function sendOfferReceived(params: {
 }
 
 // ---------------------------------------------------------------------------
+// 7b. New Message — sent when a user receives a message while away.
+//     Gated by the `email_messages` notification preference (default on).
+// ---------------------------------------------------------------------------
+
+export async function sendNewMessage(params: {
+  userId: string;
+  email: string;
+  recipientFirstName: string;
+  senderName: string;
+  messagePreview: string;
+  conversationUrl: string;
+}): Promise<void> {
+  const enabled = await checkUserEmailPref(params.userId, "email_messages");
+  if (!enabled) {
+    await logEmail({
+      userId: params.userId,
+      template: "new-message",
+      recipient: params.email,
+      status: "suppressed",
+      suppressionReason: "pref_disabled",
+    });
+    return;
+  }
+
+  try {
+    const { NewMessageEmail } = await import("@/emails/new-message");
+    const { render } = await import("@react-email/components");
+    const name = params.recipientFirstName || "there";
+    const html = await render(
+      NewMessageEmail({
+        recipientFirstName: name,
+        senderName: params.senderName,
+        messagePreview: params.messagePreview,
+        conversationUrl: params.conversationUrl,
+      })
+    );
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: `${params.senderName} sent you a message`,
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "new-message",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "new-message",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendNewMessage failed", message);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 8. Offer Status
 // ---------------------------------------------------------------------------
 

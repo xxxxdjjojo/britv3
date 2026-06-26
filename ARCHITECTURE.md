@@ -224,7 +224,14 @@ spec, not the live schema; treat any single table count as approximate.
   `maintenance_requests`, `financial_entries`.
 - **Messaging & notifications** — `conversations`, `messages`,
   `conversation_read_status`, `platform_events` (event log; unread counts derived
-  on read), `push_subscriptions`.
+  on read), `push_subscriptions`. Sending a message fans out via
+  `services/messaging/message-notifications.ts` (`notifyNewMessage`): on the
+  *first* unread message per conversation (debounced to the transition-to-unread
+  moment, and only when the recipient is not actively viewing) it writes one
+  `new_message` `platform_event` (surfaced in the in-app feed + bell) and sends a
+  pref-gated (`email_messages`) "new message" email. `actor_id` FKs to
+  `auth.users`, so notification actor names are resolved with a separate
+  `profiles` lookup, not a PostgREST embed.
 - **Billing** — subscription/plan tables, `billing_events` + ledger,
   `referral_codes` + `referral_conversions`.
 - **TrueDeed** — `ppd_transactions` (HMLR Price Paid Data, text PK for idempotent

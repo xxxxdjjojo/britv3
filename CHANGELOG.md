@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — Message notifications & messaging hardening
+
+Makes the secure in-app messaging system notify recipients reliably before users
+start communicating at scale. Verified end-to-end against the production backend
+(real two-user send, RLS isolation, role-block, rate-limit, sanitization).
+
+### Added
+- **New-message notifications.** Sending a message now fans out via
+  `services/messaging/message-notifications.ts` (`notifyNewMessage`): it writes a
+  `new_message` `platform_event` (so the conversation appears in the recipient's
+  in-app notification feed and bell) and sends a preference-gated
+  (`email_messages`) "you have a new message" email (`emails/new-message.tsx`,
+  `sendNewMessage`). Debounced to the **transition-to-unread** moment — at most
+  one notification + email per unread burst per conversation, and skipped while
+  the recipient is actively viewing — so active chats stay quiet and away users
+  are reliably reached.
+
+### Fixed
+- **Notification feed/event creation was silently broken.** `createPlatformEvent`
+  and `getNotificationFeed` embedded `profiles!platform_events_actor_id_fkey`, but
+  `actor_id` FKs to `auth.users`, not `profiles` — an invalid PostgREST
+  relationship that threw on every call. Actor names are now resolved with a
+  separate `profiles` lookup, so the notification feed and bell actually populate.
+- **Disallowed messaging pairs returned HTTP 500.** Role-pair rejection now throws
+  a typed `MessagingAuthorizationError` that the message API routes map to **403**
+  with the user-facing reason ("You cannot message this user type") instead of a
+  generic 500.
+- **Dashboard "Notifications" badge was hard-coded to 0.** The sidebar now shows
+  the real unread-notification count via `NotificationBadge` (`useNotificationCount`).
+
 ## [0.3.2.0] - 2026-06-24 — Email-confirmation signup, crash & link fixes, lint gate
 
 Four changes that merged after 0.3.1.0.

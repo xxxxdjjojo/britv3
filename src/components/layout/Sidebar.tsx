@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { UserRole } from "@/types/auth";
 import UnreadBadge from "@/components/messaging/UnreadBadge";
+import NotificationBadge from "@/components/notifications/NotificationBadge";
 
 const RETURN_URL_KEY = "britestate-return-url";
 
@@ -71,9 +72,6 @@ export function Sidebar() {
     .join("")
     .slice(0, 2)
     .toUpperCase();
-
-  // Notification count — hardcoded to 0 for now, will be connected to real data later
-  const notificationCount = 0;
 
   return (
     <aside
@@ -187,11 +185,7 @@ export function Sidebar() {
           {!collapsed && (
             <>
               <span className="flex-1">Notifications</span>
-              {notificationCount > 0 && (
-                <span className="inline-flex items-center justify-center rounded-full bg-red-500 px-1.5 py-0 text-[10px] font-medium text-white">
-                  {notificationCount > 99 ? "99+" : notificationCount}
-                </span>
-              )}
+              <NotificationBadge />
             </>
           )}
         </Link>
