@@ -210,6 +210,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/advice",
   "/areas-advice",
   "/blog",
+  "/guides",
   "/how-it-works",
   "/legal",
   "/tools",
