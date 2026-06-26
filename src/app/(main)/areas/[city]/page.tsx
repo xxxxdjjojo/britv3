@@ -13,9 +13,13 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { AreaPriceTrendClient } from "@/components/charts/AreaPriceTrendClient";
+import { ListingVolumeClient } from "@/components/charts/ListingVolumeClient";
 import { getCityData, getAllCitySlugs, getNeighbourhoodsForCityData } from "@/services/areas/area-data-service";
+import { deriveQuarterlyVolumes, priceByTypeRows } from "@/services/areas/city-chart-data";
+import { buildCityFaq } from "@/services/areas/city-faq";
 import { cityPlaceJsonLd } from "@/lib/seo/area-jsonld";
 import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
+import { faqJsonLd } from "@/lib/seo/faq-jsonld";
 import { AreaSearchCTA } from "@/components/areas/AreaSearchCTA";
 import { DataAttribution } from "@/components/areas/DataAttribution";
 import { InternalLinkCard } from "@/components/areas/InternalLinkCard";
@@ -68,6 +72,9 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
   if (!city_data) notFound();
 
   const neighbourhoods = await getNeighbourhoodsForCityData(city);
+  const quarterlyVolumes = deriveQuarterlyVolumes(city_data);
+  const priceRows = priceByTypeRows(city_data);
+  const cityFaq = buildCityFaq(city_data);
 
   return (
     <>
@@ -86,6 +93,10 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
             ])
           ),
         }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(cityFaq)) }}
       />
 
       {/* ── Hero (70vh) ── */}
@@ -196,6 +207,75 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
               </div>
             </div>
             <AreaPriceTrendClient />
+            <p className="text-xs text-neutral-400 mt-4">
+              Trend shown is illustrative of recent UK movement. Headline figures
+              above are derived from HM Land Registry data.
+            </p>
+          </div>
+        </section>
+
+        {/* ── Market Activity & Price by Type ── */}
+        <section aria-labelledby="market-activity-heading">
+          <h2 id="market-activity-heading" className="sr-only">
+            {city_data.name} market activity
+          </h2>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Transactions per quarter */}
+            <div className="bg-white rounded-xl shadow-sm border border-primary/10 p-8">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold font-heading text-neutral-900">
+                  Sales Activity
+                </h3>
+                <p className="text-sm text-neutral-500 mt-1">
+                  Estimated quarterly transactions in {city_data.name}
+                </p>
+              </div>
+              <ListingVolumeClient data={quarterlyVolumes} />
+              <p className="text-xs text-neutral-400 mt-4">
+                Based on {city_data.transactionsLast12m.toLocaleString()} HM Land
+                Registry sales over the last 12 months, split into an illustrative
+                quarterly profile.
+              </p>
+            </div>
+
+            {/* Median price by property type — real CityData.priceByType */}
+            <div className="bg-white rounded-xl shadow-sm border border-primary/10 p-8">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold font-heading text-neutral-900">
+                  Price by Property Type
+                </h3>
+                <p className="text-sm text-neutral-500 mt-1">
+                  Typical sold price in {city_data.name} by type
+                </p>
+              </div>
+              <ul className="space-y-4">
+                {priceRows.map((row) => (
+                  <li key={row.code}>
+                    <div className="flex items-baseline justify-between mb-1.5">
+                      <span className="text-sm font-bold text-neutral-700">
+                        {row.label}
+                      </span>
+                      <span className="text-sm font-bold text-primary">
+                        {row.priceFormatted}
+                      </span>
+                    </div>
+                    <div
+                      className="h-2 rounded-full bg-primary/5"
+                      role="img"
+                      aria-label={`${row.label}: ${row.priceFormatted}`}
+                    >
+                      <div
+                        className="h-2 rounded-full"
+                        style={{ width: `${row.barPercent}%`, backgroundColor: row.color }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-neutral-400 mt-5">
+                Median sold prices by property type, HM Land Registry.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -296,6 +376,21 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section aria-labelledby="city-faq-heading">
+          <h2 id="city-faq-heading" className="text-3xl font-bold font-heading mb-8">
+            {city_data.name} Property Market — FAQs
+          </h2>
+          <dl className="divide-y divide-primary/10 overflow-hidden rounded-xl border border-primary/10 bg-white">
+            {cityFaq.map((item) => (
+              <div key={item.question} className="p-6">
+                <dt className="font-bold font-heading text-neutral-900">{item.question}</dt>
+                <dd className="mt-2 text-sm leading-relaxed text-neutral-600">{item.answer}</dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
         {/* ── Internal Links ── */}
