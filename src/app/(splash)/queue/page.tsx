@@ -20,25 +20,17 @@ function GracefulState({
   body,
 }: Readonly<{ heading: string; body: string }>) {
   return (
-    <Card>
-      <h1 className="font-[family-name:var(--font-heading)] text-3xl font-semibold tracking-tight text-white">
+    <div className="w-full max-w-lg rounded-2xl border border-[#1B4D3E]/10 bg-white p-8 text-center shadow-[0_30px_80px_rgba(0,0,0,0.18)] sm:p-10">
+      <h1 className="font-[family-name:var(--font-heading)] text-3xl font-semibold tracking-tight text-[#1B4D3E]">
         {heading}
       </h1>
-      <p className="mt-3 text-base text-white/60">{body}</p>
+      <p className="mt-3 text-base text-[#1B4D3E]/65">{body}</p>
       <Link
         href="/coming-soon"
-        className="mt-7 inline-flex h-12 items-center justify-center rounded-full bg-[#FDCD74] px-7 text-sm font-semibold text-[#04130C] transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(253,205,116,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDCD74] focus-visible:ring-offset-2 focus-visible:ring-offset-[#04130C]"
+        className="mt-7 inline-flex h-12 items-center justify-center rounded-full bg-[#1B4D3E] px-7 text-sm font-semibold text-white transition duration-300 ease-out hover:bg-[#003629] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A07D2E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#04130C]"
       >
         Join the early-access list
       </Link>
-    </Card>
-  );
-}
-
-function Card({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/[0.04] p-8 text-center shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-10">
-      {children}
     </div>
   );
 }
@@ -73,28 +65,40 @@ async function QueueContents({ code }: Readonly<{ code: string }>) {
   }
 
   return (
-    <div className="flex w-full max-w-lg flex-col gap-8">
-      <Card>
+    <div className="w-full max-w-4xl">
+      <div className="mb-16">
         <QueuePosition status={status} />
-        <div className="mt-8">
-          <ProgressBar position={status.position} total={status.total} />
-        </div>
-      </Card>
+      </div>
 
-      <Card>
-        <div className="text-left">
-          <ReferralShare code={status.code} />
-        </div>
-      </Card>
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+        <div className="flex flex-col gap-8 lg:col-span-7">
+          <div className="rounded-2xl border border-[#1B4D3E]/10 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.14)] sm:p-10">
+            <ReferralShare code={status.code} />
+          </div>
 
-      <Card>
-        <div className="text-left">
-          <h2 className="mb-4 font-[family-name:var(--font-heading)] text-lg font-semibold text-white">
-            Move up faster
-          </h2>
-          <RewardTiers />
+          <div className="relative overflow-hidden rounded-2xl bg-[#1B4D3E] p-8 text-white shadow-[0_18px_50px_rgba(0,0,0,0.22)] sm:p-10">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#2D7A5F] opacity-30 blur-3xl"
+            />
+            <h3 className="relative z-10 mb-6 font-[family-name:var(--font-heading)] text-xl font-semibold">
+              Referral Progress
+            </h3>
+            <div className="relative z-10">
+              <ProgressBar referralCount={status.referralCount} />
+            </div>
+          </div>
         </div>
-      </Card>
+
+        <div className="lg:col-span-5">
+          <div className="rounded-2xl border border-[#1B4D3E]/10 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.14)]">
+            <h3 className="mb-6 font-[family-name:var(--font-heading)] text-lg font-semibold text-[#1B4D3E]">
+              Tier Rewards
+            </h3>
+            <RewardTiers referralCount={status.referralCount} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

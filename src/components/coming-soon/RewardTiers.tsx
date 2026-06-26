@@ -1,31 +1,42 @@
 import { REWARD_TIERS } from "@/lib/coming-soon/config";
 
-export function RewardTiers() {
+type RewardTiersProps = Readonly<{
+  /** Referral count so far — highlights the next tier still in reach. */
+  referralCount?: number;
+}>;
+
+export function RewardTiers({ referralCount = 0 }: RewardTiersProps) {
+  const nextTier =
+    REWARD_TIERS.find((tier) => referralCount < tier.referrals) ?? null;
+
   return (
-    <ul className="flex flex-col gap-3">
-      {REWARD_TIERS.map((tier) => (
-        <li
-          key={tier.referrals}
-          className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 transition-colors duration-300 hover:border-[#FDCD74]/40 hover:bg-white/[0.07]"
-        >
-          <span className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl bg-[#FDCD74]/15 text-[#FDCD74]">
-            <span className="text-base font-semibold leading-none tabular-nums">
+    <ul className="flex flex-col gap-6">
+      {REWARD_TIERS.map((tier) => {
+        const isReached = referralCount >= tier.referrals;
+        const isNext = nextTier?.referrals === tier.referrals;
+        const markerClass = isReached || isNext
+          ? "bg-[#FDCD74] text-[#7B5804]"
+          : "bg-[#1B4D3E]/8 text-[#1B4D3E]/55";
+
+        return (
+          <li key={tier.referrals} className="group flex items-start gap-4">
+            <span
+              aria-hidden
+              className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold tabular-nums ${markerClass}`}
+            >
               {tier.referrals}
             </span>
-            <span className="text-[0.55rem] uppercase tracking-wide opacity-70">
-              refs
-            </span>
-          </span>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-semibold text-white">
-              {tier.label}
-            </span>
-            <span className="text-sm leading-relaxed text-white/55">
-              {tier.description}
-            </span>
-          </div>
-        </li>
-      ))}
+            <div>
+              <h4 className="mb-1 text-sm font-bold text-[#1B4D3E] transition-colors group-hover:text-[#A07D2E]">
+                {tier.label}
+              </h4>
+              <p className="text-xs leading-relaxed text-[#1B4D3E]/60">
+                {tier.description}
+              </p>
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }

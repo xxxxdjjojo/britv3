@@ -4,11 +4,20 @@ import { REWARD_TIERS } from "@/lib/coming-soon/config";
 import { RewardTiers } from "@/components/coming-soon/RewardTiers";
 
 describe("RewardTiers", () => {
-  it("renders every reward tier label", () => {
+  it("renders every reward tier label and description verbatim", () => {
     render(<RewardTiers />);
 
     for (const tier of REWARD_TIERS) {
       expect(screen.getByText(tier.label)).toBeInTheDocument();
+      expect(screen.getByText(tier.description)).toBeInTheDocument();
+    }
+  });
+
+  it("shows the numeric referral threshold marker for each tier", () => {
+    render(<RewardTiers referralCount={0} />);
+
+    for (const tier of REWARD_TIERS) {
+      expect(screen.getByText(String(tier.referrals))).toBeInTheDocument();
     }
   });
 });

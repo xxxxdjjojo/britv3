@@ -8,7 +8,9 @@ describe("ReferralShare", () => {
       <ReferralShare code="ABC123XY" baseUrl="https://truedeed.co.uk" />,
     );
 
-    expect(screen.getByRole("button")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /copy link/i }),
+    ).toBeInTheDocument();
 
     // The share URL may live in an input value or as visible text; accept either.
     const inputWithRef = Array.from(
