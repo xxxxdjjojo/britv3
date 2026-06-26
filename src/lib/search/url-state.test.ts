@@ -167,9 +167,94 @@ describe("round-trip", () => {
       letAgreed: "exclude",
       availableFrom: "2026-03-01",
       minTenancyMonths: "6",
+      shortTermLet: true,
+      councilTaxBands: ["B", "C"],
+      keywords: "balcony riverside",
     };
     const restored = parseSearchState(new URLSearchParams(serializeSearchState(original)));
     expect(restored).toEqual(original);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Deeper filters (short-term let, council tax bands, keywords)
+// ---------------------------------------------------------------------------
+
+describe("deeper filters — serialize", () => {
+  it("omits shortTerm when false (default)", () => {
+    const qs = serializeSearchState({ ...DEFAULT_SEARCH_STATE, shortTermLet: false });
+    expect(new URLSearchParams(qs).has("shortTerm")).toBe(false);
+  });
+
+  it("emits shortTerm=1 when true", () => {
+    const params = new URLSearchParams(
+      serializeSearchState({ ...DEFAULT_SEARCH_STATE, shortTermLet: true }),
+    );
+    expect(params.get("shortTerm")).toBe("1");
+  });
+
+  it("omits councilTax when empty", () => {
+    const qs = serializeSearchState({ ...DEFAULT_SEARCH_STATE, councilTaxBands: [] });
+    expect(new URLSearchParams(qs).has("councilTax")).toBe(false);
+  });
+
+  it("serializes council tax bands as a comma-joined list", () => {
+    const params = new URLSearchParams(
+      serializeSearchState({ ...DEFAULT_SEARCH_STATE, councilTaxBands: ["B", "D"] }),
+    );
+    expect(params.get("councilTax")).toBe("B,D");
+  });
+
+  it("omits keywords when empty", () => {
+    const qs = serializeSearchState({ ...DEFAULT_SEARCH_STATE, keywords: "" });
+    expect(new URLSearchParams(qs).has("keywords")).toBe(false);
+  });
+
+  it("emits the keyword query verbatim", () => {
+    const params = new URLSearchParams(
+      serializeSearchState({ ...DEFAULT_SEARCH_STATE, keywords: "garden flat" }),
+    );
+    expect(params.get("keywords")).toBe("garden flat");
+  });
+});
+
+describe("deeper filters — parse", () => {
+  it("defaults shortTermLet to false when absent", () => {
+    expect(parseSearchState(new URLSearchParams()).shortTermLet).toBe(false);
+  });
+
+  it("parses shortTerm=1 to true", () => {
+    expect(parseSearchState(new URLSearchParams("shortTerm=1")).shortTermLet).toBe(true);
+  });
+
+  it("treats any non-1 shortTerm value as false", () => {
+    expect(parseSearchState(new URLSearchParams("shortTerm=yes")).shortTermLet).toBe(false);
+  });
+
+  it("defaults councilTaxBands to [] when absent", () => {
+    expect(parseSearchState(new URLSearchParams()).councilTaxBands).toEqual([]);
+  });
+
+  it("parses and upper-cases valid council tax bands", () => {
+    expect(
+      parseSearchState(new URLSearchParams("councilTax=b,d")).councilTaxBands,
+    ).toEqual(["B", "D"]);
+  });
+
+  it("drops invalid bands and de-duplicates", () => {
+    expect(
+      parseSearchState(new URLSearchParams("councilTax=A,Z,A,9")).councilTaxBands,
+    ).toEqual(["A"]);
+  });
+
+  it("defaults keywords to '' when absent", () => {
+    expect(parseSearchState(new URLSearchParams()).keywords).toBe("");
+  });
+
+  it("parses keywords verbatim", () => {
+    expect(parseSearchState(new URLSearchParams("keywords=garden+flat")).keywords).toBe(
+      "garden flat",
+    );
   });
 });
 

@@ -259,4 +259,77 @@ describe("searchProperties (mock path) — lettings filters", () => {
     });
     expect(withFurnishing.length).toBe(baseline.length);
   });
+
+  it("shortTermLet keeps only rent rows accepting a short fixed term", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      shortTermLet: true,
+    });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => p.short_term_let === true)).toBe(true);
+    expect(data.length).toBeLessThan(rentCount());
+  });
+});
+
+describe("searchProperties (mock path) — deeper cross-tenure filters", () => {
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_SEARCH_MOCK_DATA", "true");
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  const total = () => getMockSearchProperties().length;
+
+  it("mustHaves=[garden] keeps only listings that offer a garden", async () => {
+    const { data } = await searchProperties({ mustHaves: ["garden"] });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.length).toBeLessThan(total());
+    expect(data.every((p) => p.amenities?.includes("garden"))).toBe(true);
+  });
+
+  it("mustHaves requires ALL selected amenities (AND semantics)", async () => {
+    const { data } = await searchProperties({ mustHaves: ["garden", "parking"] });
+    expect(
+      data.every(
+        (p) => p.amenities?.includes("garden") && p.amenities?.includes("parking"),
+      ),
+    ).toBe(true);
+  });
+
+  it("empty mustHaves narrows nothing", async () => {
+    const { data } = await searchProperties({ mustHaves: [] });
+    expect(data.length).toBe(total());
+  });
+
+  it("amenities filter applies to rentals too", async () => {
+    const { data } = await searchProperties({
+      listingType: "rent",
+      mustHaves: ["broadband"],
+    });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => p.listing_type === "rent")).toBe(true);
+    expect(data.every((p) => p.amenities?.includes("broadband"))).toBe(true);
+  });
+
+  it("councilTaxBands keeps only listings in the chosen bands", async () => {
+    const { data } = await searchProperties({ councilTaxBands: ["A"] });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => p.council_tax_band === "A")).toBe(true);
+  });
+
+  it("keywords match across address/city (case-insensitive, all terms)", async () => {
+    const { data } = await searchProperties({ keywords: "london" });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data.every((p) =>
+        `${p.address} ${p.city} ${p.postcode}`.toLowerCase().includes("london"),
+      ),
+    ).toBe(true);
+  });
+
+  it("keywords with no match returns empty", async () => {
+    const { data } = await searchProperties({ keywords: "zzznowheresville" });
+    expect(data.length).toBe(0);
+  });
 });
