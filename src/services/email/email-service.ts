@@ -85,7 +85,7 @@ async function logEmail(params: LogEmailParams): Promise<void> {
   }
 }
 
-async function checkUserEmailPref(userId: string, prefKey: string): Promise<boolean> {
+export async function checkUserEmailPref(userId: string, prefKey: string): Promise<boolean> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase

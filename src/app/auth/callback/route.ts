@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendWelcome } from "@/services/email/email-service";
+import { inngest } from "@/inngest/client";
 import { resolveSafeNext } from "@/lib/auth/safe-redirect";
 import type { UserRole } from "@/types/auth";
 
@@ -97,6 +98,24 @@ export async function GET(request: NextRequest) {
           email: user.email,
           firstName,
         });
+
+        // Enrol into the role-based lifecycle email drip. Only on successful
+        // role assignment; guarded + non-blocking so it never breaks the redirect.
+        if (!roleError) {
+          try {
+            void inngest.send({
+              name: "lifecycle/role.assigned",
+              data: {
+                userId: user.id,
+                email: user.email,
+                role,
+                assignedAt: new Date().toISOString(),
+              },
+            });
+          } catch {
+            // best-effort — do not block the auth redirect on Inngest issues
+          }
+        }
       }
     }
   }
