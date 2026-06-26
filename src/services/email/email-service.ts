@@ -1745,5 +1745,32 @@ export async function sendRefundRejected(params: {
   }
 }
 
+// ---------------------------------------------------------------------------
+// 21. Newsletter Welcome (blog subscribe — no pref check, no user record)
+// ---------------------------------------------------------------------------
+
+export async function sendNewsletterWelcome({ to }: { to: string }): Promise<void> {
+  try {
+    const client = getResend();
+    if (!client) return;
+
+    const { NewsletterWelcomeEmail } = await import("@/emails/newsletter-welcome");
+    const { render } = await import("@react-email/components");
+    const html = await render(
+      NewsletterWelcomeEmail({ blogUrl: `${BASE_URL}/blog` }),
+    );
+
+    await client.emails.send({
+      from: FROM,
+      to,
+      subject: "You're subscribed to TrueDeed property insights",
+      html,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[email-service] sendNewsletterWelcome failed", message);
+  }
+}
+
 // Re-export BASE_URL for use in other modules that build email links
 export { BASE_URL };
