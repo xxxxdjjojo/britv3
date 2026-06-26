@@ -83,6 +83,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
+  /* --- Blog posts (static content module) --- */
+  const { getAllPosts } = await import("@/content/blog");
+  const blogPostPages: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   /* --- Dynamic pages from database --- */
   let propertyPages: MetadataRoute.Sitemap = [];
   let agentPages: MetadataRoute.Sitemap = [];
@@ -151,6 +160,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...segmentLandingPages,
     ...toolPages,
     ...marketplacePages,
+    ...blogPostPages,
     ...areaPages,
     ...programmaticPages,
     ...propertyPages,
