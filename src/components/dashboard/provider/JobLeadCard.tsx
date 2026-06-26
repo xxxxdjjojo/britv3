@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { ProviderLead } from "@/services/provider/provider-job-service";
 import { acceptLead, declineLead } from "@/services/provider/provider-job-service";
 import { createClient } from "@/lib/supabase/client";
@@ -10,6 +11,7 @@ import {
   Clock,
   Wrench,
   MessageSquare,
+  FileText,
   CheckCircle,
   XCircle,
   X,
@@ -222,6 +224,17 @@ function HeroLeadCard({
             {accepting ? "Accepting…" : "Accept Lead"}
           </Button>
           <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="w-full border-neutral-200"
+          >
+            <Link href={`/dashboard/provider/quotes/builder?request_id=${lead.id}`}>
+              <FileText className="mr-1.5 size-4" />
+              Send Quote
+            </Link>
+          </Button>
+          <Button
             size="sm"
             variant="outline"
             className="w-full border-neutral-200"
@@ -232,14 +245,15 @@ function HeroLeadCard({
             Decline
           </Button>
           <Button
+            asChild
             size="sm"
             variant="ghost"
             className="w-full"
-            aria-label="Message client"
-            disabled={accepting || declining}
           >
-            <MessageSquare className="mr-1.5 size-4" />
-            Message
+            <Link href="/inbox" aria-label="Message client">
+              <MessageSquare className="mr-1.5 size-4" />
+              Message
+            </Link>
           </Button>
         </div>
       </div>
@@ -328,6 +342,17 @@ function GridLeadCard({
         >
           <CheckCircle className="mr-1.5 size-4" />
           {accepting ? "Accepting…" : "Accept Lead"}
+        </Button>
+        <Button
+          asChild
+          size="sm"
+          variant="outline"
+          className="border-neutral-200"
+        >
+          <Link href={`/dashboard/provider/quotes/builder?request_id=${lead.id}`}>
+            <FileText className="mr-1.5 size-4" />
+            Quote
+          </Link>
         </Button>
         <Button
           size="sm"

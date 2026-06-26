@@ -175,10 +175,12 @@ describe("JobLeadsClient", () => {
     expect(screen.getByText(/no leads right now/i)).toBeInTheDocument();
   });
 
-  it("renders load more button when leads are present", () => {
+  it("does not render a non-functional 'load more' button (all leads load at once)", () => {
     render(
       <JobLeadsClient initialLeads={[MOCK_LEAD]} providerId="provider-1" />,
     );
-    expect(screen.getByRole("button", { name: /load more opportunities/i })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /load more opportunities/i }),
+    ).not.toBeInTheDocument();
   });
 });

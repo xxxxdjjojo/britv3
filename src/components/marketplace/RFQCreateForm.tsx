@@ -55,17 +55,27 @@ export function RFQCreateForm({
     setSubmitState("submitting");
     setErrorMessage(null);
     try {
+      // Strip empty optional fields: an empty number input yields NaN and an
+      // empty date input yields "" — both fail Zod validation server-side.
+      const payload = Object.fromEntries(
+        Object.entries(data).filter(([, value]) => {
+          if (value === "" || value == null) return false;
+          if (typeof value === "number" && Number.isNaN(value)) return false;
+          return true;
+        }),
+      );
+
       const res = await fetch("/api/rfq/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? "Failed to create request");
       }
       const result = await res.json();
-      setRfqReference(result.reference ?? result.id ?? "Submitted");
+      setRfqReference(result.data?.id ?? result.id ?? "Submitted");
       setSubmitState("success");
     } catch (err) {
       setErrorMessage(

@@ -44,14 +44,14 @@ export default async function QuoteBuilderPage({ searchParams }: Props) {
   if (requestId) {
     const { data: sr } = await supabase
       .from("service_requests")
-      .select("title, category, client_name")
+      .select("title, service_category")
       .eq("id", requestId)
       .maybeSingle();
 
     if (sr) {
       prefillJobTitle = (sr.title as string | null | undefined) ?? undefined;
-      prefillCategory = (sr.category as string | null | undefined) ?? undefined;
-      prefillClientName = (sr.client_name as string | null | undefined) ?? undefined;
+      prefillCategory =
+        (sr.service_category as string | null | undefined) ?? undefined;
     }
   }
 

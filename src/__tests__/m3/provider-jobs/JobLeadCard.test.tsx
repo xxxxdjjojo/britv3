@@ -108,6 +108,57 @@ describe("JobLeadCard — render with data", () => {
   });
 });
 
+describe("JobLeadCard — quote action", () => {
+  it("hero 'Send Quote' links to the builder pre-filled with the lead id", () => {
+    render(
+      <JobLeadCard
+        lead={makeLead({ id: "lead-42" })}
+        providerId="prov-1"
+        onRemove={vi.fn()}
+        variant="hero"
+      />,
+    );
+
+    expect(
+      screen.getByRole("link", { name: /send quote/i }),
+    ).toHaveAttribute(
+      "href",
+      "/dashboard/provider/quotes/builder?request_id=lead-42",
+    );
+  });
+
+  it("grid 'Quote' links to the builder pre-filled with the lead id", () => {
+    render(
+      <JobLeadCard
+        lead={makeLead({ id: "lead-42" })}
+        providerId="prov-1"
+        onRemove={vi.fn()}
+        variant="grid"
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: /^quote$/i })).toHaveAttribute(
+      "href",
+      "/dashboard/provider/quotes/builder?request_id=lead-42",
+    );
+  });
+
+  it("hero 'Message' is a real inbox link, not a dead button", () => {
+    render(
+      <JobLeadCard
+        lead={makeLead()}
+        providerId="prov-1"
+        onRemove={vi.fn()}
+        variant="hero"
+      />,
+    );
+
+    expect(
+      screen.getByRole("link", { name: /message client/i }),
+    ).toHaveAttribute("href", "/inbox");
+  });
+});
+
 describe("JobLeadCard — accept flow", () => {
   it("calls acceptLead and onRemove on success", async () => {
     mockAcceptLead.mockResolvedValue({ bookingId: "booking-1" });
