@@ -365,6 +365,7 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
       { label: "Blog", href: "/blog" },
+      { label: "Free Landlord Guide", href: "/guides/landlord-guide" },
       { label: "Help Centre", href: "/help" },
     ],
   },

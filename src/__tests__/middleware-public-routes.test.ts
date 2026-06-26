@@ -86,6 +86,18 @@ describe("matchesRoute — prefix matching", () => {
     });
   });
 
+  describe("/guides prefix covers the gated lead-magnet pages", () => {
+    it("matches /guides/landlord-guide (public lead magnet)", () => {
+      expect(matchesRoute("/guides/landlord-guide", PUBLIC_ROUTES)).toBe(true);
+    });
+
+    it("matches the downloadable PDF asset", () => {
+      expect(
+        matchesRoute("/guides/landlord-guide.pdf", PUBLIC_ROUTES),
+      ).toBe(true);
+    });
+  });
+
   describe("/areas prefix covers city/area pages", () => {
     it("matches /areas", () => {
       expect(matchesRoute("/areas", PUBLIC_ROUTES)).toBe(true);
