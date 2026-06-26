@@ -27,7 +27,7 @@ const DEFAULT_DATA: DataPoint[] = [
   { year: "2026", price: 590000 },
 ];
 
-function formatPrice(value: number) {
+export function formatPrice(value: number) {
   return `£${(value / 1000).toFixed(0)}k`;
 }
 
@@ -49,7 +49,14 @@ export function AreaPriceTrend({ data = DEFAULT_DATA, className }: AreaPriceTren
             axisLine={false}
             tickLine={false}
           />
-          <YAxis hide />
+          <YAxis
+            width={44}
+            domain={["dataMin", "dataMax"]}
+            tickFormatter={formatPrice}
+            tick={{ fontSize: 10, fill: "#9E9EAB", fontWeight: 700 }}
+            axisLine={false}
+            tickLine={false}
+          />
           <Tooltip
             formatter={(value: number) => [formatPrice(value), "Avg Price"]}
             contentStyle={{ borderRadius: 8, border: "1px solid #E2E2E8", fontSize: 12 }}

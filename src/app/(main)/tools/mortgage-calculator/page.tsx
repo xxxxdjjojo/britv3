@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
 import { MortgageRelatedTools } from "@/components/calculators/MortgageRelatedTools";
+import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -15,30 +16,10 @@ export const metadata: Metadata = {
 export default function MortgageCalculatorPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
-      {/* Breadcrumbs */}
-      <nav className="mb-4 flex gap-2 text-xs text-neutral-500">
-        <Link href="/" className="hover:underline">
-          Home
-        </Link>
-        <span>/</span>
-        <Link href="/tools" className="hover:underline">
-          Tools
-        </Link>
-        <span>/</span>
-        <span className="text-brand-primary">Mortgage Calculator</span>
-      </nav>
-
-      {/* Hero */}
-      <div className="mb-12">
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-neutral-900 md:text-5xl dark:text-white">
-          Mortgage Repayment Calculator
-        </h1>
-        <p className="max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-          Estimate your monthly mortgage repayments based on property price,
-          deposit, and interest rate. Save your parameters to see personalised
-          figures on property listing cards.
-        </p>
-      </div>
+      <CalculatorPageHeader
+        title="Mortgage Repayment Calculator"
+        description="Estimate your monthly mortgage repayments based on property price, deposit, and interest rate. Save your parameters to see personalised figures on property listing cards."
+      />
 
       {/* Calculator + Sidebar Grid */}
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">

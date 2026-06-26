@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  ChevronRight,
   Calculator,
   PiggyBank,
   ArrowRightLeft,
@@ -19,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
 import { calculateMonthlyPayment, calculateTotalRepayable } from "@/lib/calculators/mortgage";
 
 // ---------------------------------------------------------------------------
@@ -114,36 +114,12 @@ export default function RemortgageCalculatorPage() {
 
   return (
     <>
-      {/* Breadcrumbs */}
-      <div className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-2 text-sm text-neutral-500">
-            <Link
-              href="/tools"
-              className="transition-colors hover:text-brand-primary"
-            >
-              Tools
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="font-medium text-neutral-900 dark:text-white">
-              Remortgage Calculator
-            </span>
-          </nav>
-        </div>
+      <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
+        <CalculatorPageHeader
+          title="Remortgage Calculator"
+          description="Find out how much you could save by switching your mortgage deal. Compare your current repayments against a new rate and term."
+        />
       </div>
-
-      {/* Hero */}
-      <header className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h1 className="mb-4 font-heading text-4xl font-bold text-neutral-900 dark:text-white">
-            Remortgage Calculator
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-            Find out how much you could save by switching your mortgage deal.
-            Compare your current repayments against a new rate and term.
-          </p>
-        </div>
-      </header>
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">

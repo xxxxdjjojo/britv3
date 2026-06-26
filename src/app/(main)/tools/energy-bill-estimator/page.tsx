@@ -25,6 +25,7 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
+import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
 
 const PROPERTY_TYPES = [
   { value: "flat", label: "Flat", icon: Building2 },
@@ -190,27 +191,10 @@ export default function EnergyBillEstimatorPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-sm text-neutral-500 mb-8">
-        <Link href="/tools" className="hover:text-brand-primary transition-colors">
-          Tools
-        </Link>
-        <ChevronRight className="size-4" />
-        <span className="text-neutral-900 dark:text-neutral-100 font-medium">
-          Energy Bill Estimator
-        </span>
-      </nav>
-
-      {/* Hero Section */}
-      <header className="mb-12 text-center md:text-left">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-neutral-900 dark:text-white mb-4 font-heading">
-          Energy Bill &amp; EPC Estimator
-        </h1>
-        <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl">
-          Get an instant breakdown of your estimated monthly energy costs and
-          learn how to optimise your home&apos;s EPC rating for maximum efficiency.
-        </p>
-      </header>
+      <CalculatorPageHeader
+        title="Energy Bill & EPC Estimator"
+        description="Get an instant breakdown of your estimated monthly energy costs and learn how to optimise your home's EPC rating for maximum efficiency."
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Inputs & Results */}
