@@ -12,9 +12,12 @@ import { escapeHtml } from "@/lib/escape-html";
 
 // -- State machine -----------------------------------------------------------
 
+// A landlord can advance an applicant through the full pipeline OR approve/reject
+// directly from any active stage. Terminal states (approved/rejected/withdrawn)
+// allow no further transitions, so a decided application can never be re-decided.
 const VALID_TRANSITIONS: Record<TenantApplicationStatus, TenantApplicationStatus[]> = {
-  received: ["shortlisted", "rejected"],
-  shortlisted: ["referencing", "rejected"],
+  received: ["shortlisted", "referencing", "approved", "rejected"],
+  shortlisted: ["referencing", "approved", "rejected"],
   referencing: ["approved", "rejected"],
   approved: [],
   rejected: [],
@@ -68,7 +71,7 @@ export async function createApplication(
 
   // Look up the listing to find the landlord / owner
   const { data: listing, error: listingError } = await supabase
-    .from("property_listings")
+    .from("listings")
     .select("id, user_id, listing_type")
     .eq("property_id", input.property_id)
     .eq("status", "active")
@@ -110,6 +113,72 @@ export async function createApplication(
       monthly_income: input.monthly_income ?? null,
       notes: input.notes ?? null,
       status: "received",
+    })
+    .select()
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Failed to create application: ${error?.message ?? "no data"}`);
+  }
+
+  return data as TenantApplication;
+}
+
+/**
+ * Input for a landlord manually adding an applicant to one of their properties.
+ */
+export type AddApplicationAsLandlordInput = Readonly<{
+  property_id: string;
+  applicant_name: string;
+  applicant_email: string;
+  monthly_income?: number | null;
+  employment_status?: string | null;
+  notes?: string | null;
+}>;
+
+/**
+ * Add a tenant application to a property the landlord owns.
+ *
+ * Verifies the property belongs to the landlord (via a rental listing they own)
+ * before inserting, then creates the application with status 'received'. This is
+ * the landlord-facing counterpart to `createApplication` (which is renter-facing).
+ * The previous client-side insert omitted the NOT NULL `property_id`, so it
+ * always failed silently.
+ */
+export async function addApplicationAsLandlord(
+  supabase: SupabaseClient,
+  userId: string,
+  input: AddApplicationAsLandlordInput,
+): Promise<TenantApplication> {
+  // Ownership check: the property must have a rental listing owned by this user.
+  const { data: ownedListing, error: ownershipError } = await supabase
+    .from("listings")
+    .select("id")
+    .eq("property_id", input.property_id)
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  if (ownershipError) {
+    throw new Error(`Failed to verify property ownership: ${ownershipError.message}`);
+  }
+  if (!ownedListing) {
+    throw new Error("Property not found or not owned by you");
+  }
+
+  const { data, error } = await supabase
+    .from("tenant_applications")
+    .insert({
+      property_id: input.property_id,
+      landlord_id: userId,
+      applicant_name: input.applicant_name.trim(),
+      applicant_email: input.applicant_email.trim(),
+      monthly_income: input.monthly_income ?? null,
+      employment_status: input.employment_status ?? null,
+      notes: input.notes ?? null,
+      status: "received",
+      credit_check_status: "not_run",
+      references_status: "pending",
     })
     .select()
     .single();

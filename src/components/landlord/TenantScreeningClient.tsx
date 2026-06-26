@@ -39,8 +39,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+
+// -- Property option (for the add-application selector) ------------------------
+
+export type PortfolioPropertyOption = Readonly<{
+  id: string;
+  address_line_1: string;
+  city: string;
+}>;
 
 // -- Status chip config -------------------------------------------------------
 
@@ -89,6 +96,7 @@ const STATUS_CHIP: Record<
 // -- Manual add form ----------------------------------------------------------
 
 type AddFormState = {
+  property_id: string;
   applicant_name: string;
   applicant_email: string;
   monthly_income: string;
@@ -105,18 +113,30 @@ const EMPLOYMENT_OPTIONS = [
   "Unemployed",
 ];
 
-function AddApplicationSheet({ onSuccess }: Readonly<{ onSuccess: () => void }>) {
+const EMPTY_FORM: AddFormState = {
+  property_id: "",
+  applicant_name: "",
+  applicant_email: "",
+  monthly_income: "",
+  employment_status: "",
+};
+
+function AddApplicationSheet({
+  properties,
+  onSuccess,
+}: Readonly<{ properties: readonly PortfolioPropertyOption[]; onSuccess: () => void }>) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState<AddFormState>({
-    applicant_name: "",
-    applicant_email: "",
-    monthly_income: "",
-    employment_status: "",
-  });
+  const [form, setForm] = useState<AddFormState>(EMPTY_FORM);
+
+  const hasProperties = properties.length > 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.property_id) {
+      toast.error("Please choose which property this application is for");
+      return;
+    }
     if (!form.applicant_name || !form.applicant_email) {
       toast.error("Name and email are required");
       return;
@@ -124,32 +144,26 @@ function AddApplicationSheet({ onSuccess }: Readonly<{ onSuccess: () => void }>)
 
     setSubmitting(true);
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
-
-      if (authError || !user) {
-        throw new Error("Authentication required");
-      }
-
-      const { error } = await supabase.from("tenant_applications").insert({
-        applicant_name: form.applicant_name,
-        applicant_email: form.applicant_email,
-        monthly_income: form.monthly_income ? Number(form.monthly_income) : null,
-        employment_status: form.employment_status || null,
-        landlord_id: user.id,
-        status: "received",
-        credit_check_status: "not_run",
-        references_status: "pending",
+      const res = await fetch("/api/landlord/applications", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          property_id: form.property_id,
+          applicant_name: form.applicant_name,
+          applicant_email: form.applicant_email,
+          monthly_income: form.monthly_income ? Number(form.monthly_income) : undefined,
+          employment_status: form.employment_status || undefined,
+        }),
       });
 
-      if (error) throw new Error(error.message);
+      if (!res.ok) {
+        const payload = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(payload.error ?? "Failed to add application");
+      }
 
       toast.success("Application added successfully");
       setOpen(false);
-      setForm({ applicant_name: "", applicant_email: "", monthly_income: "", employment_status: "" });
+      setForm(EMPTY_FORM);
       onSuccess();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to add application");
@@ -170,7 +184,43 @@ function AddApplicationSheet({ onSuccess }: Readonly<{ onSuccess: () => void }>)
         <SheetHeader>
           <SheetTitle>Add Application</SheetTitle>
         </SheetHeader>
+        {!hasProperties ? (
+          <div className="mt-6 space-y-4 rounded-lg border border-dashed border-border p-6 text-center">
+            <p className="text-sm font-semibold text-foreground">Add a property first</p>
+            <p className="text-sm text-muted-foreground">
+              Applications belong to a property. Add a rental property to your portfolio, then
+              you can screen applicants for it.
+            </p>
+            <Button asChild className="bg-brand-primary text-white hover:bg-brand-primary/90">
+              <Link href="/dashboard/landlord/properties/add">
+                <Plus className="mr-2 size-4" />
+                Add a property
+              </Link>
+            </Button>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="property_id">
+              Which property? <span className="text-destructive">*</span>
+            </Label>
+            <Select
+              value={form.property_id}
+              onValueChange={(val) => setForm((f) => ({ ...f, property_id: val ?? "" }))}
+            >
+              <SelectTrigger id="property_id">
+                <SelectValue placeholder="Select a property" />
+              </SelectTrigger>
+              <SelectContent>
+                {properties.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.address_line_1}, {p.city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="applicant_name">
               Applicant Name <span className="text-destructive">*</span>
@@ -237,6 +287,7 @@ function AddApplicationSheet({ onSuccess }: Readonly<{ onSuccess: () => void }>)
             {submitting ? "Adding..." : "Add Application"}
           </Button>
         </form>
+        )}
       </SheetContent>
     </Sheet>
   );
@@ -349,11 +400,17 @@ function ApplicationRow({ application }: Readonly<{ application: TenantApplicati
 
 type TenantScreeningClientProps = Readonly<{
   initialApplications: TenantApplication[];
+  properties?: readonly PortfolioPropertyOption[];
 }>;
 
-export function TenantScreeningClient({ initialApplications }: TenantScreeningClientProps) {
+export function TenantScreeningClient({
+  initialApplications,
+  properties = [],
+}: TenantScreeningClientProps) {
   const router = useRouter();
-  const [applications] = useState<TenantApplication[]>(initialApplications);
+  // Derived straight from props so router.refresh() (new server data) is
+  // reflected immediately. The previous useState froze the first value.
+  const applications = initialApplications;
 
   function byStatus(status: TenantApplicationStatus) {
     return applications.filter((a) => a.status === status);
@@ -384,7 +441,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
             <Users className="size-4" />
             <span>{approvedCount} approved</span>
           </div>
-          <AddApplicationSheet onSuccess={() => router.refresh()} />
+          <AddApplicationSheet properties={properties} onSuccess={() => router.refresh()} />
         </div>
       </div>
 
