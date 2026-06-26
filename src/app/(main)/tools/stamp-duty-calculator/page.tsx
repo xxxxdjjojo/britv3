@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, Info, Calculator } from "lucide-react";
+import { Info, Calculator } from "lucide-react";
 import { SdltCalculator } from "@/components/calculators/SdltCalculator";
 import { SdltRelatedTools } from "@/components/calculators/SdltRelatedTools";
+import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
@@ -14,33 +15,12 @@ export const metadata: Metadata = {
 export default function StampDutyCalculatorPage() {
   return (
     <>
-      {/* Breadcrumbs */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-2 text-sm text-neutral-500">
-            <Link href="/tools" className="hover:text-brand-primary transition-colors">
-              Tools
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="font-medium text-neutral-900 dark:text-white">
-              Stamp Duty Calculator
-            </span>
-          </nav>
-        </div>
+      <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
+        <CalculatorPageHeader
+          title="Stamp Duty Calculator"
+          description="Calculate SDLT (England & NI), LBTT (Scotland), or LTT (Wales) for your next residential property purchase."
+        />
       </div>
-
-      {/* Hero Section */}
-      <header className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h1 className="mb-4 font-heading text-4xl font-bold text-neutral-900 dark:text-white">
-            Stamp Duty Calculator
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-            Calculate SDLT (England &amp; NI), LBTT (Scotland), or LTT (Wales)
-            for your next residential property purchase.
-          </p>
-        </div>
-      </header>
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">

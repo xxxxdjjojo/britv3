@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
 import { calculateSdlt } from "@/lib/calculators/sdlt";
 
 function formatCurrency(value: number): string {
@@ -176,32 +177,12 @@ export default function BuyVsRentCalculatorPage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <header className="bg-white dark:bg-neutral-900 pt-12 pb-8 border-b border-neutral-200 dark:border-neutral-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <nav className="flex mb-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-              <Link
-                href="/tools"
-                className="hover:text-brand-primary transition-colors"
-              >
-                Tools
-              </Link>
-              <span className="mx-2">/</span>
-              <span className="text-neutral-900 dark:text-white">
-                Buy vs Rent Calculator
-              </span>
-            </nav>
-            <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-4 font-heading">
-              Buy vs. Rent
-            </h1>
-            <p className="text-lg text-neutral-600 dark:text-neutral-400">
-              Make a data-driven decision. Compare the long-term financial
-              impact of buying a home versus renting in today&apos;s market.
-            </p>
-          </div>
-        </div>
-      </header>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+        <CalculatorPageHeader
+          title="Buy vs. Rent"
+          description="Make a data-driven decision. Compare the long-term financial impact of buying a home versus renting in today's market."
+        />
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col lg:flex-row gap-8">

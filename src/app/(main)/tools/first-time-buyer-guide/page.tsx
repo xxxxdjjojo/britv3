@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  ChevronRight,
   Calculator,
   Home,
   PiggyBank,
@@ -24,6 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -239,41 +239,17 @@ function AffordabilityChecker() {
 export default function FirstTimeBuyerGuidePage() {
   return (
     <>
-      {/* Breadcrumbs */}
-      <div className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-2 text-sm text-neutral-500">
-            <Link
-              href="/tools"
-              className="transition-colors hover:text-brand-primary"
-            >
-              Tools
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="font-medium text-neutral-900 dark:text-white">
-              First-Time Buyer Guide
-            </span>
-          </nav>
-        </div>
-      </div>
-
-      {/* Hero */}
-      <header className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-3 py-1 text-xs font-semibold text-brand-primary">
+      <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
+        <CalculatorPageHeader
+          title="First-Time Buyer Guide"
+          description="Everything you need to know about buying your first home in the UK. From government schemes and savings options to an affordability checker — all in one place."
+        >
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-3 py-1 text-xs font-semibold text-brand-primary">
             <GraduationCap className="h-3.5 w-3.5" />
             Complete Guide for 2025/26
           </div>
-          <h1 className="mb-4 font-heading text-4xl font-bold text-neutral-900 dark:text-white">
-            First-Time Buyer Guide
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-            Everything you need to know about buying your first home in the UK.
-            From government schemes and savings options to an affordability
-            checker — all in one place.
-          </p>
-        </div>
-      </header>
+        </CalculatorPageHeader>
+      </div>
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">

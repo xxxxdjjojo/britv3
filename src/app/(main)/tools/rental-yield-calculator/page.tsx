@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
 import { calculateSdlt } from "@/lib/calculators/sdlt";
 
 const LONDON_AVERAGE_YIELD = 4.1;
@@ -151,59 +152,37 @@ export default function RentalYieldCalculatorPage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <header className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-            <div>
-              <nav className="mb-4 flex text-xs font-medium uppercase tracking-wider text-neutral-500">
-                <Link
-                  href="/tools"
-                  className="hover:text-brand-primary"
-                >
-                  Tools
-                </Link>
-                <span className="mx-2">/</span>
-                <span className="text-neutral-400">
-                  Rental Yield Calculator
-                </span>
-              </nav>
-              <h1 className="mb-2 font-heading text-3xl font-bold text-neutral-900 md:text-4xl dark:text-white">
-                Rental Yield &amp; ROI Calculator
-              </h1>
-              <p className="max-w-2xl text-neutral-600 dark:text-neutral-400">
-                Professional-grade tool for UK landlords to calculate Gross and
-                Net investment returns. Analyze property profitability and
-                compare against area averages.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2"
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({ title: "Rental Yield Calculator", url: window.location.href });
-                  } else {
-                    navigator.clipboard.writeText(window.location.href);
-                  }
-                }}
-              >
-                <Share2 className="size-4" /> Share
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2"
-                onClick={() => window.print()}
-              >
-                <Download className="size-4" /> Download PDF
-              </Button>
-            </div>
+      <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
+        <CalculatorPageHeader
+          title="Rental Yield & ROI Calculator"
+          description="Professional-grade tool for UK landlords to calculate Gross and Net investment returns. Analyze property profitability and compare against area averages."
+        >
+          <div className="mt-6 flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: "Rental Yield Calculator", url: window.location.href });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                }
+              }}
+            >
+              <Share2 className="size-4" /> Share
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="gap-2"
+              onClick={() => window.print()}
+            >
+              <Download className="size-4" /> Download PDF
+            </Button>
           </div>
-        </div>
-      </header>
+        </CalculatorPageHeader>
+      </div>
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">

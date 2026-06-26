@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
+import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
 import { cn } from "@/lib/utils";
 
 const formatGBP = new Intl.NumberFormat("en-GB", {
@@ -152,30 +153,12 @@ export default function AffordabilityCalculatorPage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <header className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-6">
-          <nav className="mb-4 flex text-xs font-medium uppercase tracking-wider text-neutral-500">
-            <Link
-              href="/tools"
-              className="hover:text-brand-primary"
-            >
-              Tools
-            </Link>
-            <span className="mx-2">/</span>
-            <span className="text-neutral-900 dark:text-neutral-300">
-              Affordability Calculator
-            </span>
-          </nav>
-          <h1 className="mb-4 font-heading text-4xl font-extrabold text-neutral-900 dark:text-white">
-            Mortgage Affordability
-          </h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
-            Estimate how much you can borrow based on your income and expenses
-            to find your ideal home budget.
-          </p>
-        </div>
-      </header>
+      <div className="mx-auto max-w-7xl px-6 pt-12">
+        <CalculatorPageHeader
+          title="Mortgage Affordability"
+          description="Estimate how much you can borrow based on your income and expenses to find your ideal home budget."
+        />
+      </div>
 
       <main className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
