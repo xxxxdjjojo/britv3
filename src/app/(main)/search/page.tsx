@@ -94,6 +94,10 @@ function toSearchFilters(state: SearchState): SearchFilters {
     letAgreed: state.letAgreed,
     availableFrom: state.availableFrom || undefined,
     minTenancyMonths: state.minTenancyMonths || undefined,
+    shortTermLet: state.shortTermLet || undefined,
+    councilTaxBands:
+      state.councilTaxBands.length > 0 ? state.councilTaxBands : undefined,
+    keywords: state.keywords || undefined,
   };
 }
 

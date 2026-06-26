@@ -20,6 +20,9 @@ export type LetAgreed = "include" | "exclude";
 export const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"] as const;
 export type BedroomOption = (typeof BEDROOM_OPTIONS)[number];
 
+export const COUNCIL_TAX_BANDS = ["A", "B", "C", "D", "E", "F", "G", "H"] as const;
+export type CouncilTaxBand = (typeof COUNCIL_TAX_BANDS)[number];
+
 export type SearchState = {
   listingType: ListingType;
   q: string;
@@ -45,6 +48,15 @@ export type SearchState = {
   availableFrom: string;
   /** Positive integer string; empty string means no filter. */
   minTenancyMonths: string;
+  /** Rent-only: limit to listings accepting a short (<= 6 month) fixed term. */
+  shortTermLet: boolean;
+  // --- Cross-tenure filters (apply to both sale and rent) ---
+  /** Amenity slugs the listing must offer (matched against listing.amenities). */
+  // NOTE: amenities reuse the existing `mustHaves` field above.
+  /** Council tax bands to include; empty means any. */
+  councilTaxBands: string[];
+  /** Free-text keyword match across address, type, furnishing and amenities. */
+  keywords: string;
 };
 
 export const DEFAULT_SEARCH_STATE: SearchState = {
@@ -69,6 +81,9 @@ export const DEFAULT_SEARCH_STATE: SearchState = {
   letAgreed: "include",
   availableFrom: "",
   minTenancyMonths: "",
+  shortTermLet: false,
+  councilTaxBands: [],
+  keywords: "",
 };
 
 const VALID_SORTS: ReadonlySet<SortOption> = new Set([
@@ -94,6 +109,8 @@ const VALID_FURNISHING: ReadonlySet<Furnishing> = new Set([
 const VALID_TRISTATE: ReadonlySet<TriState> = new Set(["any", "yes", "no"]);
 
 const VALID_LET_AGREED: ReadonlySet<LetAgreed> = new Set(["include", "exclude"]);
+
+const VALID_COUNCIL_TAX: ReadonlySet<string> = new Set(COUNCIL_TAX_BANDS);
 
 /**
  * Serialize search state into a URLSearchParams query string.
@@ -132,6 +149,11 @@ export function serializeSearchState(state: SearchState): string {
   if (state.letAgreed !== DEFAULT_SEARCH_STATE.letAgreed) params.set("letAgreed", state.letAgreed);
   if (state.availableFrom) params.set("availableFrom", state.availableFrom);
   if (state.minTenancyMonths) params.set("minTenancy", state.minTenancyMonths);
+  if (state.shortTermLet) params.set("shortTerm", "1");
+  if (state.councilTaxBands.length > 0) {
+    params.set("councilTax", state.councilTaxBands.join(","));
+  }
+  if (state.keywords) params.set("keywords", state.keywords);
 
   return params.toString();
 }
@@ -184,6 +206,20 @@ function parseMinTenancy(raw: string | null): string {
   return Number(raw) > 0 ? raw : "";
 }
 
+/** Keep only recognised council tax bands (A–H), preserving order, de-duplicated. */
+function parseCouncilTaxBands(raw: string | null): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const band of parseList(raw)) {
+    const upper = band.toUpperCase();
+    if (VALID_COUNCIL_TAX.has(upper) && !seen.has(upper)) {
+      seen.add(upper);
+      out.push(upper);
+    }
+  }
+  return out;
+}
+
 /**
  * Parse URLSearchParams into a fully-populated SearchState, falling back to
  * defaults for anything missing or invalid.
@@ -217,5 +253,8 @@ export function parseSearchState(params: URLSearchParams): SearchState {
     letAgreed: parseLetAgreed(params.get("letAgreed")),
     availableFrom: parseAvailableFrom(params.get("availableFrom")),
     minTenancyMonths: parseMinTenancy(params.get("minTenancy")),
+    shortTermLet: params.get("shortTerm") === "1",
+    councilTaxBands: parseCouncilTaxBands(params.get("councilTax")),
+    keywords: params.get("keywords") ?? "",
   };
 }

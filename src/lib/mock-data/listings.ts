@@ -58,6 +58,10 @@ export type MockListingRow = {
   depositScheme: string | null;
   // Optional council tax override
   councilTaxBand?: string | null;
+  // Optional explicit overrides; when absent these are derived deterministically
+  // (see mockAmenities / mockShortTermLet) so the dataset stays terse.
+  amenities?: readonly string[];
+  shortTermLet?: boolean | null;
 };
 
 // -- Helpers for building rows -----------------------------------------------
@@ -788,6 +792,49 @@ export const PROPERTY_TYPE_REVERSE: Record<string, string> = Object.fromEntries(
   Object.entries(PROPERTY_TYPE_MAP).map(([k, v]) => [v, k]),
 );
 
+// -- Deterministic enrichment ------------------------------------------------
+// The dataset carries the authored, listing-specific fields; broadly-applicable
+// attributes (amenities, council tax band, short-term availability) are derived
+// from stable inputs (id, type, furnishing) so the catalogue stays terse and
+// every filter has a reproducible, non-trivial subset to match against.
+
+/** Council tax band A–E, by id (override via row.councilTaxBand). */
+export function mockCouncilTaxBand(row: MockListingRow): string {
+  return row.councilTaxBand ?? ["A", "B", "C", "D", "E"][Number(row.id) % 5] ?? "C";
+}
+
+/** Stable amenity slug set, by id + type + furnishing (override via row.amenities). */
+export function mockAmenities(row: MockListingRow): string[] {
+  if (row.amenities) return [...row.amenities];
+  const id = Number(row.id);
+  const isFlat = row.type === "flat";
+  const a = new Set<string>(["broadband"]);
+  if (!isFlat) {
+    a.add("garden");
+    a.add("parking");
+  }
+  if (isFlat && id % 2 === 0) a.add("lift");
+  if (isFlat && id % 3 === 0) a.add("gym");
+  if (id % 2 === 1) a.add("balcony");
+  if (id % 2 === 0) a.add("dishwasher");
+  if (row.furnishing === "furnished") a.add("in_unit_laundry");
+  if (id % 4 === 0) a.add("ev_charging");
+  if (id % 5 === 0) a.add("step_free");
+  if (id % 6 === 0) a.add("pool");
+  if (id % 7 === 0) a.add("concierge");
+  return [...a];
+}
+
+/** A rent listing is a short-term let when it accepts a <= 6 month fixed term. */
+export function mockShortTermLet(row: MockListingRow): boolean {
+  if (row.shortTermLet != null) return row.shortTermLet;
+  return (
+    row.listing_type === "rent" &&
+    row.minimumTenancyMonths != null &&
+    row.minimumTenancyMonths <= 6
+  );
+}
+
 // -- Adapters ----------------------------------------------------------------
 
 /** Map every row to a SearchProperty (search-card shape). */
@@ -821,6 +868,9 @@ export function getMockSearchProperties(): SearchProperty[] {
     students_policy: row.studentsPolicy,
     deposit_amount: row.depositAmount,
     minimum_tenancy_months: row.minimumTenancyMonths,
+    amenities: mockAmenities(row),
+    council_tax_band: mockCouncilTaxBand(row),
+    short_term_let: mockShortTermLet(row),
   }));
 }
 
@@ -929,10 +979,7 @@ export function toPropertyDetail(row: MockListingRow): PropertyDetail {
       epcPotentialScore: null,
       tenure: row.tenure,
       leaseRemainingYears: row.tenure === "leasehold" ? 95 : null,
-      councilTaxBand:
-        row.councilTaxBand ??
-        ["A", "B", "C", "D", "E"][Number(row.id) % 5] ??
-        "C",
+      councilTaxBand: mockCouncilTaxBand(row),
       planningPermissionStatus: null,
       yearBuilt: 2000 + Number(row.id),
       newBuild: false,

@@ -15,7 +15,7 @@ import type {
   SoldWithin,
   TriState,
 } from "@/lib/search/url-state";
-import { BEDROOM_OPTIONS } from "@/lib/search/url-state";
+import { BEDROOM_OPTIONS, COUNCIL_TAX_BANDS } from "@/lib/search/url-state";
 
 export const PROPERTY_TYPE_OPTIONS = [
   "Detached",
@@ -24,6 +24,25 @@ export const PROPERTY_TYPE_OPTIONS = [
   "Flat",
   "Bungalow",
 ] as const;
+
+/**
+ * Amenity slugs must match the values produced by `mockAmenities` in
+ * lib/mock-data/listings.ts (and the future search_listings amenity column).
+ */
+export const AMENITY_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
+  { value: "garden", label: "Garden" },
+  { value: "parking", label: "Parking" },
+  { value: "balcony", label: "Balcony" },
+  { value: "lift", label: "Lift" },
+  { value: "gym", label: "Gym" },
+  { value: "pool", label: "Pool" },
+  { value: "in_unit_laundry", label: "In-unit laundry" },
+  { value: "dishwasher", label: "Dishwasher" },
+  { value: "broadband", label: "High-speed broadband" },
+  { value: "ev_charging", label: "EV charging" },
+  { value: "step_free", label: "Step-free access" },
+  { value: "concierge", label: "Concierge" },
+];
 
 const SOLD_WITHIN_OPTIONS: ReadonlyArray<{ value: SoldWithin; label: string }> = [
   { value: "3m", label: "3 months" },
@@ -167,6 +186,24 @@ export function RefineFilters({
             className="h-12 w-full rounded-lg border-none bg-neutral-50 pl-10 pr-4 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
         </div>
+      </div>
+
+      {/* Keywords — free-text match across address, type, furnishing & amenities */}
+      <div className="space-y-3">
+        <label
+          htmlFor="refine-keywords"
+          className="block text-[11px] font-bold uppercase tracking-widest text-neutral-500"
+        >
+          Keywords
+        </label>
+        <input
+          id="refine-keywords"
+          type="text"
+          value={state.keywords}
+          onChange={(e) => onChange({ keywords: e.target.value })}
+          placeholder="e.g. balcony, furnished, garden…"
+          className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+        />
       </div>
 
       {/* Property Type chips */}
@@ -329,6 +366,17 @@ export function RefineFilters({
             </p>
           </div>
 
+          {/* Short-term let */}
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-3 text-sm font-bold text-neutral-600 transition-colors hover:border-neutral-300">
+            <input
+              type="checkbox"
+              checked={state.shortTermLet}
+              onChange={(e) => onChange({ shortTermLet: e.target.checked })}
+              className="size-4 accent-brand-primary"
+            />
+            <span>Short-term let available</span>
+          </label>
+
           {/* Let agreed */}
           <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-3 text-sm font-bold text-neutral-600 transition-colors hover:border-neutral-300">
             <input
@@ -440,10 +488,64 @@ export function RefineFilters({
         </div>
       </div>
 
-      {/* NOTE: a "Must-haves" (Garden/Parking/…) control intentionally omitted —
-          there is no end-to-end predicate for it yet (no query/mock filter), and
-          we do not ship a filter that silently does nothing. Re-add it together
-          with its query predicate + test. */}
+      {/* Amenities & features — multi-select, backed by listing.amenities */}
+      <fieldset className="space-y-3">
+        <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+          Amenities &amp; features
+        </legend>
+        <div className="flex flex-wrap gap-2">
+          {AMENITY_OPTIONS.map(({ value, label }) => {
+            const active = state.mustHaves.includes(value);
+            return (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={active}
+                onClick={() => onChange({ mustHaves: toggle(state.mustHaves, value) })}
+                className={cn(
+                  "rounded-full border px-4 py-2 text-xs font-bold transition-all",
+                  active
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:border-brand-primary hover:text-brand-primary",
+                )}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      {/* Council tax band — multi-select A–H */}
+      <fieldset className="space-y-3">
+        <legend className="text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+          Council tax band
+        </legend>
+        <div className="flex flex-wrap gap-2">
+          {COUNCIL_TAX_BANDS.map((band) => {
+            const active = state.councilTaxBands.includes(band);
+            return (
+              <button
+                key={band}
+                type="button"
+                aria-pressed={active}
+                aria-label={`Council tax band ${band}`}
+                onClick={() =>
+                  onChange({ councilTaxBands: toggle(state.councilTaxBands, band) })
+                }
+                className={cn(
+                  "size-10 rounded-lg border text-sm font-bold transition-all",
+                  active
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:border-brand-primary hover:text-brand-primary",
+                )}
+              >
+                {band}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
 
       {/* Actions */}
       <div className="space-y-4 pt-2">

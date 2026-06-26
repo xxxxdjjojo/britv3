@@ -35,7 +35,25 @@ export type SearchFilters = {
   letAgreed?: string;
   availableFrom?: string;
   minTenancyMonths?: string;
+  shortTermLet?: boolean;
+  // --- Cross-tenure filters (apply to both sale and rent) ---
+  councilTaxBands?: string[];
+  keywords?: string;
 };
+
+/** Build the lowercase haystack a keyword query matches against. */
+function keywordHaystack(p: SearchProperty): string {
+  return [
+    p.address,
+    p.city,
+    p.postcode,
+    p.type,
+    p.furnishing ?? "",
+    ...(p.amenities ?? []),
+  ]
+    .join(" ")
+    .toLowerCase();
+}
 
 // ---------------------------------------------------------------------------
 // Client-side filter for mock data (mirrors the Supabase query logic)
@@ -118,6 +136,34 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
     if (!isNaN(max)) results = results.filter((p) => p.sqft <= max);
   }
 
+  // Amenities & features — `mustHaves` carries amenity slugs; keep listings that
+  // offer EVERY selected amenity. Applies to both sale and rent.
+  if (filters.mustHaves && filters.mustHaves.length > 0) {
+    const required = filters.mustHaves;
+    results = results.filter((p) => {
+      const have = new Set(p.amenities ?? []);
+      return required.every((a) => have.has(a));
+    });
+  }
+
+  // Council tax band — keep listings whose band is one of the selected bands.
+  if (filters.councilTaxBands && filters.councilTaxBands.length > 0) {
+    const bands = new Set(filters.councilTaxBands);
+    results = results.filter(
+      (p) => p.council_tax_band != null && bands.has(p.council_tax_band),
+    );
+  }
+
+  // Keywords — every whitespace-separated term must appear in the haystack.
+  const keywords = filters.keywords?.trim().toLowerCase();
+  if (keywords) {
+    const terms = keywords.split(/\s+/);
+    results = results.filter((p) => {
+      const haystack = keywordHaystack(p);
+      return terms.every((t) => haystack.includes(t));
+    });
+  }
+
   // Lettings filters — rent-only. Each predicate applies only when its filter
   // value is set/non-neutral, so an untouched lettings panel narrows nothing.
   if (filters.listingType === "rent") {
@@ -163,6 +209,9 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
           p.minimum_tenancy_months != null &&
           p.minimum_tenancy_months <= maxTenancy,
       );
+    }
+    if (filters.shortTermLet) {
+      results = results.filter((p) => p.short_term_let === true);
     }
   }
 
@@ -290,7 +339,16 @@ export async function searchProperties(
       if (filters.minTenancyMonths && maxTenancy > 0) {
         query = query.lte("minimum_tenancy_months", maxTenancy);
       }
+      if (filters.shortTermLet) {
+        query = query.eq("short_term_let", true);
+      }
     }
+
+    // NOTE: the cross-tenure deeper filters (amenities/`mustHaves`, councilTaxBands,
+    // keywords) are applied on the mock path only. The search_listings MV does not
+    // carry amenity/council-tax columns or a full-text vector yet, so wiring them
+    // here would reference missing columns. They activate on live data once the MV
+    // gains those columns — same staged approach as the rental filters above.
 
     // Property type (cast enum to text for .in() filter)
     if (filters.propertyType && filters.propertyType.length > 0) {

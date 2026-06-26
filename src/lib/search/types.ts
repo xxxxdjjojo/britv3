@@ -34,4 +34,10 @@ export type SearchProperty = {
   students_policy?: string | null;
   deposit_amount?: number | null;
   minimum_tenancy_months?: number | null;
+  /** Amenity slugs the listing offers (e.g. "garden", "lift", "in_unit_laundry"). */
+  amenities?: readonly string[];
+  /** UK council tax band A–H. */
+  council_tax_band?: string | null;
+  /** True when the listing accepts a short (<= 6 month) fixed term. Rent only. */
+  short_term_let?: boolean;
 };
