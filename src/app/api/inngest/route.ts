@@ -38,6 +38,7 @@ import {
   truedeedInvoiceChargedBack,
 } from "@/inngest/functions/truedeed-dispute-emails";
 import { referencingInitiate } from "@/inngest/functions/referencing-initiate";
+import { lifecycleDrip } from "@/inngest/functions/lifecycle-drip";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -72,5 +73,6 @@ export const { GET, POST, PUT } = serve({
     truedeedDisputeResolved,
     truedeedInvoiceChargedBack,
     referencingInitiate,
+    lifecycleDrip,
   ],
 });
