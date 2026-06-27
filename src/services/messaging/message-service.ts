@@ -82,6 +82,34 @@ async function validateMessagingRoles(
   }
 }
 
+/**
+ * Reject if the recipient has blocked this conversation (per-conversation
+ * "I marked this as spam, stop their messages"). Checks the recipient's
+ * conversation_read_status row for a non-null blocked_at.
+ */
+async function assertRecipientNotBlocking(
+  supabase: SupabaseClient,
+  conversationId: string,
+  recipientId: string,
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("conversation_read_status")
+    .select("blocked_at")
+    .eq("conversation_id", conversationId)
+    .eq("user_id", recipientId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to check block status: ${error.message}`);
+  }
+
+  if (data?.blocked_at) {
+    throw new MessagingAuthorizationError(
+      "This recipient is no longer accepting messages in this conversation",
+    );
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Zod schemas
 // ---------------------------------------------------------------------------
@@ -143,6 +171,10 @@ export async function getConversations(
     participant_name: string | null;
     last_message_preview: string | null;
     unread_count: number;
+    archived_at: string | null;
+    blocked_at: string | null;
+    draft_text: string | null;
+    has_sent: boolean;
   }>).map((row) => ({
     id: row.id,
     participant_1_id: row.participant_1_id,
@@ -154,6 +186,10 @@ export async function getConversations(
     participant_name: row.participant_name,
     last_message_preview: row.last_message_preview,
     unread_count: Number(row.unread_count),
+    archived_at: row.archived_at ? new Date(row.archived_at) : null,
+    blocked_at: row.blocked_at ? new Date(row.blocked_at) : null,
+    draft_text: row.draft_text,
+    has_sent: Boolean(row.has_sent),
   } as Conversation));
 
   // Apply client-side filters that RPC doesn't handle
@@ -250,6 +286,7 @@ export async function sendMessage(
   let conversationId = input.conversation_id;
 
   if (!conversationId) {
+    // getOrCreateConversation runs the block check on the resolved conversation.
     const conv = await getOrCreateConversation(
       supabase,
       senderId,
@@ -258,6 +295,9 @@ export async function sendMessage(
       input.context_id,
     );
     conversationId = conv.id;
+  } else {
+    // Existing conversation supplied directly — enforce the recipient's block.
+    await assertRecipientNotBlocking(supabase, conversationId, input.recipient_id);
   }
 
   // Insert message
@@ -327,7 +367,10 @@ export async function getOrCreateConversation(
 
   const { data: existing } = await query.limit(1).single();
 
-  if (existing) return { id: existing.id };
+  if (existing) {
+    await assertRecipientNotBlocking(supabase, existing.id, recipientId);
+    return { id: existing.id };
+  }
 
   // Create new conversation
   const { data: created, error } = await supabase
@@ -343,6 +386,8 @@ export async function getOrCreateConversation(
     .single();
 
   if (error) throw new Error(`Failed to create conversation: ${error.message}`);
+
+  await assertRecipientNotBlocking(supabase, created.id, recipientId);
 
   return { id: created.id };
 }
@@ -371,6 +416,104 @@ export async function updateReadStatus(
     );
 
   if (error) throw new Error(`Failed to update read status: ${error.message}`);
+}
+
+// ---------------------------------------------------------------------------
+// Folder state: archive / block / drafts
+// ---------------------------------------------------------------------------
+
+/**
+ * Archive (or un-archive) a conversation for a user. Upserts only archived_at;
+ * last_read_at keeps its row default on insert and is left untouched on update.
+ */
+export async function archiveConversation(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+  archived: boolean,
+): Promise<void> {
+  const { error } = await supabase
+    .from("conversation_read_status")
+    .upsert(
+      {
+        conversation_id: conversationId,
+        user_id: userId,
+        archived_at: archived ? new Date().toISOString() : null,
+      },
+      { onConflict: "conversation_id,user_id" },
+    );
+
+  if (error) throw new Error(`Failed to archive conversation: ${error.message}`);
+}
+
+/**
+ * Block (or unblock) a conversation for a user — a per-conversation "stop their
+ * messages" flag. Upserts only blocked_at.
+ */
+export async function setConversationBlocked(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+  blocked: boolean,
+): Promise<void> {
+  const { error } = await supabase
+    .from("conversation_read_status")
+    .upsert(
+      {
+        conversation_id: conversationId,
+        user_id: userId,
+        blocked_at: blocked ? new Date().toISOString() : null,
+      },
+      { onConflict: "conversation_id,user_id" },
+    );
+
+  if (error) throw new Error(`Failed to update block status: ${error.message}`);
+}
+
+/**
+ * Save (or clear) an unsent draft for a user in a conversation. Empty or
+ * whitespace-only text clears the draft (null).
+ */
+export async function saveDraft(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+  text: string,
+): Promise<void> {
+  const trimmed = text.trim();
+  const { error } = await supabase
+    .from("conversation_read_status")
+    .upsert(
+      {
+        conversation_id: conversationId,
+        user_id: userId,
+        draft_text: trimmed.length > 0 ? text : null,
+        draft_updated_at: new Date().toISOString(),
+      },
+      { onConflict: "conversation_id,user_id" },
+    );
+
+  if (error) throw new Error(`Failed to save draft: ${error.message}`);
+}
+
+/**
+ * Get the saved draft text for a user in a conversation, or null if none.
+ */
+export async function getDraft(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("conversation_read_status")
+    .select("draft_text")
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to load draft: ${error.message}`);
+
+  return data?.draft_text ?? null;
 }
 
 /**

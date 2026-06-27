@@ -7,6 +7,10 @@ import {
   getOrCreateConversation,
   updateReadStatus,
   getUnreadCount,
+  archiveConversation,
+  setConversationBlocked,
+  saveDraft,
+  getDraft,
   MessagingAuthorizationError,
 } from "@/services/messaging/message-service";
 import { validateAttachment } from "@/services/messaging/attachment-service";
@@ -37,6 +41,7 @@ type MockBuilder = {
   lt: ReturnType<typeof vi.fn>;
   in: ReturnType<typeof vi.fn>;
   single: ReturnType<typeof vi.fn>;
+  maybeSingle: ReturnType<typeof vi.fn>;
   then: ReturnType<typeof vi.fn>;
 };
 
@@ -55,6 +60,7 @@ function createBuilder(resolveValue: { data: unknown; error: unknown; count?: nu
     lt: vi.fn().mockReturnThis(),
     in: vi.fn().mockReturnThis(),
     single: vi.fn().mockResolvedValue(resolveValue),
+    maybeSingle: vi.fn().mockResolvedValue(resolveValue),
     then: vi.fn((resolve: (v: unknown) => void) => resolve(resolveValue)),
   };
   return builder;
@@ -105,6 +111,10 @@ describe("getConversations", () => {
         participant_name: "Bob Smith",
         last_message_preview: "Hello there",
         unread_count: 2,
+        archived_at: "2026-01-16T10:00:00Z",
+        blocked_at: null,
+        draft_text: "Draft reply",
+        has_sent: true,
       },
     ];
 
@@ -119,6 +129,10 @@ describe("getConversations", () => {
     expect(result[0].participant_name).toBe("Bob Smith");
     expect(result[0].last_message_preview).toBe("Hello there");
     expect(result[0].unread_count).toBe(2);
+    expect(result[0].archived_at).toEqual(new Date("2026-01-16T10:00:00Z"));
+    expect(result[0].blocked_at).toBeNull();
+    expect(result[0].draft_text).toBe("Draft reply");
+    expect(result[0].has_sent).toBe(true);
   });
 
   it("returns empty array when no conversations exist", async () => {
@@ -230,9 +244,10 @@ describe("sendMessage", () => {
     };
 
     let callIndex = 0;
+    const blockBuilder = createBuilder({ data: null, error: null });
     const msgBuilder = createBuilder({ data: insertedMsg, error: null });
     const convBuilder = createBuilder({ data: null, error: null });
-    const builders = [msgBuilder, convBuilder];
+    const builders = [blockBuilder, msgBuilder, convBuilder];
 
     const client = {
       from: vi.fn(() => {
@@ -265,6 +280,7 @@ describe("sendMessage", () => {
     // getOrCreateConversation: validateMessagingRoles -> profiles select (thenable list)
     // getOrCreateConversation: conversations select (single -> not found)
     // getOrCreateConversation: conversations insert (single -> created)
+    // getOrCreateConversation: recipient block-status check (no row -> null)
     // sendMessage: messages insert (single -> msg)
     // sendMessage: conversations update
     const builders = [
@@ -277,6 +293,7 @@ describe("sendMessage", () => {
       }), // profiles validation
       createBuilder({ data: null, error: null }), // existing conv check
       createBuilder({ data: { id: "conv-new" }, error: null }), // insert conv
+      createBuilder({ data: null, error: null }), // recipient block-status check
       createBuilder({ data: insertedMsg, error: null }), // insert msg
       createBuilder({ data: null, error: null }), // update last_message_at
     ];
@@ -306,7 +323,7 @@ describe("sendMessage", () => {
 describe("getOrCreateConversation", () => {
   it("returns existing conversation if one exists", async () => {
     let callIndex = 0;
-    // validateMessagingRoles makes a profiles call first, then the conversation select
+    // validateMessagingRoles -> profiles; conversation select; recipient block check
     const builders = [
       createBuilder({
         data: [
@@ -316,6 +333,7 @@ describe("getOrCreateConversation", () => {
         error: null,
       }), // profiles validation
       createBuilder({ data: { id: "conv-existing" }, error: null }), // existing conv
+      createBuilder({ data: null, error: null }), // recipient block-status check
     ];
 
     const client = {
@@ -334,8 +352,8 @@ describe("getOrCreateConversation", () => {
     );
 
     expect(result.id).toBe("conv-existing");
-    // Validation + lookup = 2 from() calls (no insert needed)
-    expect(client.from).toHaveBeenCalledTimes(2);
+    // Validation + lookup + block check = 3 from() calls (no insert needed)
+    expect(client.from).toHaveBeenCalledTimes(3);
   });
 
   it("throws MessagingAuthorizationError for a disallowed role pair", async () => {
@@ -384,6 +402,144 @@ describe("updateReadStatus", () => {
       }),
       { onConflict: "conversation_id,user_id" },
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: archiveConversation / setConversationBlocked
+// ---------------------------------------------------------------------------
+
+describe("archiveConversation", () => {
+  it("upserts archived_at = now when archiving", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await archiveConversation(client, "conv-001", "user-aaa", true);
+
+    expect(client.from).toHaveBeenCalledWith("conversation_read_status");
+    const [payload, options] = builder.upsert.mock.calls[0];
+    expect(payload).toMatchObject({
+      conversation_id: "conv-001",
+      user_id: "user-aaa",
+    });
+    expect(payload.archived_at).toEqual(expect.any(String));
+    expect(payload).not.toHaveProperty("last_read_at");
+    expect(options).toEqual({ onConflict: "conversation_id,user_id" });
+  });
+
+  it("upserts archived_at = null when un-archiving", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await archiveConversation(client, "conv-001", "user-aaa", false);
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.archived_at).toBeNull();
+  });
+});
+
+describe("setConversationBlocked", () => {
+  it("upserts blocked_at = now when blocking", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await setConversationBlocked(client, "conv-001", "user-aaa", true);
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.blocked_at).toEqual(expect.any(String));
+  });
+
+  it("upserts blocked_at = null when unblocking", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await setConversationBlocked(client, "conv-001", "user-aaa", false);
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.blocked_at).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: saveDraft / getDraft
+// ---------------------------------------------------------------------------
+
+describe("saveDraft", () => {
+  it("upserts draft_text + draft_updated_at for non-empty text", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await saveDraft(client, "conv-001", "user-aaa", "Hello draft");
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.draft_text).toBe("Hello draft");
+    expect(payload.draft_updated_at).toEqual(expect.any(String));
+  });
+
+  it("clears the draft (null) for whitespace-only text", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await saveDraft(client, "conv-001", "user-aaa", "   ");
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.draft_text).toBeNull();
+  });
+});
+
+describe("getDraft", () => {
+  it("returns the stored draft_text", async () => {
+    const builder = createBuilder({
+      data: { draft_text: "saved draft" },
+      error: null,
+    });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    const draft = await getDraft(client, "conv-001", "user-aaa");
+    expect(draft).toBe("saved draft");
+  });
+
+  it("returns null when no read-status row exists", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    const draft = await getDraft(client, "conv-001", "user-aaa");
+    expect(draft).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: block enforcement on send
+// ---------------------------------------------------------------------------
+
+describe("sendMessage block enforcement", () => {
+  it("rejects when the recipient has blocked this conversation", async () => {
+    let callIndex = 0;
+    // sendMessage with an existing conversation_id:
+    //   1. recipient block-status lookup (blocked_at set) -> reject before insert
+    const builders = [
+      createBuilder({
+        data: { blocked_at: "2026-01-15T10:00:00Z" },
+        error: null,
+      }),
+    ];
+
+    const client = {
+      from: vi.fn(() => {
+        const b = builders[callIndex] ?? createBuilder({ data: null, error: null });
+        callIndex++;
+        return b;
+      }),
+    } as unknown as SupabaseClient;
+
+    await expect(
+      sendMessage(client, "user-aaa", {
+        conversation_id: "conv-001",
+        recipient_id: "user-bbb",
+        content: "Hello",
+        context_type: "general",
+      }),
+    ).rejects.toBeInstanceOf(MessagingAuthorizationError);
   });
 });
 
