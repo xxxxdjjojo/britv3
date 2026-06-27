@@ -123,14 +123,16 @@ describe("ProtectedHeader", () => {
     expect(within(menu).getByRole("menuitem", { name: /log out/i })).toBeInTheDocument();
   });
 
-  // Keyboard users must be able to open the menu too (accessibility contract).
-  it("opens the menu via the keyboard (Enter on the focused trigger)", () => {
+  // Keyboard users must be able to open the menu too (ARIA menu-button pattern).
+  // ArrowDown opens the menu and moves focus to the first item; Base UI handles
+  // this via an explicit keydown handler (true Enter->click is covered by the
+  // browser E2E because jsdom does not synthesise native button activation).
+  it("opens the menu via the keyboard (ArrowDown on the focused trigger)", () => {
     render(<ProtectedHeader />);
     const trigger = screen.getByRole("button", { name: /open profile menu/i });
 
     trigger.focus();
-    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter" });
-    fireEvent.keyUp(trigger, { key: "Enter", code: "Enter" });
+    fireEvent.keyDown(trigger, { key: "ArrowDown", code: "ArrowDown" });
 
     const menu = screen.getByRole("menu");
     expect(within(menu).getByRole("menuitem", { name: /profile/i })).toHaveAttribute(
