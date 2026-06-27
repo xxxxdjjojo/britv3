@@ -10,9 +10,9 @@ import {
   Shield,
   FileText,
   Calendar,
-  Search,
   ArrowRight,
 } from "lucide-react";
+import { HomeSearchBar } from "@/components/search/HomeSearchBar";
 
 export const metadata: Metadata = {
   title: "Tools for Renters | TrueDeed",
@@ -95,13 +95,13 @@ export default function RenterToolsPage() {
           <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
             Free tools to help you find, secure, and manage your rental home.
           </p>
-          <div className="mt-6">
-            <Button asChild>
-              <Link href="/search?type=rent">
-                <Search className="mr-2 size-4" />
-                Search rentals
-              </Link>
-            </Button>
+          <div className="mt-6 max-w-2xl">
+            <HomeSearchBar
+              defaultType="rent"
+              showTabs={false}
+              submitLabel="Search"
+              placeholder="Search rentals by town, postcode or address…"
+            />
           </div>
         </div>
       </header>

@@ -55,6 +55,16 @@ function keywordHaystack(p: SearchProperty): string {
     .toLowerCase();
 }
 
+/**
+ * Build the lowercase LOCATION haystack the `q` box matches against
+ * (its placeholder is "Search area, city or street…"). Deliberately narrower
+ * than the keyword haystack: address + city + postcode only, so a town or
+ * (partial) postcode query resolves to places, not amenities/furnishing.
+ */
+function locationHaystack(p: SearchProperty): string {
+  return `${p.address} ${p.city} ${p.postcode}`.toLowerCase();
+}
+
 // ---------------------------------------------------------------------------
 // Client-side filter for mock data (mirrors the Supabase query logic)
 // ---------------------------------------------------------------------------
@@ -161,6 +171,18 @@ function filterMockProperties(filters: SearchFilters): SearchProperty[] {
     results = results.filter((p) => {
       const haystack = keywordHaystack(p);
       return terms.every((t) => haystack.includes(t));
+    });
+  }
+
+  // Location query (`q`) — the main search box. Every whitespace-separated term
+  // must appear in the location haystack, so "Manchester", "M14" (partial
+  // postcode) and "EC1V 9HL" all resolve. Empty/whitespace narrows nothing.
+  const q = filters.q?.trim().toLowerCase();
+  if (q) {
+    const terms = q.split(/\s+/);
+    results = results.filter((p) => {
+      const loc = locationHaystack(p);
+      return terms.every((t) => loc.includes(t));
     });
   }
 
@@ -341,6 +363,22 @@ export async function searchProperties(
       }
       if (filters.shortTermLet) {
         query = query.eq("short_term_let", true);
+      }
+    }
+
+    // Location query (`q`) — the main search box. The MV carries city, postcode
+    // and address_line1, so match each term across all three (ILIKE). Each term
+    // is a separate .or() → ANDed together, mirroring the mock semantics. Terms
+    // are sanitised to alphanumerics to keep them safe inside the PostgREST
+    // or-filter grammar (which is comma/parenthesis/dot-delimited).
+    const liveQ = filters.q?.trim().toLowerCase();
+    if (liveQ) {
+      for (const rawTerm of liveQ.split(/\s+/)) {
+        const term = rawTerm.replace(/[^a-z0-9]/gi, "");
+        if (!term) continue;
+        query = query.or(
+          `city.ilike.%${term}%,postcode.ilike.%${term}%,address_line1.ilike.%${term}%`,
+        );
       }
     }
 

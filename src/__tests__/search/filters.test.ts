@@ -333,3 +333,72 @@ describe("searchProperties (mock path) — deeper cross-tenure filters", () => {
     expect(data.length).toBe(0);
   });
 });
+
+describe("searchProperties (mock path) — location query (q)", () => {
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_SEARCH_MOCK_DATA", "true");
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  const total = () => getMockSearchProperties().length;
+  const inLocation = (
+    p: { address: string; city: string; postcode: string },
+    term: string,
+  ) =>
+    `${p.address} ${p.city} ${p.postcode}`.toLowerCase().includes(term.toLowerCase());
+
+  it("q='London' returns only London listings", async () => {
+    const { data } = await searchProperties({ q: "London" });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.length).toBeLessThan(total());
+    expect(data.every((p) => inLocation(p, "london"))).toBe(true);
+  });
+
+  it("q='Manchester' with type=rent returns only Manchester rentals", async () => {
+    const { data } = await searchProperties({ listingType: "rent", q: "Manchester" });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => p.listing_type === "rent")).toBe(true);
+    expect(data.every((p) => inLocation(p, "manchester"))).toBe(true);
+  });
+
+  it("q='M14' (partial postcode) matches the M14 listing", async () => {
+    const { data } = await searchProperties({ q: "M14" });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => inLocation(p, "m14"))).toBe(true);
+    expect(data.some((p) => p.postcode.toUpperCase().startsWith("M14"))).toBe(true);
+  });
+
+  it("q='ec1v' is case-insensitive and finds the Shoreditch studio", async () => {
+    const { data } = await searchProperties({ q: "ec1v" });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => inLocation(p, "ec1v"))).toBe(true);
+  });
+
+  it("multi-term q (full postcode with space) matches", async () => {
+    const { data } = await searchProperties({ q: "EC1V 9HL" });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(data.every((p) => p.postcode.toUpperCase().includes("EC1V"))).toBe(true);
+  });
+
+  it("q with no location match returns empty", async () => {
+    const { data } = await searchProperties({ q: "zzznowheresville" });
+    expect(data.length).toBe(0);
+  });
+
+  it("empty / whitespace q narrows nothing", async () => {
+    const { data: blank } = await searchProperties({ q: "" });
+    expect(blank.length).toBe(total());
+    const { data: spaces } = await searchProperties({ q: "   " });
+    expect(spaces.length).toBe(total());
+  });
+
+  it("q composes with other filters (London + rent)", async () => {
+    const { data } = await searchProperties({ listingType: "rent", q: "London" });
+    expect(data.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data.every((p) => p.listing_type === "rent" && inLocation(p, "london")),
+    ).toBe(true);
+  });
+});
