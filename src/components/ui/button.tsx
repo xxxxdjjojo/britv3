@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
+import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -54,33 +55,86 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  render,
+  nativeButton,
   children,
   ...props
 }: ButtonProps) {
   const resolvedClassName = cn(buttonVariants({ variant, size, className }));
 
-  if (asChild && React.isValidElement(children)) {
-    // Merge button styles into child element (e.g. Link).
-    // This replicates the Radix `asChild` / Slot pattern without
-    // requiring @radix-ui/react-slot as a direct dependency.
-    return React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
-      "data-slot": "button",
-      className: cn(
-        resolvedClassName,
-        (children as React.ReactElement<{ className?: string }>).props?.className,
-      ),
-    });
+  // Render the button AS another element — the Radix-style `asChild` child
+  // (`<Button asChild><Link/></Button>`) or Base UI's `render` prop
+  // (`<Button render={<Link/>}/>`). Both are handed to Base UI's `useRender`,
+  // which merges the button styling onto the element WITHOUT imposing native
+  // button semantics — so a <Link> stays a real link-role <a> (navigable,
+  // open-in-new-tab) instead of being coerced to role="button".
+  //
+  // The previous implementation gated `asChild` on `React.isValidElement(children)`
+  // and hand-rolled `cloneElement`. Inside a Server Component the child crosses the
+  // RSC -> client boundary; during SSR `React.isValidElement` reports `false` and
+  // the child's resolved `type` is momentarily `undefined`, so the old code fell
+  // back to a native <button> on the server while the client produced an <a> — a
+  // hydration mismatch (plus a Base UI `nativeButton` warning) on every dashboard
+  // using `<Button asChild>`. Directly cloning + rendering that boundary child even
+  // errors the server render ("Element type is invalid"). `useRender` resolves the
+  // element consistently on both sides, so SSR and client stay in lock-step.
+  const customElement = (asChild ? children : render) as
+    | useRender.RenderProp
+    | undefined;
+
+  if (customElement) {
+    return (
+      <RenderAsElement
+        element={customElement}
+        className={resolvedClassName}
+        // `asChild` carries its own content; `render` is a shell whose content is
+        // the button's children.
+        injectedChildren={asChild ? undefined : children}
+        extraProps={props}
+      />
+    );
   }
 
   return (
     <ButtonPrimitive
       data-slot="button"
       className={resolvedClassName}
+      nativeButton={nativeButton}
       {...props}
     >
       {children}
     </ButtonPrimitive>
   )
+}
+
+type RenderAsElementProps = Readonly<{
+  // Same shape Base UI's `render` / `useRender` accepts: a React element or a
+  // render function.
+  element: useRender.RenderProp;
+  className: string;
+  injectedChildren: React.ReactNode;
+  extraProps: Record<string, unknown>;
+}>;
+
+// Isolated component so `useRender` is always called (Rules of Hooks): this only
+// mounts when the Button renders as a custom element (asChild / render).
+function RenderAsElement({
+  element,
+  className,
+  injectedChildren,
+  extraProps,
+}: RenderAsElementProps) {
+  return useRender({
+    render: element,
+    props: {
+      "data-slot": "button",
+      className,
+      // Only inject children for the `render`-shell case — passing `undefined`
+      // for `asChild` would clobber the child element's own content.
+      ...(injectedChildren !== undefined ? { children: injectedChildren } : {}),
+      ...extraProps,
+    },
+  });
 }
 
 export type { ButtonProps }
