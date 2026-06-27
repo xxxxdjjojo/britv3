@@ -4,6 +4,7 @@ import {
   getConversations,
   getMessages,
   sendMessage,
+  sendMessageSchema,
   getOrCreateConversation,
   updateReadStatus,
   getUnreadCount,
@@ -315,6 +316,66 @@ describe("sendMessage", () => {
     });
 
     expect(result.conversation_id).toBe("conv-new");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: sendMessageSchema UUID validation (regression — seeded ids 400'd)
+// ---------------------------------------------------------------------------
+
+describe("sendMessageSchema UUID validation", () => {
+  const baseInput = {
+    content: "Hello",
+    context_type: "general" as const,
+  };
+
+  it("accepts a non-RFC-4122 recipient_id that Postgres accepts (seeded landlord id)", () => {
+    // 44444444-... has version/variant nibbles outside RFC-4122 v1-5, so
+    // z.string().uuid() rejects it — but Postgres `uuid` stores it fine and
+    // the seeded landlord (Mike Thompson) uses exactly this id. Replies to
+    // that account must validate.
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "44444444-4444-4444-4444-444444444444",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a non-RFC-4122 conversation_id (seeded conversation id)", () => {
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "44444444-4444-4444-4444-444444444444",
+      conversation_id: "99999999-9999-9999-9999-999999999999",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a real Supabase v4 recipient_id", () => {
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "11111111-1111-4111-8111-111111111111",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("still rejects non-UUID garbage for recipient_id", () => {
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "not-a-uuid",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe("Invalid UUID");
+    }
+  });
+
+  it("still rejects non-UUID garbage for an optional context_id", () => {
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "44444444-4444-4444-4444-444444444444",
+      context_id: "123",
+    });
+    expect(result.success).toBe(false);
   });
 });
 

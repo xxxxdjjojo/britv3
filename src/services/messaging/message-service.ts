@@ -14,6 +14,7 @@ import type {
 import type { UserRole } from "@/types/auth";
 import { sanitizeText } from "@/lib/validation/sanitize-text";
 import { captureException } from "@/lib/observability/capture-exception";
+import { postgresUuid } from "@/lib/messaging/conversation-id";
 
 // ---------------------------------------------------------------------------
 // Role-relationship validation for messaging (BUG-5)
@@ -115,12 +116,14 @@ async function assertRecipientNotBlocking(
 // ---------------------------------------------------------------------------
 
 export const sendMessageSchema = z.object({
-  conversation_id: z.string().uuid().optional(),
-  recipient_id: z.string().uuid(),
+  // Postgres-valid UUID (any version) — not z.string().uuid(), which enforces
+  // RFC-4122 bits and spuriously 400s on seeded/legacy ids the DB accepts.
+  conversation_id: postgresUuid.optional(),
+  recipient_id: postgresUuid,
   content: z.string().min(1, "Message cannot be empty").max(5000, "Message too long (max 5 000 chars)"),
   context_type: z.enum(["listing", "booking", "rfq", "general"]),
-  context_id: z.string().uuid().optional(),
-  message_id: z.string().uuid().optional(),
+  context_id: postgresUuid.optional(),
+  message_id: postgresUuid.optional(),
   attachment_url: z.string().url().optional(),
   attachment_type: z.enum(["image", "pdf"]).optional(),
   attachment_size_bytes: z.number().int().positive().optional(),

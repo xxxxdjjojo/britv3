@@ -10,6 +10,9 @@
  * This regex matches exactly what Postgres accepts: any 8-4-4-4-12 hex shape.
  * Non-UUID input ("not-a-uuid", "", "123") still fails and still 400s.
  */
+import { z } from "zod";
+
+// Any well-formed 8-4-4-4-12 hex UUID (case-insensitive), version-agnostic.
 export const POSTGRES_UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -17,3 +20,14 @@ export const POSTGRES_UUID_REGEX =
 export function isPostgresUuid(value: string): boolean {
   return POSTGRES_UUID_REGEX.test(value);
 }
+
+/**
+ * Shared Zod schema for a Postgres-valid UUID. Use this anywhere the messaging
+ * code would otherwise reach for `z.string().uuid()` — that helper enforces
+ * RFC-4122 version/variant bits and spuriously 400s on seeded/legacy ids the
+ * database accepts (the DB foreign keys are the real integrity guard). Reuse it
+ * instead of duplicating the regex check at each call site.
+ */
+export const postgresUuid = z
+  .string()
+  .refine(isPostgresUuid, "Invalid UUID");
