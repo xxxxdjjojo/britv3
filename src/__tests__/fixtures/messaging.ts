@@ -29,6 +29,10 @@ export function createMockConversation(
     participant_name: "Alice Johnson",
     last_message_preview: "Hi, I have a question about the property.",
     unread_count: 1,
+    archived_at: null,
+    blocked_at: null,
+    draft_text: null,
+    has_sent: false,
     ...overrides,
   };
 }

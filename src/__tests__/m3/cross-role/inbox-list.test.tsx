@@ -4,11 +4,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { createMockConversation } from "../../fixtures/messaging";
 
+// Hoisted spies so they are accessible in tests that assert on them.
+const archiveMutate = vi.fn();
+const blockMutate = vi.fn();
+
 // InboxList is now prop-driven (the shell owns the data hook). It still uses the
 // archive/block mutation hooks and useAuth, so stub those and wrap in a client.
 vi.mock("@/hooks/useInbox", () => ({
-  useArchiveConversation: () => ({ mutate: vi.fn() }),
-  useBlockConversation: () => ({ mutate: vi.fn() }),
+  useArchiveConversation: () => ({ mutate: archiveMutate }),
+  useBlockConversation: () => ({ mutate: blockMutate }),
 }));
 vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({ user: { id: "user-aaa" }, loading: false }),
@@ -109,5 +113,38 @@ describe("InboxList states", () => {
       />,
     );
     expect(screen.getByRole("option")).toHaveAttribute("aria-selected", "true");
+  });
+});
+
+describe("InboxList folder actions", () => {
+  it("calls archiveMutation.mutate with archived:true when Archive is clicked", () => {
+    archiveMutate.mockClear();
+    renderList(
+      <InboxList
+        folder="inbox"
+        conversations={[createMockConversation({ id: "conv-001", archived_at: null })]}
+      />,
+    );
+
+    // Open the overflow menu for the row then click Archive
+    fireEvent.click(screen.getByRole("button", { name: /actions for/i }));
+    fireEvent.click(screen.getByRole("menuitem", { name: /archive/i }));
+
+    expect(archiveMutate).toHaveBeenCalledWith({ conversationId: "conv-001", archived: true });
+  });
+
+  it("calls blockMutation.mutate with blocked:true when Mark as spam is clicked", () => {
+    blockMutate.mockClear();
+    renderList(
+      <InboxList
+        folder="inbox"
+        conversations={[createMockConversation({ id: "conv-001", blocked_at: null })]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /actions for/i }));
+    fireEvent.click(screen.getByRole("menuitem", { name: /mark as spam/i }));
+
+    expect(blockMutate).toHaveBeenCalledWith({ conversationId: "conv-001", blocked: true });
   });
 });
