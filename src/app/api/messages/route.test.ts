@@ -4,9 +4,9 @@
  * Regression guard: GET /api/messages must return 200 for an authenticated
  * request and 401 for an anonymous one. The live "Failed to load conversations"
  * banner was a prod 500 (a jsdom asset missing from the serverless bundle, fixed
- * via outputFileTracingIncludes + a DOM-free sanitizeText), but the auth
- * contract is the other way this route can break the inbox — pin both states,
- * for GET and POST.
+ * by keeping isomorphic-dompurify/jsdom external + a DOM-free sanitizeText — see
+ * route.jsdom-bundle.test.ts), but the auth contract is the other way this route
+ * can break the inbox — pin both states, for GET and POST.
  */
 
 import type { NextRequest } from "next/server";

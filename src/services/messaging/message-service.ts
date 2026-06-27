@@ -12,7 +12,7 @@ import type {
   Message,
 } from "@/types/messaging";
 import type { UserRole } from "@/types/auth";
-import { sanitizeText } from "@/lib/validation/sanitize";
+import { sanitizeText } from "@/lib/validation/sanitize-text";
 import { captureException } from "@/lib/observability/capture-exception";
 
 // ---------------------------------------------------------------------------

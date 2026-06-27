@@ -3,22 +3,64 @@ const KNOWN_FEATURES = ["ai_descriptions", "push_notifications", "offline_mode",
 type KnownFeature = (typeof KNOWN_FEATURES)[number];
 
 /**
+ * Resolve every known flag's raw env value via a STATIC
+ * `process.env.NEXT_PUBLIC_ENABLE_*` reference.
+ *
+ * Why static (not the old `process.env[computedKey]`): Next.js inlines
+ * NEXT_PUBLIC_ vars at build time ONLY where they are referenced statically.
+ * A dynamic, computed-key read resolves to `undefined` in the production server
+ * bundle — so on Vercel every flag read returned false regardless of the
+ * configured value (it only "worked" in dev/Vitest, which expose a real
+ * `process.env`). That shipped a live bug: /search returned 0 results because
+ * `search_mock_data` never read as "true" in prod. Keep these references
+ * static and add a matching line for any new flag.
+ *
+ * Built at call time so `vi.stubEnv` continues to work in unit tests.
+ */
+function flagEnv(): Record<KnownFeature, string | undefined> {
+  return {
+    ai_descriptions: process.env.NEXT_PUBLIC_ENABLE_AI_DESCRIPTIONS,
+    push_notifications: process.env.NEXT_PUBLIC_ENABLE_PUSH_NOTIFICATIONS,
+    offline_mode: process.env.NEXT_PUBLIC_ENABLE_OFFLINE_MODE,
+    jwt_claims_middleware: process.env.NEXT_PUBLIC_ENABLE_JWT_CLAIMS_MIDDLEWARE,
+    search_live_data: process.env.NEXT_PUBLIC_ENABLE_SEARCH_LIVE_DATA,
+    local_area_intelligence: process.env.NEXT_PUBLIC_ENABLE_LOCAL_AREA_INTELLIGENCE,
+    search_rental_filters: process.env.NEXT_PUBLIC_ENABLE_SEARCH_RENTAL_FILTERS,
+    search_mock_data: process.env.NEXT_PUBLIC_ENABLE_SEARCH_MOCK_DATA,
+  };
+}
+
+/**
  * Check if a feature flag is enabled via environment variables.
- * Reads `NEXT_PUBLIC_ENABLE_{NAME}` (uppercased) and returns true only if the value is exactly "true".
+ *
+ * Reads in two layers, most-reliable first:
+ *  1. RUNTIME dynamic `process.env[key]` — on the server (where every caller of
+ *     this lives) this resolves the live value per-request and is immune to any
+ *     build-time NEXT_PUBLIC inlining quirk. On Vercel the production env var is
+ *     injected into the function runtime, so this is the source of truth there.
+ *  2. STATIC `process.env.NEXT_PUBLIC_ENABLE_*` map (flagEnv) — the build-inlined
+ *     fallback, which is all that exists in client bundles (where dynamic
+ *     `process.env[key]` is undefined).
+ *
+ * Returns true only if the resolved value is exactly "true". Unknown flags are
+ * always false.
  *
  * Upgrade path: Replace env var reads with PostHog feature flag API calls
  * (posthog.isFeatureEnabled(name)) when remote feature flag management is needed.
  */
 export function isFeatureEnabled(name: string): boolean {
-  const envKey = `NEXT_PUBLIC_ENABLE_${name.toUpperCase()}`;
-  return process.env[envKey] === "true";
+  const key = name.toLowerCase();
+  const runtime = process.env[`NEXT_PUBLIC_ENABLE_${key.toUpperCase()}`];
+  if (runtime !== undefined) return runtime === "true";
+  return flagEnv()[key as KnownFeature] === "true";
 }
 
 /**
  * Returns current values of all known feature flags.
  */
 export function features(): Record<KnownFeature, boolean> {
+  const env = flagEnv();
   return Object.fromEntries(
-    KNOWN_FEATURES.map((name) => [name, isFeatureEnabled(name)]),
+    KNOWN_FEATURES.map((name) => [name, env[name] === "true"]),
   ) as Record<KnownFeature, boolean>;
 }

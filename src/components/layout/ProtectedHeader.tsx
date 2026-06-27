@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Mail,
@@ -32,31 +31,6 @@ export function ProtectedHeader() {
   const { isMobile, isTablet } = useBreakpoint();
   const { user, signOut } = useAuth();
   const shouldAutoHide = (isMobile || isTablet) && scrollDirection === "down";
-
-  // Open the profile menu on hover (desktop) while keeping click/tap + keyboard working
-  // via Base UI's onOpenChange. A short close delay bridges the gap to the popup.
-  const [menuOpen, setMenuOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cancelClose = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = null;
-  };
-  const openMenu = () => {
-    cancelClose();
-    setMenuOpen(true);
-  };
-  const scheduleClose = () => {
-    cancelClose();
-    closeTimer.current = setTimeout(() => setMenuOpen(false), 160);
-  };
-  useEffect(() => cancelClose, []);
-
-  // Hover-to-open only on devices that actually hover. On touch, tap/click drives
-  // the menu via Base UI (a synthetic hover on first tap would otherwise open-then-close).
-  const hoverProps =
-    isMobile || isTablet
-      ? {}
-      : { onMouseEnter: openMenu, onMouseLeave: scheduleClose };
 
   const handleLogout = async () => {
     await signOut();
@@ -96,22 +70,22 @@ export function ProtectedHeader() {
 
           <NotificationBell />
 
-          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen} modal={false}>
+          {/* Uncontrolled: Base UI owns the open state so press and keyboard both
+              flow through one state machine. The previous version made this
+              controlled AND added a hand-rolled onMouseEnter open + onMouseLeave
+              close; because a desktop click always fires mouseenter first, the
+              hover opened the menu and Base UI's trigger press then toggled it
+              shut — so clicking the avatar never opened anything. */}
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger
               aria-label="Open profile menu"
               className="ml-1 flex items-center rounded-full outline-none transition hover:ring-2 hover:ring-brand-primary/30 focus-visible:ring-2 focus-visible:ring-brand-primary/40"
-              {...hoverProps}
             >
               <Avatar size="sm">
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              sideOffset={6}
-              className="min-w-48"
-              {...hoverProps}
-            >
+            <DropdownMenuContent align="end" sideOffset={6} className="min-w-48">
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="truncate">{displayName}</DropdownMenuLabel>
               </DropdownMenuGroup>

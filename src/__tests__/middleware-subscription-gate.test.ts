@@ -271,3 +271,112 @@ describe("middleware: subscription gate", () => {
     expect(spies.subscriptionMaybeSingle).toHaveBeenCalled();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Provider "open" sections — product decision 2026-06-27.
+//
+// Service providers can use Jobs, Quotes, Reviews and Earnings BEFORE they
+// subscribe or finish verification, so a new provider can explore and build
+// quotes before paying. These four sections must therefore pass BOTH gates
+// (verification + subscription) even when the provider has no plan / is not
+// verified. Every OTHER provider section stays gated.
+// ---------------------------------------------------------------------------
+
+describe("middleware: provider-open sections bypass the gates", () => {
+  const OPEN_PATHS = [
+    "/dashboard/provider/jobs/leads",
+    "/dashboard/provider/jobs/active",
+    "/dashboard/provider/jobs/completed",
+    "/dashboard/provider/quotes",
+    "/dashboard/provider/quotes/builder",
+    "/dashboard/provider/reviews",
+    "/dashboard/provider/payments",
+  ];
+
+  // ── Subscription gate (JWT-claims path: provider has role but no plan) ────
+  for (const path of OPEN_PATHS) {
+    it(`subscription gate: provider without a plan can access ${path}`, async () => {
+      const { supabase } = buildSupabaseMock({
+        user: { id: "prov-1", app_metadata: { role: "service_provider" } },
+      });
+      createServerClientMock.mockReturnValue(supabase);
+
+      const { proxy } = await import("../proxy");
+      const response = await proxy(makeRequest(path));
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get("location")).toBeNull();
+    });
+  }
+
+  it("subscription gate: a NON-open provider section still redirects to checkout", async () => {
+    const { supabase } = buildSupabaseMock({
+      user: { id: "prov-1", app_metadata: { role: "service_provider" } },
+    });
+    createServerClientMock.mockReturnValue(supabase);
+
+    const { proxy } = await import("../proxy");
+    const response = await proxy(makeRequest("/dashboard/provider/analytics"));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toContain(
+      "/dashboard/provider/billing/checkout/subscription",
+    );
+  });
+
+  // ── Verification gate (DB path: provider unverified, no JWT claims) ───────
+  it("verification gate: an UNVERIFIED provider can access an open section (quotes)", async () => {
+    isFeatureEnabledMock.mockReturnValue(false); // force DB path → verification gate runs
+    const { supabase } = buildSupabaseMock({
+      user: { id: "prov-1" }, // no app_metadata.role → DB profile lookup
+      profile: {
+        data: {
+          active_role: "service_provider",
+          is_admin: false,
+          admin_role: null,
+          provider_verification_status: "unverified",
+          verification_level: "basic",
+        },
+        error: null,
+      },
+      // Active sub so only the verification gate is under test here.
+      subscription: { kind: "ok", row: { status: "active", plan_name: "Pro" } },
+    });
+    createServerClientMock.mockReturnValue(supabase);
+
+    const { proxy } = await import("../proxy");
+    const response = await proxy(
+      makeRequest("/dashboard/provider/quotes/builder"),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
+  });
+
+  it("verification gate: an UNVERIFIED provider is still blocked from a NON-open section", async () => {
+    isFeatureEnabledMock.mockReturnValue(false);
+    const { supabase } = buildSupabaseMock({
+      user: { id: "prov-1" },
+      profile: {
+        data: {
+          active_role: "service_provider",
+          is_admin: false,
+          admin_role: null,
+          provider_verification_status: "unverified",
+          verification_level: "basic",
+        },
+        error: null,
+      },
+      subscription: { kind: "ok", row: { status: "active", plan_name: "Pro" } },
+    });
+    createServerClientMock.mockReturnValue(supabase);
+
+    const { proxy } = await import("../proxy");
+    const response = await proxy(makeRequest("/dashboard/provider/analytics"));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toContain(
+      "/dashboard/provider/verification",
+    );
+  });
+});

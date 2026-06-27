@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { AgentPublicProfile } from "@/types/providers";
-import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
+import { sanitizePostgrestInput } from "@/lib/validation/sanitize-text";
 
 export const metadata: Metadata = {
   title: "Find an Estate Agent Near You | TrueDeed",

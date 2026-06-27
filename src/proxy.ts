@@ -353,6 +353,21 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // ── Provider "open" sections (product decision 2026-06-27) ────────────────
+  // Jobs, Quotes, Reviews and Earnings are intentionally reachable by a service
+  // provider BEFORE they subscribe or finish verification, so a new provider
+  // can explore leads and build quotes before paying. Every OTHER provider
+  // section stays behind the verification + subscription gates below.
+  const PROVIDER_OPEN_PREFIXES = [
+    "/dashboard/provider/jobs",
+    "/dashboard/provider/quotes",
+    "/dashboard/provider/reviews",
+    "/dashboard/provider/payments",
+  ] as const;
+  const isProviderOpenPage = PROVIDER_OPEN_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+
   // ── Role check + role-route enforcement ───────────────────────────────
   if (isDashboardRoute) {
     // Determine the user's actual role from JWT claims or DB
@@ -396,7 +411,8 @@ export async function proxy(request: NextRequest) {
         VERIFICATION_GATED_PREFIXES.some((prefix) => pathname === prefix) || // overview exact match
         pathname.includes("/billing") ||
         pathname.includes("/verification") ||
-        pathname.includes("/referrals");
+        pathname.includes("/referrals") ||
+        isProviderOpenPage;
 
       if (!isVerificationExempt) {
         const isProvider = pathname.startsWith("/dashboard/provider");
@@ -446,7 +462,7 @@ export async function proxy(request: NextRequest) {
       (prefix) => pathname === prefix,
     );
 
-    if (isGatedRoute && !isBillingPage && !isReferralsPage && !isDashboardOverview) {
+    if (isGatedRoute && !isBillingPage && !isReferralsPage && !isDashboardOverview && !isProviderOpenPage) {
       if (hasClaims) {
         const hasPlan = appMetadata?.plan && appMetadata.plan !== "";
         if (!hasPlan) {

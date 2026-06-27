@@ -18,9 +18,11 @@ import {
 } from "@/services/messaging/message-service";
 import { createRateLimiter } from "@/lib/cache/redis";
 import { captureListingMessageIntroduction } from "@/lib/truedeed/capture-message";
-import { notifyNewMessage } from "@/services/messaging/message-notifications";
 import { captureException } from "@/lib/observability/capture-exception";
 import type { InboxFilters, ContextType } from "@/types/messaging";
+
+// `notifyNewMessage` is imported lazily inside POST (see below): it pulls in the
+// email-rendering graph, which we keep off the GET (unread-badge) cold path.
 
 /** 10 messages per minute per user — shared across message endpoints. */
 const messageRateLimiter = createRateLimiter(10, "1 m");
@@ -106,7 +108,12 @@ export async function POST(request: NextRequest) {
       conversationId: parsed.data.conversation_id,
     });
 
-    // Notify the recipient (in-app feed + away email) — fire-and-forget
+    // Notify the recipient (in-app feed + away email) — fire-and-forget.
+    // Imported lazily so the email-rendering module graph never loads on the GET
+    // unread-badge path.
+    const { notifyNewMessage } = await import(
+      "@/services/messaging/message-notifications"
+    );
     await notifyNewMessage({ conversationId: msg.conversation_id, senderId: user.id });
 
     return NextResponse.json({ message: msg }, { status: 201 });

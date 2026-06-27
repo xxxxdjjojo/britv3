@@ -1,49 +1,18 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
-import { mkdirSync, writeFileSync, existsSync } from "fs";
-import { resolve } from "path";
-
-/**
- * Webpack plugin: after emit, ensure .next/browser/default-stylesheet.css exists.
- * jsdom (bundled via @react-email or Sentry SSR) reads this file at runtime.
- * Turbopack generates it automatically but webpack doesn't.
- */
-class EnsureBrowserCssPlugin {
-  apply(compiler: { hooks: { afterEmit: { tap: (name: string, cb: () => void) => void } } }) {
-    compiler.hooks.afterEmit.tap("EnsureBrowserCssPlugin", () => {
-      const browserDir = resolve(process.cwd(), ".next", "browser");
-      if (!existsSync(resolve(browserDir, "default-stylesheet.css"))) {
-        mkdirSync(browserDir, { recursive: true });
-        writeFileSync(resolve(browserDir, "default-stylesheet.css"), "/* placeholder for jsdom */");
-      }
-    });
-  }
-}
 
 const nextConfig: NextConfig = {
-  // @react-pdf/renderer uses Node.js APIs and cannot be bundled for SSR
-  serverExternalPackages: ["@react-pdf/renderer"],
-  // jsdom (pulled in server-side by isomorphic-dompurify, used in the messaging
-  // sanitizer) reads `../../browser/default-stylesheet.css` relative to its
-  // bundled chunk at runtime. EnsureBrowserCssPlugin writes that file into
-  // `.next/browser/`, but output file tracing can't see the dynamic readFileSync,
-  // so the asset was never copied into the serverless bundle — every route that
-  // imports the sanitizer (e.g. GET /api/messages) threw ENOENT → 500 in prod.
-  // `sanitizeText` is now DOM-free so the messaging route no longer drags jsdom
-  // in, but `sanitizeHtml` (and other surfaces) still can — keep this as
-  // belt-and-suspenders. `/**/*` matches routes at ANY depth (the two-segment
-  // `/api/messages` included); `/*` would only reliably match top-level routes.
-  outputFileTracingIncludes: {
-    "/**/*": [".next/browser/default-stylesheet.css"],
-  },
-  webpack(config, { isServer }) {
-    if (isServer) {
-      config.plugins = config.plugins ?? [];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      config.plugins.push(new EnsureBrowserCssPlugin() as any);
-    }
-    return config;
-  },
+  // Packages that read their own on-disk assets via Node APIs and must NOT be
+  // bundled into serverless chunks (the bundler rewrites their __dirname so the
+  // assets ENOENT at runtime). Keeping them external lets `require()` resolve
+  // them from node_modules, which Vercel's file tracing ships with the function.
+  //   - @react-pdf/renderer: reads font files.
+  //   - isomorphic-dompurify -> jsdom: jsdom reads default-stylesheet.css at load.
+  //     Bundling it caused GET /api/messages?count_only=true to 500 on every
+  //     request (the unread badge). The jsdom-free server hot paths now import from
+  //     src/lib/validation/sanitize-text.ts; this keeps the remaining server
+  //     DOMPurify use (SafeHTML's sanitizeHtml) resolving jsdom from node_modules.
+  serverExternalPackages: ["@react-pdf/renderer", "isomorphic-dompurify", "jsdom"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/**" },
