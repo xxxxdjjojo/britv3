@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { sanitizeText } from "@/lib/validation/sanitize";
+import { sanitizeText } from "@/lib/validation/sanitize-text";
 
 const TEXT_ONLY_REGEX = /^[a-zA-Z\s\-']+$/;
 const UK_PHONE_REGEX = /^(\+44|0)[1-9]\d{8,9}$/;

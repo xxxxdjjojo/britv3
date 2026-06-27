@@ -6,7 +6,7 @@
 import { z } from "zod";
 import sharp from "sharp";
 import { fileTypeFromBuffer } from "file-type";
-import { sanitizeText } from "@/lib/validation/sanitize";
+import { sanitizeText } from "@/lib/validation/sanitize-text";
 import { invalidateCachePattern } from "@/lib/cache/redis";
 import {
   DEFAULT_NOTIFICATION_PREFERENCES,

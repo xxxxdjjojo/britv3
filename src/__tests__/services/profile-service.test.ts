@@ -12,9 +12,9 @@ vi.mock("@/lib/cache/redis", () => ({
 }));
 
 // Mock sanitize module
-vi.mock("@/lib/validation/sanitize", () => ({
+// profile-service imports sanitizeText from the jsdom-free sanitize-text module.
+vi.mock("@/lib/validation/sanitize-text", () => ({
   sanitizeText: vi.fn((text: string) => text.replace(/<[^>]*>/g, "")),
-  sanitizeHtml: vi.fn((text: string) => text),
 }));
 
 // Mock sharp
@@ -40,7 +40,7 @@ import {
   updateNotificationPreferences,
 } from "@/services/profile/profile-service";
 import { invalidateCachePattern } from "@/lib/cache/redis";
-import { sanitizeText } from "@/lib/validation/sanitize";
+import { sanitizeText } from "@/lib/validation/sanitize-text";
 
 describe("profile-service", () => {
   let mockClient: ReturnType<typeof createMockSupabaseClient>;

@@ -15,7 +15,9 @@ import { validateAttachment } from "@/services/messaging/attachment-service";
 // Mock sanitize (isomorphic-dompurify is not available in happy-dom)
 // ---------------------------------------------------------------------------
 
-vi.mock("@/lib/validation/sanitize", () => ({
+// message-service imports sanitizeText from the jsdom-free sanitize-text module
+// (so server route bundles never pull in isomorphic-dompurify/jsdom).
+vi.mock("@/lib/validation/sanitize-text", () => ({
   sanitizeText: vi.fn((text: string) => text.replace(/<[^>]*>/g, "")),
 }));
 
@@ -199,7 +201,7 @@ describe("getMessages", () => {
 
 describe("sendMessage", () => {
   it("sanitizes content before insert", async () => {
-    const { sanitizeText } = await import("@/lib/validation/sanitize");
+    const { sanitizeText } = await import("@/lib/validation/sanitize-text");
 
     const insertedMsg = {
       id: "msg-new",

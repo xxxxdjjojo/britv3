@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { sanitizeText } from "@/lib/validation/sanitize";
+import { sanitizeText } from "@/lib/validation/sanitize-text";
 
 const AGENT_FIELDS = new Set(["agency_name", "specializations", "coverage_areas"]);
 const PROVIDER_FIELDS = new Set(["business_name", "trading_name", "service_postcodes"]);
