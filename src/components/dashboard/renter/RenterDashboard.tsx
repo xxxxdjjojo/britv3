@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardList, Home, Search, FileText } from "lucide-react";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import type { RenterDashboard as RenterData } from "@/types/dashboard";
 
 const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -125,6 +126,7 @@ export function RenterDashboard({ data }: Readonly<{ data: RenterData }>) {
               <FileText className="mr-2 size-4" />
               View Applications
             </Button>
+            <DashboardMessagesLink variant="button" />
           </div>
         </CardContent>
       </Card>

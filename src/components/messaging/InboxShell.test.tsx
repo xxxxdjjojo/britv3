@@ -1,8 +1,25 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import type { Conversation } from "@/types/messaging";
+
+// Stub MessageThread so we can assert the props the shell passes to it
+// (participantName + recipientId) without booting the real chat thread.
+vi.mock("./MessageThread", () => ({
+  default: ({
+    participantName,
+    recipientId,
+  }: {
+    participantName?: string;
+    recipientId?: string;
+  }) => (
+    <div data-testid="thread">
+      <span data-testid="thread-name">{participantName ?? "(none)"}</span>
+      <span data-testid="thread-recipient">{recipientId ?? "(none)"}</span>
+    </div>
+  ),
+}));
 
 // InboxShell instantiates a Supabase client (Realtime) and the auth hook at mount;
 // stub both so the shell renders in isolation.
@@ -86,5 +103,16 @@ describe("InboxShell", () => {
     renderWithClient(<InboxShell />);
     expect(screen.getByText("Jane Doe")).toBeInTheDocument();
     expect(screen.queryByText("Archived Person")).not.toBeInTheDocument();
+  });
+
+  it("passes the participant name (and recipient id) to the open thread", () => {
+    renderWithClient(<InboxShell />);
+
+    // Open the conversation from the list.
+    fireEvent.click(screen.getByText("Jane Doe"));
+
+    // The thread header must receive the real participant name, not "Conversation".
+    expect(screen.getByTestId("thread-name")).toHaveTextContent("Jane Doe");
+    expect(screen.getByTestId("thread-recipient")).toHaveTextContent("user-2");
   });
 });

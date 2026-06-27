@@ -13,6 +13,7 @@ import { UpcomingJobsList } from "@/components/dashboard/provider/UpcomingJobsLi
 import { CashPositionWidget } from "@/components/dashboard/provider/CashPositionWidget";
 import { SmartActionsCard } from "@/components/dashboard/provider/SmartActionsCard";
 import { SectionHeader } from "@/components/dashboard/SectionHeader";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import { Button } from "@/components/ui/button";
 import {
   Inbox,
@@ -52,16 +53,19 @@ export default async function ProviderDashboardPage() {
   return (
     <div className="flex flex-col gap-8 p-6 md:p-8 max-w-screen-xl">
       {/* ── Page Header — Stitch editorial: eyebrow above a large heading ────── */}
-      <div className="flex flex-col gap-1">
-        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
-          Welcome back
-        </p>
-        <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
-          {businessName ?? "Provider Dashboard"}
-        </h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Here&apos;s what&apos;s happening with your business today.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Welcome back
+          </p>
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+            {businessName ?? "Provider Dashboard"}
+          </h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Here&apos;s what&apos;s happening with your business today.
+          </p>
+        </div>
+        <DashboardMessagesLink variant="button" />
       </div>
 
       {/* ── Verification Banner ──────────────────────────────────────────────── */}

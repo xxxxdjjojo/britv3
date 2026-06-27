@@ -17,6 +17,7 @@ import { KeyDatesTicker } from "@/components/landlord/KeyDatesTicker";
 import type { KeyDate } from "@/components/landlord/KeyDatesTicker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardAnalytics } from "@/components/landlord/DashboardAnalytics";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
@@ -116,6 +117,10 @@ async function DashboardContent() {
               <ShieldCheck className="size-5" />
               Compliance
             </Link>
+            <DashboardMessagesLink
+              variant="panel"
+              className="rounded-xl border border-white/20 px-6 py-3 font-bold backdrop-blur-md"
+            />
           </div>
         </div>
         <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 opacity-10">

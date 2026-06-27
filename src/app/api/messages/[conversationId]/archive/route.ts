@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { archiveConversation } from "@/services/messaging/message-service";
+import { isPostgresUuid } from "@/lib/messaging/conversation-id";
 import { captureException } from "@/lib/observability/capture-exception";
 
 type RouteParams = { params: Promise<{ conversationId: string }> };
@@ -23,7 +24,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     }
 
     const { conversationId } = await params;
-    if (!z.string().uuid().safeParse(conversationId).success) {
+    if (!isPostgresUuid(conversationId)) {
       return NextResponse.json({ error: "Invalid conversation id" }, { status: 400 });
     }
 

@@ -23,6 +23,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import type { AgentDashboard as AgentData } from "@/types/dashboard";
 
 /* -------------------------------------------------------------------------- */
@@ -271,6 +272,7 @@ export function AgentDashboard({ data }: Readonly<{ data: AgentData }>) {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <DashboardMessagesLink variant="icon" />
           <button
             type="button"
             aria-label="Notifications"

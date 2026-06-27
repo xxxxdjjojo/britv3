@@ -82,6 +82,22 @@ describe("POST /api/messages/[conversationId]/archive", () => {
     expect(archiveConversation).not.toHaveBeenCalled();
   });
 
+  it("accepts a Postgres-valid non-v4 UUID (reaches the service, not 400)", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+    // Nil UUID — Postgres-valid but rejected by z.string().uuid() (version nibble 0).
+    const nonV4 = "00000000-0000-0000-0000-000000000000";
+
+    const res = await POST(makeRequest({ archived: true }), context(nonV4));
+
+    expect(res.status).toBe(200);
+    expect(archiveConversation).toHaveBeenCalledWith(
+      expect.anything(),
+      nonV4,
+      "user-aaa",
+      true,
+    );
+  });
+
   it("returns 400 when archived is missing/not a boolean", async () => {
     mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
 

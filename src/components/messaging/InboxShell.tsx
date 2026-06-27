@@ -40,8 +40,20 @@ export default function InboxShell() {
   const [activeRecipientId, setActiveRecipientId] = useState<string | null>(null);
   const [mobileFoldersOpen, setMobileFoldersOpen] = useState(false);
 
-  const { counts, filterByFolder, isLoading, error } = useInboxFolders();
+  const {
+    conversations: allConversations,
+    counts,
+    filterByFolder,
+    isLoading,
+    error,
+  } = useInboxFolders();
   const conversations = filterByFolder(activeFolder);
+
+  // Name shown in the thread header — looked up from the open conversation so
+  // the header reads e.g. "Tom Richards" (with initials), not a generic label.
+  const activeParticipantName =
+    allConversations.find((c) => c.id === activeConversation)?.participant_name ??
+    undefined;
 
   // Realtime: refresh the inbox when either participant column changes.
   useEffect(() => {
@@ -158,7 +170,11 @@ export default function InboxShell() {
         )}
       >
         {activeConversation ? (
-          <MessageThread conversationId={activeConversation} recipientId={activeRecipientId ?? ""} />
+          <MessageThread
+            conversationId={activeConversation}
+            recipientId={activeRecipientId ?? ""}
+            participantName={activeParticipantName}
+          />
         ) : (
           <div className="flex flex-1 items-center justify-center bg-surface text-sm text-muted-foreground">
             Select a conversation to start messaging

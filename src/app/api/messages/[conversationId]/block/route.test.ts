@@ -79,10 +79,26 @@ describe("POST /api/messages/[conversationId]/block", () => {
   it("returns 400 for a non-uuid conversationId", async () => {
     mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
 
-    const res = await POST(makeRequest(), context("nope"));
+    const res = await POST(makeRequest(), context("not-a-uuid"));
 
     expect(res.status).toBe(400);
     expect(setConversationBlocked).not.toHaveBeenCalled();
+  });
+
+  it("accepts a Postgres-valid non-v4 UUID (reaches the service, not 400)", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+    // Nil UUID — Postgres-valid but rejected by z.string().uuid() (version nibble 0).
+    const nonV4 = "00000000-0000-0000-0000-000000000000";
+
+    const res = await POST(makeRequest({ blocked: true }), context(nonV4));
+
+    expect(res.status).toBe(200);
+    expect(setConversationBlocked).toHaveBeenCalledWith(
+      expect.anything(),
+      nonV4,
+      "user-aaa",
+      true,
+    );
   });
 
   it("returns 400 when blocked is not a boolean", async () => {
