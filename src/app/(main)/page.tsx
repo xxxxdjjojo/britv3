@@ -20,6 +20,7 @@ import {
   Key,
 } from "lucide-react";
 import { PropertyCardGrid } from "@/components/shared/PropertyCardGrid";
+import { HomeSearchBar } from "@/components/search/HomeSearchBar";
 import { brandConfig } from "@/config/brand";
 
 export const metadata: Metadata = {
@@ -237,47 +238,18 @@ export default function HomePage() {
               </div>
 
               <div className="w-full max-w-[640px] mt-4">
-                {/* Fix 3: Buy / Rent / Services Tabs → Links */}
-                <div className="flex justify-center mb-4 gap-1 p-1 bg-white/20 backdrop-blur-md rounded-lg w-fit mx-auto">
-                  <Link
-                    href="/search?type=buy"
-                    className="px-6 py-2 bg-white text-brand-primary text-sm font-bold rounded-md shadow-sm"
-                  >
-                    Buy
-                  </Link>
-                  <Link
-                    href="/search?type=rent"
-                    className="px-6 py-2 text-white hover:bg-white/10 text-sm font-medium rounded-md transition-colors"
-                  >
-                    Rent
-                  </Link>
+                {/* Real, wired property search — types a town/postcode/address and
+                    navigates to /search?type=&q= (see HomeSearchBar). A "Find
+                    Services" shortcut sits beside it for the non-property path. */}
+                <HomeSearchBar />
+                <div className="mt-3 flex justify-center">
                   <Link
                     href="/search?type=find-services"
-                    className="px-6 py-2 text-white hover:bg-white/10 text-sm font-medium rounded-md transition-colors"
+                    className="text-sm font-semibold text-white/90 underline-offset-4 transition-colors hover:text-white hover:underline"
                   >
-                    Find Services
+                    Or find a verified service professional →
                   </Link>
                 </div>
-
-                {/* Fix 1: Search bar → Link container */}
-                <Link
-                  href="/search"
-                  className="flex w-full items-stretch rounded-xl h-14 sm:h-16 bg-white shadow-xl ring-4 ring-black/5 hover:ring-brand-primary/20 transition-shadow cursor-text"
-                  aria-label="Search properties"
-                >
-                  <div className="text-neutral-400 flex items-center justify-center pl-5 pr-3 rounded-l-xl">
-                    <Search className="size-5" />
-                  </div>
-                  <span className="flex w-full min-w-0 flex-1 items-center text-neutral-400 text-base font-normal h-full px-2">
-                    Search by school, commute, or lifestyle...
-                  </span>
-                  <div className="flex items-center justify-center pr-2 rounded-r-xl">
-                    <span className="flex items-center gap-2 h-10 sm:h-12 px-5 sm:px-6 bg-brand-primary hover:bg-brand-primary-light text-white text-sm sm:text-base font-bold rounded-lg transition-transform active:scale-95 shadow-md">
-                      <Sparkles className="size-[18px]" />
-                      <span className="hidden sm:inline">Ask AI</span>
-                    </span>
-                  </div>
-                </Link>
 
                 {/* Trust Bar */}
                 <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-white/90 text-sm font-semibold drop-shadow-sm">
