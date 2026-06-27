@@ -36,6 +36,37 @@ describe("isFeatureEnabled", () => {
     process.env["NEXT_PUBLIC_ENABLE_OFFLINE_MODE"] = "";
     expect(isFeatureEnabled("offline_mode")).toBe(false);
   });
+
+  // Regression guard for the prod bug: every known flag must resolve via a
+  // STATIC process.env.NEXT_PUBLIC_ENABLE_* reference (a dynamic computed-key
+  // read resolves to undefined in the Next.js production server bundle). If a
+  // flag is added to KNOWN_FEATURES without a matching static line in flagEnv,
+  // this catches it.
+  const KNOWN = [
+    "ai_descriptions",
+    "push_notifications",
+    "offline_mode",
+    "jwt_claims_middleware",
+    "search_live_data",
+    "local_area_intelligence",
+    "search_rental_filters",
+    "search_mock_data",
+  ];
+
+  for (const flag of KNOWN) {
+    it(`wires the static env reference for '${flag}'`, () => {
+      const key = `NEXT_PUBLIC_ENABLE_${flag.toUpperCase()}`;
+      process.env[key] = "true";
+      expect(isFeatureEnabled(flag)).toBe(true);
+      process.env[key] = "false";
+      expect(isFeatureEnabled(flag)).toBe(false);
+    });
+  }
+
+  it("search_mock_data reads true (the prod regression)", () => {
+    process.env["NEXT_PUBLIC_ENABLE_SEARCH_MOCK_DATA"] = "true";
+    expect(isFeatureEnabled("search_mock_data")).toBe(true);
+  });
 });
 
 describe("features", () => {
