@@ -7,10 +7,12 @@ const nextConfig: NextConfig = {
   // assets ENOENT at runtime). Keeping them external lets `require()` resolve
   // them from node_modules, which Vercel's file tracing ships with the function.
   //   - @react-pdf/renderer: reads font files.
-  //   - jsdom (pulled in by isomorphic-dompurify): reads default-stylesheet.css.
+  //   - isomorphic-dompurify -> jsdom: jsdom reads default-stylesheet.css at load.
   //     Bundling it caused GET /api/messages?count_only=true to 500 on every
-  //     request (the unread badge) — see src/lib/validation/sanitize-text.ts.
-  serverExternalPackages: ["@react-pdf/renderer", "jsdom"],
+  //     request (the unread badge). The jsdom-free server hot paths now import from
+  //     src/lib/validation/sanitize-text.ts; this keeps the remaining server
+  //     DOMPurify use (SafeHTML's sanitizeHtml) resolving jsdom from node_modules.
+  serverExternalPackages: ["@react-pdf/renderer", "isomorphic-dompurify", "jsdom"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/**" },

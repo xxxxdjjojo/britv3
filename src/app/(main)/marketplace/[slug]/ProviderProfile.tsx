@@ -21,7 +21,7 @@ import type {
   ProviderRatingStats,
 } from "@/types/marketplace";
 import { CATEGORY_LABELS } from "@/lib/marketplace/category-labels";
-import { sanitizeUrl } from "@/lib/validation/sanitize";
+import { sanitizeUrl } from "@/lib/validation/sanitize-text";
 
 type ProviderData = {
   user_id: string;

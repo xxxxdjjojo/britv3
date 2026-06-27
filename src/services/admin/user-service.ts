@@ -1,7 +1,7 @@
 /* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
+import { sanitizePostgrestInput } from "@/lib/validation/sanitize-text";
 import type { AdminRole } from "@/lib/admin-permissions";
 
 export type UserSearchResult = {
