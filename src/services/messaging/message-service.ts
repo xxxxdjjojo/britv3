@@ -90,20 +90,22 @@ async function validateMessagingRoles(
 async function assertRecipientNotBlocking(
   supabase: SupabaseClient,
   conversationId: string,
-  recipientId: string,
 ): Promise<void> {
-  const { data, error } = await supabase
-    .from("conversation_read_status")
-    .select("blocked_at")
-    .eq("conversation_id", conversationId)
-    .eq("user_id", recipientId)
-    .maybeSingle();
+  // RLS hides the recipient's conversation_read_status row from the sender, so a
+  // direct read fail-OPENS (zero rows → "not blocked"). Enforce via the
+  // SECURITY DEFINER RPC, which reads past RLS but returns only a boolean and
+  // only for a conversation the caller participates in. See migration
+  // 20260627192215_block_check_security_definer.sql.
+  const { data: blocked, error } = await supabase.rpc(
+    "is_conversation_blocked_by_recipient",
+    { p_conversation_id: conversationId },
+  );
 
   if (error) {
     throw new Error(`Failed to check block status: ${error.message}`);
   }
 
-  if (data?.blocked_at) {
+  if (blocked) {
     throw new MessagingAuthorizationError(
       "This recipient is no longer accepting messages in this conversation",
     );
@@ -297,7 +299,7 @@ export async function sendMessage(
     conversationId = conv.id;
   } else {
     // Existing conversation supplied directly — enforce the recipient's block.
-    await assertRecipientNotBlocking(supabase, conversationId, input.recipient_id);
+    await assertRecipientNotBlocking(supabase, conversationId);
   }
 
   // Insert message
@@ -368,7 +370,7 @@ export async function getOrCreateConversation(
   const { data: existing } = await query.limit(1).single();
 
   if (existing) {
-    await assertRecipientNotBlocking(supabase, existing.id, recipientId);
+    await assertRecipientNotBlocking(supabase, existing.id);
     return { id: existing.id };
   }
 
@@ -387,7 +389,7 @@ export async function getOrCreateConversation(
 
   if (error) throw new Error(`Failed to create conversation: ${error.message}`);
 
-  await assertRecipientNotBlocking(supabase, created.id, recipientId);
+  await assertRecipientNotBlocking(supabase, created.id);
 
   return { id: created.id };
 }
