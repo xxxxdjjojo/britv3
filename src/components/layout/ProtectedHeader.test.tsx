@@ -94,6 +94,51 @@ describe("ProtectedHeader", () => {
     );
   });
 
+  // Regression guard for the real-browser failure: a desktop click is ALWAYS
+  // preceded by the pointer entering the target. The previous implementation
+  // opened the menu on `mouseenter` (custom hover state) and then Base UI's
+  // trigger-press toggled it straight back shut — so clicking the avatar never
+  // opened anything. A bare `fireEvent.click` (no preceding enter) hid the bug.
+  // The menu MUST be open after the enter→click sequence.
+  it("opens the menu when the avatar is pointed at and then clicked (real pointer order)", () => {
+    render(<ProtectedHeader />);
+    const trigger = screen.getByRole("button", { name: /open profile menu/i });
+
+    fireEvent.mouseEnter(trigger);
+    fireEvent.click(trigger);
+
+    const menu = screen.getByRole("menu");
+    expect(within(menu).getByRole("menuitem", { name: /profile/i })).toHaveAttribute(
+      "href",
+      "/profile",
+    );
+    expect(within(menu).getByRole("menuitem", { name: /settings/i })).toHaveAttribute(
+      "href",
+      "/settings",
+    );
+    expect(within(menu).getByRole("menuitem", { name: /help/i })).toHaveAttribute(
+      "href",
+      "/help",
+    );
+    expect(within(menu).getByRole("menuitem", { name: /log out/i })).toBeInTheDocument();
+  });
+
+  // Keyboard users must be able to open the menu too (accessibility contract).
+  it("opens the menu via the keyboard (Enter on the focused trigger)", () => {
+    render(<ProtectedHeader />);
+    const trigger = screen.getByRole("button", { name: /open profile menu/i });
+
+    trigger.focus();
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter" });
+    fireEvent.keyUp(trigger, { key: "Enter", code: "Enter" });
+
+    const menu = screen.getByRole("menu");
+    expect(within(menu).getByRole("menuitem", { name: /profile/i })).toHaveAttribute(
+      "href",
+      "/profile",
+    );
+  });
+
   it("logs the user out when Log out is clicked", () => {
     render(<ProtectedHeader />);
     fireEvent.click(screen.getByRole("button", { name: /open profile menu/i }));
