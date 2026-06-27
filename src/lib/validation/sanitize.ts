@@ -28,15 +28,26 @@ export function sanitizeHtml(dirty: string): string {
 /**
  * Strip ALL HTML tags, returning plain text only.
  * Returns empty string for null/undefined input.
+ *
+ * Dependency-free on purpose: this is a plain-text stripper that needs no DOM,
+ * so it must NOT pull isomorphic-dompurify/jsdom into server bundles (jsdom's
+ * runtime `readFileSync` of a CSS asset 500'd the messaging route in prod).
+ * Every caller renders the result as React-escaped text — never as raw HTML —
+ * so a regex strip is safe here. `sanitizeHtml` (below) keeps DOMPurify because
+ * it legitimately allowlists tags for `dangerouslySetInnerHTML`.
  */
 export function sanitizeText(dirty: string): string {
   if (dirty == null) return "";
   if (typeof dirty !== "string") return "";
 
-  return DOMPurify.sanitize(dirty, {
-    ALLOWED_TAGS: [],
-    ALLOWED_ATTR: [],
-  });
+  return (
+    dirty
+      // Drop complete tags: <tag ...>, </tag>, <!-- ... -->, etc.
+      .replace(/<[^>]*>/g, "")
+      // Drop a trailing unterminated tag with no closing `>` (e.g. an
+      // attribute-laden `<img src=x onerror=...` truncated at end of input).
+      .replace(/<[^>]*$/g, "")
+  );
 }
 
 /**

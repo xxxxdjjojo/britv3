@@ -29,9 +29,12 @@ const nextConfig: NextConfig = {
   // `.next/browser/`, but output file tracing can't see the dynamic readFileSync,
   // so the asset was never copied into the serverless bundle — every route that
   // imports the sanitizer (e.g. GET /api/messages) threw ENOENT → 500 in prod.
-  // Force-include it for all server routes so the inbox loads.
+  // `sanitizeText` is now DOM-free so the messaging route no longer drags jsdom
+  // in, but `sanitizeHtml` (and other surfaces) still can — keep this as
+  // belt-and-suspenders. `/**/*` matches routes at ANY depth (the two-segment
+  // `/api/messages` included); `/*` would only reliably match top-level routes.
   outputFileTracingIncludes: {
-    "/*": [".next/browser/default-stylesheet.css"],
+    "/**/*": [".next/browser/default-stylesheet.css"],
   },
   webpack(config, { isServer }) {
     if (isServer) {
