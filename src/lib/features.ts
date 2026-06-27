@@ -32,14 +32,27 @@ function flagEnv(): Record<KnownFeature, string | undefined> {
 
 /**
  * Check if a feature flag is enabled via environment variables.
- * Reads the static `NEXT_PUBLIC_ENABLE_{NAME}` reference and returns true only
- * if the value is exactly "true". Unknown flags are always false.
+ *
+ * Reads in two layers, most-reliable first:
+ *  1. RUNTIME dynamic `process.env[key]` — on the server (where every caller of
+ *     this lives) this resolves the live value per-request and is immune to any
+ *     build-time NEXT_PUBLIC inlining quirk. On Vercel the production env var is
+ *     injected into the function runtime, so this is the source of truth there.
+ *  2. STATIC `process.env.NEXT_PUBLIC_ENABLE_*` map (flagEnv) — the build-inlined
+ *     fallback, which is all that exists in client bundles (where dynamic
+ *     `process.env[key]` is undefined).
+ *
+ * Returns true only if the resolved value is exactly "true". Unknown flags are
+ * always false.
  *
  * Upgrade path: Replace env var reads with PostHog feature flag API calls
  * (posthog.isFeatureEnabled(name)) when remote feature flag management is needed.
  */
 export function isFeatureEnabled(name: string): boolean {
-  return flagEnv()[name.toLowerCase() as KnownFeature] === "true";
+  const key = name.toLowerCase();
+  const runtime = process.env[`NEXT_PUBLIC_ENABLE_${key.toUpperCase()}`];
+  if (runtime !== undefined) return runtime === "true";
+  return flagEnv()[key as KnownFeature] === "true";
 }
 
 /**
