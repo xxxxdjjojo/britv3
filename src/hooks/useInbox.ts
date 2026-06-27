@@ -141,6 +141,8 @@ export function useDraft(conversationId: string | undefined) {
   return {
     draft: query.data?.draft ?? null,
     isLoading: query.isLoading,
+    /** True when the most recent draft save failed (text is never lost on screen). */
+    saveFailed: saveMutation.isError,
     save: (text: string) => saveMutation.mutate(text),
     clear: () => clearMutation.mutate(),
   };
