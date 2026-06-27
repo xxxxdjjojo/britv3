@@ -1,6 +1,6 @@
 import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { sanitizeCmsHtml } from "@/lib/validation/sanitize-cms";
-import { sanitizeText } from "@/lib/validation/sanitize";
+import { sanitizeText } from "@/lib/validation/sanitize-text";
 
 type CmsPayload = {
   title?: string;

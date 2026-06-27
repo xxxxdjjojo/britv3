@@ -1,5 +1,5 @@
 import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
-import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
+import { sanitizePostgrestInput } from "@/lib/validation/sanitize-text";
 
 export async function POST(req: Request) {
   return auditedAdminActionWithPermission(

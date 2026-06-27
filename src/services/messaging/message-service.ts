@@ -13,7 +13,7 @@ import type {
   Message,
 } from "@/types/messaging";
 import type { UserRole } from "@/types/auth";
-import { sanitizeText } from "@/lib/validation/sanitize";
+import { sanitizeText } from "@/lib/validation/sanitize-text";
 
 // ---------------------------------------------------------------------------
 // Role-relationship validation for messaging (BUG-5)
