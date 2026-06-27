@@ -83,6 +83,7 @@ function createMockClient(tableResolvers: Record<string, { data: unknown; error:
 
   return {
     from: fromFn,
+    rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
     auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: "user-aaa" } } }) },
     storage: {
       from: vi.fn().mockReturnValue({
@@ -247,10 +248,10 @@ describe("sendMessage", () => {
     };
 
     let callIndex = 0;
-    const blockBuilder = createBuilder({ data: null, error: null });
+    // Block check now runs via the SECURITY DEFINER RPC (not a from() read).
     const msgBuilder = createBuilder({ data: insertedMsg, error: null });
     const convBuilder = createBuilder({ data: null, error: null });
-    const builders = [blockBuilder, msgBuilder, convBuilder];
+    const builders = [msgBuilder, convBuilder];
 
     const client = {
       from: vi.fn(() => {
@@ -258,6 +259,7 @@ describe("sendMessage", () => {
         callIndex++;
         return b;
       }),
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
     } as unknown as SupabaseClient;
 
     await sendMessage(client, "user-aaa", {
@@ -296,7 +298,7 @@ describe("sendMessage", () => {
       }), // profiles validation
       createBuilder({ data: null, error: null }), // existing conv check
       createBuilder({ data: { id: "conv-new" }, error: null }), // insert conv
-      createBuilder({ data: null, error: null }), // recipient block-status check
+      // (block check now runs via RPC, not a from() read)
       createBuilder({ data: insertedMsg, error: null }), // insert msg
       createBuilder({ data: null, error: null }), // update last_message_at
     ];
@@ -307,6 +309,7 @@ describe("sendMessage", () => {
         callIndex++;
         return b;
       }),
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
     } as unknown as SupabaseClient;
 
     const result = await sendMessage(client, "user-aaa", {
@@ -396,7 +399,7 @@ describe("getOrCreateConversation", () => {
         error: null,
       }), // profiles validation
       createBuilder({ data: { id: "conv-existing" }, error: null }), // existing conv
-      createBuilder({ data: null, error: null }), // recipient block-status check
+      // (block check now runs via RPC, not a from() read)
     ];
 
     const client = {
@@ -405,6 +408,7 @@ describe("getOrCreateConversation", () => {
         callIndex++;
         return b;
       }),
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
     } as unknown as SupabaseClient;
 
     const result = await getOrCreateConversation(
@@ -415,8 +419,13 @@ describe("getOrCreateConversation", () => {
     );
 
     expect(result.id).toBe("conv-existing");
-    // Validation + lookup + block check = 3 from() calls (no insert needed)
-    expect(client.from).toHaveBeenCalledTimes(3);
+    // Validation + lookup = 2 from() calls (no insert needed); the block check
+    // is now a separate SECURITY DEFINER RPC, not a from() read.
+    expect(client.from).toHaveBeenCalledTimes(2);
+    expect(client.rpc).toHaveBeenCalledWith(
+      "is_conversation_blocked_by_recipient",
+      { p_conversation_id: "conv-existing" },
+    );
   });
 
   it("throws MessagingAuthorizationError for a disallowed role pair", async () => {
@@ -576,24 +585,33 @@ describe("getDraft", () => {
 // ---------------------------------------------------------------------------
 
 describe("sendMessage block enforcement", () => {
-  it("rejects when the recipient has blocked this conversation", async () => {
-    let callIndex = 0;
-    // sendMessage with an existing conversation_id:
-    //   1. recipient block-status lookup (blocked_at set) -> reject before insert
-    const builders = [
-      createBuilder({
-        data: { blocked_at: "2026-01-15T10:00:00Z" },
+  // Faithful to production: RLS on conversation_read_status is
+  // `USING (user_id = auth.uid())`, so the SENDER reading the RECIPIENT's row
+  // gets ZERO rows back — `conversation_read_status` resolves to null even when
+  // the recipient really has blocked. The block must therefore be enforced via
+  // the SECURITY DEFINER RPC `is_conversation_blocked_by_recipient` (which reads
+  // past RLS and returns only a boolean), NOT a direct table read.
+  it("rejects when the recipient has blocked, even though RLS hides the row from the sender", async () => {
+    const client = createMockClient({
+      // RLS-filtered: the sender cannot see the recipient's block row.
+      conversation_read_status: { data: null, error: null },
+      messages: {
+        data: {
+          id: "msg-1",
+          conversation_id: "conv-001",
+          sender_id: "user-aaa",
+          content: "Hello",
+          created_at: "2026-01-15T10:00:00Z",
+        },
         error: null,
-      }),
-    ];
-
-    const client = {
-      from: vi.fn(() => {
-        const b = builders[callIndex] ?? createBuilder({ data: null, error: null });
-        callIndex++;
-        return b;
-      }),
-    } as unknown as SupabaseClient;
+      },
+      conversations: { data: null, error: null },
+    });
+    // The definer RPC sees the truth: the recipient blocked this conversation.
+    (client.rpc as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: true,
+      error: null,
+    });
 
     await expect(
       sendMessage(client, "user-aaa", {
@@ -603,6 +621,28 @@ describe("sendMessage block enforcement", () => {
         context_type: "general",
       }),
     ).rejects.toBeInstanceOf(MessagingAuthorizationError);
+
+    // And it must NOT have inserted the message before bailing out.
+    expect(client.from).not.toHaveBeenCalledWith("messages");
+  });
+
+  it("surfaces a real RPC error instead of silently allowing the send", async () => {
+    const client = createMockClient({
+      conversation_read_status: { data: null, error: null },
+    });
+    (client.rpc as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: null,
+      error: { message: "permission denied for function" },
+    });
+
+    await expect(
+      sendMessage(client, "user-aaa", {
+        conversation_id: "conv-001",
+        recipient_id: "user-bbb",
+        content: "Hello",
+        context_type: "general",
+      }),
+    ).rejects.toThrow(/Failed to check block status/);
   });
 });
 
