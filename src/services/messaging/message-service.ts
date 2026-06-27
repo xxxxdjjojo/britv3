@@ -1,4 +1,3 @@
-/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Messaging service -- conversation lifecycle, message CRUD, and read status.
  * All functions accept a Supabase client for testability.
@@ -14,6 +13,7 @@ import type {
 } from "@/types/messaging";
 import type { UserRole } from "@/types/auth";
 import { sanitizeText } from "@/lib/validation/sanitize";
+import { captureException } from "@/lib/observability/capture-exception";
 
 // ---------------------------------------------------------------------------
 // Role-relationship validation for messaging (BUG-5)
@@ -113,59 +113,66 @@ export async function getConversations(
   userId: string,
   filters?: InboxFilters,
 ): Promise<Conversation[]> {
-  try {
-    const { data, error } = await supabase.rpc("get_inbox_for_user", {
-      p_user_id: userId,
+  const { data, error } = await supabase.rpc("get_inbox_for_user", {
+    p_user_id: userId,
+  });
+
+  // A real RPC/DB failure must surface (route returns 500, UI shows the error
+  // banner) — it must NOT be swallowed as an empty inbox. An empty result for a
+  // healthy query is genuinely-empty and returns [].
+  if (error) {
+    captureException(error, {
+      module: "communication",
+      feature: "message-service",
+      operation: "getConversations",
+      extra: { userId },
     });
-
-    if (error) throw new Error(`Failed to load conversations: ${error.message}`);
-    if (!data || data.length === 0) return [];
-
-    let conversations = (data as Array<{
-      id: string;
-      participant_1_id: string;
-      participant_2_id: string;
-      context_type: string;
-      context_id: string | null;
-      last_message_at: string;
-      created_at: string;
-      participant_name: string | null;
-      last_message_preview: string | null;
-      unread_count: number;
-    }>).map((row) => ({
-      id: row.id,
-      participant_1_id: row.participant_1_id,
-      participant_2_id: row.participant_2_id,
-      context_type: row.context_type as ContextType,
-      context_id: row.context_id,
-      last_message_at: new Date(row.last_message_at),
-      created_at: new Date(row.created_at),
-      participant_name: row.participant_name,
-      last_message_preview: row.last_message_preview,
-      unread_count: Number(row.unread_count),
-    } as Conversation));
-
-    // Apply client-side filters that RPC doesn't handle
-    if (filters?.context_type) {
-      conversations = conversations.filter(
-        (c) => c.context_type === filters.context_type,
-      );
-    }
-
-    if (filters?.search) {
-      const term = filters.search.toLowerCase();
-      conversations = conversations.filter(
-        (c) =>
-          c.participant_name?.toLowerCase().includes(term) ||
-          c.last_message_preview?.toLowerCase().includes(term),
-      );
-    }
-
-    return conversations;
-  } catch (err) {
-    console.error("getConversations error:", err);
-    return [];
+    throw new Error(`Failed to load conversations: ${error.message}`);
   }
+
+  if (!data || data.length === 0) return [];
+
+  let conversations = (data as Array<{
+    id: string;
+    participant_1_id: string;
+    participant_2_id: string;
+    context_type: string;
+    context_id: string | null;
+    last_message_at: string;
+    created_at: string;
+    participant_name: string | null;
+    last_message_preview: string | null;
+    unread_count: number;
+  }>).map((row) => ({
+    id: row.id,
+    participant_1_id: row.participant_1_id,
+    participant_2_id: row.participant_2_id,
+    context_type: row.context_type as ContextType,
+    context_id: row.context_id,
+    last_message_at: new Date(row.last_message_at),
+    created_at: new Date(row.created_at),
+    participant_name: row.participant_name,
+    last_message_preview: row.last_message_preview,
+    unread_count: Number(row.unread_count),
+  } as Conversation));
+
+  // Apply client-side filters that RPC doesn't handle
+  if (filters?.context_type) {
+    conversations = conversations.filter(
+      (c) => c.context_type === filters.context_type,
+    );
+  }
+
+  if (filters?.search) {
+    const term = filters.search.toLowerCase();
+    conversations = conversations.filter(
+      (c) =>
+        c.participant_name?.toLowerCase().includes(term) ||
+        c.last_message_preview?.toLowerCase().includes(term),
+    );
+  }
+
+  return conversations;
 }
 
 // ---------------------------------------------------------------------------
@@ -374,15 +381,19 @@ export async function getUnreadCount(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<number> {
-  try {
-    const { data, error } = await supabase.rpc("get_unread_count", {
-      p_user_id: userId,
-    });
+  const { data, error } = await supabase.rpc("get_unread_count", {
+    p_user_id: userId,
+  });
 
-    if (error) throw new Error(`Failed to get unread count: ${error.message}`);
-    return Number(data ?? 0);
-  } catch (err) {
-    console.error("getUnreadCount error:", err);
-    return 0;
+  if (error) {
+    captureException(error, {
+      module: "communication",
+      feature: "message-service",
+      operation: "getUnreadCount",
+      extra: { userId },
+    });
+    throw new Error(`Failed to get unread count: ${error.message}`);
   }
+
+  return Number(data ?? 0);
 }

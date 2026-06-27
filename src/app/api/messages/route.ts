@@ -1,4 +1,3 @@
-/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * GET /api/messages -- list conversations for current user.
  *   ?count_only=true returns { count: number } (unread conversations).
@@ -20,6 +19,7 @@ import {
 import { createRateLimiter } from "@/lib/cache/redis";
 import { captureListingMessageIntroduction } from "@/lib/truedeed/capture-message";
 import { notifyNewMessage } from "@/services/messaging/message-notifications";
+import { captureException } from "@/lib/observability/capture-exception";
 import type { InboxFilters, ContextType } from "@/types/messaging";
 
 /** 10 messages per minute per user — shared across message endpoints. */
@@ -54,7 +54,12 @@ export async function GET(request: NextRequest) {
     const conversations = await getConversations(supabase, user.id, filters);
     return NextResponse.json({ conversations });
   } catch (err) {
-    console.error("[GET /api/messages]", err);
+    captureException(err, {
+      module: "communication",
+      feature: "messaging-api",
+      route: "/api/messages",
+      operation: "GET",
+    });
     return NextResponse.json({ error: "Failed to load inbox" }, { status: 500 });
   }
 }
@@ -109,7 +114,12 @@ export async function POST(request: NextRequest) {
     if (err instanceof MessagingAuthorizationError) {
       return NextResponse.json({ error: err.message }, { status: 403 });
     }
-    console.error("[POST /api/messages]", err);
+    captureException(err, {
+      module: "communication",
+      feature: "messaging-api",
+      route: "/api/messages",
+      operation: "POST",
+    });
     return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   }
 }

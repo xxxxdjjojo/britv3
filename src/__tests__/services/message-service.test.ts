@@ -130,6 +130,23 @@ describe("getConversations", () => {
     const result = await getConversations(client, "user-aaa");
     expect(result).toEqual([]);
   });
+
+  it("throws on a real RPC failure instead of masking it as an empty inbox", async () => {
+    // Guard: a broken query must surface (route → 500, UI shows the error
+    // banner), not be swallowed into [] which renders the "no conversations"
+    // empty state and hides the outage.
+    const client = {
+      from: vi.fn(() => createBuilder({ data: null, error: null })),
+      rpc: vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: "function get_inbox_for_user does not exist" },
+      }),
+    } as unknown as SupabaseClient;
+
+    await expect(getConversations(client, "user-aaa")).rejects.toThrow(
+      /Failed to load conversations/,
+    );
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -384,6 +401,20 @@ describe("getUnreadCount", () => {
 
     const count = await getUnreadCount(client, "user-aaa");
     expect(count).toBe(1); // Only conv-002 has unread messages
+  });
+
+  it("throws on a real RPC failure instead of masking it as zero", async () => {
+    const client = {
+      from: vi.fn(() => createBuilder({ data: null, error: null })),
+      rpc: vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: "permission denied for function get_unread_count" },
+      }),
+    } as unknown as SupabaseClient;
+
+    await expect(getUnreadCount(client, "user-aaa")).rejects.toThrow(
+      /Failed to get unread count/,
+    );
   });
 });
 

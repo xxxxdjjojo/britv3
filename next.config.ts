@@ -23,6 +23,16 @@ class EnsureBrowserCssPlugin {
 const nextConfig: NextConfig = {
   // @react-pdf/renderer uses Node.js APIs and cannot be bundled for SSR
   serverExternalPackages: ["@react-pdf/renderer"],
+  // jsdom (pulled in server-side by isomorphic-dompurify, used in the messaging
+  // sanitizer) reads `../../browser/default-stylesheet.css` relative to its
+  // bundled chunk at runtime. EnsureBrowserCssPlugin writes that file into
+  // `.next/browser/`, but output file tracing can't see the dynamic readFileSync,
+  // so the asset was never copied into the serverless bundle — every route that
+  // imports the sanitizer (e.g. GET /api/messages) threw ENOENT → 500 in prod.
+  // Force-include it for all server routes so the inbox loads.
+  outputFileTracingIncludes: {
+    "/*": [".next/browser/default-stylesheet.css"],
+  },
   webpack(config, { isServer }) {
     if (isServer) {
       config.plugins = config.plugins ?? [];
