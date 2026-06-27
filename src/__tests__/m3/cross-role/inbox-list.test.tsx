@@ -1,11 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 import { createMockConversation } from "../../fixtures/messaging";
 
-// Drive the list through its data hooks so loading / error / empty / data
-// states are deterministic with no network or auth dependency.
-const useInboxMock = vi.fn();
-vi.mock("@/hooks/useInbox", () => ({ useInbox: () => useInboxMock() }));
+// InboxList is now prop-driven (the shell owns the data hook). It still uses the
+// archive/block mutation hooks and useAuth, so stub those and wrap in a client.
+vi.mock("@/hooks/useInbox", () => ({
+  useArchiveConversation: () => ({ mutate: vi.fn() }),
+  useBlockConversation: () => ({ mutate: vi.fn() }),
+}));
 vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({ user: { id: "user-aaa" }, loading: false }),
 }));
@@ -13,109 +17,97 @@ vi.mock("posthog-js", () => ({ default: { capture: vi.fn() } }));
 
 import InboxList from "@/components/messaging/InboxList";
 
-describe("InboxList states", () => {
-  beforeEach(() => {
-    useInboxMock.mockReset();
-  });
+function renderList(ui: ReactNode) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
+}
 
+describe("InboxList states", () => {
   it("renders skeleton rows while loading", () => {
-    useInboxMock.mockReturnValue({ data: undefined, isLoading: true, error: null });
-    const { container } = render(<InboxList />);
+    const { container } = renderList(
+      <InboxList conversations={[]} folder="inbox" isLoading />,
+    );
     expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(0);
   });
 
   it("renders an error message on error", () => {
-    useInboxMock.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: new Error("boom"),
-    });
-    render(<InboxList />);
+    renderList(
+      <InboxList conversations={[]} folder="inbox" error={new Error("boom")} />,
+    );
     expect(screen.getByText("Failed to load conversations")).toBeInTheDocument();
   });
 
-  it("renders the empty state when there are no conversations", () => {
-    useInboxMock.mockReturnValue({
-      data: { conversations: [] },
-      isLoading: false,
-      error: null,
-    });
-    render(<InboxList />);
-    expect(screen.getByText("No conversations found")).toBeInTheDocument();
+  it("renders the folder-specific empty state when there are no conversations", () => {
+    renderList(<InboxList conversations={[]} folder="archived" />);
+    expect(screen.getByText("No archived conversations")).toBeInTheDocument();
   });
 
   it("renders conversation rows with participant name and preview", () => {
-    useInboxMock.mockReturnValue({
-      data: {
-        conversations: [
+    renderList(
+      <InboxList
+        folder="inbox"
+        conversations={[
           createMockConversation({
             id: "c1",
             participant_name: "Alice Johnson",
             last_message_preview: "About the boiler",
             unread_count: 0,
           }),
-        ],
-      },
-      isLoading: false,
-      error: null,
-    });
-    render(<InboxList />);
+        ]}
+      />,
+    );
     expect(screen.getByText("Alice Johnson")).toBeInTheDocument();
     expect(screen.getByText("About the boiler")).toBeInTheDocument();
   });
 
   it("marks unread conversations in the accessible label", () => {
-    useInboxMock.mockReturnValue({
-      data: {
-        conversations: [createMockConversation({ id: "c1", unread_count: 3 })],
-      },
-      isLoading: false,
-      error: null,
-    });
-    render(<InboxList />);
+    renderList(
+      <InboxList
+        folder="inbox"
+        conversations={[createMockConversation({ id: "c1", unread_count: 3 })]}
+      />,
+    );
     const row = screen.getByRole("option");
     expect(row.getAttribute("aria-label")).toContain("unread");
   });
 
   it("does not mark read conversations as unread", () => {
-    useInboxMock.mockReturnValue({
-      data: {
-        conversations: [createMockConversation({ id: "c1", unread_count: 0 })],
-      },
-      isLoading: false,
-      error: null,
-    });
-    render(<InboxList />);
+    renderList(
+      <InboxList
+        folder="inbox"
+        conversations={[createMockConversation({ id: "c1", unread_count: 0 })]}
+      />,
+    );
     expect(screen.getByRole("option").getAttribute("aria-label")).not.toContain("unread");
   });
 
   it("invokes onSelectConversation with conversation id and other participant", () => {
-    useInboxMock.mockReturnValue({
-      data: {
-        conversations: [
+    const onSelect = vi.fn();
+    renderList(
+      <InboxList
+        folder="inbox"
+        onSelectConversation={onSelect}
+        conversations={[
           createMockConversation({
             id: "c1",
             participant_1_id: "user-aaa",
             participant_2_id: "user-bbb",
           }),
-        ],
-      },
-      isLoading: false,
-      error: null,
-    });
-    const onSelect = vi.fn();
-    render(<InboxList onSelectConversation={onSelect} />);
+        ]}
+      />,
+    );
     fireEvent.click(screen.getByRole("option"));
     expect(onSelect).toHaveBeenCalledWith("c1", "user-bbb");
   });
 
   it("marks the active conversation as selected", () => {
-    useInboxMock.mockReturnValue({
-      data: { conversations: [createMockConversation({ id: "c1" })] },
-      isLoading: false,
-      error: null,
-    });
-    render(<InboxList activeId="c1" />);
+    renderList(
+      <InboxList
+        folder="inbox"
+        activeId="c1"
+        conversations={[createMockConversation({ id: "c1" })]}
+      />,
+    );
     expect(screen.getByRole("option")).toHaveAttribute("aria-selected", "true");
   });
 });

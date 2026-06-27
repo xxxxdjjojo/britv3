@@ -1,19 +1,36 @@
 "use client";
 
 /**
- * InboxList -- Conversation list wired to real useInbox() hook.
+ * InboxList -- presentational conversation list. Receives an already
+ * folder-filtered conversation list from the shell and renders rows with
+ * swipe-to-archive plus a per-row archive / mark-as-spam action menu.
  */
 
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, MoreVertical, Archive, ArchiveRestore, ShieldAlert, ShieldCheck } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useInbox } from "@/hooks/useInbox";
+import { useArchiveConversation, useBlockConversation } from "@/hooks/useInbox";
 import { useAuth } from "@/hooks/useAuth";
 import posthog from "posthog-js";
-import type { Conversation } from "@/types/messaging";
+import type { Conversation, Folder } from "@/types/messaging";
+
+const EMPTY_STATE_BY_FOLDER: Record<Folder, string> = {
+  inbox: "No conversations yet",
+  unread: "No unread conversations",
+  sent: "No sent conversations",
+  drafts: "No drafts",
+  archived: "No archived conversations",
+  spam: "No blocked conversations",
+};
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -46,9 +63,10 @@ function SwipeableConversationRow(
   props: Readonly<{
     children: React.ReactNode;
     onArchive: () => void;
+    actionLabel?: string;
   }>,
 ) {
-  const { children, onArchive } = props;
+  const { children, onArchive, actionLabel = "Archive" } = props;
   const [offset, setOffset] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -93,7 +111,7 @@ function SwipeableConversationRow(
         style={{ opacity: offset < 0 ? 1 : 0 }}
         aria-hidden="true"
       >
-        Archive
+        {actionLabel}
       </div>
 
       {/* Swipeable row */}
@@ -122,10 +140,13 @@ function ConversationRow(
     isActive: boolean;
     currentUserId: string;
     onSelect: (id: string, recipientId: string) => void;
+    onArchive: () => void;
+    onBlock: () => void;
     buttonRef: (el: HTMLButtonElement | null) => void;
   }>,
 ) {
-  const { conversation: conv, isActive, currentUserId, onSelect, buttonRef } = props;
+  const { conversation: conv, isActive, currentUserId, onSelect, onArchive, onBlock, buttonRef } =
+    props;
 
   const otherUserId =
     conv.participant_1_id === currentUserId
@@ -140,58 +161,109 @@ function ConversationRow(
   const lastMessage = conv.last_message_preview ?? "No messages yet";
   const timestamp = relativeTime(conv.last_message_at);
   const hasUnread = conv.unread_count > 0;
+  const isArchived = conv.archived_at != null;
+  const isBlocked = conv.blocked_at != null;
 
   const ariaLabel = `${name}, ${lastMessage}, ${timestamp}${hasUnread ? ", unread" : ""}`;
 
   return (
-    <button
-      ref={buttonRef}
-      type="button"
-      role="option"
-      aria-selected={isActive}
-      aria-label={ariaLabel}
-      onClick={() => {
-        posthog.capture("conversation_opened", {
-          conversation_id: conv.id,
-          has_unread: hasUnread,
-        });
-        onSelect(conv.id, otherUserId);
-      }}
+    <div
       className={cn(
-        "flex items-center gap-3 w-full text-left rounded-xl px-3 py-3 transition-colors bg-surface hover:bg-muted/60",
-        isActive && "bg-brand-primary-lighter border-l-2 border-brand-primary",
+        "group/row relative flex items-center rounded-xl bg-surface transition-colors hover:bg-muted/60",
+        isActive && "bg-brand-primary-lighter",
       )}
     >
-      <div className="relative">
-        <Avatar>
-          <AvatarFallback className="bg-brand-primary-lighter text-brand-primary-dark text-sm font-semibold">
-            {initials}
-          </AvatarFallback>
-        </Avatar>
-        {hasUnread && (
-          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-brand-primary border-2 border-surface" />
+      <button
+        ref={buttonRef}
+        type="button"
+        role="option"
+        aria-selected={isActive}
+        aria-label={ariaLabel}
+        onClick={() => {
+          posthog.capture("conversation_opened", {
+            conversation_id: conv.id,
+            has_unread: hasUnread,
+          });
+          onSelect(conv.id, otherUserId);
+        }}
+        className={cn(
+          "flex flex-1 min-w-0 items-center gap-3 rounded-xl px-3 py-3 text-left",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/40",
+          isActive && "border-l-2 border-brand-primary",
         )}
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className={cn(
-              "text-sm truncate",
-              hasUnread ? "font-bold text-brand-primary-dark" : "font-medium text-foreground",
-            )}
-          >
-            {name}
-          </span>
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {timestamp}
-          </span>
+      >
+        <div className="relative shrink-0">
+          <Avatar>
+            <AvatarFallback className="bg-brand-primary-lighter text-brand-primary-dark text-sm font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          {hasUnread && (
+            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-brand-primary border-2 border-surface" />
+          )}
         </div>
-        <p className="text-xs truncate mt-0.5 text-muted-foreground">
-          {lastMessage}
-        </p>
-      </div>
-    </button>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={cn(
+                "text-sm truncate",
+                hasUnread ? "font-bold text-brand-primary-dark" : "font-medium text-foreground",
+              )}
+            >
+              {name}
+            </span>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {timestamp}
+            </span>
+          </div>
+          <p className="text-xs truncate mt-0.5 text-muted-foreground">
+            {lastMessage}
+          </p>
+        </div>
+      </button>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className={cn(
+            "mr-1 inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors",
+            "opacity-0 focus-visible:opacity-100 group-hover/row:opacity-100 data-popup-open:opacity-100",
+            "hover:bg-brand-primary-lighter hover:text-brand-primary-dark",
+          )}
+          aria-label={`Actions for ${name}`}
+        >
+          <MoreVertical className="h-4 w-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={onArchive}>
+            {isArchived ? (
+              <>
+                <ArchiveRestore className="h-4 w-4" />
+                Move to inbox
+              </>
+            ) : (
+              <>
+                <Archive className="h-4 w-4" />
+                Archive
+              </>
+            )}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onBlock} variant={isBlocked ? undefined : "destructive"}>
+            {isBlocked ? (
+              <>
+                <ShieldCheck className="h-4 w-4" />
+                Unblock
+              </>
+            ) : (
+              <>
+                <ShieldAlert className="h-4 w-4" />
+                Mark as spam
+              </>
+            )}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
 
@@ -217,13 +289,29 @@ function SkeletonRow() {
 
 export default function InboxList(
   props: Readonly<{
+    /** Already folder-filtered conversation list (the shell owns the hook). */
+    conversations: Conversation[];
+    /** Which folder these conversations belong to — drives the empty-state copy. */
+    folder: Folder;
+    isLoading?: boolean;
+    error?: unknown;
     activeId?: string;
     onSelectConversation?: (id: string, recipientId: string) => void;
   }>,
 ) {
-  const { activeId, onSelectConversation } = props;
+  const {
+    conversations: folderConversations,
+    folder,
+    isLoading = false,
+    error = null,
+    activeId,
+    onSelectConversation,
+  } = props;
+  const hasError = Boolean(error);
   const { user } = useAuth();
   const currentUserId = user?.id ?? "";
+  const archiveMutation = useArchiveConversation();
+  const blockMutation = useBlockConversation();
   const [search, setSearch] = useState("");
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -269,17 +357,34 @@ export default function InboxList(
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data, isLoading, error } = useInbox({
-    search: search || undefined,
-  });
+  // Search filters the already-folder-filtered list client-side (matches name
+  // or last-message preview). No extra server round-trip per keystroke.
+  const conversations = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return folderConversations;
+    return folderConversations.filter((conv) => {
+      const name = conv.participant_name?.toLowerCase() ?? "";
+      const preview = conv.last_message_preview?.toLowerCase() ?? "";
+      return name.includes(q) || preview.includes(q);
+    });
+  }, [folderConversations, search]);
 
-  const conversations = data?.conversations ?? [];
+  function handleArchive(conv: Conversation) {
+    const archived = conv.archived_at == null;
+    posthog.capture("conversation_archived", {
+      conversation_id: conv.id,
+      archived,
+    });
+    archiveMutation.mutate({ conversationId: conv.id, archived });
+  }
 
-  // TODO: Wire onArchive to a real archive/delete API endpoint once available.
-  // The API route and Supabase mutation for archiving conversations does not
-  // exist yet. For now the swipe gesture reveals the action visually only.
-  function handleArchive(conversationId: string) {
-    posthog.capture("conversation_archive_swiped", { conversation_id: conversationId });
+  function handleBlock(conv: Conversation) {
+    const blocked = conv.blocked_at == null;
+    posthog.capture("conversation_blocked", {
+      conversation_id: conv.id,
+      blocked,
+    });
+    blockMutation.mutate({ conversationId: conv.id, blocked });
   }
 
   return (
@@ -314,30 +419,33 @@ export default function InboxList(
             </>
           )}
 
-          {!isLoading && error && (
+          {!isLoading && hasError && (
             <div className="p-6 text-center text-sm text-destructive">
               Failed to load conversations
             </div>
           )}
 
-          {!isLoading && !error && conversations.length === 0 && (
+          {!isLoading && !hasError && conversations.length === 0 && (
             <div className="p-6 text-center text-sm text-muted-foreground">
-              No conversations found
+              {search.trim() ? "No conversations match your search" : EMPTY_STATE_BY_FOLDER[folder]}
             </div>
           )}
 
           {!isLoading &&
-            !error &&
+            !hasError &&
             conversations.map((conv, index) => (
               <SwipeableConversationRow
                 key={conv.id}
-                onArchive={() => handleArchive(conv.id)}
+                onArchive={() => handleArchive(conv)}
+                actionLabel={conv.archived_at != null ? "Unarchive" : "Archive"}
               >
                 <ConversationRow
                   conversation={conv}
                   isActive={conv.id === activeId}
                   currentUserId={currentUserId}
                   onSelect={onSelectConversation ?? (() => {})}
+                  onArchive={() => handleArchive(conv)}
+                  onBlock={() => handleBlock(conv)}
                   buttonRef={setItemRef(index)}
                 />
               </SwipeableConversationRow>
