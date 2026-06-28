@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DashboardWelcome } from "@/components/dashboard/shared/DashboardWelcome";
 import { SectionHeader } from "@/components/dashboard/SectionHeader";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import {
   Heart,
   Calendar,
@@ -278,12 +279,15 @@ export function HomebuyerDashboard({ data }: Readonly<{ data: HomebuyerData }>) 
 
         {/* Right — Recent Activity (2/3) */}
         <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="text-base">Recent Activity</CardTitle>
-            <Button variant="ghost" size="sm" render={<Link href="/notifications" />}>
-              View all
-              <ArrowRight className="ml-1 size-3" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <DashboardMessagesLink variant="button" className="py-1.5" />
+              <Button variant="ghost" size="sm" render={<Link href="/notifications" />}>
+                View all
+                <ArrowRight className="ml-1 size-3" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col divide-y divide-neutral-200">

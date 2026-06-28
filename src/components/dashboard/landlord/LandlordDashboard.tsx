@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { SectionHeader } from "@/components/dashboard/SectionHeader";
 import { InsightPanel } from "@/components/dashboard/InsightPanel";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import {
   Flame,
   Zap,
@@ -30,7 +31,6 @@ import {
   Wrench,
   Search,
   FileText,
-  Mail,
   ArrowRight,
 } from "lucide-react";
 import type { LandlordDashboard as LandlordData } from "@/types/dashboard";
@@ -63,7 +63,6 @@ const MOCK_COMPLIANCE_ALERTS = [
 const MOCK_QUICK_MANAGEMENT = [
   { id: "1", icon: Search, label: "Find Tradesperson", href: "/dashboard/landlord/maintenance" },
   { id: "2", icon: FileText, label: "Generate Report", href: "/dashboard/landlord/finance/expenses" },
-  { id: "3", icon: Mail, label: "Email All Tenants", href: "/inbox" },
 ];
 
 const MOCK_RENT_COLLECTION = [
@@ -211,6 +210,7 @@ export function LandlordDashboard({ data }: Readonly<{ data: LandlordData }>) {
                 {item.label}
               </Link>
             ))}
+            <DashboardMessagesLink variant="panel" />
           </div>
         </InsightPanel>
       </div>

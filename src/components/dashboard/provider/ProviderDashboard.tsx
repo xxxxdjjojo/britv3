@@ -23,6 +23,7 @@ import {
   Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import type { ProviderDashboard as ProviderData } from "@/types/dashboard";
 
 // -- Mock data ----------------------------------------------------------------
@@ -268,6 +269,7 @@ export function ProviderDashboard({ data }: Readonly<{ data: ProviderData }>) {
                   <FileText className="mr-1.5 size-4" />
                   New Quote
               </Button>
+              <DashboardMessagesLink variant="button" className="col-span-2 w-full" />
             </CardContent>
           </Card>
 

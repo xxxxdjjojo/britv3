@@ -1,4 +1,3 @@
-/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Messaging service -- conversation lifecycle, message CRUD, and read status.
  * All functions accept a Supabase client for testability.
@@ -14,6 +13,8 @@ import type {
 } from "@/types/messaging";
 import type { UserRole } from "@/types/auth";
 import { sanitizeText } from "@/lib/validation/sanitize-text";
+import { captureException } from "@/lib/observability/capture-exception";
+import { postgresUuid } from "@/lib/messaging/conversation-id";
 
 // ---------------------------------------------------------------------------
 // Role-relationship validation for messaging (BUG-5)
@@ -82,17 +83,49 @@ async function validateMessagingRoles(
   }
 }
 
+/**
+ * Reject if the recipient has blocked this conversation (per-conversation
+ * "I marked this as spam, stop their messages"). Checks the recipient's
+ * conversation_read_status row for a non-null blocked_at.
+ */
+async function assertRecipientNotBlocking(
+  supabase: SupabaseClient,
+  conversationId: string,
+): Promise<void> {
+  // RLS hides the recipient's conversation_read_status row from the sender, so a
+  // direct read fail-OPENS (zero rows → "not blocked"). Enforce via the
+  // SECURITY DEFINER RPC, which reads past RLS but returns only a boolean and
+  // only for a conversation the caller participates in. See migration
+  // 20260627192215_block_check_security_definer.sql.
+  const { data: blocked, error } = await supabase.rpc(
+    "is_conversation_blocked_by_recipient",
+    { p_conversation_id: conversationId },
+  );
+
+  if (error) {
+    throw new Error(`Failed to check block status: ${error.message}`);
+  }
+
+  if (blocked) {
+    throw new MessagingAuthorizationError(
+      "This recipient is no longer accepting messages in this conversation",
+    );
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Zod schemas
 // ---------------------------------------------------------------------------
 
 export const sendMessageSchema = z.object({
-  conversation_id: z.string().uuid().optional(),
-  recipient_id: z.string().uuid(),
+  // Postgres-valid UUID (any version) — not z.string().uuid(), which enforces
+  // RFC-4122 bits and spuriously 400s on seeded/legacy ids the DB accepts.
+  conversation_id: postgresUuid.optional(),
+  recipient_id: postgresUuid,
   content: z.string().min(1, "Message cannot be empty").max(5000, "Message too long (max 5 000 chars)"),
   context_type: z.enum(["listing", "booking", "rfq", "general"]),
-  context_id: z.string().uuid().optional(),
-  message_id: z.string().uuid().optional(),
+  context_id: postgresUuid.optional(),
+  message_id: postgresUuid.optional(),
   attachment_url: z.string().url().optional(),
   attachment_type: z.enum(["image", "pdf"]).optional(),
   attachment_size_bytes: z.number().int().positive().optional(),
@@ -113,59 +146,74 @@ export async function getConversations(
   userId: string,
   filters?: InboxFilters,
 ): Promise<Conversation[]> {
-  try {
-    const { data, error } = await supabase.rpc("get_inbox_for_user", {
-      p_user_id: userId,
+  const { data, error } = await supabase.rpc("get_inbox_for_user", {
+    p_user_id: userId,
+  });
+
+  // A real RPC/DB failure must surface (route returns 500, UI shows the error
+  // banner) — it must NOT be swallowed as an empty inbox. An empty result for a
+  // healthy query is genuinely-empty and returns [].
+  if (error) {
+    captureException(error, {
+      module: "communication",
+      feature: "message-service",
+      operation: "getConversations",
+      extra: { userId },
     });
-
-    if (error) throw new Error(`Failed to load conversations: ${error.message}`);
-    if (!data || data.length === 0) return [];
-
-    let conversations = (data as Array<{
-      id: string;
-      participant_1_id: string;
-      participant_2_id: string;
-      context_type: string;
-      context_id: string | null;
-      last_message_at: string;
-      created_at: string;
-      participant_name: string | null;
-      last_message_preview: string | null;
-      unread_count: number;
-    }>).map((row) => ({
-      id: row.id,
-      participant_1_id: row.participant_1_id,
-      participant_2_id: row.participant_2_id,
-      context_type: row.context_type as ContextType,
-      context_id: row.context_id,
-      last_message_at: new Date(row.last_message_at),
-      created_at: new Date(row.created_at),
-      participant_name: row.participant_name,
-      last_message_preview: row.last_message_preview,
-      unread_count: Number(row.unread_count),
-    } as Conversation));
-
-    // Apply client-side filters that RPC doesn't handle
-    if (filters?.context_type) {
-      conversations = conversations.filter(
-        (c) => c.context_type === filters.context_type,
-      );
-    }
-
-    if (filters?.search) {
-      const term = filters.search.toLowerCase();
-      conversations = conversations.filter(
-        (c) =>
-          c.participant_name?.toLowerCase().includes(term) ||
-          c.last_message_preview?.toLowerCase().includes(term),
-      );
-    }
-
-    return conversations;
-  } catch (err) {
-    console.error("getConversations error:", err);
-    return [];
+    throw new Error(`Failed to load conversations: ${error.message}`);
   }
+
+  if (!data || data.length === 0) return [];
+
+  let conversations = (data as Array<{
+    id: string;
+    participant_1_id: string;
+    participant_2_id: string;
+    context_type: string;
+    context_id: string | null;
+    last_message_at: string;
+    created_at: string;
+    participant_name: string | null;
+    last_message_preview: string | null;
+    unread_count: number;
+    archived_at: string | null;
+    blocked_at: string | null;
+    draft_text: string | null;
+    has_sent: boolean;
+  }>).map((row) => ({
+    id: row.id,
+    participant_1_id: row.participant_1_id,
+    participant_2_id: row.participant_2_id,
+    context_type: row.context_type as ContextType,
+    context_id: row.context_id,
+    last_message_at: new Date(row.last_message_at),
+    created_at: new Date(row.created_at),
+    participant_name: row.participant_name,
+    last_message_preview: row.last_message_preview,
+    unread_count: Number(row.unread_count),
+    archived_at: row.archived_at ? new Date(row.archived_at) : null,
+    blocked_at: row.blocked_at ? new Date(row.blocked_at) : null,
+    draft_text: row.draft_text,
+    has_sent: Boolean(row.has_sent),
+  } as Conversation));
+
+  // Apply client-side filters that RPC doesn't handle
+  if (filters?.context_type) {
+    conversations = conversations.filter(
+      (c) => c.context_type === filters.context_type,
+    );
+  }
+
+  if (filters?.search) {
+    const term = filters.search.toLowerCase();
+    conversations = conversations.filter(
+      (c) =>
+        c.participant_name?.toLowerCase().includes(term) ||
+        c.last_message_preview?.toLowerCase().includes(term),
+    );
+  }
+
+  return conversations;
 }
 
 // ---------------------------------------------------------------------------
@@ -243,6 +291,7 @@ export async function sendMessage(
   let conversationId = input.conversation_id;
 
   if (!conversationId) {
+    // getOrCreateConversation runs the block check on the resolved conversation.
     const conv = await getOrCreateConversation(
       supabase,
       senderId,
@@ -251,6 +300,9 @@ export async function sendMessage(
       input.context_id,
     );
     conversationId = conv.id;
+  } else {
+    // Existing conversation supplied directly — enforce the recipient's block.
+    await assertRecipientNotBlocking(supabase, conversationId);
   }
 
   // Insert message
@@ -320,7 +372,10 @@ export async function getOrCreateConversation(
 
   const { data: existing } = await query.limit(1).single();
 
-  if (existing) return { id: existing.id };
+  if (existing) {
+    await assertRecipientNotBlocking(supabase, existing.id);
+    return { id: existing.id };
+  }
 
   // Create new conversation
   const { data: created, error } = await supabase
@@ -336,6 +391,8 @@ export async function getOrCreateConversation(
     .single();
 
   if (error) throw new Error(`Failed to create conversation: ${error.message}`);
+
+  await assertRecipientNotBlocking(supabase, created.id);
 
   return { id: created.id };
 }
@@ -366,6 +423,104 @@ export async function updateReadStatus(
   if (error) throw new Error(`Failed to update read status: ${error.message}`);
 }
 
+// ---------------------------------------------------------------------------
+// Folder state: archive / block / drafts
+// ---------------------------------------------------------------------------
+
+/**
+ * Archive (or un-archive) a conversation for a user. Upserts only archived_at;
+ * last_read_at keeps its row default on insert and is left untouched on update.
+ */
+export async function archiveConversation(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+  archived: boolean,
+): Promise<void> {
+  const { error } = await supabase
+    .from("conversation_read_status")
+    .upsert(
+      {
+        conversation_id: conversationId,
+        user_id: userId,
+        archived_at: archived ? new Date().toISOString() : null,
+      },
+      { onConflict: "conversation_id,user_id" },
+    );
+
+  if (error) throw new Error(`Failed to archive conversation: ${error.message}`);
+}
+
+/**
+ * Block (or unblock) a conversation for a user — a per-conversation "stop their
+ * messages" flag. Upserts only blocked_at.
+ */
+export async function setConversationBlocked(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+  blocked: boolean,
+): Promise<void> {
+  const { error } = await supabase
+    .from("conversation_read_status")
+    .upsert(
+      {
+        conversation_id: conversationId,
+        user_id: userId,
+        blocked_at: blocked ? new Date().toISOString() : null,
+      },
+      { onConflict: "conversation_id,user_id" },
+    );
+
+  if (error) throw new Error(`Failed to update block status: ${error.message}`);
+}
+
+/**
+ * Save (or clear) an unsent draft for a user in a conversation. Empty or
+ * whitespace-only text clears the draft (null).
+ */
+export async function saveDraft(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+  text: string,
+): Promise<void> {
+  const trimmed = text.trim();
+  const { error } = await supabase
+    .from("conversation_read_status")
+    .upsert(
+      {
+        conversation_id: conversationId,
+        user_id: userId,
+        draft_text: trimmed.length > 0 ? text : null,
+        draft_updated_at: new Date().toISOString(),
+      },
+      { onConflict: "conversation_id,user_id" },
+    );
+
+  if (error) throw new Error(`Failed to save draft: ${error.message}`);
+}
+
+/**
+ * Get the saved draft text for a user in a conversation, or null if none.
+ */
+export async function getDraft(
+  supabase: SupabaseClient,
+  conversationId: string,
+  userId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("conversation_read_status")
+    .select("draft_text")
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to load draft: ${error.message}`);
+
+  return data?.draft_text ?? null;
+}
+
 /**
  * Get total unread conversation count for a user.
  * Uses get_unread_count RPC (1 query vs N×2 sequential queries).
@@ -374,15 +529,19 @@ export async function getUnreadCount(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<number> {
-  try {
-    const { data, error } = await supabase.rpc("get_unread_count", {
-      p_user_id: userId,
-    });
+  const { data, error } = await supabase.rpc("get_unread_count", {
+    p_user_id: userId,
+  });
 
-    if (error) throw new Error(`Failed to get unread count: ${error.message}`);
-    return Number(data ?? 0);
-  } catch (err) {
-    console.error("getUnreadCount error:", err);
-    return 0;
+  if (error) {
+    captureException(error, {
+      module: "communication",
+      feature: "message-service",
+      operation: "getUnreadCount",
+      extra: { userId },
+    });
+    throw new Error(`Failed to get unread count: ${error.message}`);
   }
+
+  return Number(data ?? 0);
 }

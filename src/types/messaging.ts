@@ -28,6 +28,14 @@ export type Conversation = Readonly<{
   last_message_preview: string | null;
   /** Computed: count of unread messages for current user */
   unread_count: number;
+  /** Per-user: when the current user archived this conversation (null if not) */
+  archived_at: Date | null;
+  /** Per-user: when the current user blocked this conversation (null if not) */
+  blocked_at: Date | null;
+  /** Per-user: saved unsent draft for this conversation (null if none) */
+  draft_text: string | null;
+  /** Computed: whether the current user has sent any message here */
+  has_sent: boolean;
 }>;
 
 /** Mirrors public.messages table (with joined fields) */
@@ -69,3 +77,6 @@ export type InboxFilters = Readonly<{
   context_type?: ContextType;
   search?: string;
 }>;
+
+/** Inbox folder views */
+export type Folder = "inbox" | "unread" | "sent" | "drafts" | "archived" | "spam";

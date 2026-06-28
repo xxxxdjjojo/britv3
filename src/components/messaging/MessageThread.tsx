@@ -2,6 +2,7 @@
 
 /**
  * MessageThread -- Real-time chat thread backed by useMessages() + Supabase Realtime.
+ * Styled with the Message / Bubble / MessageScroller conversation primitives.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -9,7 +10,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Message,
+  MessageGroup,
+  MessageAvatar,
+  MessageContent,
+  MessageHeader,
+  MessageFooter,
+} from "@/components/ui/message";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import { MessageScroller } from "@/components/ui/message-scroller";
 import {
   Phone,
   Video,
@@ -18,13 +28,13 @@ import {
   FileText,
   MapPin,
   CreditCard,
+  CheckCheck,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useMessages, useMarkAsRead } from "@/hooks/useMessages";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import MessageComposer from "@/components/messaging/MessageComposer";
-import type { Message } from "@/types/messaging";
+import type { Message as MessageType } from "@/types/messaging";
 
 /* ---------- Constants ---------- */
 
@@ -34,6 +44,17 @@ const QUICK_ACTIONS = [
   { label: "Share Location", icon: MapPin },
   { label: "Request Quote", icon: CreditCard },
 ] as const;
+
+/* ---------- Helpers ---------- */
+
+function initialsOf(name: string | null | undefined): string {
+  return (name ?? "?")
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 /* ---------- Sub-components ---------- */
 
@@ -47,12 +68,7 @@ function ThreadHeader(
 ) {
   const { participantName, propertyInfo } = props;
   const displayName = participantName ?? "Conversation";
-  const initials = displayName
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = initialsOf(displayName);
 
   return (
     <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
@@ -101,76 +117,126 @@ function DateSeparator(props: Readonly<{ label: string }>) {
   );
 }
 
+/**
+ * A single message rendered with the Message/Bubble primitives.
+ * Own messages align="end" in brand-green; others align="start" in muted grey.
+ * `showAvatar`/`showHeader` are controlled by the group so only the last message
+ * in a run carries the avatar and only the first carries the sender name.
+ */
 export function MessageBubble(
-  props: Readonly<{ message: Message; isOwn: boolean }>,
+  props: Readonly<{
+    message: MessageType;
+    isOwn: boolean;
+    showAvatar?: boolean;
+    showHeader?: boolean;
+  }>,
 ) {
-  const { message, isOwn } = props;
+  const { message, isOwn, showAvatar = true, showHeader = false } = props;
   const time = new Date(message.created_at).toLocaleTimeString("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
   });
-  const senderInitials = (message.sender_name ?? "?")
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
-    <div
-      className={cn(
-        "flex gap-2 max-w-[75%]",
-        isOwn ? "ml-auto flex-row-reverse" : "mr-auto",
-      )}
+    <Message
+      align={isOwn ? "end" : "start"}
+      data-testid={`message-${message.id}`}
+      className="px-1"
     >
       {!isOwn && (
-        <Avatar className="h-8 w-8 shrink-0 mt-1">
-          <AvatarFallback className="bg-brand-primary-lighter text-brand-primary-dark text-xs font-semibold">
-            {senderInitials}
-          </AvatarFallback>
-        </Avatar>
+        <MessageAvatar className="bg-transparent">
+          {showAvatar ? (
+            <Avatar size="sm">
+              <AvatarFallback className="bg-brand-primary-lighter text-brand-primary-dark text-[10px] font-semibold">
+                {initialsOf(message.sender_name)}
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <span aria-hidden className="size-6" />
+          )}
+        </MessageAvatar>
       )}
-      <div
-        className={cn(
-          "flex flex-col",
-          isOwn ? "items-end" : "items-start",
+
+      <MessageContent>
+        {showHeader && !isOwn && (
+          <MessageHeader>{message.sender_name ?? "Unknown"}</MessageHeader>
         )}
-      >
-        <div
-          className={cn(
-            "rounded-2xl px-4 py-2.5 text-sm shadow-sm",
-            isOwn
-              ? "bg-brand-primary text-white rounded-br-md"
-              : "bg-muted text-foreground rounded-bl-md",
-          )}
-        >
-          <p className="whitespace-pre-wrap break-words">{message.content}</p>
-          {message.attachment_url && (
-            <div className="mt-1">
-              {message.attachment_type === "image" ? (
-                <img
-                  src={message.attachment_url}
-                  alt="attachment"
-                  className="rounded-lg max-w-48 aspect-video object-cover"
-                />
-              ) : (
-                <a
-                  href={message.attachment_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs underline"
-                >
-                  <FileText className="h-3 w-3" /> Download PDF
-                </a>
-              )}
-            </div>
-          )}
-        </div>
-        <span className="text-[10px] text-muted-foreground mt-1">
-          {time}
-        </span>
-      </div>
-    </div>
+
+        <Bubble variant={isOwn ? "default" : "muted"} align={isOwn ? "end" : "start"}>
+          <BubbleContent className="shadow-sm">
+            <p className="whitespace-pre-wrap break-words">{message.content}</p>
+            {message.attachment_url && (
+              <div className="mt-1.5">
+                {message.attachment_type === "image" ? (
+                  <img
+                    src={message.attachment_url}
+                    alt="attachment"
+                    className="rounded-lg max-w-48 aspect-video object-cover"
+                  />
+                ) : (
+                  <a
+                    href={message.attachment_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs underline"
+                  >
+                    <FileText className="h-3 w-3" /> Download PDF
+                  </a>
+                )}
+              </div>
+            )}
+          </BubbleContent>
+        </Bubble>
+
+        <MessageFooter className="gap-1">
+          <time dateTime={new Date(message.created_at).toISOString()}>{time}</time>
+          {isOwn && <CheckCheck className="size-3.5 text-brand-primary" aria-label="Delivered" />}
+        </MessageFooter>
+      </MessageContent>
+    </Message>
+  );
+}
+
+/**
+ * Renders the flat message list as MessageGroups, stacking consecutive messages
+ * from the same sender. Only the last message in a run shows the avatar; only the
+ * first shows the sender header.
+ */
+export function MessageGroupList(
+  props: Readonly<{ messages: ReadonlyArray<MessageType>; currentUserId?: string }>,
+) {
+  const { messages, currentUserId } = props;
+
+  // Partition into runs of consecutive same-sender messages.
+  const groups: MessageType[][] = [];
+  for (const m of messages) {
+    const last = groups[groups.length - 1];
+    if (last && last[0].sender_id === m.sender_id) {
+      last.push(m);
+    } else {
+      groups.push([m]);
+    }
+  }
+
+  return (
+    <>
+      {groups.map((group) => {
+        const isOwn = group[0].sender_id === currentUserId;
+        return (
+          <MessageGroup key={group[0].id} data-testid="message-group">
+            {group.map((m, i) => (
+              <MessageBubble
+                key={m.id}
+                message={m}
+                isOwn={isOwn}
+                showAvatar={i === group.length - 1}
+                showHeader={i === 0}
+              />
+            ))}
+          </MessageGroup>
+        );
+      })}
+    </>
   );
 }
 
@@ -226,12 +292,6 @@ export default function MessageThread(
   // Flatten pages into a sorted array — pages are newest-first, so reverse for display
   const messages = data?.pages.flatMap((p) => p.messages).reverse() ?? [];
 
-  // Auto-scroll to bottom on new messages
-  const bottomRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
-
   // Realtime subscription for live new messages
   const channelRef = useRef<RealtimeChannel | null>(null);
   useEffect(() => {
@@ -253,13 +313,13 @@ export default function MessageThread(
             (
               old:
                 | {
-                    pages: { messages: Message[] }[];
+                    pages: { messages: MessageType[] }[];
                     pageParams: unknown[];
                   }
                 | undefined,
             ) => {
               if (!old) return old;
-              const newMsg = payload.new as Message;
+              const newMsg = payload.new as MessageType;
               // Dedup: skip if already in cache
               const allMsgs = old.pages.flatMap((p) => p.messages);
               if (allMsgs.some((m) => m.id === newMsg.id)) return old;
@@ -329,9 +389,9 @@ export default function MessageThread(
     <div className="flex flex-col h-full bg-surface">
       <ThreadHeader participantName={participantName} propertyInfo={propertyInfo} />
 
-      {/* Message feed */}
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-3" role="log" aria-label="Message history">
+      {/* Message feed — MessageScroller sticks to bottom on new messages */}
+      <MessageScroller stickToBottomKey={messages.length}>
+        <div className="flex flex-col gap-3 p-4" role="log" aria-label="Message history">
           {/* Load earlier messages */}
           {hasNextPage && (
             <div className="flex justify-center py-2">
@@ -348,27 +408,21 @@ export default function MessageThread(
 
           <DateSeparator label="Today" />
 
-          {messages.map((msg) => (
-            <MessageBubble
-              key={msg.id}
-              message={msg}
-              isOwn={msg.sender_id === user?.id}
-            />
-          ))}
+          <MessageGroupList messages={messages} currentUserId={user?.id} />
 
           {/* Screen reader announcement for new messages */}
           <div aria-live="polite" className="sr-only">
             {liveMessage}
           </div>
-
-          {/* Scroll anchor */}
-          <div ref={bottomRef} />
         </div>
-      </ScrollArea>
+      </MessageScroller>
 
       <QuickActionsBar />
       {isOtherTyping && (
-        <div className="px-4 py-1 text-xs text-muted-foreground italic flex items-center gap-1">
+        <div
+          role="status"
+          className="px-4 py-1 text-xs text-muted-foreground italic flex items-center gap-1"
+        >
           <span className="inline-flex gap-0.5">
             <span className="animate-bounce" style={{ animationDelay: "0ms" }}>•</span>
             <span className="animate-bounce" style={{ animationDelay: "150ms" }}>•</span>

@@ -26,6 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { InsightPanel } from "@/components/dashboard/InsightPanel";
 import { SectionHeader } from "@/components/dashboard/SectionHeader";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import type { AgentDashboardKpis, ActivityFeedItem, DiaryViewingSlot } from "@/types/agent";
 
 // ============================================================================
@@ -441,6 +442,7 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <DashboardMessagesLink variant="icon" />
           <button
             type="button"
             aria-label="Notifications"

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Home, Eye, MessageSquare, Calendar, TrendingUp, TrendingDown, type LucideIcon } from "lucide-react";
 import { PerformanceChart } from "@/components/seller/PerformanceChart";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import { getSellerKPIs } from "@/services/seller/listing-service";
 import { getListingAnalyticsSummary } from "@/services/seller/analytics-service";
 
@@ -87,10 +88,13 @@ export default async function SellerDashboardHome() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">Welcome back</p>
-        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark mt-1">Seller Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Track your listings and manage your sale</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">Welcome back</p>
+          <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark mt-1">Seller Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Track your listings and manage your sale</p>
+        </div>
+        <DashboardMessagesLink variant="button" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         <Link href="/dashboard/seller/listings" className="block">

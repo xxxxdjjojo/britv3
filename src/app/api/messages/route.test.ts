@@ -1,57 +1,203 @@
-import { describe, it, expect, vi } from "vitest";
-
 /**
- * Regression guard for the production 500 on GET /api/messages?count_only=true
- * (the unread-message badge).
+ * Auth-contract tests for the messaging API.
  *
- * In the Vercel serverless lambda, `isomorphic-dompurify` pulls in `jsdom`, which
- * reads `default-stylesheet.css` (relative to its own dir) at MODULE LOAD. When
- * webpack bundles jsdom into the route chunk that path resolves to
- * `.next/browser/default-stylesheet.css`, which isn't traced into the function —
- * so the whole route chunk throws `ENOENT` at evaluation and EVERY request 500s
- * before the handler even runs (anonymous requests included).
- *
- * The unread-badge GET path must not depend on that module graph. We prove it by
- * making `isomorphic-dompurify` explode at import (exactly what the lambda does)
- * and asserting the route still loads and the handler still runs.
+ * Regression guard: GET /api/messages must return 200 for an authenticated
+ * request and 401 for an anonymous one. The live "Failed to load conversations"
+ * banner was a prod 500 (a jsdom asset missing from the serverless bundle, fixed
+ * by keeping isomorphic-dompurify/jsdom external + a DOM-free sanitizeText — see
+ * route.jsdom-bundle.test.ts), but the auth contract is the other way this route
+ * can break the inbox — pin both states, for GET and POST.
  */
 
-// Simulate jsdom's ENOENT-at-load inside the lambda.
-vi.mock("isomorphic-dompurify", () => {
-  throw new Error("ENOENT: default-stylesheet.css (simulated Vercel lambda)");
-});
+import type { NextRequest } from "next/server";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Unauthenticated client → handler should return 401 (proves the module loaded
-// and the handler ran, instead of the chunk crashing at import).
-vi.mock("@/lib/supabase/server", () => ({
-  createClient: async () => ({
-    auth: { getUser: async () => ({ data: { user: null }, error: null }) },
-  }),
-}));
+const { mockCreateClient } = vi.hoisted(() => ({ mockCreateClient: vi.fn() }));
+const { mockLimit } = vi.hoisted(() => ({ mockLimit: vi.fn() }));
 
-// POST-only collaborators — stubbed so they can't throw at import for unrelated
-// reasons (missing Redis/env). They are irrelevant to the GET count path.
+vi.mock("@/lib/supabase/server", () => ({ createClient: mockCreateClient }));
+
+// Rate limiter is module-level in the route — stub the factory so every POST
+// passes the limit unless a test overrides mockLimit.
 vi.mock("@/lib/cache/redis", () => ({
-  createRateLimiter: () => ({ limit: async () => ({ success: true }) }),
+  createRateLimiter: () => ({ limit: mockLimit }),
 }));
+
+// Fire-and-forget side effects — keep them inert so POST tests isolate auth.
 vi.mock("@/lib/truedeed/capture-message", () => ({
-  captureListingMessageIntroduction: async () => {},
+  captureListingMessageIntroduction: vi.fn().mockResolvedValue(undefined),
 }));
 vi.mock("@/services/messaging/message-notifications", () => ({
-  notifyNewMessage: async () => {},
+  notifyNewMessage: vi.fn().mockResolvedValue(undefined),
 }));
 
-describe("GET /api/messages?count_only=true (unread badge)", () => {
-  it("loads and responds without pulling jsdom/dompurify into the route bundle", async () => {
-    const { GET } = await import("./route");
-    const { NextRequest } = await import("next/server");
+// Keep the route's auth contract the unit under test — stub the data layer so
+// the assertions isolate getUser() → status code. MessagingAuthorizationError
+// is the REAL class so `instanceof` in the route matches.
+vi.mock("@/services/messaging/message-service", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/services/messaging/message-service")
+  >("@/services/messaging/message-service");
+  return {
+    ...actual,
+    getConversations: vi.fn().mockResolvedValue([]),
+    getUnreadCount: vi.fn().mockResolvedValue(0),
+    sendMessage: vi.fn(),
+  };
+});
 
-    const res = await GET(
-      new NextRequest("http://localhost/api/messages?count_only=true"),
+import { GET, POST } from "./route";
+import {
+  getConversations,
+  getUnreadCount,
+  sendMessage,
+  MessagingAuthorizationError,
+} from "@/services/messaging/message-service";
+
+function makeRequest(qs = ""): NextRequest {
+  const url = new URL(`http://localhost/api/messages${qs ? `?${qs}` : ""}`);
+  return { nextUrl: url } as NextRequest;
+}
+
+const VALID_BODY = {
+  recipient_id: "11111111-1111-4111-8111-111111111111",
+  content: "Hello there",
+  context_type: "general" as const,
+};
+
+function makePostRequest(body: unknown = VALID_BODY): NextRequest {
+  return { json: vi.fn().mockResolvedValue(body) } as unknown as NextRequest;
+}
+
+function authedClient(userId: string) {
+  return {
+    auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: userId } } }) },
+  };
+}
+
+function anonClient() {
+  return {
+    auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null } }) },
+  };
+}
+
+beforeEach(() => {
+  mockCreateClient.mockReset();
+  vi.mocked(getConversations).mockClear();
+  vi.mocked(getUnreadCount).mockClear();
+  vi.mocked(sendMessage).mockReset();
+  mockLimit.mockReset();
+  mockLimit.mockResolvedValue({ success: true, reset: Date.now() + 60_000 });
+});
+
+describe("GET /api/messages — auth contract", () => {
+  it("returns 200 for an authenticated request", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual({ conversations: [] });
+    expect(getConversations).toHaveBeenCalledWith(
+      expect.anything(),
+      "user-aaa",
+      expect.any(Object),
+    );
+  });
+
+  it("returns 401 for an anonymous request", async () => {
+    mockCreateClient.mockResolvedValue(anonClient());
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(401);
+    expect(body).toEqual({ error: "Unauthorized" });
+    expect(getConversations).not.toHaveBeenCalled();
+  });
+
+  it("returns 200 for the count_only unread badge when authenticated", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+
+    const res = await GET(makeRequest("count_only=true"));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual({ count: 0 });
+  });
+
+  it("surfaces a service failure as 500 (not a silent empty inbox)", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+    vi.mocked(getConversations).mockRejectedValueOnce(
+      new Error("Failed to load conversations: rpc exploded"),
     );
 
-    // 401 is fine — the point is the route module LOADED and the handler RAN,
-    // rather than the chunk crashing at import like it does in production.
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(body).toEqual({ error: "Failed to load inbox" });
+  });
+
+  it("surfaces a count_only service failure as 500", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+    vi.mocked(getUnreadCount).mockRejectedValueOnce(
+      new Error("Failed to load unread count: rpc exploded"),
+    );
+
+    const res = await GET(makeRequest("count_only=true"));
+    const body = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(body).toEqual({ error: "Failed to load inbox" });
+  });
+});
+
+describe("POST /api/messages — auth contract", () => {
+  it("returns 401 for an anonymous request", async () => {
+    mockCreateClient.mockResolvedValue(anonClient());
+
+    const res = await POST(makePostRequest());
+    const body = await res.json();
+
     expect(res.status).toBe(401);
+    expect(body).toEqual({ error: "Unauthorized" });
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+
+  it("returns 403 when the service throws MessagingAuthorizationError", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+    vi.mocked(sendMessage).mockRejectedValueOnce(new MessagingAuthorizationError());
+
+    const res = await POST(makePostRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(typeof body.error).toBe("string");
+  });
+
+  it("returns 500 on a generic service failure", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+    vi.mocked(sendMessage).mockRejectedValueOnce(new Error("db exploded"));
+
+    const res = await POST(makePostRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(body).toEqual({ error: "Failed to send message" });
+  });
+
+  it("returns 201 on a successful send", async () => {
+    mockCreateClient.mockResolvedValue(authedClient("user-aaa"));
+    vi.mocked(sendMessage).mockResolvedValueOnce({
+      conversation_id: "22222222-2222-4222-8222-222222222222",
+    } as Awaited<ReturnType<typeof sendMessage>>);
+
+    const res = await POST(makePostRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(201);
+    expect(body.message).toBeDefined();
   });
 });

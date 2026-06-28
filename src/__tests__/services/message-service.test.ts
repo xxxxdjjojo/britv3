@@ -4,9 +4,14 @@ import {
   getConversations,
   getMessages,
   sendMessage,
+  sendMessageSchema,
   getOrCreateConversation,
   updateReadStatus,
   getUnreadCount,
+  archiveConversation,
+  setConversationBlocked,
+  saveDraft,
+  getDraft,
   MessagingAuthorizationError,
 } from "@/services/messaging/message-service";
 import { validateAttachment } from "@/services/messaging/attachment-service";
@@ -39,6 +44,7 @@ type MockBuilder = {
   lt: ReturnType<typeof vi.fn>;
   in: ReturnType<typeof vi.fn>;
   single: ReturnType<typeof vi.fn>;
+  maybeSingle: ReturnType<typeof vi.fn>;
   then: ReturnType<typeof vi.fn>;
 };
 
@@ -57,6 +63,7 @@ function createBuilder(resolveValue: { data: unknown; error: unknown; count?: nu
     lt: vi.fn().mockReturnThis(),
     in: vi.fn().mockReturnThis(),
     single: vi.fn().mockResolvedValue(resolveValue),
+    maybeSingle: vi.fn().mockResolvedValue(resolveValue),
     then: vi.fn((resolve: (v: unknown) => void) => resolve(resolveValue)),
   };
   return builder;
@@ -76,6 +83,7 @@ function createMockClient(tableResolvers: Record<string, { data: unknown; error:
 
   return {
     from: fromFn,
+    rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
     auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: "user-aaa" } } }) },
     storage: {
       from: vi.fn().mockReturnValue({
@@ -107,6 +115,10 @@ describe("getConversations", () => {
         participant_name: "Bob Smith",
         last_message_preview: "Hello there",
         unread_count: 2,
+        archived_at: "2026-01-16T10:00:00Z",
+        blocked_at: null,
+        draft_text: "Draft reply",
+        has_sent: true,
       },
     ];
 
@@ -121,6 +133,10 @@ describe("getConversations", () => {
     expect(result[0].participant_name).toBe("Bob Smith");
     expect(result[0].last_message_preview).toBe("Hello there");
     expect(result[0].unread_count).toBe(2);
+    expect(result[0].archived_at).toEqual(new Date("2026-01-16T10:00:00Z"));
+    expect(result[0].blocked_at).toBeNull();
+    expect(result[0].draft_text).toBe("Draft reply");
+    expect(result[0].has_sent).toBe(true);
   });
 
   it("returns empty array when no conversations exist", async () => {
@@ -131,6 +147,23 @@ describe("getConversations", () => {
 
     const result = await getConversations(client, "user-aaa");
     expect(result).toEqual([]);
+  });
+
+  it("throws on a real RPC failure instead of masking it as an empty inbox", async () => {
+    // Guard: a broken query must surface (route → 500, UI shows the error
+    // banner), not be swallowed into [] which renders the "no conversations"
+    // empty state and hides the outage.
+    const client = {
+      from: vi.fn(() => createBuilder({ data: null, error: null })),
+      rpc: vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: "function get_inbox_for_user does not exist" },
+      }),
+    } as unknown as SupabaseClient;
+
+    await expect(getConversations(client, "user-aaa")).rejects.toThrow(
+      /Failed to load conversations/,
+    );
   });
 });
 
@@ -215,6 +248,7 @@ describe("sendMessage", () => {
     };
 
     let callIndex = 0;
+    // Block check now runs via the SECURITY DEFINER RPC (not a from() read).
     const msgBuilder = createBuilder({ data: insertedMsg, error: null });
     const convBuilder = createBuilder({ data: null, error: null });
     const builders = [msgBuilder, convBuilder];
@@ -225,6 +259,7 @@ describe("sendMessage", () => {
         callIndex++;
         return b;
       }),
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
     } as unknown as SupabaseClient;
 
     await sendMessage(client, "user-aaa", {
@@ -250,6 +285,7 @@ describe("sendMessage", () => {
     // getOrCreateConversation: validateMessagingRoles -> profiles select (thenable list)
     // getOrCreateConversation: conversations select (single -> not found)
     // getOrCreateConversation: conversations insert (single -> created)
+    // getOrCreateConversation: recipient block-status check (no row -> null)
     // sendMessage: messages insert (single -> msg)
     // sendMessage: conversations update
     const builders = [
@@ -262,6 +298,7 @@ describe("sendMessage", () => {
       }), // profiles validation
       createBuilder({ data: null, error: null }), // existing conv check
       createBuilder({ data: { id: "conv-new" }, error: null }), // insert conv
+      // (block check now runs via RPC, not a from() read)
       createBuilder({ data: insertedMsg, error: null }), // insert msg
       createBuilder({ data: null, error: null }), // update last_message_at
     ];
@@ -272,6 +309,7 @@ describe("sendMessage", () => {
         callIndex++;
         return b;
       }),
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
     } as unknown as SupabaseClient;
 
     const result = await sendMessage(client, "user-aaa", {
@@ -285,13 +323,73 @@ describe("sendMessage", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Tests: sendMessageSchema UUID validation (regression — seeded ids 400'd)
+// ---------------------------------------------------------------------------
+
+describe("sendMessageSchema UUID validation", () => {
+  const baseInput = {
+    content: "Hello",
+    context_type: "general" as const,
+  };
+
+  it("accepts a non-RFC-4122 recipient_id that Postgres accepts (seeded landlord id)", () => {
+    // 44444444-... has version/variant nibbles outside RFC-4122 v1-5, so
+    // z.string().uuid() rejects it — but Postgres `uuid` stores it fine and
+    // the seeded landlord (Mike Thompson) uses exactly this id. Replies to
+    // that account must validate.
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "44444444-4444-4444-4444-444444444444",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a non-RFC-4122 conversation_id (seeded conversation id)", () => {
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "44444444-4444-4444-4444-444444444444",
+      conversation_id: "99999999-9999-9999-9999-999999999999",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a real Supabase v4 recipient_id", () => {
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "11111111-1111-4111-8111-111111111111",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("still rejects non-UUID garbage for recipient_id", () => {
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "not-a-uuid",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe("Invalid UUID");
+    }
+  });
+
+  it("still rejects non-UUID garbage for an optional context_id", () => {
+    const result = sendMessageSchema.safeParse({
+      ...baseInput,
+      recipient_id: "44444444-4444-4444-4444-444444444444",
+      context_id: "123",
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Tests: getOrCreateConversation
 // ---------------------------------------------------------------------------
 
 describe("getOrCreateConversation", () => {
   it("returns existing conversation if one exists", async () => {
     let callIndex = 0;
-    // validateMessagingRoles makes a profiles call first, then the conversation select
+    // validateMessagingRoles -> profiles; conversation select; recipient block check
     const builders = [
       createBuilder({
         data: [
@@ -301,6 +399,7 @@ describe("getOrCreateConversation", () => {
         error: null,
       }), // profiles validation
       createBuilder({ data: { id: "conv-existing" }, error: null }), // existing conv
+      // (block check now runs via RPC, not a from() read)
     ];
 
     const client = {
@@ -309,6 +408,7 @@ describe("getOrCreateConversation", () => {
         callIndex++;
         return b;
       }),
+      rpc: vi.fn().mockResolvedValue({ data: false, error: null }),
     } as unknown as SupabaseClient;
 
     const result = await getOrCreateConversation(
@@ -319,8 +419,13 @@ describe("getOrCreateConversation", () => {
     );
 
     expect(result.id).toBe("conv-existing");
-    // Validation + lookup = 2 from() calls (no insert needed)
+    // Validation + lookup = 2 from() calls (no insert needed); the block check
+    // is now a separate SECURITY DEFINER RPC, not a from() read.
     expect(client.from).toHaveBeenCalledTimes(2);
+    expect(client.rpc).toHaveBeenCalledWith(
+      "is_conversation_blocked_by_recipient",
+      { p_conversation_id: "conv-existing" },
+    );
   });
 
   it("throws MessagingAuthorizationError for a disallowed role pair", async () => {
@@ -373,6 +478,175 @@ describe("updateReadStatus", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Tests: archiveConversation / setConversationBlocked
+// ---------------------------------------------------------------------------
+
+describe("archiveConversation", () => {
+  it("upserts archived_at = now when archiving", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await archiveConversation(client, "conv-001", "user-aaa", true);
+
+    expect(client.from).toHaveBeenCalledWith("conversation_read_status");
+    const [payload, options] = builder.upsert.mock.calls[0];
+    expect(payload).toMatchObject({
+      conversation_id: "conv-001",
+      user_id: "user-aaa",
+    });
+    expect(payload.archived_at).toEqual(expect.any(String));
+    expect(payload).not.toHaveProperty("last_read_at");
+    expect(options).toEqual({ onConflict: "conversation_id,user_id" });
+  });
+
+  it("upserts archived_at = null when un-archiving", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await archiveConversation(client, "conv-001", "user-aaa", false);
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.archived_at).toBeNull();
+  });
+});
+
+describe("setConversationBlocked", () => {
+  it("upserts blocked_at = now when blocking", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await setConversationBlocked(client, "conv-001", "user-aaa", true);
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.blocked_at).toEqual(expect.any(String));
+  });
+
+  it("upserts blocked_at = null when unblocking", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await setConversationBlocked(client, "conv-001", "user-aaa", false);
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.blocked_at).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: saveDraft / getDraft
+// ---------------------------------------------------------------------------
+
+describe("saveDraft", () => {
+  it("upserts draft_text + draft_updated_at for non-empty text", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await saveDraft(client, "conv-001", "user-aaa", "Hello draft");
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.draft_text).toBe("Hello draft");
+    expect(payload.draft_updated_at).toEqual(expect.any(String));
+  });
+
+  it("clears the draft (null) for whitespace-only text", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    await saveDraft(client, "conv-001", "user-aaa", "   ");
+
+    const [payload] = builder.upsert.mock.calls[0];
+    expect(payload.draft_text).toBeNull();
+  });
+});
+
+describe("getDraft", () => {
+  it("returns the stored draft_text", async () => {
+    const builder = createBuilder({
+      data: { draft_text: "saved draft" },
+      error: null,
+    });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    const draft = await getDraft(client, "conv-001", "user-aaa");
+    expect(draft).toBe("saved draft");
+  });
+
+  it("returns null when no read-status row exists", async () => {
+    const builder = createBuilder({ data: null, error: null });
+    const client = { from: vi.fn(() => builder) } as unknown as SupabaseClient;
+
+    const draft = await getDraft(client, "conv-001", "user-aaa");
+    expect(draft).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: block enforcement on send
+// ---------------------------------------------------------------------------
+
+describe("sendMessage block enforcement", () => {
+  // Faithful to production: RLS on conversation_read_status is
+  // `USING (user_id = auth.uid())`, so the SENDER reading the RECIPIENT's row
+  // gets ZERO rows back — `conversation_read_status` resolves to null even when
+  // the recipient really has blocked. The block must therefore be enforced via
+  // the SECURITY DEFINER RPC `is_conversation_blocked_by_recipient` (which reads
+  // past RLS and returns only a boolean), NOT a direct table read.
+  it("rejects when the recipient has blocked, even though RLS hides the row from the sender", async () => {
+    const client = createMockClient({
+      // RLS-filtered: the sender cannot see the recipient's block row.
+      conversation_read_status: { data: null, error: null },
+      messages: {
+        data: {
+          id: "msg-1",
+          conversation_id: "conv-001",
+          sender_id: "user-aaa",
+          content: "Hello",
+          created_at: "2026-01-15T10:00:00Z",
+        },
+        error: null,
+      },
+      conversations: { data: null, error: null },
+    });
+    // The definer RPC sees the truth: the recipient blocked this conversation.
+    (client.rpc as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: true,
+      error: null,
+    });
+
+    await expect(
+      sendMessage(client, "user-aaa", {
+        conversation_id: "conv-001",
+        recipient_id: "user-bbb",
+        content: "Hello",
+        context_type: "general",
+      }),
+    ).rejects.toBeInstanceOf(MessagingAuthorizationError);
+
+    // And it must NOT have inserted the message before bailing out.
+    expect(client.from).not.toHaveBeenCalledWith("messages");
+  });
+
+  it("surfaces a real RPC error instead of silently allowing the send", async () => {
+    const client = createMockClient({
+      conversation_read_status: { data: null, error: null },
+    });
+    (client.rpc as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: null,
+      error: { message: "permission denied for function" },
+    });
+
+    await expect(
+      sendMessage(client, "user-aaa", {
+        conversation_id: "conv-001",
+        recipient_id: "user-bbb",
+        content: "Hello",
+        context_type: "general",
+      }),
+    ).rejects.toThrow(/Failed to check block status/);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Tests: getUnreadCount
 // ---------------------------------------------------------------------------
 
@@ -386,6 +660,20 @@ describe("getUnreadCount", () => {
 
     const count = await getUnreadCount(client, "user-aaa");
     expect(count).toBe(1); // Only conv-002 has unread messages
+  });
+
+  it("throws on a real RPC failure instead of masking it as zero", async () => {
+    const client = {
+      from: vi.fn(() => createBuilder({ data: null, error: null })),
+      rpc: vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: "permission denied for function get_unread_count" },
+      }),
+    } as unknown as SupabaseClient;
+
+    await expect(getUnreadCount(client, "user-aaa")).rejects.toThrow(
+      /Failed to get unread count/,
+    );
   });
 });
 

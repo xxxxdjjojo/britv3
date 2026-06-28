@@ -46,6 +46,35 @@ describe("sanitizeText (jsdom-free)", () => {
   it("preserves plain text unchanged", () => {
     expect(sanitizeText("just plain text")).toBe("just plain text");
   });
+
+  it("strips attributes along with their tag", () => {
+    expect(
+      sanitizeText('<a href="https://evil.test" onclick="x()">click</a>'),
+    ).toBe("click");
+  });
+
+  it("strips a malformed/unclosed tag with an inline handler", () => {
+    const result = sanitizeText("<img src=x onerror=alert(1)");
+    expect(result).not.toContain("<");
+    expect(result).not.toContain(">");
+  });
+
+  it("does NOT decode HTML entities (they stay literal, not re-injectable)", () => {
+    // A regex strip leaves entities untouched; rendered as React-escaped text
+    // they display as the literal characters and cannot reconstitute a tag.
+    expect(sanitizeText("&lt;b&gt;x&lt;/b&gt; &amp; more")).toBe(
+      "&lt;b&gt;x&lt;/b&gt; &amp; more",
+    );
+  });
+
+  it("leaves no <…>-delimited tags for a mixed adversarial payload", () => {
+    const payload =
+      '<div><script>alert(1)</script><img src=x onerror=alert(2)><b>bold</b></div>';
+    const result = sanitizeText(payload);
+    expect(result).not.toMatch(/<[^>]*>/);
+    expect(result).not.toContain("<");
+    expect(result).not.toContain(">");
+  });
 });
 
 describe("sanitizePostgrestInput", () => {

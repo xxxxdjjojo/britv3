@@ -4,10 +4,11 @@
  * MessageComposer -- textarea with file attach support and Ctrl+Enter send.
  */
 
-import { useRef, useState, useCallback, useMemo } from "react";
+import { useRef, useState, useCallback, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import posthog from "posthog-js";
 import { useSendMessage } from "@/hooks/useMessages";
+import { useDraft } from "@/hooks/useInbox";
 import { createClient } from "@/lib/supabase/client";
 import { uploadAttachment } from "@/services/messaging/attachment-service";
 import { getSuggestedReplies } from "@/services/smart-replies/smart-replies";
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import AttachmentPreview from "@/components/messaging/AttachmentPreview";
 
 const MAX_CHARS = 5000;
+const DRAFT_DEBOUNCE_MS = 600;
 const supabase = createClient();
 
 export default function MessageComposer(
@@ -39,6 +41,41 @@ export default function MessageComposer(
   );
 
   const sendMutation = useSendMessage(conversationId);
+
+  // -- Draft autosave --------------------------------------------------------
+  // The user's text always stays in `content`, so a failed save never loses it;
+  // `saveFailed` only surfaces a subtle indicator.
+  const { draft, saveFailed, save: saveDraft, clear: clearDraft } = useDraft(conversationId);
+
+  // Seed the composer from the saved draft when the conversation opens (and once
+  // the async draft fetch resolves). Implemented as "adjust state during render"
+  // by tracking the seeded key in state — React's documented pattern, which the
+  // React Compiler accepts (no effect, no ref reads during render).
+  const [seededFor, setSeededFor] = useState<string | null>(null);
+  if (seededFor !== conversationId && draft != null) {
+    setSeededFor(conversationId);
+    if (draft !== content) {
+      setContent(draft);
+    }
+  }
+
+  // Debounced persistence of the in-progress draft.
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleDraftSave = useCallback(
+    (text: string) => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+      draftTimerRef.current = setTimeout(() => {
+        saveDraft(text);
+      }, DRAFT_DEBOUNCE_MS);
+    },
+    [saveDraft],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    };
+  }, []);
 
   const handleSend = useCallback(async () => {
     const trimmed = content.trim();
@@ -88,10 +125,13 @@ export default function MessageComposer(
         onSuccess: () => {
           setContent("");
           setSelectedFile(null);
+          if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+          // Remove the saved draft so the Drafts folder/count updates.
+          clearDraft();
         },
       },
     );
-  }, [content, selectedFile, sendMutation, recipientId, contextType, conversationId, isUploading]);
+  }, [content, selectedFile, sendMutation, recipientId, contextType, conversationId, isUploading, clearDraft]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -185,7 +225,9 @@ export default function MessageComposer(
             placeholder="Type a message... (Ctrl+Enter to send)"
             value={content}
             onChange={(e) => {
-              setContent(e.target.value.slice(0, MAX_CHARS));
+              const next = e.target.value.slice(0, MAX_CHARS);
+              setContent(next);
+              scheduleDraftSave(next);
               void supabase.channel(`typing:${conversationId}`).send({
                 type: "broadcast",
                 event: "typing",
@@ -196,7 +238,12 @@ export default function MessageComposer(
             rows={1}
             className="pr-16 min-h-10 max-h-32 resize-none"
           />
-          <span className="absolute right-2 bottom-1 text-[10px] text-muted-foreground">
+          <span className="absolute right-2 bottom-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+            {saveFailed && (
+              <span role="status" className="text-amber-600">
+                Draft not saved
+              </span>
+            )}
             {charCount}/{MAX_CHARS}
           </span>
         </div>

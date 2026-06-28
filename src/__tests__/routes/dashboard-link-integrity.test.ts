@@ -144,6 +144,54 @@ function toResolvablePath(raw: string): string | null {
   return isInternal ? href : null;
 }
 
+/**
+ * The dashboard surface that each role actually renders at its dashboard URL.
+ * Each must surface a Messages entry point linking to `/inbox` (Task 6) so a
+ * user lands in the inbox from any dashboard.
+ *
+ * Note: homebuyer/renter resolve via the `[role]` dynamic page (which renders
+ * the role component), while seller/landlord/agent/provider have a *literal*
+ * `dashboard/<role>/page.tsx` that overrides `[role]` — so the live surface is
+ * the literal page (or the component it renders), not the `[role]` component.
+ * The contract must hold for whatever the user actually sees.
+ */
+const ROLE_DASHBOARD_SURFACES: ReadonlyArray<readonly [string, string]> = [
+  ["homebuyer", "components/dashboard/homebuyer/HomebuyerDashboard.tsx"],
+  ["renter", "components/dashboard/renter/RenterDashboard.tsx"],
+  ["seller", "app/(protected)/dashboard/seller/page.tsx"],
+  ["landlord", "app/(protected)/dashboard/landlord/page.tsx"],
+  ["agent", "components/dashboard/agent/AgentDashboardHome.tsx"],
+  ["provider", "app/(protected)/dashboard/provider/page.tsx"],
+];
+
+/** Does a source file declare an href to `/inbox` (the canonical inbox route)? */
+function linksToInbox(src: string): boolean {
+  // href="/inbox", href={"/inbox"}, href: "/inbox", or via the shared
+  // DashboardMessagesLink component (which hard-codes the /inbox target).
+  for (const raw of extractHrefs(src)) {
+    const urlPath = toResolvablePath(raw);
+    if (urlPath === "/inbox") return true;
+  }
+  return /\bDashboardMessagesLink\b/.test(src);
+}
+
+describe("dashboard messages entry point", () => {
+  it.each(ROLE_DASHBOARD_SURFACES)(
+    "the %s dashboard links to /inbox",
+    (_role, relPath) => {
+      const src = readFileSync(path.join(SRC_ROOT, relPath), "utf8");
+      expect(
+        linksToInbox(src),
+        `${relPath} has no Messages link to /inbox — every dashboard must surface the inbox`,
+      ).toBe(true);
+    },
+  );
+
+  it("/inbox is a real route", () => {
+    expect(resolveAppRoute("/inbox")).not.toBeNull();
+  });
+});
+
 describe("dashboard link integrity", () => {
   it("every hard-coded dashboard href resolves to a real route", () => {
     const files = SCAN_DIRS.flatMap((d) => collectSourceFiles(d));

@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/dashboard/SectionHeader";
 import { InsightPanel } from "@/components/dashboard/InsightPanel";
+import DashboardMessagesLink from "@/components/messaging/DashboardMessagesLink";
 import {
   Tag,
   CalendarCheck,
@@ -173,6 +174,7 @@ export function SellerDashboard({ data }: Readonly<{ data: SellerData }>) {
                   <ChevronRight className="size-4 shrink-0 text-neutral-400 transition group-hover:text-brand-primary" />
                 </button>
               ))}
+              <DashboardMessagesLink variant="button" className="w-full" />
             </div>
           </CardContent>
         </Card>

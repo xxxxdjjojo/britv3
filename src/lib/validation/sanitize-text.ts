@@ -32,6 +32,9 @@ export function sanitizeText(dirty: string): string {
       .replace(/<(script|style)\b[^>]*>[\s\S]*$/gi, "")
       // Strip every remaining tag.
       .replace(/<[^>]*>/g, "")
+      // Drop a trailing unterminated tag with no closing `>` (e.g. an
+      // attribute-laden `<img src=x onerror=...` truncated at end of input).
+      .replace(/<[^>]*$/g, "")
   );
 }
 
