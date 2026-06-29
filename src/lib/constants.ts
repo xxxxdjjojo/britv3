@@ -192,6 +192,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/overview",
   "/search",
   "/properties",
+  "/new-homes",
   "/marketplace",
   "/services",
   "/agents",

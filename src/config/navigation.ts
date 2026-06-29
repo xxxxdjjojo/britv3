@@ -112,7 +112,7 @@ export const NAV_ITEMS: NavItem[] = [
         heading: "Search",
         links: [
           { label: "Property Search", href: "/search?type=buy" },
-          { label: "New Builds", href: "/search?type=new-builds" },
+          { label: "New Homes", href: "/new-homes" },
           { label: "Map Search", href: "/search?view=map&type=buy" },
         ],
       },
@@ -331,7 +331,7 @@ export const FOOTER_LINKS: FooterColumn[] = [
     links: [
       { label: "Buy", href: "/search?type=buy" },
       { label: "Rent", href: "/search?type=rent" },
-      { label: "New Builds", href: "/search?type=new-builds" },
+      { label: "New Homes", href: "/new-homes" },
       { label: "Commercial", href: "/search?type=commercial" },
       { label: "Sold Prices", href: "/sold-prices" },
     ],
@@ -677,7 +677,7 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   { label: "Property Search", href: "/search", section: "Search", keywords: ["buy", "rent", "property", "search", "find"] },
   { label: "Buy Property", href: "/search?type=buy", section: "Search", keywords: ["buy", "purchase", "property"] },
   { label: "Rent Property", href: "/search?type=rent", section: "Search", keywords: ["rent", "rental", "let", "property"] },
-  { label: "New Builds", href: "/search?type=new-builds", section: "Search", keywords: ["new", "builds", "development", "new-build"] },
+  { label: "New Homes", href: "/new-homes", section: "Search", keywords: ["new", "homes", "builds", "development", "new-build"] },
   { label: "Map Search (Buy)", href: "/search?view=map&type=buy", section: "Search", keywords: ["map", "buy", "search"] },
   { label: "Map Search (Rent)", href: "/search?view=map&type=rent", section: "Search", keywords: ["map", "rent", "search"] },
 
