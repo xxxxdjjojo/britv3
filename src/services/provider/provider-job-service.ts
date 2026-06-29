@@ -23,6 +23,10 @@ export type ProviderLead = Readonly<{
   description: string;
   /** Town / city of the job */
   location: string;
+  /** Job title as written by the homeowner */
+  title: string;
+  /** True when the job's postcode falls inside the provider's service area */
+  inServiceArea: boolean;
   /**
    * Lead status:
    * 'new' | 'accepted' | 'declined' | 'expired' | 'converted'
@@ -158,6 +162,16 @@ function toPence(value: number | null | undefined): number | null {
   return Math.round(value * 100);
 }
 
+/**
+ * Extract the outward portion of a UK postcode (e.g. "TW7 4PQ" → "TW7").
+ * Used to match a job's postcode against a provider's service-area list,
+ * which is stored as outward codes.
+ */
+function outwardCode(postcode: string | null | undefined): string {
+  if (!postcode) return "";
+  return postcode.trim().toUpperCase().split(/\s+/)[0] ?? "";
+}
+
 /** Compute days elapsed since a given ISO timestamp. */
 function daysElapsed(isoTimestamp: string): number {
   const ms = Date.now() - new Date(isoTimestamp).getTime();
@@ -186,17 +200,25 @@ export async function getProviderLeads(
   filters?: LeadFilters,
 ): Promise<ProviderLead[]> {
   try {
-    // 1. Fetch provider's service categories
+    // 1. Fetch provider's service categories + service area postcodes
     const { data: providerData, error: providerError } = await supabase
       .from("service_provider_details")
-      .select("services")
+      .select("services, service_postcodes")
       .eq("user_id", providerId)
       .maybeSingle();
 
     if (providerError || !providerData) return [];
 
-    const services: string[] = (providerData as { services: string[] }).services ?? [];
+    const provider = providerData as {
+      services: string[];
+      service_postcodes: string[] | null;
+    };
+    const services: string[] = provider.services ?? [];
     if (services.length === 0) return [];
+
+    const serviceAreas = new Set(
+      (provider.service_postcodes ?? []).map(outwardCode),
+    );
 
     // 2. Cutoff: 48h ago (leads older than this are considered expired)
     const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
@@ -207,25 +229,24 @@ export async function getProviderLeads(
       .select(
         `
         id,
-        client_id,
-        category,
+        service_category,
         title,
         description,
-        budget_range_min,
-        budget_range_max,
-        postcode,
+        budget_min,
+        budget_max,
+        property_postcode,
         urgency_level,
         status,
         created_at
       `,
       )
       .eq("status", "open")
-      .in("category", services)
+      .in("service_category", services)
       .gte("created_at", cutoff)
       .order("created_at", { ascending: false });
 
     if (filters?.category) {
-      query = query.eq("category", filters.category);
+      query = query.eq("service_category", filters.category);
     }
     if (filters?.urgency) {
       query = query.eq("urgency_level", filters.urgency);
@@ -235,26 +256,38 @@ export async function getProviderLeads(
 
     if (error || !data) return [];
 
-    // 4. Map to ProviderLead shape
-    return (data as Array<Record<string, unknown>>).map((row): ProviderLead => {
-      const createdAt = row["created_at"] as string;
-      const expiresAt = new Date(
-        new Date(createdAt).getTime() + 48 * 60 * 60 * 1000,
-      ).toISOString();
+    // 4. Map to ProviderLead shape; flag leads inside the provider's area
+    const leads = (data as Array<Record<string, unknown>>).map(
+      (row): ProviderLead => {
+        const createdAt = row["created_at"] as string;
+        const expiresAt = new Date(
+          new Date(createdAt).getTime() + 48 * 60 * 60 * 1000,
+        ).toISOString();
+        const postcode = (row["property_postcode"] as string | null) ?? "";
 
-      return {
-        id: row["id"] as string,
-        clientName: "Client",
-        serviceCategory: row["category"] as string,
-        description: (row["description"] as string | null) ?? "",
-        location: (row["postcode"] as string | null) ?? "",
-        status: "new",
-        budgetMinPence: toPence(row["budget_range_min"] as number | null),
-        budgetMaxPence: toPence(row["budget_range_max"] as number | null),
-        createdAt,
-        expiresAt,
-      };
-    });
+        return {
+          id: row["id"] as string,
+          clientName: "Client",
+          serviceCategory: row["service_category"] as string,
+          title: (row["title"] as string | null) ?? "",
+          description: (row["description"] as string | null) ?? "",
+          location: postcode,
+          inServiceArea:
+            serviceAreas.size > 0 && serviceAreas.has(outwardCode(postcode)),
+          status: "new",
+          budgetMinPence: toPence(row["budget_min"] as number | null),
+          budgetMaxPence: toPence(row["budget_max"] as number | null),
+          createdAt,
+          expiresAt,
+        };
+      },
+    );
+
+    // 5. Surface in-area leads first, keeping recency order within each group
+    return [
+      ...leads.filter((l) => l.inServiceArea),
+      ...leads.filter((l) => !l.inServiceArea),
+    ];
   } catch {
     return [];
   }
@@ -279,14 +312,16 @@ export async function getActiveJobs(
         `
         id,
         status,
-        scheduled_date,
-        total_amount,
+        scheduled_start_date,
         created_at,
         service_requests (
           title,
-          category
+          service_category
         ),
-        profiles:client_id (
+        quotes (
+          total_amount
+        ),
+        profiles!bookings_user_id_fkey (
           full_name
         )
       `,
@@ -304,14 +339,16 @@ export async function getActiveJobs(
       const profile = Array.isArray(row["profiles"])
         ? (row["profiles"][0] as Record<string, unknown> | undefined)
         : (row["profiles"] as Record<string, unknown> | undefined);
+      const quoteArr = Array.isArray(row["quotes"]) ? row["quotes"] : [];
+      const quote = quoteArr[0] as Record<string, unknown> | undefined;
 
       return {
         id: row["id"] as string,
         title: (sr?.["title"] as string | undefined) ?? "Job",
         clientName: (profile?.["full_name"] as string | undefined) ?? "Client",
         status: bookingStatusDisplay(row["status"] as string),
-        scheduledDate: (row["scheduled_date"] as string | null) ?? null,
-        totalAmountPence: Math.round(((row["total_amount"] as number | null) ?? 0) * 100),
+        scheduledDate: (row["scheduled_start_date"] as string | null) ?? null,
+        totalAmountPence: Math.round(((quote?.["total_amount"] as number | null) ?? 0) * 100),
         daysRunning: daysElapsed(row["created_at"] as string),
       };
     });
@@ -346,12 +383,14 @@ export async function getCompletedJobs(
         `
         id,
         status,
-        total_amount,
         created_at,
         service_requests (
           title
         ),
-        profiles:client_id (
+        quotes (
+          total_amount
+        ),
+        profiles!bookings_user_id_fkey (
           full_name
         ),
         reviews!reviews_booking_id_fkey (
@@ -393,13 +432,15 @@ export async function getCompletedJobs(
         : (row["profiles"] as Record<string, unknown> | undefined);
       const reviewArr = Array.isArray(row["reviews"]) ? row["reviews"] : [];
       const review = reviewArr[0] as Record<string, unknown> | undefined;
+      const quoteArr = Array.isArray(row["quotes"]) ? row["quotes"] : [];
+      const quote = quoteArr[0] as Record<string, unknown> | undefined;
 
       return {
         id: row["id"] as string,
         title: (sr?.["title"] as string | undefined) ?? "Job",
         clientName: (profile?.["full_name"] as string | undefined) ?? "Client",
         completedAt: row["created_at"] as string,
-        totalAmountPence: Math.round(((row["total_amount"] as number | null) ?? 0) * 100),
+        totalAmountPence: Math.round(((quote?.["total_amount"] as number | null) ?? 0) * 100),
         rating: (review?.["overall_rating"] as number | null) ?? null,
       };
     });
@@ -431,17 +472,16 @@ export async function getJobDetail(
       id,
       provider_id,
       status,
-      scheduled_date,
-      total_amount,
+      scheduled_start_date,
       created_at,
       service_requests (
         title,
-        category,
+        service_category,
         description,
-        postcode,
-        client_id
+        property_postcode,
+        user_id
       ),
-      profiles:client_id (
+      profiles!bookings_user_id_fkey (
         id,
         full_name,
         email,
@@ -508,10 +548,10 @@ export async function getJobDetail(
   return {
     id: row["id"] as string,
     status: bookingStatusDisplay(status),
-    serviceType: (sr?.["category"] as string | undefined) ?? "Service",
+    serviceType: (sr?.["service_category"] as string | undefined) ?? "Service",
     description: (sr?.["description"] as string | undefined) ?? "",
     client: {
-      id: (profile?.["id"] as string | undefined) ?? (sr?.["client_id"] as string | undefined) ?? "",
+      id: (profile?.["id"] as string | undefined) ?? (sr?.["user_id"] as string | undefined) ?? "",
       name: (profile?.["full_name"] as string | undefined) ?? "Client",
       email: (profile?.["email"] as string | undefined) ?? "",
       phone: (profile?.["phone"] as string | null | undefined) ?? null,
@@ -519,10 +559,10 @@ export async function getJobDetail(
     address: {
       line1: "",
       city: "",
-      postcode: (sr?.["postcode"] as string | undefined) ?? "",
+      postcode: (sr?.["property_postcode"] as string | undefined) ?? "",
     },
     agreedPricePence,
-    scheduledAt: (row["scheduled_date"] as string | null) ?? null,
+    scheduledAt: (row["scheduled_start_date"] as string | null) ?? null,
     completedAt: status === "completed" ? createdAt : null,
     attachments: [],
     timeline,
@@ -548,7 +588,7 @@ export async function acceptLead(
   // 1. Fetch the service request
   const { data: reqData, error: reqError } = await supabase
     .from("service_requests")
-    .select("id, category, status, client_id")
+    .select("id, service_category, status")
     .eq("id", leadId)
     .maybeSingle();
 
@@ -573,7 +613,7 @@ export async function acceptLead(
 
   const services: string[] =
     (providerData as { services: string[] }).services ?? [];
-  const category = req["category"] as string;
+  const category = req["service_category"] as string;
 
   if (!services.includes(category)) {
     throw new Error(
@@ -581,11 +621,12 @@ export async function acceptLead(
     );
   }
 
-  // 3. Update service_request status to 'accepted'
+  // 3. Mark the request as awarded to this provider ('awarded' is the valid
+  //    rfq_status for a request a provider has taken on).
   const acceptedAt = new Date().toISOString();
   const { error: updateError } = await supabase
     .from("service_requests")
-    .update({ status: "accepted" })
+    .update({ status: "awarded" })
     .eq("id", leadId);
 
   if (updateError) throw new Error(`Failed to accept lead: ${updateError.message}`);
@@ -617,7 +658,7 @@ export async function declineLead(
   // 1. Fetch the service request
   const { data: reqData, error: reqError } = await supabase
     .from("service_requests")
-    .select("id, category, status")
+    .select("id, service_category, status")
     .eq("id", leadId)
     .maybeSingle();
 
@@ -638,7 +679,7 @@ export async function declineLead(
 
   const services: string[] =
     (providerData as { services: string[] }).services ?? [];
-  const category = req["category"] as string;
+  const category = req["service_category"] as string;
 
   if (!services.includes(category)) {
     throw new Error(
@@ -646,14 +687,10 @@ export async function declineLead(
     );
   }
 
-  // 3. Update service_request status to 'cancelled'
+  // 3. Declining only removes the lead from THIS provider's board (handled
+  //    client-side). It must NOT mutate the shared service_request status —
+  //    other providers can still quote on it.
   const declinedAt = new Date().toISOString();
-  const { error: updateError } = await supabase
-    .from("service_requests")
-    .update({ status: "cancelled" })
-    .eq("id", leadId);
-
-  if (updateError) throw new Error(`Failed to decline lead: ${updateError.message}`);
 
   return {
     leadId,
@@ -702,25 +739,22 @@ export async function getUpcomingJobs(
         `
         id,
         status,
-        scheduled_date,
+        scheduled_start_date,
         service_requests (
-          category,
-          title
+          title,
+          service_category,
+          property_address,
+          property_postcode
         ),
-        profiles:client_id (
+        profiles!bookings_user_id_fkey (
           full_name
-        ),
-        properties (
-          address_line1,
-          city,
-          postcode
         )
       `,
       )
       .eq("provider_id", providerId)
       .in("status", ["confirmed", "in_progress"])
-      .gte("scheduled_date", todayStart.toISOString())
-      .order("scheduled_date", { ascending: true })
+      .gte("scheduled_start_date", todayStart.toISOString())
+      .order("scheduled_start_date", { ascending: true })
       .limit(limit);
 
     if (error || !data) return [];
@@ -732,24 +766,20 @@ export async function getUpcomingJobs(
       const profile = Array.isArray(row["profiles"])
         ? (row["profiles"][0] as Record<string, unknown> | undefined)
         : (row["profiles"] as Record<string, unknown> | undefined);
-      const property = Array.isArray(row["properties"])
-        ? (row["properties"][0] as Record<string, unknown> | undefined)
-        : (row["properties"] as Record<string, unknown> | undefined);
 
-      const line1 = (property?.["address_line1"] as string | null) ?? "";
-      const city = (property?.["city"] as string | null) ?? "";
-      const postcode = (property?.["postcode"] as string | null) ?? "";
-      const addressParts = [line1, city, postcode].filter(Boolean);
+      const line1 = (sr?.["property_address"] as string | null) ?? "";
+      const postcode = (sr?.["property_postcode"] as string | null) ?? "";
+      const addressParts = [line1, postcode].filter(Boolean);
       const address = addressParts.join(", ");
 
       return {
         id: row["id"] as string,
         clientName: (profile?.["full_name"] as string | undefined) ?? "Client",
         serviceType:
-          (sr?.["category"] as string | undefined) ??
+          (sr?.["service_category"] as string | undefined) ??
           (sr?.["title"] as string | undefined) ??
           "Job",
-        scheduledDate: (row["scheduled_date"] as string | null) ?? null,
+        scheduledDate: (row["scheduled_start_date"] as string | null) ?? null,
         status: row["status"] as string,
         address,
       };

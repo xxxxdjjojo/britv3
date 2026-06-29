@@ -181,8 +181,14 @@ function HeroLeadCard({
               {chip.label}
             </span>
             <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${badge.className}`}>
-              New Lead
+              {lead.serviceCategory}
             </span>
+            {lead.inServiceArea && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-xs font-medium text-brand-primary">
+                <MapPin className="size-3" />
+                In your area
+              </span>
+            )}
             <span className="ml-auto text-xs text-neutral-400">
               Posted {relativeTime(lead.createdAt)}
             </span>
@@ -190,7 +196,7 @@ function HeroLeadCard({
 
           {/* Title */}
           <h3 className="text-lg font-bold text-neutral-900 leading-snug">
-            {lead.serviceCategory}
+            {lead.title || lead.serviceCategory}
           </h3>
 
           {/* Description */}
@@ -304,10 +310,10 @@ function GridLeadCard({
           <Wrench className="size-4 text-brand-primary" />
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-neutral-900 leading-snug">
-            {lead.serviceCategory}
+          <p className="text-sm font-semibold text-neutral-900 leading-snug line-clamp-1">
+            {lead.title || lead.serviceCategory}
           </p>
-          <p className="text-xs text-neutral-500">{lead.clientName}</p>
+          <p className="text-xs text-neutral-500">{lead.serviceCategory}</p>
         </div>
       </div>
 
@@ -326,6 +332,11 @@ function GridLeadCard({
           <p className="font-bold uppercase tracking-wide text-neutral-400 mb-0.5">Location</p>
           <p className="font-medium text-neutral-700 truncate">
             {lead.location || "Location TBC"}
+            {lead.inServiceArea && (
+              <span className="ml-1.5 inline-flex items-center rounded-full bg-brand-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-primary align-middle">
+                In area
+              </span>
+            )}
           </p>
         </div>
       </div>
