@@ -33,6 +33,7 @@ import { useMarketAreaCard } from "@/hooks/useMarketAreaCard";
 import { geographyLevelForZoom, type GeographyLevel } from "@/lib/market-map/geography";
 import { LEVEL_LABEL, humanizeAreaName } from "@/lib/market-map/labels";
 import { fitBoundsFor } from "@/lib/market-map/fit-bounds";
+import type { SoldParcel } from "@/lib/market-map/sold-colour";
 import { cn } from "@/lib/utils";
 import { MarketMapFilters } from "./MarketMapFilters";
 import { MarketMapSummaryCards } from "./MarketMapSummaryCards";
@@ -40,6 +41,8 @@ import { MarketMapAreaList } from "./MarketMapAreaList";
 import { MarketMapAreaDetail } from "./MarketMapAreaDetail";
 import { MarketMapPriceCard } from "./MarketMapPriceCard";
 import { MarketMapLegend } from "./MarketMapLegend";
+import { MarketMapRentPanel } from "./MarketMapRentPanel";
+import { SoldParcelDetail } from "./SoldParcelDetail";
 import {
   Drawer,
   DrawerContent,
@@ -137,11 +140,12 @@ export function MarketMapExplorer({
   const [metadata, setMetadata] = useState<MarketMapMetadata | null>(null);
   const [selectedArea, setSelectedArea] =
     useState<MarketMapFeatureProperties | null>(null);
-  // Click coordinate for the selected area, anchoring the on-map price popup.
-  const [areaAnchor, setAreaAnchor] = useState<
-    { longitude: number; latitude: number } | null
-  >(null);
+  // Sold parcel selected at street zoom — routed into the Sales tab body.
+  const [selectedParcel, setSelectedParcel] = useState<SoldParcel | null>(null);
   const [allFeatures, setAllFeatures] = useState<MarketMapFeatureProperties[]>([]);
+
+  // Side-panel tab: sales (the choropleth/parcel detail) or rent (coming soon).
+  const [activeTab, setActiveTab] = useState<"sales" | "rent">("sales");
 
   // Flat/house breakdown for the selected area (lazy-loaded on selection).
   // The street layer uses H3 micro-area cells whose ids are not aggregatable by
@@ -223,13 +227,30 @@ export function MarketMapExplorer({
   }, []);
 
   const handleAreaSelect = useCallback(
-    (
-      props: MarketMapFeatureProperties | null,
-      anchor?: { longitude: number; latitude: number },
-    ) => {
+    (props: MarketMapFeatureProperties | null) => {
       setSelectedArea(props);
-      setAreaAnchor(props ? anchor ?? null : null);
+      // Area and parcel selections are mutually exclusive in the panel.
+      setSelectedParcel(null);
+      // A real area selection always surfaces in the Sales tab.
+      if (props) setActiveTab("sales");
       void setUrlParams({ area_id: props ? props.area_id : null });
+    },
+    [setUrlParams],
+  );
+
+  // Sold-parcel selection (street zoom). A parcel takes precedence over the
+  // area selection: selecting one clears the area (and its URL param) and pulls
+  // the Sales tab to the front. A null parcel just clears the prior parcel —
+  // MarketMap fires onParcelSelect(null) before onAreaSelect on a non-parcel
+  // click, so area/tab state is left to handleAreaSelect.
+  const handleParcelSelect = useCallback(
+    (parcel: SoldParcel | null) => {
+      setSelectedParcel(parcel);
+      if (parcel) {
+        setSelectedArea(null);
+        void setUrlParams({ area_id: null });
+        setActiveTab("sales");
+      }
     },
     [setUrlParams],
   );
@@ -311,30 +332,6 @@ export function MarketMapExplorer({
         periodTo: selectedArea.date_to,
       }
     : null;
-
-  // ---------------------------------------------------------------------------
-  // On-map price popup for the clicked area (reuses the already-fetched area
-  // card — no extra request). Rendered by MarketMap as a MapLibre <Popup>.
-  // ---------------------------------------------------------------------------
-
-  const areaPopup =
-    selectedArea && areaAnchor
-      ? {
-          longitude: areaAnchor.longitude,
-          latitude: areaAnchor.latitude,
-          onClose: () => handleAreaSelect(null),
-          children: (
-            <MarketMapPriceCard
-              card={areaCard ?? undefined}
-              areaName={humanizeAreaName(
-                selectedArea.area_name,
-                selectedArea.geography_level,
-              )}
-              isLoading={areaCardLoading}
-            />
-          ),
-        }
-      : null;
 
   // ---------------------------------------------------------------------------
   // Shared search bar
@@ -425,12 +422,122 @@ export function MarketMapExplorer({
   );
 
   // ---------------------------------------------------------------------------
-  // Left panel content (desktop)
+  // Sales / Rent tab strip — shared between desktop and mobile layouts.
   // ---------------------------------------------------------------------------
 
-  // Right panel content (desktop). Master/detail: filters are always on top;
-  // selecting an area swaps the area list for that area's price detail, with a
-  // "Back to all areas" control. Search sits in a sticky header.
+  const tabStrip = (
+    <div
+      role="tablist"
+      aria-label="Map data"
+      className="flex shrink-0 gap-1 border-b border-[#E2E2E8] bg-white px-4"
+    >
+      {(["sales", "rent"] as const).map((tab) => {
+        const isActive = activeTab === tab;
+        return (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => setActiveTab(tab)}
+            className={cn(
+              "-mb-px border-b-2 px-3 py-2.5 font-sans text-sm font-semibold capitalize transition-colors",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]",
+              isActive
+                ? "border-[#1B4D3E] text-[#1B4D3E]"
+                : "border-transparent text-[#7A7A88] hover:text-[#2E2E33]",
+            )}
+          >
+            {tab}
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  // ---------------------------------------------------------------------------
+  // Sales tab body — precedence: parcel > area > list.
+  // ---------------------------------------------------------------------------
+
+  const salesBody = selectedParcel ? (
+    <div className="flex flex-col gap-3 p-4">
+      <button
+        type="button"
+        onClick={() => handleParcelSelect(null)}
+        className="flex items-center gap-1.5 self-start font-sans text-xs font-medium text-[#1B4D3E] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]"
+      >
+        <ArrowLeft className="size-3.5" aria-hidden="true" />
+        Back to map
+      </button>
+      <SoldParcelDetail parcel={selectedParcel} />
+    </div>
+  ) : selectedArea ? (
+    <>
+      {/* Detail mode — the clicked area's prices, shown first */}
+      <div className="flex flex-col gap-3 p-4">
+        <button
+          type="button"
+          onClick={() => handleAreaSelect(null)}
+          className="flex items-center gap-1.5 self-start font-sans text-xs font-medium text-[#1B4D3E] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]"
+        >
+          <ArrowLeft className="size-3.5" aria-hidden="true" />
+          Back to all areas
+        </button>
+        <MarketMapPriceCard
+          card={areaCard ?? undefined}
+          areaName={humanizeAreaName(selectedArea.area_name, selectedArea.geography_level)}
+          isLoading={areaCardLoading}
+        />
+        <MarketMapAreaDetail
+          properties={selectedArea}
+          detail={areaDetail}
+          onClose={() => handleAreaSelect(null)}
+        />
+      </div>
+
+      {/* Filters remain available below the detail */}
+      <div className="border-t border-[#E2E2E8]">
+        <MarketMapFilters
+          propertyType={propertyType}
+          onPropertyTypeChange={handlePropertyTypeChange}
+          focusAreaName={focusAreaName}
+          onApply={() => {/* filters are applied reactively */}}
+        />
+      </div>
+    </>
+  ) : (
+    <>
+      {/* List mode — filters then ranked areas in view */}
+      <MarketMapFilters
+        propertyType={propertyType}
+        onPropertyTypeChange={handlePropertyTypeChange}
+        focusAreaName={focusAreaName}
+        onApply={() => {/* filters are applied reactively */}}
+      />
+      <div className="border-t border-[#E2E2E8] p-4">
+        <p className="mb-2 font-sans text-xs font-bold uppercase tracking-[0.08em] text-[#858593]">
+          {allFeatures.length > 0
+            ? "Areas in view — tap one for details"
+            : "Areas in view"}
+        </p>
+        {allFeatures.length > 0 ? (
+          <MarketMapAreaList
+            features={allFeatures}
+            selectedAreaId={null}
+            onSelect={handleAreaSelect}
+          />
+        ) : (
+          <p className="font-sans text-xs text-[#7A7A88]">
+            Pan or zoom the map, or search above, to see sold prices by area.
+          </p>
+        )}
+      </div>
+    </>
+  );
+
+  // Right panel content (desktop). Sticky search header + Sales/Rent tab strip;
+  // the body swaps on the active tab. The Sales body is master/detail with a
+  // parcel > area > list precedence.
   const rightPanel = (
     <aside
       className="hidden h-full min-h-0 w-1/2 max-w-[720px] shrink-0 flex-col border-l border-[#E2E2E8] bg-[#F8F8FA] lg:flex"
@@ -441,73 +548,12 @@ export function MarketMapExplorer({
         {searchBar}
       </div>
 
-      {/* Scrollable body. When an area is selected, its prices lead (so a click
-          is immediately visible); filters drop below. Otherwise filters lead,
-          followed by the ranked "areas in view" list. */}
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        {selectedArea ? (
-          <>
-            {/* Detail mode — the clicked area's prices, shown first */}
-            <div className="flex flex-col gap-3 p-4">
-              <button
-                type="button"
-                onClick={() => handleAreaSelect(null)}
-                className="flex items-center gap-1.5 self-start font-sans text-xs font-medium text-[#1B4D3E] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]"
-              >
-                <ArrowLeft className="size-3.5" aria-hidden="true" />
-                Back to all areas
-              </button>
-              <MarketMapPriceCard
-                card={areaCard ?? undefined}
-                areaName={humanizeAreaName(selectedArea.area_name, selectedArea.geography_level)}
-                isLoading={areaCardLoading}
-              />
-              <MarketMapAreaDetail
-                properties={selectedArea}
-                detail={areaDetail}
-                onClose={() => handleAreaSelect(null)}
-              />
-            </div>
+      {/* Sticky Sales / Rent tab strip */}
+      {tabStrip}
 
-            {/* Filters remain available below the detail */}
-            <div className="border-t border-[#E2E2E8]">
-              <MarketMapFilters
-                propertyType={propertyType}
-                onPropertyTypeChange={handlePropertyTypeChange}
-                focusAreaName={focusAreaName}
-                onApply={() => {/* filters are applied reactively */}}
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            {/* List mode — filters then ranked areas in view */}
-            <MarketMapFilters
-              propertyType={propertyType}
-              onPropertyTypeChange={handlePropertyTypeChange}
-              focusAreaName={focusAreaName}
-              onApply={() => {/* filters are applied reactively */}}
-            />
-            <div className="border-t border-[#E2E2E8] p-4">
-              <p className="mb-2 font-sans text-xs font-bold uppercase tracking-[0.08em] text-[#858593]">
-                {allFeatures.length > 0
-                  ? "Areas in view — tap one for details"
-                  : "Areas in view"}
-              </p>
-              {allFeatures.length > 0 ? (
-                <MarketMapAreaList
-                  features={allFeatures}
-                  selectedAreaId={null}
-                  onSelect={handleAreaSelect}
-                />
-              ) : (
-                <p className="font-sans text-xs text-[#7A7A88]">
-                  Pan or zoom the map, or search above, to see sold prices by area.
-                </p>
-              )}
-            </div>
-          </>
-        )}
+      {/* Scrollable body — driven by the active tab. */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {activeTab === "sales" ? salesBody : <MarketMapRentPanel />}
       </div>
 
       {/* Scale indicator footer */}
@@ -540,7 +586,7 @@ export function MarketMapExplorer({
           onViewportChange={(v) => setCurrentZoom(v.zoom)}
           onFeatures={handleFeatures}
           onAreaSelect={handleAreaSelect}
-          areaPopup={areaPopup}
+          onParcelSelect={handleParcelSelect}
           onMetadata={handleMetadata}
           className="h-full w-full"
         />
@@ -594,46 +640,68 @@ export function MarketMapExplorer({
                 </DrawerTitle>
               </DrawerHeader>
 
+              {/* Sales / Rent tab strip */}
+              {tabStrip}
+
               <div className="flex-1 overflow-y-auto pb-safe">
-                <div className="p-4">
-                  <MarketMapSummaryCards data={summaryData} />
-                </div>
-
-                <MarketMapFilters
-                  propertyType={propertyType}
-                  onPropertyTypeChange={handlePropertyTypeChange}
-                  focusAreaName={focusAreaName}
-                  onApply={() => {/* reactive */}}
-                />
-
-                {/* Selected area inside sheet — instant price card + drill-down */}
-                {selectedArea && (
+                {activeTab === "rent" ? (
+                  <MarketMapRentPanel />
+                ) : selectedParcel ? (
+                  /* Parcel detail (street zoom) takes precedence */
                   <div className="flex flex-col gap-3 p-4">
-                    <MarketMapPriceCard
-                      card={areaCard ?? undefined}
-                      areaName={humanizeAreaName(selectedArea.area_name, selectedArea.geography_level)}
-                      isLoading={areaCardLoading}
-                    />
-                    <MarketMapAreaDetail
-                      properties={selectedArea}
-                      detail={areaDetail}
-                      onClose={() => handleAreaSelect(null)}
-                    />
+                    <button
+                      type="button"
+                      onClick={() => handleParcelSelect(null)}
+                      className="flex items-center gap-1.5 self-start font-sans text-xs font-medium text-[#1B4D3E] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]"
+                    >
+                      <ArrowLeft className="size-3.5" aria-hidden="true" />
+                      Back to map
+                    </button>
+                    <SoldParcelDetail parcel={selectedParcel} />
                   </div>
-                )}
+                ) : (
+                  <>
+                    <div className="p-4">
+                      <MarketMapSummaryCards data={summaryData} />
+                    </div>
 
-                {/* Area list in sheet */}
-                {allFeatures.length > 0 && (
-                  <div className="p-4">
-                    <p className="mb-2 font-sans text-xs font-bold uppercase tracking-[0.08em] text-[#858593]">
-                      Areas in view
-                    </p>
-                    <MarketMapAreaList
-                      features={allFeatures}
-                      selectedAreaId={selectedArea?.area_id}
-                      onSelect={handleAreaSelect}
+                    <MarketMapFilters
+                      propertyType={propertyType}
+                      onPropertyTypeChange={handlePropertyTypeChange}
+                      focusAreaName={focusAreaName}
+                      onApply={() => {/* reactive */}}
                     />
-                  </div>
+
+                    {/* Selected area inside sheet — instant price card + drill-down */}
+                    {selectedArea && (
+                      <div className="flex flex-col gap-3 p-4">
+                        <MarketMapPriceCard
+                          card={areaCard ?? undefined}
+                          areaName={humanizeAreaName(selectedArea.area_name, selectedArea.geography_level)}
+                          isLoading={areaCardLoading}
+                        />
+                        <MarketMapAreaDetail
+                          properties={selectedArea}
+                          detail={areaDetail}
+                          onClose={() => handleAreaSelect(null)}
+                        />
+                      </div>
+                    )}
+
+                    {/* Area list in sheet */}
+                    {allFeatures.length > 0 && (
+                      <div className="p-4">
+                        <p className="mb-2 font-sans text-xs font-bold uppercase tracking-[0.08em] text-[#858593]">
+                          Areas in view
+                        </p>
+                        <MarketMapAreaList
+                          features={allFeatures}
+                          selectedAreaId={selectedArea?.area_id}
+                          onSelect={handleAreaSelect}
+                        />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </DrawerContent>
