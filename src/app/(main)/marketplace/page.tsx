@@ -4,11 +4,7 @@ import { getFeaturedProviders } from "./featured-providers";
 import { HubHero } from "@/components/marketplace/hub/HubHero";
 import { CategoryGrid } from "@/components/marketplace/hub/CategoryGrid";
 import { FeaturedProviders } from "@/components/marketplace/hub/FeaturedProviders";
-import {
-  HowItWorks,
-  TrustBand,
-  FinalCta,
-} from "@/components/marketplace/hub/HubBands";
+import { WhyChoose } from "@/components/marketplace/hub/HubBands";
 
 const SITE_URL = "https://www.truedeed.co.uk";
 const PAGE_PATH = "/marketplace";
@@ -69,10 +65,8 @@ export default async function MarketplaceLandingPage() {
       <CollectionJsonLd />
       <HubHero />
       <CategoryGrid />
+      <WhyChoose />
       <FeaturedProviders providers={featured} />
-      <HowItWorks />
-      <TrustBand />
-      <FinalCta />
     </div>
   );
 }

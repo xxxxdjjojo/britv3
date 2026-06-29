@@ -1,12 +1,18 @@
-import Link from "next/link";
-import { ShieldCheck, Search, Star } from "lucide-react";
+import { Search, MapPin, ShieldCheck, PoundSterling, Star } from "lucide-react";
+
+const TRUST_BADGES = [
+  { icon: ShieldCheck, label: "Verified Professionals" },
+  { icon: PoundSterling, label: "No Hidden Costs" },
+  { icon: Star, label: "Top-Rated Service" },
+] as const;
 
 /**
- * Marketplace hub hero. Editorial, airy, soft-green direction.
+ * Marketplace hub hero. Soft-green gradient, centered editorial headline with a
+ * dual search bar (service + postcode).
  *
- * The search form posts to `/services` (a real route) via plain GET so it works
- * without JavaScript — mirroring the original landing behaviour. A secondary
- * "Post a Job" CTA routes to `/post-a-job`.
+ * The form is a plain HTML GET to `/services/tradespeople` so it works without
+ * JavaScript. That route reads `q` (search query) and `postcode` directly from
+ * its search params, so the search is fully functional server-side.
  */
 export function HubHero() {
   return (
@@ -17,102 +23,101 @@ export function HubHero() {
       {/* Soft atmospheric wash */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_55%_at_85%_0%,rgba(45,122,95,0.18),transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_55%_at_85%_0%,rgba(45,122,95,0.16),transparent_70%),radial-gradient(50%_45%_at_10%_100%,rgba(45,122,95,0.08),transparent_70%)]"
       />
-      <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:py-28">
-        <div className="flex flex-col justify-center">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-brand-primary ring-1 ring-brand-primary/15 backdrop-blur dark:bg-slate-900/70 dark:text-brand-primary-light">
-            <ShieldCheck className="size-3.5" />
-            Verified UK professionals
-          </span>
+      <div className="relative mx-auto max-w-4xl px-6 py-24 text-center sm:py-32">
+        <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-sm font-medium text-brand-primary ring-1 ring-brand-primary/20 backdrop-blur dark:bg-slate-900/70 dark:text-brand-primary-light">
+          <span
+            aria-hidden
+            className="size-2 animate-pulse rounded-full bg-brand-primary-light"
+          />
+          Trusted by 50,000+ UK homeowners
+        </span>
 
-          <h1
-            id="hub-hero-heading"
-            className="mt-6 font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-brand-primary-dark dark:text-white sm:text-5xl lg:text-6xl"
+        <h1
+          id="hub-hero-heading"
+          className="mt-8 font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-brand-primary-dark dark:text-white sm:text-5xl lg:text-6xl"
+        >
+          Find Trusted Tradespeople
+          <br />
+          <span className="text-brand-primary-light">Near You.</span>
+        </h1>
+
+        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-brand-primary-dark/70 dark:text-slate-300">
+          Book verified plumbers, electricians and more in minutes. Quality
+          professionals, real reviews, transparent ratings.
+        </p>
+
+        {/* Dual search — plain HTML GET, works without JS. /services/tradespeople
+            reads `q` and `postcode` from its search params. */}
+        <form
+          action="/services/tradespeople"
+          method="get"
+          role="search"
+          aria-label="Search professionals"
+          className="mx-auto mt-10 flex max-w-4xl flex-col items-stretch gap-2 rounded-2xl bg-white p-2 shadow-2xl shadow-brand-primary/10 ring-1 ring-brand-primary/10 md:flex-row dark:bg-slate-900 dark:ring-slate-700"
+        >
+          <div className="flex flex-1 items-center gap-3 px-4">
+            <Search
+              className="size-5 shrink-0 text-brand-primary-mid"
+              aria-hidden
+            />
+            <label htmlFor="hub-search-service" className="sr-only">
+              What service do you need?
+            </label>
+            <input
+              id="hub-search-service"
+              type="text"
+              name="q"
+              aria-label="Service"
+              placeholder="What service do you need?"
+              className="w-full bg-transparent py-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+          </div>
+
+          <div
+            aria-hidden
+            className="hidden w-px self-center bg-border md:block md:h-10 dark:bg-slate-700"
+          />
+
+          <div className="flex flex-1 items-center gap-3 px-4">
+            <MapPin
+              className="size-5 shrink-0 text-brand-primary-mid"
+              aria-hidden
+            />
+            <label htmlFor="hub-search-postcode" className="sr-only">
+              Enter postcode
+            </label>
+            <input
+              id="hub-search-postcode"
+              type="text"
+              name="postcode"
+              aria-label="Postcode"
+              placeholder="Enter postcode"
+              className="w-full bg-transparent py-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="rounded-xl bg-brand-primary px-10 py-4 text-sm font-bold text-white shadow-lg shadow-brand-primary/20 transition-colors hover:bg-brand-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
           >
-            Find a tradesperson
-            <br />
-            <span className="text-brand-primary-light">you can actually trust.</span>
-          </h1>
+            Search Pros
+          </button>
+        </form>
 
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-brand-primary-dark/70 dark:text-slate-300">
-            Plumbers, electricians, builders and property professionals across the UK —
-            ID-checked, reviewed by real customers, and rated transparently.
-          </p>
-
-          {/* Search — plain HTML GET, works without JS */}
-          <form
-            action="/services"
-            method="get"
-            role="search"
-            aria-label="Search professionals"
-            className="mt-8 flex flex-col gap-3 rounded-2xl bg-white p-2 shadow-lg shadow-brand-primary/5 ring-1 ring-brand-primary/10 sm:flex-row dark:bg-slate-900 dark:ring-slate-700"
-          >
-            <div className="flex flex-1 items-center gap-2 px-3">
-              <Search className="size-5 shrink-0 text-brand-primary-mid" aria-hidden />
-              <label htmlFor="hub-search" className="sr-only">
-                Search by trade or profession
-              </label>
-              <input
-                id="hub-search"
-                type="text"
-                name="q"
-                placeholder="Try “electrician” or “surveyor”…"
-                className="w-full bg-transparent py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+        {/* Trust badges */}
+        <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-brand-primary-dark/70 dark:text-slate-400">
+          {TRUST_BADGES.map((badge) => (
+            <li key={badge.label} className="flex items-center gap-2">
+              <badge.icon
+                className="size-4 text-brand-primary-light"
+                aria-hidden
               />
-            </div>
-            <button
-              type="submit"
-              className="rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
-            >
-              Search
-            </button>
-          </form>
-
-          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-brand-primary-dark/70 dark:text-slate-400">
-            <span>
-              Got a job in mind?{" "}
-              <Link
-                href="/post-a-job"
-                className="font-semibold text-brand-primary underline-offset-4 hover:underline dark:text-brand-primary-light"
-              >
-                Post it free &amp; get quotes →
-              </Link>
-            </span>
-          </div>
-        </div>
-
-        {/* Editorial trust card */}
-        <div className="relative hidden items-center justify-center lg:flex">
-          <div className="w-full max-w-sm rounded-3xl bg-white p-7 shadow-xl shadow-brand-primary/10 ring-1 ring-brand-primary/10 dark:bg-slate-900 dark:ring-slate-700">
-            <div className="flex items-center gap-1 text-brand-gold">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="size-5 fill-current" aria-hidden />
-              ))}
-            </div>
-            <p className="mt-4 text-lg font-medium leading-snug text-brand-primary-dark dark:text-white">
-              “Found a vetted electrician in minutes. The reviews were the real
-              deal — no surprises.”
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              A homeowner in Manchester
-            </p>
-            <div className="mt-6 grid grid-cols-3 gap-3 border-t border-border pt-5 dark:border-slate-700">
-              {[
-                { value: "ID", label: "checked" },
-                { value: "100%", label: "real reviews" },
-                { value: "UK-wide", label: "coverage" },
-              ].map((s) => (
-                <div key={s.label}>
-                  <p className="font-heading text-lg font-bold text-brand-primary dark:text-brand-primary-light">
-                    {s.value}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+              {badge.label}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
