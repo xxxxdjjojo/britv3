@@ -31,7 +31,7 @@ const FOOTER = "Sold prices: HM Land Registry. Floor areas: EPC.";
 
 type Props = Readonly<{ parcel: SoldParcel }>;
 
-export function SoldParcelPopup({ parcel }: Props) {
+export function SoldParcelDetail({ parcel }: Props) {
   const isSingle = parcel.saleCount === 1;
 
   return (
