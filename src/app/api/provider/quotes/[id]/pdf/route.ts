@@ -29,7 +29,6 @@ type MilestoneRecord = {
 
 type QuoteRow = Quote & {
   scope_of_work?: string | null;
-  validity_date?: string | null;
   milestones?: MilestoneRecord[] | null;
   line_items: QuoteLineItemWithSection[];
 };
@@ -60,8 +59,9 @@ function fmtDate(iso: string | null | undefined): string {
 // ---------------------------------------------------------------------------
 
 function buildHtmlQuote(quote: QuoteRow, providerName: string): string {
-  const subtotalPence = quote.subtotal;
-  const vatPence = 0; // VAT not stored separately on quotes; total_amount is the source of truth
+  // VAT is not stored separately on quotes; total_amount is the source of truth.
+  const subtotalPence = quote.total_amount;
+  const vatPence = 0;
   const totalPence = quote.total_amount;
 
   const lineItems = quote.line_items as QuoteLineItemWithSection[];
@@ -149,8 +149,7 @@ function buildHtmlQuote(quote: QuoteRow, providerName: string): string {
       </div>
       <div class="dates">
         <p><strong>Issue date:</strong> ${fmtDate(quote.created_at)}</p>
-        ${quote.valid_until ? `<p><strong>Valid until:</strong> ${fmtDate(quote.valid_until)}</p>` : ""}
-        ${quote.validity_date ? `<p><strong>Validity date:</strong> ${fmtDate(quote.validity_date)}</p>` : ""}
+        ${quote.validity_date ? `<p><strong>Valid until:</strong> ${fmtDate(quote.validity_date)}</p>` : ""}
         <p><strong>Status:</strong> ${quote.status.toUpperCase()}</p>
       </div>
     </div>
@@ -161,7 +160,7 @@ function buildHtmlQuote(quote: QuoteRow, providerName: string): string {
       </div>
       <div>
         <p class="label">Prepared For</p>
-        <p class="name">${quote.request_id ?? "Client"}</p>
+        <p class="name">${quote.service_request_id ?? "Client"}</p>
       </div>
     </div>
     ${quote.scope_of_work ? `<div class="scope"><p class="label">Scope of Work</p><p>${quote.scope_of_work}</p></div>` : ""}
@@ -184,7 +183,6 @@ function buildHtmlQuote(quote: QuoteRow, providerName: string): string {
         <div class="row total"><dt>Total</dt><dd>£${fmtGbp(totalPence)}</dd></div>
       </dl>
     </div>
-    ${quote.notes ? `<div class="notes"><p class="label">Notes</p><p>${quote.notes}</p></div>` : ""}
     ${milestonesHtml}
   </div>
 </body>
@@ -324,11 +322,11 @@ export async function GET(
               { style: styles.muted },
               `Issue date: ${fmtDate(quote.created_at)}`,
             ),
-            (quote.valid_until ?? quote.validity_date)
+            quote.validity_date
               ? React.createElement(
                   Text,
                   { style: styles.muted },
-                  `Valid until: ${fmtDate(quote.valid_until ?? quote.validity_date)}`,
+                  `Valid until: ${fmtDate(quote.validity_date)}`,
                 )
               : null,
             React.createElement(
@@ -352,7 +350,7 @@ export async function GET(
             View,
             { style: styles.partyBlock },
             React.createElement(Text, { style: styles.sectionLabel }, "Prepared For"),
-            React.createElement(Text, { style: styles.partyName }, quote.request_id ?? "Client"),
+            React.createElement(Text, { style: styles.partyName }, quote.service_request_id ?? "Client"),
           ),
         ),
         // Scope of work
@@ -416,7 +414,7 @@ export async function GET(
               View,
               { style: styles.totalLine },
               React.createElement(Text, null, "Subtotal"),
-              React.createElement(Text, null, `£${fmtGbp(quote.subtotal)}`),
+              React.createElement(Text, null, `£${fmtGbp(quote.total_amount)}`),
             ),
             React.createElement(
               View,
@@ -426,15 +424,6 @@ export async function GET(
             ),
           ),
         ),
-        // Notes
-        quote.notes
-          ? React.createElement(
-              View,
-              { style: styles.notesBox },
-              React.createElement(Text, { style: styles.sectionLabel }, "Notes"),
-              React.createElement(Text, null, quote.notes),
-            )
-          : null,
         // Payment schedule milestones
         quote.milestones && quote.milestones.length > 0
           ? React.createElement(

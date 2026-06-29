@@ -226,6 +226,8 @@ export type Quote = Readonly<{
   validity_date: Date | null;
   status: QuoteStatus;
   version: number;
+  quote_signature: string | null;
+  decline_reason: string | null;
   created_at: Date;
   updated_at: Date;
 }>;

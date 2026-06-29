@@ -434,11 +434,13 @@ describe("quote-service", () => {
   });
 
   describe("declineQuote", () => {
-    it("should decline quote with reason", async () => {
+    it("should decline quote and write decline_reason into the update payload", async () => {
       const declinedQuote = {
         id: "quote-1",
         status: "declined",
       };
+
+      let capturedUpdate: Record<string, unknown> | null = null;
 
       const fromMock = vi.fn().mockImplementation((table: string) => {
         if (table === "quotes") {
@@ -455,15 +457,18 @@ describe("quote-service", () => {
                 }),
               }),
             }),
-            update: vi.fn().mockReturnValue({
-              eq: vi.fn().mockReturnValue({
-                select: vi.fn().mockReturnValue({
-                  single: vi.fn().mockResolvedValue({
-                    data: declinedQuote,
-                    error: null,
+            update: vi.fn().mockImplementation((data: Record<string, unknown>) => {
+              capturedUpdate = data;
+              return {
+                eq: vi.fn().mockReturnValue({
+                  select: vi.fn().mockReturnValue({
+                    single: vi.fn().mockResolvedValue({
+                      data: declinedQuote,
+                      error: null,
+                    }),
                   }),
                 }),
-              }),
+              };
             }),
           };
         }
@@ -483,6 +488,9 @@ describe("quote-service", () => {
       );
 
       expect(result.status).toBe("declined");
+      expect(capturedUpdate).not.toBeNull();
+      expect(capturedUpdate!.status).toBe("declined");
+      expect(capturedUpdate!.decline_reason).toBe("Too expensive");
     });
   });
 });

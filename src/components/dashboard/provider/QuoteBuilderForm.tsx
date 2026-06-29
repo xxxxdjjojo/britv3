@@ -372,9 +372,8 @@ export function QuoteBuilderForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          request_id: requestId ?? undefined,
+          service_request_id: requestId ?? undefined,
           line_items: lineItems,
-          notes: values.notes || undefined,
           valid_until_days: validUntilDays,
           milestones: milestonesPayload,
         }),
