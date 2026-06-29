@@ -125,10 +125,14 @@ export type SimilarProperty = {
 // -- Helpers -----------------------------------------------------------------
 
 /**
- * Parse PostGIS GEOGRAPHY point string into { lat, lng } or null.
- * Supabase returns geography as a GeoJSON object or WKT string.
+ * Parse a PostGIS GEOGRAPHY point into { lat, lng }, or null.
+ *
+ * Supabase/PostgREST serialises a raw `geography` column as an EWKB HEX string
+ * (e.g. "0101000020E6100000…"), NOT GeoJSON — that is the representation live
+ * listings actually arrive in. A GeoJSON object is also accepted (e.g. when a
+ * query casts the column via ST_AsGeoJSON).
  */
-function parseCoordinates(
+export function parseCoordinates(
   coordinates: unknown,
 ): { lat: number; lng: number } | null {
   if (!coordinates) return null;
@@ -146,9 +150,60 @@ function parseCoordinates(
     if (Array.isArray(coords) && coords.length >= 2) {
       return { lat: coords[1], lng: coords[0] };
     }
+    return null;
+  }
+
+  // EWKB hex string — the PostgREST representation of a geography column.
+  if (typeof coordinates === "string") {
+    return parseEwkbHexPoint(coordinates);
   }
 
   return null;
+}
+
+/**
+ * Decode an EWKB hex Point into { lat, lng }. Handles little/big-endian and the
+ * optional SRID / Z / M flags (X and Y are always the first two ordinates).
+ * Returns null for any non-Point or malformed input so callers degrade
+ * gracefully rather than throwing.
+ */
+function parseEwkbHexPoint(
+  hex: string,
+): { lat: number; lng: number } | null {
+  const clean = hex.trim();
+  // Minimum Point: endian(1) + type(4) + x(8) + y(8) = 21 bytes = 42 hex chars.
+  if (
+    clean.length < 42 ||
+    clean.length % 2 !== 0 ||
+    !/^[0-9a-fA-F]+$/.test(clean)
+  ) {
+    return null;
+  }
+
+  try {
+    const bytes = new Uint8Array(clean.length / 2);
+    for (let i = 0; i < bytes.length; i++) {
+      bytes[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
+    }
+    const view = new DataView(bytes.buffer);
+    const littleEndian = bytes[0] === 1;
+    const type = view.getUint32(1, littleEndian);
+
+    // Base geometry type with the Z/M/SRID flags masked off. Point === 1.
+    if ((type & 0x0fffffff) !== 1) return null;
+
+    const hasSrid = (type & 0x20000000) !== 0;
+    const offset = 5 + (hasSrid ? 4 : 0);
+    if (offset + 16 > bytes.length) return null;
+
+    const lng = view.getFloat64(offset, littleEndian);
+    const lat = view.getFloat64(offset + 8, littleEndian);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+    return { lat, lng };
+  } catch {
+    return null;
+  }
 }
 
 // -- Mock data fallback (when search_live_data flag is off) ------------------
