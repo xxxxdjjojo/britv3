@@ -26,7 +26,7 @@ function LogoFallback({ name }: Readonly<{ name: string | null }>) {
         .toUpperCase()
     : "AG";
   return (
-    <div className="w-full h-full flex items-center justify-center bg-[#2563EB] text-white text-2xl font-bold">
+    <div className="w-full h-full flex items-center justify-center bg-brand-primary text-white text-2xl font-bold">
       {initials}
     </div>
   );
@@ -40,96 +40,89 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
   const totalReviews = stats.total_reviews;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden mb-8">
-      {/* Cover photo / gradient */}
-      <div className="relative h-48">
-        {logoUrl ? (
-          <Image
-            src={logoUrl}
-            alt={`${agencyName} cover`}
-            fill
-            className="object-cover opacity-20"
-            priority
-          />
-        ) : null}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#2563EB] to-blue-400" />
-      </div>
-
-      {/* Content below cover */}
-      <div className="px-8 pb-8">
-        {/* Logo + identity row */}
-        <div className="flex flex-col md:flex-row items-start md:items-end -mt-16 gap-6">
+    <section className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-10 shadow-sm border border-slate-100 dark:border-slate-800 mb-8">
+      {/* Logo + identity + CTA row */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-6">
           {/* Logo */}
           <div className="relative flex-shrink-0">
-            <div className="w-32 h-32 rounded-xl border-4 border-white dark:border-slate-900 shadow-md bg-white overflow-hidden">
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm bg-white overflow-hidden">
               {logoUrl ? (
                 <Image
                   src={logoUrl}
                   alt={`${agencyName} logo`}
                   fill
-                  className="object-cover"
+                  className="object-contain p-2"
+                  priority
                 />
               ) : (
                 <LogoFallback name={agencyName} />
               )}
             </div>
             {/* Verified badge */}
-            <div className="absolute -bottom-2 -right-2 bg-green-500 text-white p-1 rounded-full border-2 border-white">
+            <div className="absolute -bottom-2 -right-2 bg-brand-primary text-white p-1 rounded-full border-2 border-white dark:border-slate-900">
               <ShieldCheck className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* Identity */}
-          <div className="flex-1 pt-4 md:pt-0">
+          <div>
             <div className="flex flex-wrap items-center gap-3 mb-1">
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
                 {agencyName}
               </h1>
-              <span className="inline-flex items-center rounded-full bg-[#2563EB]/10 border border-[#2563EB]/20 text-[#2563EB] text-xs font-semibold px-2.5 py-0.5">
+              <span className="inline-flex items-center rounded-full bg-brand-primary/10 text-brand-primary text-xs font-bold px-3 py-1 uppercase tracking-wider">
                 Premium Partner
               </span>
             </div>
 
             {/* Rating + location row */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
               {avgRating != null && (
                 <span className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  <Star className="w-4 h-4 fill-brand-secondary text-brand-secondary" />
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
                     {avgRating}
                   </span>
-                  <span>({totalReviews} Reviews)</span>
+                  <span className="ml-1">({totalReviews} Reviews)</span>
                 </span>
               )}
               {city && (
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-slate-400" />
-                  {city}
-                </span>
+                <>
+                  {avgRating != null && (
+                    <span className="mx-1 text-slate-300 dark:text-slate-600">
+                      &bull;
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4 text-slate-400" />
+                    {city}
+                  </span>
+                </>
               )}
-            </div>
-
-            {/* CTA buttons */}
-            <div className="flex flex-wrap gap-3 mt-4">
-              <button
-                type="button"
-                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-surface dark:hover:bg-slate-800 transition-colors"
-              >
-                Follow
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2 rounded-lg bg-[#2563EB] text-white text-sm font-medium hover:bg-[#1d4ed8] transition-colors"
-              >
-                Contact Agent
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Stat bar */}
-        <AgencyStatBar stats={stats} />
+        {/* CTA buttons */}
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            className="flex-1 md:flex-none border border-brand-primary text-brand-primary font-bold px-6 py-3 rounded-xl hover:bg-brand-primary/5 transition-colors"
+          >
+            Follow
+          </button>
+          <button
+            type="button"
+            className="flex-1 md:flex-none bg-brand-primary text-white font-bold px-8 py-3 rounded-xl hover:bg-brand-primary-light transition-all"
+          >
+            Contact Agent
+          </button>
+        </div>
       </div>
-    </div>
+
+      {/* Stat bar */}
+      <AgencyStatBar stats={stats} />
+    </section>
   );
 }

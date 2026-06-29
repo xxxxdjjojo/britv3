@@ -35,21 +35,24 @@ export function ReferralShare({ code, baseUrl }: ReferralShareProps) {
   }
 
   return (
-    <div className="flex flex-col">
-      <h2 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-[#1B4D3E]">
-        Move up the list.
+    <div className="relative z-10 flex flex-col">
+      <h2 className="font-[family-name:var(--font-heading)] text-3xl font-semibold text-white">
+        Ascend to Founder status.
       </h2>
-      <p className="mt-2 leading-relaxed text-[#1B4D3E]/65">
+      <p className="mt-3 max-w-md leading-relaxed text-white/70">
         Share your private link — each friend who joins moves you up the queue
         and unlocks tier rewards.
       </p>
 
-      <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-        <label htmlFor="referral-share-url" className="sr-only">
-          Your referral link
-        </label>
-        <div className="flex flex-1 items-center gap-3 rounded-full border border-[#1B4D3E]/15 bg-[#F5ECD7]/30 px-5 focus-within:border-[#A07D2E]">
-          <span aria-hidden className="text-[#1B4D3E]/40">
+      <label
+        htmlFor="referral-share-url"
+        className="mt-8 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-white/55"
+      >
+        Your unique invitation link
+      </label>
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-1 items-center gap-3 rounded-full border border-white/20 bg-white/10 px-5 backdrop-blur-md focus-within:border-[#FDCD74]">
+          <span aria-hidden className="text-[#FDCD74]">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -69,27 +72,40 @@ export function ReferralShare({ code, baseUrl }: ReferralShareProps) {
             readOnly
             value={shareUrl}
             onFocus={(event) => event.currentTarget.select()}
-            className="h-12 w-full truncate bg-transparent text-sm font-medium text-[#1B4D3E] focus:outline-none"
+            className="h-12 w-full truncate bg-transparent text-sm font-medium text-white placeholder-white/40 focus:outline-none"
           />
         </div>
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-[#1B4D3E] px-7 text-sm font-semibold text-white transition duration-300 ease-out hover:bg-[#003629] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A07D2E] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#FDCD74] px-7 text-sm font-semibold text-[#5D4200] transition duration-300 ease-out hover:bg-[#eec068] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDCD74] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1B4D3E]"
         >
+          <svg
+            aria-hidden
+            viewBox="0 0 24 24"
+            fill="none"
+            className="h-4 w-4"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="9" y="9" width="13" height="13" rx="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
           {copied ? "Copied!" : "Copy Link"}
         </button>
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-4">
-        <p className="text-[0.65rem] font-medium uppercase tracking-widest text-[#1B4D3E]/45">
+      <div className="mt-6 flex items-center gap-4">
+        <p className="text-[0.65rem] font-medium uppercase tracking-widest text-white/45">
           Direct share
         </p>
         <button
           type="button"
           onClick={handleCopy}
           aria-label="Share your referral link"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F5ECD7]/50 text-[#1B4D3E] transition-colors hover:bg-[#FDCD74] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A07D2E] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#FDCD74] hover:text-[#5D4200] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FDCD74] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1B4D3E]"
         >
           <svg
             viewBox="0 0 24 24"

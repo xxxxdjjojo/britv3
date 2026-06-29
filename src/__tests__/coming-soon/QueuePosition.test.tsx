@@ -15,7 +15,7 @@ describe("QueuePosition", () => {
     render(<QueuePosition status={status} />);
 
     expect(
-      screen.getByRole("heading", { name: /here's your spot/i }),
+      screen.getByRole("heading", { name: /you're in/i }),
     ).toBeInTheDocument();
   });
 

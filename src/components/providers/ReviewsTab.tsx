@@ -231,7 +231,7 @@ export function ReviewsTab({
                   disabled={loading}
                   className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
                     page === item
-                      ? "bg-[#2563EB] text-white"
+                      ? "bg-brand-primary text-white"
                       : "border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-surface dark:hover:bg-slate-800"
                   }`}
                 >

@@ -87,39 +87,58 @@ export function RFQCreateForm({
 
   if (submitState === "success") {
     return (
-      <div className={cn("rounded-lg border border-border bg-card p-6 text-center", className)}>
-        <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-green-100 text-green-600">
-          <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className={cn("rounded-xl border border-slate-200 bg-white p-8 text-center", className)}>
+        <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-brand-primary-lighter text-brand-primary">
+          <svg className="size-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-foreground">Request Submitted</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Reference: <span className="font-mono font-medium">{rfqReference}</span>
+        <h3 className="text-xl font-bold text-slate-900">Job posted</h3>
+        <p className="mt-1 text-sm text-slate-500">
+          Reference: <span className="font-mono font-medium text-slate-700">{rfqReference}</span>
         </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Providers will be notified and you will receive quotes shortly.
+        <p className="mt-2 text-sm text-slate-500">
+          Verified professionals will be notified and you will receive quotes
+          shortly.
         </p>
       </div>
     );
   }
 
+  const labelClass = "mb-2 block text-sm font-semibold text-slate-700";
+  const fieldClass =
+    "h-auto w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary";
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={cn("space-y-5 rounded-lg border border-border bg-card p-6", className)}
+      className={cn("space-y-6 rounded-xl border border-slate-200 bg-white p-6", className)}
     >
-      <h2 className="text-lg font-semibold text-foreground">
-        Request for Quotes
-      </h2>
+      {/* Title */}
+      <div>
+        <Label htmlFor="rfq-title" className={labelClass}>
+          Job title
+        </Label>
+        <Input
+          id="rfq-title"
+          placeholder="e.g. Install new kitchen cabinets"
+          className={fieldClass}
+          {...register("title")}
+        />
+        {errors.title && (
+          <p className="mt-1.5 text-xs text-destructive">{errors.title.message}</p>
+        )}
+      </div>
 
       {/* Service Category */}
-      <div className="space-y-1.5">
-        <Label htmlFor="rfq-category">Service category</Label>
+      <div>
+        <Label htmlFor="rfq-category" className={labelClass}>
+          Category
+        </Label>
         <select
           id="rfq-category"
           {...register("service_category")}
-          className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+          className={cn(fieldClass, "appearance-none")}
         >
           {Object.entries(SERVICE_CATEGORY_LABELS).map(([value, label]) => (
             <option key={value} value={value}>
@@ -128,70 +147,69 @@ export function RFQCreateForm({
           ))}
         </select>
         {errors.service_category && (
-          <p className="text-xs text-destructive">{errors.service_category.message}</p>
-        )}
-      </div>
-
-      {/* Title */}
-      <div className="space-y-1.5">
-        <Label htmlFor="rfq-title">Title</Label>
-        <Input
-          id="rfq-title"
-          placeholder="e.g. Full house survey needed"
-          {...register("title")}
-        />
-        {errors.title && (
-          <p className="text-xs text-destructive">{errors.title.message}</p>
+          <p className="mt-1.5 text-xs text-destructive">{errors.service_category.message}</p>
         )}
       </div>
 
       {/* Description */}
-      <div className="space-y-1.5">
-        <Label htmlFor="rfq-description">Description</Label>
+      <div>
+        <Label htmlFor="rfq-description" className={labelClass}>
+          Project description
+        </Label>
         <Textarea
           id="rfq-description"
-          placeholder="Describe the work you need done..."
-          rows={4}
+          placeholder="Describe what needs to be done. Mention dimensions, materials, or any specific requirements..."
+          rows={5}
+          className={fieldClass}
           {...register("description")}
         />
         {errors.description && (
-          <p className="text-xs text-destructive">{errors.description.message}</p>
+          <p className="mt-1.5 text-xs text-destructive">{errors.description.message}</p>
         )}
       </div>
 
-      {/* Postcode */}
-      <div className="space-y-1.5">
-        <Label htmlFor="rfq-postcode">Property postcode</Label>
-        <Input
-          id="rfq-postcode"
-          placeholder="e.g. SW1A 1AA"
-          {...register("property_postcode")}
-        />
-        <p className="text-xs text-muted-foreground">UK postcode format</p>
-        {errors.property_postcode && (
-          <p className="text-xs text-destructive">{errors.property_postcode.message}</p>
-        )}
-      </div>
-
-      {/* Preferred start date */}
-      <div className="space-y-1.5">
-        <Label htmlFor="rfq-start-date">Preferred start date</Label>
-        <Input
-          id="rfq-start-date"
-          type="date"
-          {...register("preferred_start_date")}
-        />
-        {errors.preferred_start_date && (
-          <p className="text-xs text-destructive">{errors.preferred_start_date.message}</p>
-        )}
+      {/* Postcode + Preferred start date */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div>
+          <Label htmlFor="rfq-postcode" className={labelClass}>
+            Location
+          </Label>
+          <Input
+            id="rfq-postcode"
+            placeholder="Enter postcode or city"
+            className={fieldClass}
+            {...register("property_postcode")}
+          />
+          <p className="mt-1.5 text-xs text-slate-400">UK postcode format</p>
+          {errors.property_postcode && (
+            <p className="mt-1 text-xs text-destructive">{errors.property_postcode.message}</p>
+          )}
+        </div>
+        <div>
+          <Label htmlFor="rfq-start-date" className={labelClass}>
+            Preferred start date
+          </Label>
+          <Input
+            id="rfq-start-date"
+            type="date"
+            className={fieldClass}
+            {...register("preferred_start_date")}
+          />
+          {errors.preferred_start_date && (
+            <p className="mt-1.5 text-xs text-destructive">{errors.preferred_start_date.message}</p>
+          )}
+        </div>
       </div>
 
       {/* Urgency */}
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-foreground">Urgency</legend>
-        <div className="flex flex-wrap gap-4">
+      <fieldset>
+        <legend className={labelClass}>Urgency</legend>
+        <div className="flex flex-wrap gap-3">
           {(["low", "normal", "high", "emergency"] as const).map((level) => (
-            <label key={level} className="flex items-center gap-1.5 text-sm">
+            <label
+              key={level}
+              className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors has-[:checked]:border-brand-primary has-[:checked]:bg-brand-primary-lighter has-[:checked]:text-brand-primary"
+            >
               <input
                 type="radio"
                 value={level}
@@ -203,36 +221,42 @@ export function RFQCreateForm({
           ))}
         </div>
         {errors.urgency_level && (
-          <p className="text-xs text-destructive">{errors.urgency_level.message}</p>
+          <p className="mt-1.5 text-xs text-destructive">{errors.urgency_level.message}</p>
         )}
       </fieldset>
 
       {/* Budget */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="rfq-budget-min">Budget min (GBP)</Label>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div>
+          <Label htmlFor="rfq-budget-min" className={labelClass}>
+            Budget min (GBP)
+          </Label>
           <Input
             id="rfq-budget-min"
             type="number"
             min={0}
             placeholder="0"
+            className={fieldClass}
             {...register("budget_min", { valueAsNumber: true })}
           />
           {errors.budget_min && (
-            <p className="text-xs text-destructive">{errors.budget_min.message}</p>
+            <p className="mt-1.5 text-xs text-destructive">{errors.budget_min.message}</p>
           )}
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="rfq-budget-max">Budget max (GBP)</Label>
+        <div>
+          <Label htmlFor="rfq-budget-max" className={labelClass}>
+            Budget max (GBP)
+          </Label>
           <Input
             id="rfq-budget-max"
             type="number"
             min={0}
             placeholder="0"
+            className={fieldClass}
             {...register("budget_max", { valueAsNumber: true })}
           />
           {errors.budget_max && (
-            <p className="text-xs text-destructive">{errors.budget_max.message}</p>
+            <p className="mt-1.5 text-xs text-destructive">{errors.budget_max.message}</p>
           )}
         </div>
       </div>
@@ -241,21 +265,23 @@ export function RFQCreateForm({
         <p className="text-sm text-destructive">{errorMessage}</p>
       )}
 
-      <Button
-        type="submit"
-        disabled={submitState === "submitting"}
-        className="w-full"
-        size="lg"
-      >
-        {submitState === "submitting" ? (
-          <>
-            <Loader2 className="animate-spin" />
-            Submitting...
-          </>
-        ) : (
-          "Submit Request"
-        )}
-      </Button>
+      <div className="border-t border-slate-100 pt-6">
+        <Button
+          type="submit"
+          disabled={submitState === "submitting"}
+          className="w-full rounded-lg bg-brand-primary py-3 text-base font-bold text-white shadow-md shadow-brand-primary/20 transition-all hover:bg-brand-primary-dark"
+          size="lg"
+        >
+          {submitState === "submitting" ? (
+            <>
+              <Loader2 className="animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Post job"
+          )}
+        </Button>
+      </div>
     </form>
   );
 }

@@ -219,13 +219,13 @@ export function ConveyancerCredentials({
       </h2>
 
       {/* Registration card */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-xl">
+      <div className="bg-brand-primary-lighter dark:bg-brand-primary/10 border border-brand-primary/20 dark:border-brand-primary/30 p-5 rounded-2xl">
         <div className="flex items-start gap-3">
-          <div className="shrink-0 w-9 h-9 bg-blue-700 rounded-full flex items-center justify-center">
+          <div className="shrink-0 w-9 h-9 bg-brand-primary rounded-full flex items-center justify-center">
             <Scale className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide">
+            <p className="text-xs font-bold text-brand-primary dark:text-green-400 uppercase tracking-wide">
               {regType} Registration
             </p>
             <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
@@ -241,8 +241,8 @@ export function ConveyancerCredentials({
       </div>
 
       {/* Fee table */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-surface dark:bg-slate-800/30">
           <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
             Typical Fees (inc. VAT)
           </h3>
@@ -254,8 +254,8 @@ export function ConveyancerCredentials({
                 key={label}
                 className="border-b border-slate-100 dark:border-slate-800 last:border-0"
               >
-                <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{label}</td>
-                <td className="px-4 py-3 text-right font-semibold text-slate-900 dark:text-white">
+                <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400">{label}</td>
+                <td className="px-5 py-3.5 text-right font-bold text-slate-900 dark:text-white">
                   {value !== undefined ? `£${value.toLocaleString()}` : "POA"}
                 </td>
               </tr>
@@ -273,7 +273,7 @@ export function ConveyancerCredentials({
           </span>
         )}
         {noSaleNoFee === true && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-semibold rounded-lg border border-green-200 dark:border-green-800">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary-lighter dark:bg-brand-primary/15 text-brand-primary dark:text-green-400 text-xs font-semibold rounded-lg border border-brand-primary/20 dark:border-brand-primary/30">
             <CheckCircle2 className="w-3.5 h-3.5" />
             No Sale, No Fee
           </span>
@@ -353,7 +353,7 @@ export function SurveyorCredentials({
       </h2>
 
       {/* RICS membership card */}
-      <div className="bg-green-50 dark:bg-brand-primary/10 border border-green-200 dark:border-brand-primary/30 p-4 rounded-xl">
+      <div className="bg-brand-primary-lighter dark:bg-brand-primary/10 border border-brand-primary/20 dark:border-brand-primary/30 p-5 rounded-2xl">
         <div className="flex items-start gap-3">
           <div className="shrink-0 w-9 h-9 bg-brand-primary rounded-full flex items-center justify-center">
             <Building2 className="w-4 h-4 text-white" />
@@ -377,19 +377,19 @@ export function SurveyorCredentials({
         <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
           Survey Types Offered
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {displaySurveys.map((survey) => (
             <div
               key={survey.key}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
             >
-              <p className="text-xs font-bold text-brand-primary dark:text-green-400 uppercase tracking-wide">
+              <p className="text-[10px] font-bold text-brand-primary/70 dark:text-green-400/70 uppercase tracking-wider">
                 {survey.level}
               </p>
-              <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">
+              <p className="text-sm font-bold text-slate-900 dark:text-white mt-1.5">
                 {survey.label}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                 {survey.subtitle}
               </p>
             </div>

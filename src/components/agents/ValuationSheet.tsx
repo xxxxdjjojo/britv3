@@ -110,9 +110,9 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors"
+        className="w-full bg-brand-secondary text-brand-primary font-bold py-4 rounded-xl shadow-lg hover:scale-[1.02] transition-all"
       >
-        Request a Free Valuation
+        Request Valuation
       </button>
 
       <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
@@ -152,7 +152,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
             <button
               type="button"
               onClick={handleClose}
-              className="px-6 py-2 rounded-lg bg-[#2563EB] text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+              className="px-6 py-2 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors"
             >
               Close
             </button>
@@ -172,7 +172,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.address}
                 onChange={handleChange}
                 placeholder="e.g. 42 Maple Street"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               />
             </div>
 
@@ -187,7 +187,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.postcode}
                 onChange={handleChange}
                 placeholder="e.g. SW1A 1AA"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               />
             </div>
 
@@ -200,7 +200,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 name="propertyType"
                 value={formData.propertyType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               >
                 <option value="">Select type</option>
                 <option value="detached">Detached</option>
@@ -220,7 +220,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 name="bedrooms"
                 value={formData.bedrooms}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               >
                 <option value="">Select bedrooms</option>
                 <option value="1">1</option>
@@ -240,7 +240,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 name="tenure"
                 value={formData.tenure}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               >
                 <option value="">Select tenure</option>
                 <option value="freehold">Freehold</option>
@@ -258,7 +258,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 name="contactTime"
                 value={formData.contactTime}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               >
                 <option value="">Select time</option>
                 <option value="morning">Morning (9–12)</option>
@@ -282,7 +282,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Full name"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               />
             </div>
 
@@ -298,7 +298,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="e.g. 07700 900123"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               />
             </div>
 
@@ -314,7 +314,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               />
             </div>
 
@@ -327,7 +327,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full px-4 py-3 rounded-lg bg-[#2563EB] text-white text-sm font-semibold hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-3 rounded-xl bg-brand-secondary text-brand-primary text-sm font-bold hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all"
             >
               {submitting ? "Submitting…" : "Request Valuation"}
             </button>

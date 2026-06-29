@@ -27,7 +27,16 @@ export function ProgressBar({ referralCount }: ProgressBarProps) {
       role="img"
       aria-label={caption}
     >
-      <div aria-hidden className="relative mb-6 h-1.5 rounded-full bg-white/10">
+      <div
+        aria-hidden
+        className="mb-3 flex items-center justify-between text-[0.7rem] font-medium uppercase tracking-widest text-white/55"
+      >
+        <span>{next ? `Progress to ${next.label}` : "All rewards unlocked"}</span>
+        <span className="tabular-nums text-[#FDCD74]">
+          {Math.round(fillPct)}%
+        </span>
+      </div>
+      <div aria-hidden className="relative mb-6 h-2 rounded-full bg-white/10">
         <div
           className="absolute left-0 top-0 h-full rounded-full bg-[#FDCD74] transition-[width] duration-700 ease-out"
           style={{ width: `${fillPct}%` }}
@@ -38,7 +47,7 @@ export function ProgressBar({ referralCount }: ProgressBarProps) {
             return (
               <span
                 key={threshold}
-                className={`h-3 w-3 rounded-full border-2 border-[#1B4D3E] ${
+                className={`h-3.5 w-3.5 rounded-full border-2 border-[#1B4D3E] ${
                   reached ? "bg-[#FDCD74]" : "bg-white/25"
                 }`}
               />

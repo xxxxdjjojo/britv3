@@ -24,19 +24,19 @@ function statusBadge(status: string): { label: string; className: string } {
   switch (status) {
     case "for_rent":
       return {
-        label: "For Rent",
-        className: "bg-emerald-500 text-white",
+        label: "To Let",
+        className: "bg-white/90 backdrop-blur text-brand-primary-light",
       };
     case "under_offer":
       return {
         label: "Under Offer",
-        className: "bg-amber-500 text-white",
+        className: "bg-white/90 backdrop-blur text-brand-secondary",
       };
     case "for_sale":
     default:
       return {
         label: "For Sale",
-        className: "bg-[#2563EB] text-white",
+        className: "bg-white/90 backdrop-blur text-slate-900",
       };
   }
 }
@@ -48,15 +48,15 @@ function PropertyCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
     .join(", ");
 
   return (
-    <article className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
+    <article className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-muted dark:bg-slate-800">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted dark:bg-slate-800">
         {listing.cover_image_url ? (
           <Image
             src={listing.cover_image_url}
             alt={listing.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-xs">
@@ -65,7 +65,7 @@ function PropertyCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
         )}
         {/* Status badge */}
         <span
-          className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full ${badge.className}`}
+          className={`absolute top-4 left-4 text-xs font-bold uppercase px-3 py-1 rounded ${badge.className}`}
         >
           {badge.label}
         </span>
@@ -73,36 +73,33 @@ function PropertyCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
         <button
           type="button"
           aria-label="Save listing"
-          className="absolute top-3 right-3 p-1.5 bg-white/90 rounded-full text-slate-500 hover:text-rose-500 transition-colors"
+          className="absolute top-4 right-4 p-1.5 bg-white/90 backdrop-blur rounded-full text-slate-500 hover:text-rose-500 transition-colors"
         >
           <Heart className="w-4 h-4" />
         </button>
       </div>
 
       {/* Body */}
-      <div className="p-4">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-          {formatPrice(listing.price)}
-        </h3>
-        <p className="text-xs uppercase tracking-wide text-slate-500 mt-0.5">
-          {listing.property_type ?? listing.status}
-        </p>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 line-clamp-1">
+      <div className="p-5">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 truncate">
           {address || listing.title}
+        </h3>
+        <p className="text-brand-primary font-bold text-xl mb-4">
+          {formatPrice(listing.price)}
         </p>
 
         {/* Stats row */}
-        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400">
+        <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
           {listing.bedrooms != null && (
             <span className="flex items-center gap-1">
               <Bed className="w-4 h-4" />
-              {listing.bedrooms}
+              {listing.bedrooms} Bed
             </span>
           )}
           {listing.bathrooms != null && (
             <span className="flex items-center gap-1">
               <Bath className="w-4 h-4" />
-              {listing.bathrooms}
+              {listing.bathrooms} Bath
             </span>
           )}
         </div>

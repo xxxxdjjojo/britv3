@@ -110,10 +110,30 @@ export default function ProviderHero({ provider, category }: ProviderHeroProps) 
 
           {/* Identity block */}
           <div className="flex-1 pb-6 pt-24 md:pt-24">
-            <h1 className="text-3xl font-bold font-sans tracking-tight text-slate-900 dark:text-white">
-              {provider.business_name}
-            </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-400 mt-1 capitalize">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-4xl font-bold font-sans tracking-tight text-slate-900 dark:text-white">
+                {provider.business_name}
+              </h1>
+              {verificationStatus === "verified" && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-secondary-light text-brand-secondary border border-brand-secondary/30">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-3.5 h-3.5"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <polyline points="9 12 11 14 15 10" />
+                  </svg>
+                  Verified Pro
+                </span>
+              )}
+            </div>
+            <p className="text-xl text-slate-600 dark:text-slate-400 mt-2 font-medium capitalize">
               {String(categoryLabel).replace(/_/g, " ")}
             </p>
 
@@ -151,7 +171,7 @@ export default function ProviderHero({ provider, category }: ProviderHeroProps) 
             <div className="flex flex-wrap gap-3 mt-5">
               <a
                 href="#quote"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-primary text-white text-sm font-semibold rounded-lg shadow-sm hover:bg-brand-primary-dark transition-colors"
               >
                 Request a Quote
               </a>

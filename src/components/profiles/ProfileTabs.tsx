@@ -60,7 +60,7 @@ export function ProfileTabs({ tabs }: ProfileTabsProps) {
               onClick={() => handleTabChange(tab.id)}
               className={`py-4 px-1 border-b-2 font-semibold text-sm transition-all ${
                 activeTab === tab.id
-                  ? "border-[#2563EB] text-[#2563EB]"
+                  ? "border-brand-primary text-brand-primary"
                   : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-200"
               }`}
             >

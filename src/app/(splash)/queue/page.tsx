@@ -65,23 +65,27 @@ async function QueueContents({ code }: Readonly<{ code: string }>) {
   }
 
   return (
-    <div className="w-full max-w-4xl">
+    <div className="w-full max-w-5xl">
       <div className="mb-16">
         <QueuePosition status={status} />
       </div>
 
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
         <div className="flex flex-col gap-8 lg:col-span-7">
-          <div className="rounded-2xl border border-[#1B4D3E]/10 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.14)] sm:p-10">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#003629] to-[#1B4D3E] p-8 shadow-[0_18px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/10 sm:p-10">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#FDCD74]/10 blur-3xl"
+            />
             <ReferralShare code={status.code} />
           </div>
 
-          <div className="relative overflow-hidden rounded-2xl bg-[#1B4D3E] p-8 text-white shadow-[0_18px_50px_rgba(0,0,0,0.22)] sm:p-10">
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-xl sm:p-10">
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#2D7A5F] opacity-30 blur-3xl"
+              className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#2D7A5F]/25 blur-3xl"
             />
-            <h3 className="relative z-10 mb-6 font-[family-name:var(--font-heading)] text-xl font-semibold">
+            <h3 className="relative z-10 mb-6 font-[family-name:var(--font-heading)] text-xl font-semibold text-white">
               Referral Progress
             </h3>
             <div className="relative z-10">
@@ -91,10 +95,13 @@ async function QueueContents({ code }: Readonly<{ code: string }>) {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="rounded-2xl border border-[#1B4D3E]/10 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.14)]">
-            <h3 className="mb-6 font-[family-name:var(--font-heading)] text-lg font-semibold text-[#1B4D3E]">
-              Tier Rewards
+          <div className="rounded-2xl border border-[#1B4D3E]/10 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
+            <h3 className="mb-2 font-[family-name:var(--font-heading)] text-2xl font-semibold text-[#1B4D3E]">
+              Tier Rewards &amp; Progress
             </h3>
+            <p className="mb-8 text-sm text-[#1B4D3E]/60">
+              Climb the tiers with every friend you refer.
+            </p>
             <RewardTiers referralCount={status.referralCount} />
           </div>
         </div>

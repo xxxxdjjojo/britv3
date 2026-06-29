@@ -27,7 +27,7 @@ function PricingBadge({ pricing }: Readonly<{ pricing: ProviderPricing }>) {
   }
   if (pricing.type === "fixed") {
     return (
-      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
+      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-brand-primary-lighter text-brand-primary border border-brand-primary/20 dark:bg-brand-primary/15 dark:text-brand-primary-light dark:border-brand-primary/30">
         £{pricing.amount.toLocaleString("en-GB")} fixed
       </span>
     );
@@ -102,7 +102,7 @@ export function ServicesTab({ services, providerId: _providerId }: ServicesTabPr
               <button
                 type="button"
                 data-quote-service={service.name}
-                className="w-full bg-[#2563EB] text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm"
+                className="w-full bg-brand-primary text-white py-2 px-4 rounded-lg font-semibold hover:bg-brand-primary-dark transition-colors text-sm"
               >
                 Request Quote
               </button>

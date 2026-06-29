@@ -39,19 +39,19 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
   const statusLabel = listing.status === "let" ? "Let" : "Sold";
   const statusClass =
     listing.status === "let"
-      ? "bg-blue-100 text-blue-700"
-      : "bg-emerald-100 text-emerald-700";
+      ? "bg-white/90 backdrop-blur text-brand-primary-light"
+      : "bg-white/90 backdrop-blur text-brand-primary";
 
   return (
-    <article className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
+    <article className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-muted dark:bg-slate-800">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted dark:bg-slate-800">
         {listing.cover_image_url ? (
           <Image
             src={listing.cover_image_url}
             alt={listing.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-xs">
@@ -59,21 +59,21 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
           </div>
         )}
         {/* Status badge */}
-        <span className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full ${statusClass}`}>
+        <span className={`absolute top-4 left-4 text-xs font-bold uppercase px-3 py-1 rounded ${statusClass}`}>
           {statusLabel}
         </span>
         {/* % of asking badge */}
         {pct != null && (
-          <span className="absolute bottom-3 right-3 bg-green-50 text-green-700 text-xs font-bold rounded-full px-2 py-0.5">
+          <span className="absolute bottom-4 right-4 bg-brand-primary text-white text-xs font-bold rounded-full px-2.5 py-0.5">
             {pct}% of asking
           </span>
         )}
       </div>
 
       {/* Body */}
-      <div className="p-4">
+      <div className="p-5">
         {/* Sold price */}
-        <h3 className="text-xl font-bold text-brand-primary dark:text-emerald-400">
+        <h3 className="text-xl font-bold text-brand-primary">
           {statusLabel} for {formatPrice(listing.sold_price)}
         </h3>
         {/* Asking price (struck through if differs) */}
@@ -96,17 +96,17 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
         )}
 
         {/* Stats row */}
-        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400">
+        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">
           {listing.bedrooms != null && (
             <span className="flex items-center gap-1">
               <Bed className="w-4 h-4" />
-              {listing.bedrooms}
+              {listing.bedrooms} Bed
             </span>
           )}
           {listing.bathrooms != null && (
             <span className="flex items-center gap-1">
               <Bath className="w-4 h-4" />
-              {listing.bathrooms}
+              {listing.bathrooms} Bath
             </span>
           )}
         </div>

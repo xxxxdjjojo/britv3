@@ -201,7 +201,7 @@ function HeroSearchBar({ initialWhat, initialWhere, onSearch }: HeroSearchBarPro
       </div>
       <button
         type="submit"
-        className="h-11 shrink-0 rounded-lg bg-[#2563EB] px-6 text-sm font-semibold text-white hover:bg-[#1D4ED8] transition-colors"
+        className="h-11 shrink-0 rounded-lg bg-brand-primary px-6 text-sm font-semibold text-white hover:bg-brand-primary-light transition-colors"
       >
         Search
       </button>
@@ -290,17 +290,21 @@ export function ProviderSearchPage({
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-12 px-4">
+      <div className="border-b border-slate-200 dark:border-slate-800 bg-gradient-to-br from-brand-primary-lighter to-white dark:from-slate-900 dark:to-background py-12 px-4">
         <div className="mx-auto max-w-5xl space-y-4">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-white">{pageTitle}</h1>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              {pageTitle}
+            </h1>
             {specialistBadge && (
-              <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-slate-900">
+              <span className="rounded-full bg-brand-secondary px-3 py-1 text-xs font-bold text-white">
                 {specialistBadge} Regulated
               </span>
             )}
           </div>
-          <p className="text-slate-300 text-sm max-w-2xl">{pageSubtitle}</p>
+          <p className="text-slate-600 dark:text-slate-300 text-sm max-w-2xl">
+            {pageSubtitle}
+          </p>
           <HeroSearchBar
             initialWhat={filters.search_query ?? ""}
             initialWhere={filters.postcode ?? ""}
@@ -324,11 +328,11 @@ export function ProviderSearchPage({
           {/* Results area */}
           <div className="flex-1 min-w-0 space-y-4">
             {/* Count + sort header */}
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{count}</span>{" "}
-                provider{count !== 1 ? "s" : ""} found
-              </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                <span className="text-brand-primary">{count}</span> provider
+                {count !== 1 ? "s" : ""} found
+              </h2>
               <div className="flex items-center gap-2">
                 <label
                   htmlFor="sort-select"
@@ -340,7 +344,7 @@ export function ProviderSearchPage({
                   id="sort-select"
                   value={sort}
                   onChange={handleSortChange}
-                  className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                  className="h-9 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
                 >
                   {SORT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>

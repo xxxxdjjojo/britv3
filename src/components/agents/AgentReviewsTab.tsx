@@ -30,7 +30,7 @@ function StarRow({ rating }: Readonly<{ rating: number }>) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`w-4 h-4 ${star <= rating ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700"}`}
+          className={`w-4 h-4 ${star <= rating ? "fill-brand-secondary text-brand-secondary" : "fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700"}`}
         />
       ))}
     </div>
@@ -81,12 +81,12 @@ function PropertyContextPill({
         {address}
       </span>
       {listingType === "sale" && (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-primary/10 text-brand-primary">
           Sale
         </span>
       )}
       {listingType === "let" && (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-secondary/15 text-brand-secondary">
           Let
         </span>
       )}

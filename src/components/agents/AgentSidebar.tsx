@@ -24,12 +24,13 @@ export default function AgentSidebar({
   const phone = agency.phone ?? null;
 
   return (
-    <aside className="space-y-6">
-      {/* Valuation CTA card */}
-      <div className="bg-[#2563EB] text-white rounded-xl p-6 shadow-xl">
-        <h3 className="text-lg font-bold mb-1">Thinking of selling?</h3>
-        <p className="text-blue-100 text-sm mb-4">
-          Get a free property valuation from our local experts.
+    <aside className="space-y-6 lg:sticky lg:top-24">
+      {/* Free Valuation CTA card */}
+      <div className="bg-brand-primary text-white rounded-2xl p-8 shadow-xl">
+        <h3 className="text-2xl font-bold mb-2 text-white">Free Valuation</h3>
+        <p className="text-white/80 text-sm mb-6 leading-relaxed">
+          Thinking of selling or letting? Get an expert valuation from our local
+          experts within 24 hours.
         </p>
         <ValuationSheet
           agencyId={agency.agency?.id ?? agency.id}
@@ -38,40 +39,50 @@ export default function AgentSidebar({
       </div>
 
       {/* Office Information */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">
-          Office Information
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+          Office Location
         </h3>
         <ul className="space-y-3">
           {agencyAddress && (
-            <li className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400">
+            <li className="flex items-start gap-3 text-sm font-medium text-slate-700 dark:text-slate-300">
               <MapPin className="w-4 h-4 mt-0.5 text-slate-400 flex-shrink-0" />
-              <span>{agencyAddress}</span>
+              <span className="leading-relaxed">{agencyAddress}</span>
             </li>
           )}
           {phone && (
-            <li className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+            <li className="flex items-center gap-3 text-sm font-medium text-slate-700 dark:text-slate-300">
               <Phone className="w-4 h-4 text-slate-400 flex-shrink-0" />
               <span>{phone}</span>
             </li>
           )}
-          <li className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400">
-            <Clock className="w-4 h-4 mt-0.5 text-slate-400 flex-shrink-0" />
-            <div>
-              <p>Mon–Fri: 9:00–18:30</p>
-              <p>Sat: 10:00–16:00</p>
-            </div>
-          </li>
         </ul>
+        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3 text-slate-600 dark:text-slate-400">
+          <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
+          <div className="flex items-center gap-8">
+            <div>
+              <p className="text-xs text-slate-500">Mon - Fri</p>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                9:00 - 18:30
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Sat</p>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                10:00 - 16:00
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Map placeholder */}
-      <div className="h-32 rounded-lg bg-muted dark:bg-slate-800 flex items-center justify-center text-slate-400 text-sm border border-slate-200 dark:border-slate-700">
+      <div className="h-32 rounded-2xl bg-muted dark:bg-slate-800 flex items-center justify-center text-slate-400 text-sm border border-slate-200 dark:border-slate-700">
         Map view
       </div>
 
       {/* Team preview */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
         <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">
           Meet the Team
         </h3>
@@ -97,7 +108,7 @@ export default function AgentSidebar({
                       className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#2563EB] flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-xs font-bold">
                         {initials}
                       </span>
