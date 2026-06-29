@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { MapEmbedClient } from "@/components/maps/MapEmbedClient";
+import { DetailLayeredMap } from "@/components/properties/blocks/DetailLayeredMap";
 import { LocalAreaSection } from "@/components/properties/detail/LocalAreaSection";
 import type { PropertyView } from "@/lib/properties/build-property-view";
 
@@ -22,24 +22,21 @@ export function LocalIntelligenceBlock({ view }: { view: PropertyView }) {
       <h2 className="text-xl font-semibold mb-3">Local intelligence</h2>
       <Separator className="mb-4" />
 
-      {view.showMap && (
-        <div className="mb-6">
-          <MapEmbedClient
-            latitude={coordinates.lat}
-            longitude={coordinates.lng}
-            zoom={15}
-            className="h-64 w-full rounded-xl overflow-hidden border"
-          />
-          <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="size-3.5" />
-            {view.address}
-          </p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">
-            Location is approximate. Map data © MapTiler &amp; OpenStreetMap
-            contributors.
-          </p>
-        </div>
-      )}
+      <div className="mb-6">
+        <DetailLayeredMap
+          latitude={coordinates.lat}
+          longitude={coordinates.lng}
+          address={view.address}
+        />
+        <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+          <MapPin className="size-3.5" />
+          {view.address}
+        </p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Location is approximate. Prices © HM Land Registry. Map data © MapTiler
+          &amp; OpenStreetMap contributors.
+        </p>
+      </div>
 
       <Suspense
         fallback={

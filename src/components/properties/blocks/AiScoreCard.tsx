@@ -1,59 +1,13 @@
 import { Star } from "lucide-react";
-import { getMobilityScores } from "@/services/properties/mobility-service";
-import { getFloodRisk } from "@/services/properties/flood-service";
-import { getNearbyTransport } from "@/services/properties/transport-service";
-import { getPostcodeCard } from "@/services/market-map/postcode-card-service";
-import {
-  buildBuyerScore,
-  buildRenterScore,
-  type ScoreInputs,
-  type PropertyScore,
-} from "@/lib/properties/property-score";
-import {
-  assessValuePosition,
-  bandForPropertyType,
-} from "@/lib/properties/price-position";
-import type { PropertyView } from "@/lib/properties/build-property-view";
+import type { PropertyScore } from "@/lib/properties/property-score";
 
 /**
- * Block 03 (right) — the TrueDeed Score. A heuristic, fully transparent score
- * computed from real signals already on the page (EPC, value-vs-area, flood
- * risk, mobility, transport). No LLM, no invented numbers: every dimension
- * shows its basis. Self-gates — renders nothing when no signal is available.
- * Async (reuses the cached local-area services).
+ * Block 03 (right) — the TrueDeed Score. Presentational: it renders a
+ * precomputed heuristic score (see property-score-service). Fully transparent —
+ * every dimension shows its basis on hover; no LLM, no invented numbers.
+ * Self-gates: renders nothing when no dimension has a signal.
  */
-export async function AiScoreCard({ view }: { view: PropertyView }) {
-  const { listing, property } = view.detail;
-  const coords = property.coordinates;
-
-  const [mobility, flood, transport, card] = await Promise.all([
-    getMobilityScores(property.id).catch(() => null),
-    coords ? getFloodRisk(coords.lat, coords.lng).catch(() => null) : Promise.resolve(null),
-    coords ? getNearbyTransport(coords.lat, coords.lng).catch(() => null) : Promise.resolve(null),
-    getPostcodeCard(property.postcode).catch(() => null),
-  ]);
-
-  let valueDeltaPct: number | null = null;
-  if (card?.found) {
-    const series = card[bandForPropertyType(property.propertyType)];
-    if (!series.insufficient && series.median != null) {
-      valueDeltaPct = assessValuePosition(listing.price, series.median)?.deltaPct ?? null;
-    }
-  }
-
-  const inputs: ScoreInputs = {
-    epcRating: property.epcRating,
-    valueDeltaPct,
-    floodBand: flood?.riskLevel ?? null,
-    transitScore: mobility?.transit ?? null,
-    walkScore: mobility?.walk ?? null,
-    transportStopCount: transport?.length ?? null,
-    schoolRating: null,
-  };
-
-  const score: PropertyScore =
-    listing.listingType === "rent" ? buildRenterScore(inputs) : buildBuyerScore(inputs);
-
+export function AiScoreCard({ score }: { score: PropertyScore }) {
   if (score.dimensions.length === 0) return null;
 
   return (
@@ -75,7 +29,10 @@ export async function AiScoreCard({ view }: { view: PropertyView }) {
               title={d.basis}
             >
               <span className="text-muted-foreground">{d.label}</span>
-              <span className="flex shrink-0 items-center gap-0.5" aria-label={`${d.stars} out of 5`}>
+              <span
+                className="flex shrink-0 items-center gap-0.5"
+                aria-label={`${d.label}: ${d.stars} out of 5`}
+              >
                 {[1, 2, 3, 4, 5].map((n) => (
                   <Star
                     key={n}
