@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { SoldParcelPopup } from "./SoldParcelPopup";
+import { SoldParcelDetail } from "./SoldParcelDetail";
 import type { SoldParcel, SoldSale } from "@/lib/market-map/sold-colour";
 
 function sale(overrides: Partial<SoldSale> = {}): SoldSale {
@@ -30,9 +30,9 @@ function parcel(overrides: Partial<SoldParcel> = {}): SoldParcel {
   };
 }
 
-describe("SoldParcelPopup", () => {
+describe("SoldParcelDetail", () => {
   it("renders a single sale with address, formatted £ and £/m²", () => {
-    render(<SoldParcelPopup parcel={parcel()} />);
+    render(<SoldParcelDetail parcel={parcel()} />);
 
     expect(screen.getByText("12 Acacia Avenue")).toBeInTheDocument();
     expect(screen.getByText("£450,000")).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe("SoldParcelPopup", () => {
 
   it("renders the 'no £/m²' path when ppsqm is null", () => {
     render(
-      <SoldParcelPopup
+      <SoldParcelDetail
         parcel={parcel({
           medianPricePerSqmPence: null,
           sales: [sale({ ppsqm: null, floorArea: null })],
@@ -57,7 +57,7 @@ describe("SoldParcelPopup", () => {
 
   it("renders the approx-location note when estimatedLocation is true", () => {
     render(
-      <SoldParcelPopup parcel={parcel({ sales: [sale({ estimatedLocation: true })] })} />,
+      <SoldParcelDetail parcel={parcel({ sales: [sale({ estimatedLocation: true })] })} />,
     );
 
     expect(
@@ -66,7 +66,7 @@ describe("SoldParcelPopup", () => {
   });
 
   it("renders 'Address withheld' when the single sale address is null", () => {
-    render(<SoldParcelPopup parcel={parcel({ sales: [sale({ address: null })] })} />);
+    render(<SoldParcelDetail parcel={parcel({ sales: [sale({ address: null })] })} />);
     expect(screen.getByText("Address withheld")).toBeInTheDocument();
   });
 
@@ -77,7 +77,7 @@ describe("SoldParcelPopup", () => {
       sale({ address: "Flat 3", date: "2025-01-09", price: 32_000_000 }),
     ];
     render(
-      <SoldParcelPopup
+      <SoldParcelDetail
         parcel={parcel({
           saleCount: 3,
           medianPricePence: 30_000_000,
@@ -96,7 +96,7 @@ describe("SoldParcelPopup", () => {
   });
 
   it("always shows the source-attribution footer", () => {
-    render(<SoldParcelPopup parcel={parcel()} />);
+    render(<SoldParcelDetail parcel={parcel()} />);
     expect(
       screen.getByText("Sold prices: HM Land Registry. Floor areas: EPC."),
     ).toBeInTheDocument();
