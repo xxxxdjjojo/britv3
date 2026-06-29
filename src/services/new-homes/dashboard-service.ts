@@ -104,12 +104,14 @@ export async function getDeveloperDashboardData(
       .from("development_leads")
       .select("*")
       .in("development_id", developmentIds)
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .limit(1000),
     supabase
       .from("development_viewings")
       .select("*")
       .in("development_id", developmentIds)
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .limit(1000),
   ]);
 
   const leads: DevelopmentLead[] = ((leadsRes.data as Row[]) ?? []).map((r) => {

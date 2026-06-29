@@ -53,6 +53,20 @@ export async function createDevelopmentLead(
     return { ok: false, error: "Development not found" };
   }
 
+  // If a unit is named, it must belong to this development — otherwise a caller
+  // could attach another developer's unit id to the lead (data corruption +
+  // unit-id enumeration). There is no composite FK enforcing this, so check it.
+  if (input.unitId) {
+    const { data: unit } = await admin
+      .from("development_units")
+      .select("development_id")
+      .eq("id", input.unitId)
+      .maybeSingle();
+    if (!unit || (unit as Row).development_id !== input.developmentId) {
+      return { ok: false, error: "Development not found" };
+    }
+  }
+
   const { data: leadRow, error: insertError } = await admin
     .from("development_leads")
     .insert({

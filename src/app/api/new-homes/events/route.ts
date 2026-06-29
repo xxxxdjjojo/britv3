@@ -31,8 +31,8 @@ const eventSchema = z.object({
 
 export async function POST(request: Request): Promise<NextResponse> {
   const ip =
-    request.headers.get("x-forwarded-for") ??
     request.headers.get("x-real-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "unknown";
 
   const { success: rateLimitOk } = await eventRateLimiter.limit(ip);

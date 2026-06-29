@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
-import { createRateLimiter } from "@/lib/cache/redis";
+import { createAuthRateLimiter } from "@/lib/cache/redis";
 import { developmentLeadSchema } from "@/lib/new-homes/lead-schema";
 import { createDevelopmentLead } from "@/services/new-homes/leads-service";
 
-// 8 lead submissions per hour per IP — generous for a genuine buyer, tight
-// enough to blunt spam.
-const leadRateLimiter = createRateLimiter(8, "1 h");
+// 8 lead submissions per hour per IP. Fail CLOSED if Redis is unavailable —
+// these submissions carry buyer PII, so abuse control must not silently lapse.
+const leadRateLimiter = createAuthRateLimiter(8, "1 h");
 
 export async function POST(request: Request): Promise<NextResponse> {
+  // Take the first hop of x-forwarded-for; prefer Vercel's authoritative x-real-ip.
   const ip =
-    request.headers.get("x-forwarded-for") ??
     request.headers.get("x-real-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "unknown";
 
   const { success: rateLimitOk } = await leadRateLimiter.limit(ip);
