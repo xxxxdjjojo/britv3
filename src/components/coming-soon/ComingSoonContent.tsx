@@ -11,8 +11,13 @@ export function ComingSoonContent({
   referredBy,
 }: ComingSoonContentProps) {
   return (
-    <div className="flex flex-col items-center gap-7 text-center">
-      <h1 className="max-w-4xl text-balance font-[family-name:var(--font-heading)] text-4xl font-semibold leading-[1.04] tracking-tight text-white sm:text-6xl lg:text-7xl">
+    <div className="flex flex-col items-center gap-8 text-center">
+      <span className="inline-flex items-center gap-2 rounded-full border border-[#FDCD74]/30 bg-[#FDCD74]/10 px-4 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-[#FDCD74] backdrop-blur">
+        <span aria-hidden className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#FDCD74]" />
+        Early Access
+      </span>
+
+      <h1 className="max-w-4xl text-balance font-[family-name:var(--font-heading)] text-4xl font-semibold leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-[5rem]">
         {variant.headline}
       </h1>
 

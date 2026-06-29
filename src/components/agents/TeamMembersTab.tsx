@@ -29,12 +29,12 @@ function MemberAvatar({
 
   if (avatarUrl) {
     return (
-      <div className="w-20 h-20 rounded-full border-2 border-[#2563EB]/20 overflow-hidden mb-4 flex-shrink-0">
+      <div className="w-full aspect-square rounded-xl overflow-hidden mb-3">
         <Image
           src={avatarUrl}
           alt={fullName ?? "Team member"}
-          width={80}
-          height={80}
+          width={240}
+          height={240}
           className="object-cover w-full h-full"
         />
       </div>
@@ -42,8 +42,8 @@ function MemberAvatar({
   }
 
   return (
-    <div className="w-20 h-20 rounded-full border-2 border-[#2563EB]/20 bg-[#2563EB] flex items-center justify-center mb-4 flex-shrink-0">
-      <span className="text-white text-2xl font-bold">{initials}</span>
+    <div className="w-full aspect-square rounded-xl bg-brand-primary flex items-center justify-center mb-3">
+      <span className="text-white text-3xl font-bold">{initials}</span>
     </div>
   );
 }
@@ -62,31 +62,28 @@ export function TeamMembersTab({ members }: TeamMembersTabProps) {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-        Our Team
+        Our Experts
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
         {members.map((member) => (
-          <div
-            key={member.id}
-            className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow flex flex-col items-center text-center"
-          >
+          <div key={member.id} className="group text-center">
             <MemberAvatar
               fullName={member.full_name}
               avatarUrl={member.avatar_url}
             />
 
-            <p className="text-lg font-bold text-slate-900 dark:text-white">
+            <p className="font-bold text-sm text-slate-900 dark:text-white">
               {member.full_name ?? "Team Member"}
             </p>
 
             {member.role && (
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
                 {member.role}
               </p>
             )}
 
             {member.bio && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-3 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2 leading-relaxed">
                 {member.bio}
               </p>
             )}

@@ -47,7 +47,7 @@ export function ComingSoonExperience({
   }, [variantId]);
 
   return (
-    <div className="flex flex-col items-center gap-10">
+    <div className="flex flex-col items-center gap-12">
       <ComingSoonContent variant={getVariant(variantId)} referredBy={referredBy} />
       <SocialProof count={count} />
     </div>
