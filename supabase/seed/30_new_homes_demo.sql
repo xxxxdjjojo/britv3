@@ -42,17 +42,20 @@ BEGIN
     'developer@demo.truedeed.co.uk',
     crypt('DemoPass123!', gen_salt('bf')),
     v_now,
-    jsonb_build_object('display_name', 'Priya Sharma', 'role', 'seller'),
+    jsonb_build_object('display_name', 'Priya Sharma', 'role', 'developer'),
     jsonb_build_object('provider', 'email', 'providers', jsonb_build_array('email')),
     v_now, v_now, '', '', '', '', '', '', '', ''
   ) ON CONFLICT (id) DO NOTHING;
 
+  -- DO UPDATE (not DO NOTHING): the on_auth_user_created trigger creates the
+  -- profile with the default 'homebuyer' role at insert time, so we MUST
+  -- overwrite active_role to 'developer' or the dashboard routes to homebuyer.
   INSERT INTO profiles (id, display_name, active_role, verification_level, is_admin, created_at, updated_at)
-  VALUES (v_dev_user, 'Priya Sharma', 'seller'::user_role, 'professional'::verification_level, FALSE, v_now, v_now)
-  ON CONFLICT (id) DO NOTHING;
+  VALUES (v_dev_user, 'Priya Sharma', 'developer'::user_role, 'professional'::verification_level, FALSE, v_now, v_now)
+  ON CONFLICT (id) DO UPDATE SET active_role = 'developer'::user_role, display_name = 'Priya Sharma';
 
   INSERT INTO user_roles (id, user_id, role, granted_at)
-  VALUES (gen_random_uuid(), v_dev_user, 'seller'::user_role, v_now)
+  VALUES (gen_random_uuid(), v_dev_user, 'developer'::user_role, v_now)
   ON CONFLICT (user_id, role) DO NOTHING;
 
   -- Email identity — hosted GoTrue requires this for password sign-in.
