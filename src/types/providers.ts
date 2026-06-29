@@ -251,7 +251,6 @@ export type CompareProvider = {
   slug: string;
   business_name: string;
   services: string[];
-  city: string | null;
   service_postcodes: string[];
   accreditations: { type: string; number?: string }[];
   response_time_hours: number | null;

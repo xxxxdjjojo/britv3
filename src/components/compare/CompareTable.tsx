@@ -127,7 +127,6 @@ export function CompareTable({ providers }: CompareTableProps) {
       render: (p) => (
         <span className="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300 text-sm">
           <MapPin className="w-4 h-4 flex-shrink-0 text-slate-400" />
-          {p.city ? `${p.city} — ` : ""}
           {formatCoverage(p.service_postcodes)}
         </span>
       ),
