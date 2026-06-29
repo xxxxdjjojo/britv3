@@ -146,6 +146,12 @@ BEGIN
     (v_admin_id,    'Admin User',     'homebuyer'::user_role,        'professional'::verification_level, NULL, TRUE,  'super_admin', v_now, v_now)
   ON CONFLICT (id) DO NOTHING;
 
+  UPDATE profiles
+  SET is_admin = TRUE,
+      admin_role = COALESCE(admin_role, 'super_admin'),
+      updated_at = v_now
+  WHERE id = v_admin_id;
+
   RAISE NOTICE 'profiles created.';
 
   -- ===========================================================================

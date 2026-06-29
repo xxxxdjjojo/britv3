@@ -2,7 +2,13 @@
 import { createClient } from "@/lib/supabase/server";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import type { AdminRole, AdminPermission } from "@/lib/admin-permissions";
-import { hasPermission } from "@/lib/admin-permissions";
+import { ADMIN_ROLES, hasPermission } from "@/lib/admin-permissions";
+
+type ProfileWithRole = { is_admin: boolean | null; admin_role: string | null };
+
+function isAdminRole(value: string | null | undefined): value is AdminRole {
+  return !!value && ADMIN_ROLES.includes(value as AdminRole);
+}
 
 export type AdminContext = {
   user: User;
@@ -12,6 +18,7 @@ export type AdminContext = {
 export async function adminOnly(
   _request: Request,
 ): Promise<AdminContext | Response> {
+  void _request;
   let supabase: SupabaseClient;
 
   try {
@@ -30,12 +37,12 @@ export async function adminOnly(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let profile: { is_admin: boolean | null } | null = null;
+  let profile: ProfileWithRole | null = null;
 
   try {
     const { data, error } = await supabase
       .from("profiles")
-      .select("is_admin")
+      .select("is_admin, admin_role")
       .eq("id", user.id)
       .single();
 
@@ -44,7 +51,7 @@ export async function adminOnly(
       return Response.json({ error: "Service unavailable" }, { status: 503 });
     }
 
-    profile = data as { is_admin: boolean | null } | null;
+    profile = data as ProfileWithRole | null;
   } catch (e) {
     console.error("[admin-guard] DB error fetching profile:", e);
     return Response.json({ error: "Service unavailable" }, { status: 503 });
@@ -52,6 +59,10 @@ export async function adminOnly(
 
   if (profile?.is_admin !== true) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  if (!isAdminRole(profile.admin_role)) {
+    return Response.json({ error: "Admin role not configured" }, { status: 403 });
   }
 
   return { user, supabase };
@@ -85,7 +96,6 @@ export async function adminWithPermission(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  type ProfileWithRole = { is_admin: boolean | null; admin_role: string | null };
   let profile: ProfileWithRole | null = null;
 
   try {
@@ -112,10 +122,10 @@ export async function adminWithPermission(
 
   // Deny access if admin_role is not explicitly set — never default to super_admin.
   // The migration backfills existing admins, so null means unmigrated or a bug.
-  if (!profile.admin_role) {
+  if (!isAdminRole(profile.admin_role)) {
     return Response.json({ error: "Admin role not configured" }, { status: 403 });
   }
-  const adminRole = profile.admin_role as AdminRole;
+  const adminRole = profile.admin_role;
 
   if (!hasPermission(adminRole, permission)) {
     return Response.json({ error: "Insufficient permissions" }, { status: 403 });

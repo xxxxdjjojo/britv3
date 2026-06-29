@@ -24,17 +24,19 @@ function createMockClient(opts: {
   user?: { id: string } | null;
   authError?: { message: string } | null;
   isAdmin?: boolean | null;
+  adminRole?: string | null;
   profileError?: { message: string } | null;
 }) {
   const {
     user = null,
     authError = null,
     isAdmin = null,
+    adminRole = null,
     profileError = null,
   } = opts;
 
   const profileChain = createQueryChain({
-    data: isAdmin !== null ? { is_admin: isAdmin } : null,
+    data: isAdmin !== null ? { is_admin: isAdmin, admin_role: adminRole } : null,
     error: profileError,
   });
 
@@ -123,6 +125,7 @@ describe("adminOnly", () => {
     const mockClient = createMockClient({
       user: { id: "admin-456" },
       isAdmin: true,
+      adminRole: "super_admin",
     });
     vi.mocked(createClient).mockResolvedValue(mockClient as never);
 
@@ -134,6 +137,26 @@ describe("adminOnly", () => {
     const ctx = result as { user: { id: string }; supabase: unknown };
     expect(ctx.user.id).toBe("admin-456");
     expect(ctx.supabase).toBeDefined();
+  });
+
+  it("returns 403 when is_admin is true but admin_role is missing", async () => {
+    const { createClient } = await import("@/lib/supabase/server");
+    const mockClient = createMockClient({
+      user: { id: "admin-456" },
+      isAdmin: true,
+      adminRole: null,
+    });
+    vi.mocked(createClient).mockResolvedValue(mockClient as never);
+
+    const { adminOnly } = await import("@/lib/admin-guard");
+    const result = await adminOnly(new Request("http://localhost/api/admin/test"));
+
+    expect(result).toBeInstanceOf(Response);
+    const response = result as Response;
+    expect(response.status).toBe(403);
+
+    const body = await response.json();
+    expect(body).toEqual({ error: "Admin role not configured" });
   });
 
   it("returns 503 when the profiles DB query throws", async () => {
