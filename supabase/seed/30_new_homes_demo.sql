@@ -47,6 +47,15 @@ BEGIN
   INSERT INTO user_roles (id, user_id, role, granted_at)
   VALUES (gen_random_uuid(), v_dev_user, 'seller'::user_role, v_now)
   ON CONFLICT (user_id, role) DO NOTHING;
+
+  -- Email identity — hosted GoTrue requires this for password sign-in.
+  INSERT INTO auth.identities (id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
+  VALUES (
+    gen_random_uuid(), v_dev_user, v_dev_user::text, 'email',
+    jsonb_build_object('sub', v_dev_user::text, 'email', 'developer@demo.truedeed.co.uk', 'email_verified', true),
+    v_now, v_now, v_now
+  )
+  ON CONFLICT DO NOTHING;
 END $$;
 
 -- Developers -----------------------------------------------------------------
@@ -245,7 +254,7 @@ INSERT INTO public.development_leads
    desired_move_date, mortgage_position, has_property_to_sell, preferred_plot,
    message, source_route, utm_source, created_at)
 SELECT
-  dev_id, lead_type::development_lead_type, status::development_lead_status,
+  dev_id::uuid, lead_type::development_lead_type, status::development_lead_status,
   name, email, phone, buyer_status, budget, move_date, mortgage, has_sell, plot,
   message, source_route, utm_source, NOW() - (days || ' days')::interval
 FROM (VALUES
@@ -279,7 +288,7 @@ FROM (VALUES
   ('b0000000-0000-0000-0000-000000000006','request_brochure','new','Zara Mehta','zara.mehta@example.com',NULL,'investor',320000,'Flexible','cash_buyer',FALSE,'','','/new-homes/wapping-wharf-rise','direct',1)
 ) AS s(dev_id, lead_type, status, name, email, phone, buyer_status, budget, move_date, mortgage, has_sell, plot, message, source_route, utm_source, days)
 WHERE NOT EXISTS (
-  SELECT 1 FROM public.development_leads existing WHERE existing.email = s.email AND existing.development_id = s.dev_id
+  SELECT 1 FROM public.development_leads existing WHERE existing.email = s.email AND existing.development_id = s.dev_id::uuid
 );
 
 -- Viewings (derived from leads that booked/reserved on the showcase developer)
