@@ -35,14 +35,12 @@ function makeQuote(status: string) {
   return {
     id: QUOTE_ID,
     provider_id: PROVIDER_ID,
-    request_id: REQUEST_ID,
+    service_request_id: REQUEST_ID,
     quote_number: "QT-2026-0001",
     line_items: [],
-    subtotal: 10000,
     total_amount: 10000,
     status,
-    valid_until: null,
-    notes: null,
+    validity_date: null,
     created_at: NOW,
     updated_at: NOW,
   };
@@ -217,7 +215,7 @@ describe("acceptQuote", () => {
   });
 
   it("throws if the quote has no linked service_request", async () => {
-    const quoteWithoutRequest = { ...makeQuote("sent"), request_id: null };
+    const quoteWithoutRequest = { ...makeQuote("sent"), service_request_id: null };
     const supabase = makeSupabaseMock({
       quoteResult: { data: quoteWithoutRequest, error: null },
       srResult: { data: null, error: null },

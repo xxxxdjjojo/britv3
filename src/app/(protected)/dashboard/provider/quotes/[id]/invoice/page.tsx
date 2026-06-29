@@ -82,7 +82,7 @@ export default async function InvoicePage({ params }: Props) {
         providerEmail={providerEmail}
         quoteId={quoteId}
         prefillLineItems={prefillLineItems}
-        prefillNotes={quote.notes ?? undefined}
+        prefillNotes={undefined}
       />
     </div>
   );

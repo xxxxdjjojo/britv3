@@ -27,9 +27,8 @@ const lineItemSchema = z.object({
 });
 
 const createQuoteSchema = z.object({
-  request_id: z.string().uuid().optional(),
+  service_request_id: z.string().uuid().optional(),
   line_items: z.array(lineItemSchema).min(1, "At least one line item is required"),
-  notes: z.string().optional(),
   valid_until_days: z.number().int().min(1).max(365).optional(),
 });
 

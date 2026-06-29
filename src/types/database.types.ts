@@ -1993,12 +1993,14 @@ export type Database = {
       quotes: {
         Row: {
           created_at: string | null
+          decline_reason: string | null
           estimated_duration: string | null
           id: string
           line_items: Json
           payment_terms: string | null
           provider_id: string
           quote_number: string | null
+          quote_signature: string | null
           scope_of_work: string
           service_request_id: string
           status: Database["public"]["Enums"]["quote_status"]
@@ -2011,12 +2013,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          decline_reason?: string | null
           estimated_duration?: string | null
           id?: string
           line_items?: Json
           payment_terms?: string | null
           provider_id: string
           quote_number?: string | null
+          quote_signature?: string | null
           scope_of_work: string
           service_request_id: string
           status?: Database["public"]["Enums"]["quote_status"]
@@ -2029,12 +2033,14 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          decline_reason?: string | null
           estimated_duration?: string | null
           id?: string
           line_items?: Json
           payment_terms?: string | null
           provider_id?: string
           quote_number?: string | null
+          quote_signature?: string | null
           scope_of_work?: string
           service_request_id?: string
           status?: Database["public"]["Enums"]["quote_status"]

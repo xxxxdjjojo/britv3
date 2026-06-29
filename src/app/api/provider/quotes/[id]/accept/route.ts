@@ -48,7 +48,7 @@ export async function POST(
       data: {
         quoteId: quote.id,
         providerId: quote.provider_id,
-        requestId: quote.request_id,
+        requestId: quote.service_request_id,
         userId: user.id,
       },
     });

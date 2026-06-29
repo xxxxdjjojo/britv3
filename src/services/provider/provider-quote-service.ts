@@ -25,14 +25,12 @@ export type QuoteStatus = "draft" | "sent" | "viewed" | "accepted" | "declined" 
 export type Quote = Readonly<{
   id: string;
   provider_id: string;
-  request_id: string | null;
+  service_request_id: string | null;
   quote_number: string;
   line_items: QuoteLineItem[];
-  subtotal: number;
   total_amount: number;
   status: QuoteStatus;
-  valid_until: string | null;
-  notes: string | null;
+  validity_date: string | null;
   created_at: string;
   updated_at: string;
 }>;
@@ -48,14 +46,13 @@ export type QuoteWithRequest = Quote &
   }>;
 
 export type CreateQuoteInput = Readonly<{
-  request_id?: string;
+  service_request_id?: string;
   line_items: QuoteLineItem[];
-  notes?: string;
   valid_until_days?: number;
 }>;
 
 export type UpdateQuoteInput = Partial<
-  Pick<CreateQuoteInput, "line_items" | "notes" | "valid_until_days">
+  Pick<CreateQuoteInput, "line_items" | "valid_until_days">
 >;
 
 // ---------------------------------------------------------------------------
@@ -89,7 +86,7 @@ function computeSubtotal(lineItems: QuoteLineItem[]): number {
   return lineItems.reduce((sum, item) => sum + item.total_pence, 0);
 }
 
-/** Generate a valid_until ISO date string from today + N days. */
+/** Generate a validity-date ISO string (YYYY-MM-DD) from today + N days. */
 function addDays(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);
@@ -135,9 +132,9 @@ export async function createQuote(
 ): Promise<Quote> {
   validateLineItems(input.line_items);
 
-  const subtotal = computeSubtotal(input.line_items);
+  const total = computeSubtotal(input.line_items);
   const quoteNumber = await generateQuoteNumber(supabase, providerId);
-  const validUntil =
+  const validityDate =
     input.valid_until_days != null ? addDays(input.valid_until_days) : null;
 
   const now = new Date().toISOString();
@@ -146,14 +143,12 @@ export async function createQuote(
     .from("quotes")
     .insert({
       provider_id: providerId,
-      request_id: input.request_id ?? null,
+      service_request_id: input.service_request_id ?? null,
       quote_number: quoteNumber,
       line_items: input.line_items,
-      subtotal,
-      total_amount: subtotal,
+      total_amount: total,
       status: "draft",
-      valid_until: validUntil,
-      notes: input.notes ?? null,
+      validity_date: validityDate,
       created_at: now,
       updated_at: now,
     })
@@ -204,18 +199,13 @@ export async function updateQuote(
 
   if (updates.line_items !== undefined) {
     validateLineItems(updates.line_items);
-    const subtotal = computeSubtotal(updates.line_items);
+    const total = computeSubtotal(updates.line_items);
     patch["line_items"] = updates.line_items;
-    patch["subtotal"] = subtotal;
-    patch["total_amount"] = subtotal;
-  }
-
-  if (updates.notes !== undefined) {
-    patch["notes"] = updates.notes;
+    patch["total_amount"] = total;
   }
 
   if (updates.valid_until_days !== undefined) {
-    patch["valid_until"] = addDays(updates.valid_until_days);
+    patch["validity_date"] = addDays(updates.valid_until_days);
   }
 
   const { data, error } = await supabase
@@ -323,14 +313,12 @@ export async function getQuotesByProvider(
     return {
       id: row["id"] as string,
       provider_id: row["provider_id"] as string,
-      request_id: (row["request_id"] as string | null) ?? null,
+      service_request_id: (row["service_request_id"] as string | null) ?? null,
       quote_number: row["quote_number"] as string,
       line_items: (row["line_items"] as QuoteLineItem[]) ?? [],
-      subtotal: row["subtotal"] as number,
       total_amount: row["total_amount"] as number,
       status: row["status"] as QuoteStatus,
-      valid_until: (row["valid_until"] as string | null) ?? null,
-      notes: (row["notes"] as string | null) ?? null,
+      validity_date: (row["validity_date"] as string | null) ?? null,
       created_at: row["created_at"] as string,
       updated_at: row["updated_at"] as string,
       service_request: sr
@@ -391,14 +379,14 @@ export async function acceptQuote(
   }
 
   // 3. Verify the caller owns the service_request linked to this quote
-  if (!quote.request_id) {
+  if (!quote.service_request_id) {
     throw new Error("Quote is not linked to a service request and cannot be accepted.");
   }
 
   const { data: serviceRequest, error: srFetchError } = await supabase
     .from("service_requests")
     .select("id, user_id")
-    .eq("id", quote.request_id)
+    .eq("id", quote.service_request_id)
     .maybeSingle();
 
   if (srFetchError) {
@@ -432,7 +420,7 @@ export async function acceptQuote(
   const { error: srUpdateError } = await supabase
     .from("service_requests")
     .update({ status: "awarded", updated_at: now })
-    .eq("id", quote.request_id);
+    .eq("id", quote.service_request_id);
 
   if (srUpdateError) {
     throw new Error(`Failed to update service request status: ${srUpdateError.message}`);
