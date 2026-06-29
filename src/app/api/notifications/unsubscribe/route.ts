@@ -90,10 +90,12 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createServiceClient();
 
-    // Fetch current preferences from profiles table
+    // Fetch current preferences from profiles table.
+    // Read both stores: the nested `preferences` (global digest signal) and the
+    // flat `notification_preferences` (20-key schema read by checkUserEmailPref).
     const { data, error: fetchError } = await supabase
       .from("profiles")
-      .select("preferences")
+      .select("preferences, notification_preferences")
       .eq("id", result.userId)
       .single();
 
@@ -105,13 +107,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const row = data as { preferences: NotificationPreferences | null } | null;
+    const row = data as {
+      preferences: NotificationPreferences | null;
+      notification_preferences: Record<string, unknown> | null;
+    } | null;
     const updatedPrefs = buildUnsubscribedPreferences(row?.preferences ?? null);
+
+    // Mirror the unsubscribe into the flat store so checkUserEmailPref agrees:
+    // set every *_email key to false, preserving non-email keys.
+    const flatPrefs: Record<string, unknown> = { ...(row?.notification_preferences ?? {}) };
+    for (const key of Object.keys(flatPrefs)) {
+      if (key.endsWith("_email")) flatPrefs[key] = false;
+    }
 
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
         preferences: updatedPrefs,
+        notification_preferences: flatPrefs,
         updated_at: new Date().toISOString(),
       })
       .eq("id", result.userId);

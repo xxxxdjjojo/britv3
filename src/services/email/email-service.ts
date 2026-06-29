@@ -85,16 +85,46 @@ async function logEmail(params: LogEmailParams): Promise<void> {
   }
 }
 
+/**
+ * Maps an email-service prefKey to the flat `*_email` toggle stored on
+ * `profiles.notification_preferences` (the 20-key schema written by the
+ * `/settings/notifications` UI). Keys not present here (e.g. `email_reviews`,
+ * `email_billing`) have no dedicated toggle and default to enabled — they are
+ * still suppressed by a global unsubscribe.
+ */
+export const PREF_KEY_TO_EMAIL_COLUMN: Record<string, string> = {
+  email_marketing: "market_reports_email",
+  email_property_alerts: "property_alerts_email",
+  email_viewing_reminders: "viewings_email",
+  email_offers: "offers_email",
+  email_messages: "messages_email",
+  email_enquiries: "messages_email",
+  email_digest: "market_reports_email",
+};
+
 export async function checkUserEmailPref(userId: string, prefKey: string): Promise<boolean> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from("notification_preferences")
-      .select(prefKey)
-      .eq("user_id", userId)
+      .from("profiles")
+      .select("notification_preferences, preferences")
+      .eq("id", userId)
       .single();
-    if (error || !data) return true; // default to enabled if no record
-    return (data as unknown as Record<string, unknown>)[prefKey] !== false;
+    if (error || !data) return true; // fail-open if no row / query error
+
+    const row = data as unknown as {
+      notification_preferences?: Record<string, unknown> | null;
+      preferences?: { digest_frequency?: string } | null;
+    };
+
+    // Global unsubscribe — the one-click "stop all email" signal. Suppresses
+    // every gated email regardless of the per-type toggle.
+    if (row.preferences?.digest_frequency === "never") return false;
+
+    const column = PREF_KEY_TO_EMAIL_COLUMN[prefKey];
+    if (!column) return true; // no dedicated toggle — default enabled
+
+    return row.notification_preferences?.[column] !== false;
   } catch {
     return true; // default to enabled on error
   }
