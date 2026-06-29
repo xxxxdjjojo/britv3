@@ -3,7 +3,7 @@
 **App:** britv3 (Next.js 16.2.1 App Router, React 19, Supabase)
 **Date:** 2026-06-14
 **Branch:** `perf/audit-and-fixes`
-**Method:** Local **production** build (`next build && next start`, port 3004) measured with Chrome
+**Method:** Local **production** build (`next build && next start`, port 3000) measured with Chrome
 DevTools performance traces under mobile emulation (412×915, DPR 2.625, **Slow 4G, 4× CPU**).
 Dev numbers captured against `next dev` (port 3000). Backend = remote Supabase (AWS **eu-west-1**);
 `search_live_data` flag is **off**, so `/search` and `/properties/[slug]` serve **mock data** (no DB)
@@ -59,7 +59,7 @@ static/ISR; (d) code-split Recharts. Image conversion and font-weight trimming a
 | Item | Value |
 |------|-------|
 | Build | `pnpm build` (Next 16, **webpack**), exit 0 (warnings only) |
-| Prod server | `pnpm start` on :3004 |
+| Prod server | `pnpm start` on :3000 |
 | Dev server | `next dev` on :3000 (pre-existing, prior session) |
 | Emulation | Mobile 412×915 DPR 2.625, Slow 4G, 4× CPU throttle |
 | Backend | Remote Supabase, DB pooler `aws-1-eu-west-1` |

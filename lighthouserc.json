@@ -2,8 +2,8 @@
   "ci": {
     "collect": {
       "url": [
-        "http://localhost:3004/",
-        "http://localhost:3004/properties/modern-2-bed-flat-clifton-bristol-sale"
+        "http://localhost:3000/",
+        "http://localhost:3000/properties/modern-2-bed-flat-clifton-bristol-sale"
       ],
       "numberOfRuns": 3
     },

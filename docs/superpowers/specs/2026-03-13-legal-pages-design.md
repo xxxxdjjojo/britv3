@@ -99,7 +99,7 @@ Old `src/app/(main)/terms/page.tsx` and `src/app/(main)/privacy/page.tsx` are de
 
 ### 2.6 SEO — Canonical URLs (Issue 9 resolution)
 
-`.env.example` already defines `NEXT_PUBLIC_APP_URL=http://localhost:3004`. Use this existing variable — do not introduce a second `NEXT_PUBLIC_SITE_URL`. Each page's `generateMetadata()` uses:
+`.env.example` already defines `NEXT_PUBLIC_APP_URL=http://localhost:3000`. Use this existing variable — do not introduce a second `NEXT_PUBLIC_SITE_URL`. Each page's `generateMetadata()` uses:
 
 ```ts
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://britestate.co.uk';
