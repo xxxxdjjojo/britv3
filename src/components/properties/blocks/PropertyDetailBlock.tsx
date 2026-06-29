@@ -91,7 +91,7 @@ export function PropertyDetailBlock({ view }: { view: PropertyView }) {
 
       {/* Floor plans */}
       {floors.length > 0 && (
-        <section>
+        <section id="floor-plans">
           <h2 className="text-xl font-semibold mb-3">Floor plans</h2>
           <Separator className="mb-4" />
           <FloorPlan floors={floors} />

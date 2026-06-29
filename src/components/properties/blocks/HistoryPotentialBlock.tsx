@@ -7,6 +7,7 @@ import {
 import { RenovationROIPanel } from "@/components/properties/roi/RenovationROIPanel";
 import { WhatIfFloorPlan } from "@/components/properties/roi/WhatIfFloorPlan";
 import { PermittedDevelopmentSummary } from "@/components/properties/detail/PermittedDevelopmentSummary";
+import { PropertyTimeline } from "@/components/properties/blocks/PropertyTimeline";
 import type { Property } from "@/types/property";
 import type { createClient } from "@/lib/supabase/server";
 import type { PropertyView } from "@/lib/properties/build-property-view";
@@ -35,6 +36,8 @@ export function HistoryPotentialBlock({
 
   return (
     <div className="space-y-10">
+      <PropertyTimeline view={view} />
+
       {coordinates && (
         <section>
           <h2 className="text-xl font-semibold mb-3">Planning applications</h2>

@@ -2,7 +2,10 @@ import { Separator } from "@/components/ui/separator";
 import { RentalLettingDetails } from "@/components/properties/detail/RentalLettingDetails";
 import { TenancyDepositExplainer } from "@/components/properties/detail/TenancyDepositExplainer";
 import { RentMoveInCost } from "@/components/properties/detail/RentMoveInCost";
+import { rentIncomeRequired } from "@/lib/properties/financial-snapshot";
 import type { PropertyView } from "@/lib/properties/build-property-view";
+
+const gbp = (n: number) => `£${Math.round(n).toLocaleString("en-GB")}`;
 
 /**
  * Block 04 (rent) — Tenancy & cost. The renter's "can I afford to move in?"
@@ -26,6 +29,22 @@ export function TenancyCostBlock({ view }: { view: PropertyView }) {
           holdingDepositAmount={listing.holdingDepositAmount}
           beds={property.bedrooms}
         />
+
+        <div className="rounded-xl border bg-card p-4">
+          <p className="text-xs text-muted-foreground">
+            Estimated income required
+          </p>
+          <p className="mt-0.5 text-xl font-bold text-primary">
+            {gbp(rentIncomeRequired(monthlyRent))}
+            <span className="ml-1 text-xs font-normal text-muted-foreground">
+              / year
+            </span>
+          </p>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Referencing agencies typically expect a gross annual income of about
+            30× the monthly rent. Guideline only.
+          </p>
+        </div>
 
         <TenancyDepositExplainer
           monthlyRent={monthlyRent}

@@ -4,8 +4,6 @@ import { FileText } from "lucide-react";
 import { AgentCardSidebar } from "@/components/properties/detail/AgentCardSidebar";
 import { BookViewingModal } from "@/components/properties/detail/BookViewingModal";
 import { RecommendedTradespeople } from "@/components/properties/detail/RecommendedTradespeople";
-import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
-import { SdltCalculator } from "@/components/calculators/SdltCalculator";
 import type {
   PropertyView,
   PropertyViewerState,
@@ -13,9 +11,9 @@ import type {
 
 /**
  * Block 10 — Action centre (desktop right rail, sticky). Agent card, the
- * primary book-viewing / apply CTA, the buy-side calculators, and recommended
- * tradespeople. Variant-aware: sale gets mortgage + SDLT calculators, rent gets
- * the apply-to-rent card (its move-in cost lives in the Tenancy & cost block).
+ * primary book-viewing / apply CTA, and recommended tradespeople. Variant-
+ * aware: rent gets the apply-to-rent card. Buy-side mortgage + SDLT calculators
+ * live in the Financial snapshot band (single source), not here.
  */
 export function ActionRail({
   view,
@@ -74,17 +72,6 @@ export function ActionRail({
             existingViewingId={viewer.existingViewingId}
           />
         </div>
-      )}
-
-      {!isRent && (
-        <>
-          <div className="rounded-xl border bg-card p-4">
-            <MortgageCalculator initialPrice={listing.price} />
-          </div>
-          <div className="rounded-xl border bg-card p-4">
-            <SdltCalculator initialPrice={listing.price} />
-          </div>
-        </>
       )}
 
       <Suspense fallback={null}>
