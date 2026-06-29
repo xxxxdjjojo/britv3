@@ -28,10 +28,10 @@ const BADGE_CONFIG: Record<BadgeKey, BadgeConfigEntry> = {
   britestate_verified: { label: "TrueDeed Verified", color: "bg-brand-primary", Icon: ShieldCheck },
   gas_safe: { label: "Gas Safe", color: "bg-orange-600", Icon: Flame },
   niceic: { label: "NICEIC", color: "bg-orange-500", Icon: Zap },
-  fca: { label: "FCA Regulated", color: "bg-blue-800", Icon: BadgeCheck },
+  fca: { label: "FCA Regulated", color: "bg-brand-primary-dark", Icon: BadgeCheck },
   rics: { label: "RICS Member", color: "bg-brand-primary", Icon: Building2 },
-  sra: { label: "SRA Regulated", color: "bg-blue-700", Icon: Scale },
-  clc: { label: "CLC Regulated", color: "bg-blue-600", Icon: Scale },
+  sra: { label: "SRA Regulated", color: "bg-brand-primary-dark", Icon: Scale },
+  clc: { label: "CLC Regulated", color: "bg-brand-primary", Icon: Scale },
   insured: { label: "Insured", color: "bg-green-600", Icon: Shield },
 };
 

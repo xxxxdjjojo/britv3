@@ -6,7 +6,7 @@
  * rating row, trust badges, latest review snippet, and dual CTAs.
  */
 
-import { ShieldCheck, Star } from "lucide-react";
+import { MapPin, ShieldCheck, Star } from "lucide-react";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 import { CompareButton } from "@/components/providers/CompareButton";
 
@@ -27,7 +27,7 @@ function StarRating({ rating }: { rating: number }) {
           className={`w-3.5 h-3.5 ${
             i < Math.round(clampedRating)
               ? "fill-amber-400 text-amber-400"
-              : "fill-slate-200 text-slate-200"
+              : "fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700"
           }`}
         />
       ))}
@@ -47,6 +47,9 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
   const totalReviews = provider_rating_stats?.total_reviews ?? 0;
   const services = provider.services ?? [];
   const displayName = provider.business_name ?? "Provider";
+  // Coverage: prefer service_postcodes (always present on the flat search RPC
+  // shape) over the unreliable `city` field.
+  const coverage = (provider.service_postcodes ?? []).slice(0, 2);
 
   const truncatedReview =
     latestReview && latestReview.length > 120
@@ -54,10 +57,10 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
       : latestReview;
 
   return (
-    <article className="flex flex-col sm:flex-row gap-4 p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
+    <article className="group flex flex-col sm:flex-row gap-5 p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-xl hover:border-brand-primary/30 transition-all">
       {/* Left: Avatar */}
       <div className="relative flex-shrink-0 self-start">
-        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-muted dark:bg-slate-800">
+        <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-brand-primary-lighter dark:bg-slate-800 ring-1 ring-slate-100 dark:ring-slate-800">
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -66,86 +69,99 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-slate-400">
+            <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-brand-primary">
               {displayName.charAt(0).toUpperCase()}
             </div>
           )}
         </div>
         {isVerified && (
           <span
-            className="absolute -bottom-1 -right-1 bg-brand-primary rounded-full p-0.5"
+            className="absolute -bottom-1.5 -right-1.5 bg-brand-primary rounded-full p-1 ring-2 ring-white dark:ring-slate-900"
             title="TrueDeed Verified"
           >
-            <ShieldCheck className="w-4 h-4 text-white" />
+            <ShieldCheck className="w-3.5 h-3.5 text-white" />
           </span>
         )}
       </div>
 
       {/* Right: Identity block */}
       <div className="flex-1 min-w-0">
-        {/* Name + Compare */}
-        <div className="flex flex-wrap items-start gap-2 mb-1">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">
+        {/* Name + verified mark + Compare */}
+        <div className="flex flex-wrap items-center gap-2 mb-1.5">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight group-hover:text-brand-primary transition-colors">
             {displayName}
           </h3>
-          <CompareButton providerId={provider.id} providerName={displayName} />
-        </div>
-
-        {/* Trade category + location pills */}
-        <div className="flex flex-wrap gap-2 mb-2">
-          {services.slice(0, 3).map((svc) => (
-            <span
-              key={svc}
-              className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full capitalize"
-            >
-              {String(svc).replace(/_/g, " ")}
-            </span>
-          ))}
-          {provider.city && (
-            <span className="px-2 py-0.5 bg-muted dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium rounded-full">
-              {provider.city}
-            </span>
+          {isVerified && (
+            <ShieldCheck
+              className="w-4 h-4 text-brand-primary"
+              aria-label="Verified"
+            />
           )}
+          <span className="ml-auto">
+            <CompareButton providerId={provider.id} providerName={displayName} />
+          </span>
         </div>
 
         {/* Rating row */}
-        <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 dark:text-slate-400 mb-2">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-3">
           {totalReviews > 0 ? (
             <>
               <StarRating rating={avgRating} />
               <span className="font-semibold text-slate-900 dark:text-white">
                 {avgRating.toFixed(1)}
               </span>
-              <span>({totalReviews} review{totalReviews !== 1 ? "s" : ""})</span>
+              <span className="text-slate-400">
+                ({totalReviews} review{totalReviews !== 1 ? "s" : ""})
+              </span>
             </>
           ) : (
             <span className="text-slate-400 text-xs">No reviews yet</span>
           )}
           {provider.years_experience && provider.years_experience > 0 && (
-            <span>· {provider.years_experience} years exp.</span>
+            <span className="text-slate-400">
+              · {provider.years_experience} yrs experience
+            </span>
           )}
         </div>
 
-        {/* Trust badges (compact, max 3) */}
+        {/* Service category pills */}
         <div className="flex flex-wrap gap-1.5 mb-2">
+          {services.slice(0, 3).map((svc) => (
+            <span
+              key={svc}
+              className="px-2.5 py-1 bg-brand-primary-lighter dark:bg-brand-primary/15 text-brand-primary dark:text-brand-primary-mid text-[11px] font-semibold rounded-md capitalize"
+            >
+              {String(svc).replace(/_/g, " ")}
+            </span>
+          ))}
+        </div>
+
+        {/* Trust badges + coverage */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-2">
           {isVerified && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-primary text-white text-xs font-bold rounded-full">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-primary text-white text-[11px] font-bold rounded-full">
               <ShieldCheck className="w-3 h-3" /> Verified
             </span>
           )}
           {provider.insurance_verified && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-600 text-white text-xs font-bold rounded-full">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-primary-light text-white text-[11px] font-bold rounded-full">
               Insured
             </span>
           )}
           {(provider.qualifications ?? []).slice(0, 1).map((q) => (
             <span
               key={q}
-              className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-700 text-white text-xs font-bold rounded-full"
+              className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-secondary text-white text-[11px] font-bold rounded-full"
             >
               {q.split(":")[0]}
             </span>
           ))}
+          {coverage.length > 0 && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-slate-500 dark:text-slate-400 text-[11px] font-medium">
+              <MapPin className="w-3 h-3" />
+              {coverage.join(", ")}
+            </span>
+          )}
         </div>
 
         {/* Latest review snippet */}
@@ -156,16 +172,16 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
         )}
 
         {/* Bottom CTA row */}
-        <div className="flex flex-wrap gap-2 mt-4">
+        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
           <a
             href={`/services/${category}/${slug}`}
-            className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#1D4ED8] transition-colors"
+            className="bg-brand-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-brand-primary-light transition-colors"
           >
             View Profile
           </a>
           <a
             href={`/services/${category}/${slug}#services`}
-            className="border border-slate-300 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
+            className="border border-slate-300 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:border-brand-primary hover:text-brand-primary transition-colors"
           >
             Get a Quote
           </a>
