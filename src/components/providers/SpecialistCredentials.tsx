@@ -242,7 +242,7 @@ export function ConveyancerCredentials({
 
       {/* Fee table */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30">
+        <div className="px-5 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-surface dark:bg-slate-800/30">
           <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
             Typical Fees (inc. VAT)
           </h3>
