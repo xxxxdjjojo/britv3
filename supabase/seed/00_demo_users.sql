@@ -135,16 +135,22 @@ BEGIN
   -- ===========================================================================
   RAISE NOTICE 'Creating profiles...';
 
-  INSERT INTO profiles (id, display_name, active_role, verification_level, avatar_url, is_admin, created_at, updated_at)
+  INSERT INTO profiles (id, display_name, active_role, verification_level, avatar_url, is_admin, admin_role, created_at, updated_at)
   VALUES
-    (v_buyer_id,    'James Wilson',   'homebuyer'::user_role,        'standard'::verification_level,     NULL, FALSE, v_now, v_now),
-    (v_renter_id,   'Sophie Chen',    'renter'::user_role,           'standard'::verification_level,     NULL, FALSE, v_now, v_now),
-    (v_seller_id,   'David Okonkwo',  'seller'::user_role,           'enhanced'::verification_level,     NULL, FALSE, v_now, v_now),
-    (v_landlord_id, 'Mike Thompson',  'landlord'::user_role,         'enhanced'::verification_level,     NULL, FALSE, v_now, v_now),
-    (v_agent_id,    'Sarah Mitchell', 'agent'::user_role,            'professional'::verification_level, NULL, FALSE, v_now, v_now),
-    (v_provider_id, 'Tom Richards',   'service_provider'::user_role, 'professional'::verification_level, NULL, FALSE, v_now, v_now),
-    (v_admin_id,    'Admin User',     'homebuyer'::user_role,        'professional'::verification_level, NULL, TRUE,  v_now, v_now)
+    (v_buyer_id,    'James Wilson',   'homebuyer'::user_role,        'standard'::verification_level,     NULL, FALSE, NULL,          v_now, v_now),
+    (v_renter_id,   'Sophie Chen',    'renter'::user_role,           'standard'::verification_level,     NULL, FALSE, NULL,          v_now, v_now),
+    (v_seller_id,   'David Okonkwo',  'seller'::user_role,           'enhanced'::verification_level,     NULL, FALSE, NULL,          v_now, v_now),
+    (v_landlord_id, 'Mike Thompson',  'landlord'::user_role,         'enhanced'::verification_level,     NULL, FALSE, NULL,          v_now, v_now),
+    (v_agent_id,    'Sarah Mitchell', 'agent'::user_role,            'professional'::verification_level, NULL, FALSE, NULL,          v_now, v_now),
+    (v_provider_id, 'Tom Richards',   'service_provider'::user_role, 'professional'::verification_level, NULL, FALSE, NULL,          v_now, v_now),
+    (v_admin_id,    'Admin User',     'homebuyer'::user_role,        'professional'::verification_level, NULL, TRUE,  'super_admin', v_now, v_now)
   ON CONFLICT (id) DO NOTHING;
+
+  UPDATE profiles
+  SET is_admin = TRUE,
+      admin_role = COALESCE(admin_role, 'super_admin'),
+      updated_at = v_now
+  WHERE id = v_admin_id;
 
   RAISE NOTICE 'profiles created.';
 

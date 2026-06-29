@@ -43,6 +43,7 @@ describe("Dashboard shell configuration", () => {
       agent: "/dashboard/agent",
       service_provider: "/dashboard/provider",
       mortgage_broker: "/dashboard/broker",
+      developer: "/dashboard/developer",
     };
 
     for (const role of VALID_ROLES) {
@@ -60,6 +61,7 @@ describe("Dashboard shell configuration", () => {
       agent: 3,
       service_provider: 3,
       mortgage_broker: 3,
+      developer: 3,
     };
 
     for (const role of VALID_ROLES) {

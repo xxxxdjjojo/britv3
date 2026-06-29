@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { PUBLIC_ROUTES, AUTH_ROUTES, ROUTE_TO_ROLE, ROLE_TO_ROUTE } from "@/lib/constants";
 import { isFeatureEnabled } from "@/lib/features";
-import { ADMIN_ROUTE_PERMISSIONS, hasPermission, type AdminRole } from "@/lib/admin-permissions";
+import { ADMIN_ROLES, ADMIN_ROUTE_PERMISSIONS, hasPermission, type AdminRole } from "@/lib/admin-permissions";
 import { captureException } from "@/lib/observability/capture-exception";
 import { CORRELATION_ID_HEADER, getCorrelationId } from "@/lib/observability/correlation-id";
 
@@ -110,6 +110,10 @@ function redirectWithHeaders(
   const response = NextResponse.redirect(url);
   setResponseHeaders(response, nonce, getCorrelationId(request.headers));
   return response;
+}
+
+function isAdminRole(value: string | null | undefined): value is AdminRole {
+  return !!value && ADMIN_ROLES.includes(value as AdminRole);
 }
 
 export async function proxy(request: NextRequest) {
@@ -272,17 +276,19 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── Consolidated profile query ──────────────────────────────────────────
-  // Fetch profile data once for both admin guard and role-route enforcement.
-  // When JWT claims are available, skip the DB query entirely.
+  // Fetch profile data once for admin guard and role-route enforcement.
+  // Admin authorization always reads the profile row; JWT/app metadata can be
+  // stale and must not be the source of truth for elevated permissions.
   const isAdminRoute = pathname.startsWith("/admin");
   const isDashboardRoute = isAuthenticated && pathname.startsWith("/dashboard");
 
-  // Only query the DB when we actually need profile data and don't have JWT claims.
+  // Query the DB for every admin route, and for dashboard routes only when
+  // JWT product-role claims are unavailable.
   // Fetches provider_verification_status + verification_level for the verification
   // gate (Wave 1.2) so we avoid a second round-trip.
   let profileData: MiddlewareProfileData | null = null;
 
-  if (isAuthenticated && !hasClaims && (isAdminRoute || isDashboardRoute)) {
+  if (isAuthenticated && (isAdminRoute || (!hasClaims && isDashboardRoute))) {
     try {
       const { data: profile, error } = await supabase
         .from("profiles")
@@ -320,25 +326,17 @@ export async function proxy(request: NextRequest) {
       return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
     }
 
-    if (hasClaims) {
-      if (appMetadata?.is_admin !== true) {
-        return redirectWithHeaders("/forbidden", nonce, request);
-      }
-    } else {
-      if (profileData?.is_admin !== true) {
-        return redirectWithHeaders("/forbidden", nonce, request);
-      }
+    if (profileData?.is_admin !== true || !isAdminRole(profileData.admin_role)) {
+      return redirectWithHeaders("/forbidden", nonce, request);
     }
   }
 
   // ── Admin role permission gate ────────────────────────────────────
   if (isAdminRoute && pathname !== "/admin") {
-    const adminRole = (hasClaims ? appMetadata?.admin_role : profileData?.admin_role) as AdminRole | undefined;
-    // Deny access if admin_role is not set — never default to highest privilege
-    if (!adminRole) {
+    const role = profileData?.admin_role;
+    if (!isAdminRole(role)) {
       return redirectWithHeaders("/forbidden", nonce, request);
     }
-    const role = adminRole;
 
     // Find the matching route permission
     const matchedRoute = Object.keys(ADMIN_ROUTE_PERMISSIONS)

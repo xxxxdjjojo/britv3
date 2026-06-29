@@ -24,6 +24,16 @@ export interface DeveloperContext {
   developerName: string;
 }
 
+/** Resolve the developer org for the currently authenticated user (or null). */
+export async function resolveCurrentDeveloper(): Promise<DeveloperContext | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  return resolveDeveloperForUser(user.id);
+}
+
 /** Resolve the developer org the current user manages, or null if none. */
 export async function resolveDeveloperForUser(
   userId: string,

@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProviderContextWrapper } from "@/components/dashboard/provider/ProviderContextWrapper";
 import { resolveProviderId } from "@/lib/provider/resolve-provider";
+import { dashboardPathForRole } from "@/lib/routes";
+import type { UserRole } from "@/types/auth";
 
 export default async function ProviderLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const supabase = await createClient();
@@ -15,7 +17,10 @@ export default async function ProviderLayout({ children }: Readonly<{ children: 
     .single();
 
   if (profile?.active_role !== "service_provider") {
-    redirect(`/dashboard/${profile?.active_role ?? "homebuyer"}`);
+    const activeRole = profile?.active_role as UserRole | null | undefined;
+    redirect(
+      activeRole ? dashboardPathForRole(activeRole) : "/dashboard/homebuyer",
+    );
   }
 
   let providerIdentity: Awaited<ReturnType<typeof resolveProviderId>>;

@@ -18,7 +18,11 @@ export function BottomTabBar() {
 
   if (!activeRole) return null;
 
-  const tabs = TAB_CONFIG[activeRole];
+  // Defensive: `activeRole` is a DB string cast to UserRole, so a role the tab
+  // map doesn't know must hide the bar rather than throw on `tabs.map` and
+  // white-screen the dashboard (same DB↔type drift rationale as Sidebar).
+  const tabs = TAB_CONFIG[activeRole] ?? [];
+  if (tabs.length === 0) return null;
 
   return (
     <nav

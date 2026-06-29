@@ -109,10 +109,10 @@ for (const { email, role } of TEST_USERS) {
     // admin is a boolean flag on profiles, not a value in the role enum.
     const { error: adminError } = await supabase
       .from("profiles")
-      .update({ is_admin: true })
+      .update({ is_admin: true, admin_role: "super_admin" })
       .eq("id", userId);
     if (adminError) {
-      console.error(`Set is_admin for ${email}:`, adminError);
+      console.error(`Set admin access for ${email}:`, adminError);
       continue;
     }
   } else {

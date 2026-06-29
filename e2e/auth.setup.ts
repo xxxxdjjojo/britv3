@@ -35,7 +35,9 @@ for (const [role, creds] of Object.entries(TEST_USERS)) {
       // logins redirect into routes that compile on first hit, which can exceed
       // 10s. A warm server resolves in well under a second, so this only affects
       // the cold-start case and does not mask a genuine auth failure.
-      await page.waitForURL("**/dashboard**", { timeout: 45_000 });
+      const expectedPostLoginUrl =
+        role === "admin" ? /\/admin(?:$|[/?#])/ : "**/dashboard**";
+      await page.waitForURL(expectedPostLoginUrl, { timeout: 45_000 });
 
       // Login succeeded — save authenticated state
       await page.context().storageState({ path: authFile });

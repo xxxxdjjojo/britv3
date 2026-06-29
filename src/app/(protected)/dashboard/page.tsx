@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { roleToRoute } from "./role-route-map";
+import { resolveDashboardDestination } from "@/lib/auth/admin-access";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -10,18 +10,12 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  // Get user's active role from profile
+  // Get user's product role plus admin overlay from the profile row.
   const { data: profile } = await supabase
     .from("profiles")
-    .select("active_role")
+    .select("active_role, is_admin, admin_role")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.active_role) {
-    // No roles assigned yet -- send to role selection
-    redirect("/register/role-select");
-  }
-
-  // Redirect to role-specific dashboard
-  redirect(`/dashboard/${roleToRoute(profile.active_role)}`);
+  redirect(resolveDashboardDestination(profile));
 }

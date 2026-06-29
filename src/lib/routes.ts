@@ -8,6 +8,7 @@ const DASHBOARD_BASE_BY_ROLE = {
   agent: "/dashboard/agent",
   service_provider: "/dashboard/provider",
   mortgage_broker: "/dashboard/broker",
+  developer: "/dashboard/developer",
 } as const satisfies Record<UserRole, string>;
 
 export const ROUTES = {

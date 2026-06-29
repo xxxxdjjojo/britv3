@@ -596,6 +596,12 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
     { href: dashboardPathForRole("mortgage_broker", "analytics"), label: "Analytics", icon: TrendingUp },
     { href: dashboardPathForRole("mortgage_broker", "fca-verification"), label: "FCA Verification", icon: BadgeCheck },
   ],
+  developer: [
+    { href: "/dashboard/developer", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard/developer/developments", label: "Developments", icon: Building2 },
+    { href: "/dashboard/developer/leads", label: "Leads", icon: UserPlus },
+    { href: "/dashboard/developer/viewings", label: "Viewings", icon: Calendar },
+  ],
 };
 
 // ---------------------------------------------------------------------------
@@ -611,6 +617,7 @@ export const ROLE_PRIMARY_CTA: Record<UserRole, { label: string; href: string }>
   agent: { label: "New Listing", href: "/dashboard/agent/listings/create" },
   service_provider: { label: "Find Work", href: "/dashboard/provider/jobs/leads" },
   mortgage_broker: { label: "New Lead", href: "/dashboard/broker/leads" },
+  developer: { label: "View Leads", href: "/dashboard/developer/leads" },
 };
 
 // ---------------------------------------------------------------------------
@@ -664,6 +671,13 @@ export const TAB_CONFIG: Record<UserRole, TabItem[]> = {
     { label: "Leads", href: dashboardPathForRole("mortgage_broker", "leads"), icon: Briefcase },
     { label: "Pipeline", href: dashboardPathForRole("mortgage_broker", "pipeline"), icon: Users },
     { label: "Products", href: dashboardPathForRole("mortgage_broker", "products"), icon: ClipboardList },
+    { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
+    { label: "Profile", href: "/profile", icon: User },
+  ],
+  developer: [
+    { label: "Overview", href: "/dashboard/developer", icon: Home },
+    { label: "Leads", href: "/dashboard/developer/leads", icon: Users },
+    { label: "Viewings", href: "/dashboard/developer/viewings", icon: Calendar },
     { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],

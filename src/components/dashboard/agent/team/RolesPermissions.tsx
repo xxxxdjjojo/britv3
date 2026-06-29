@@ -91,7 +91,19 @@ function loadSaved(): Record<TeamRole, Record<PermKey, boolean>> | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as Record<TeamRole, Record<PermKey, boolean>>;
+    const parsed = JSON.parse(raw) as Partial<
+      Record<TeamRole, Record<PermKey, boolean>>
+    >;
+    // Normalize against the defaults: a partial/corrupt persisted blob must
+    // never leave a role missing, or `permissions[role][key]` throws into the
+    // error boundary (same crash class as the developer-dashboard outage).
+    return TEAM_ROLES.reduce(
+      (acc, role) => {
+        acc[role] = { ...DEFAULT_PERMISSIONS[role], ...(parsed?.[role] ?? {}) };
+        return acc;
+      },
+      {} as Record<TeamRole, Record<PermKey, boolean>>,
+    );
   } catch {
     return null;
   }

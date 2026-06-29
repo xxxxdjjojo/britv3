@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { dashboardPathForRole } from "@/lib/routes";
+import type { UserRole } from "@/types/auth";
 
 export default async function SellerDashboardLayout(
   props: Readonly<{ children: React.ReactNode }>,
@@ -15,7 +17,10 @@ export default async function SellerDashboardLayout(
     .maybeSingle();
 
   if (profile?.active_role !== "seller") {
-    redirect(`/dashboard/${profile?.active_role ?? "homebuyer"}`);
+    const activeRole = profile?.active_role as UserRole | null | undefined;
+    redirect(
+      activeRole ? dashboardPathForRole(activeRole) : "/dashboard/homebuyer",
+    );
   }
 
   // Render children directly — parent dashboard/layout.tsx provides the shared Sidebar.

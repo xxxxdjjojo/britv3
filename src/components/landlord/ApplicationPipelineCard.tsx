@@ -52,6 +52,16 @@ const STATUS_STYLES: Record<
   },
 };
 
+// Fallback for a status outside TenantApplicationStatus (DB/enum drift). The
+// status comes off a live DB row, so an unknown value must render a neutral
+// badge instead of throwing on `statusStyle.bg` into the error boundary.
+const FALLBACK_STATUS_STYLE = {
+  bg: "bg-muted dark:bg-gray-800/40",
+  text: "text-gray-700 dark:text-gray-300",
+  dot: "bg-muted-foreground",
+  label: "Unknown",
+} as const;
+
 const CREDIT_STYLES: Record<
   CreditCheckStatus,
   { variant: "outline" | "secondary" | "destructive"; label: string }
@@ -84,7 +94,7 @@ export function ApplicationPipelineCard({
   application,
   onMoveToNextStage,
 }: ApplicationPipelineCardProps) {
-  const statusStyle = STATUS_STYLES[application.status];
+  const statusStyle = STATUS_STYLES[application.status] ?? FALLBACK_STATUS_STYLE;
   const creditStyle = CREDIT_STYLES[application.credit_check_status ?? "not_run"];
   const refStyle = REF_STYLES[application.references_status ?? "pending"];
 
