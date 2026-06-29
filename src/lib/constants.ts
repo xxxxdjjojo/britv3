@@ -273,6 +273,7 @@ export const ROUTE_TO_ROLE: Readonly<Record<string, UserRole>> = {
   homebuyer: "homebuyer",
   renter: "renter",
   broker: "mortgage_broker",
+  developer: "developer",
 } as const;
 
 /** Reverse mapping: database UserRole → URL path segment */

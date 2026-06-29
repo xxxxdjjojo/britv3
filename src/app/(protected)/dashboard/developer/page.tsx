@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import {
   getDeveloperDashboardData,
-  resolveDeveloperForUser,
+  resolveCurrentDeveloper,
 } from "@/services/new-homes/dashboard-service";
+import { DeveloperGate } from "@/components/new-homes/dashboard/DeveloperGate";
 import {
   ConversionFunnel,
   MetricCard,
@@ -23,44 +23,10 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function DeveloperDashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Protected route — the middleware ensures `user` exists, but guard anyway.
-  const developer = user ? await resolveDeveloperForUser(user.id) : null;
-
   // Membership gate: any authenticated user can reach this URL, but only a
   // linked developer-org member sees a populated dashboard.
-  if (!developer) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <h1 className="font-heading text-2xl font-bold text-neutral-900">
-          Developer dashboard
-        </h1>
-        <p className="mx-auto mt-3 max-w-md text-neutral-600">
-          This area is for housebuilders and developers advertising new-build
-          schemes on TrueDeed. Your account isn&apos;t linked to a developer
-          organisation yet.
-        </p>
-        <div className="mt-6 flex justify-center gap-3">
-          <Link
-            href="/developers"
-            className="inline-flex h-10 items-center rounded-lg bg-brand-primary px-4 text-sm font-semibold text-white hover:bg-brand-primary-light"
-          >
-            Learn about listing your scheme
-          </Link>
-          <Link
-            href="/contact"
-            className="inline-flex h-10 items-center rounded-lg border border-neutral-300 px-4 text-sm font-semibold text-neutral-700 hover:bg-muted"
-          >
-            Request access
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const developer = await resolveCurrentDeveloper();
+  if (!developer) return <DeveloperGate />;
 
   const data = await getDeveloperDashboardData(developer.developerId);
   const { metrics } = data;

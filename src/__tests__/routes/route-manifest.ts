@@ -247,9 +247,6 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/rfqs",
   "/dashboard/rfqs/create",
   "/dashboard/saved",
-  // Developer dashboard — membership-gated (no developer user_role, so it is
-  // not in any ROLE_NAV_ITEMS sidebar); linked from the marketing mega-menu.
-  "/dashboard/developer",
   // Agent — role-specific sub-pages plus the shared `[role]` tools, none in nav.
   "/dashboard/agent/ai-match",
   "/dashboard/agent/analytics",
