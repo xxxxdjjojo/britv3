@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { dashboardPathForRole } from "@/lib/routes";
+import type { UserRole } from "@/types/auth";
 
 export default async function AgentLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const supabase = await createClient();
@@ -13,7 +15,10 @@ export default async function AgentLayout({ children }: Readonly<{ children: Rea
     .single();
 
   if (profile?.active_role !== "agent") {
-    redirect(`/dashboard/${profile?.active_role ?? "homebuyer"}`);
+    const activeRole = profile?.active_role as UserRole | null | undefined;
+    redirect(
+      activeRole ? dashboardPathForRole(activeRole) : "/dashboard/homebuyer",
+    );
   }
 
   return <>{children}</>;

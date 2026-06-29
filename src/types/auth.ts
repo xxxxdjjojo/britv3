@@ -46,6 +46,7 @@ export type Profile = Readonly<{
   phone: string | null;
   phone_verified: boolean;
   is_admin: boolean;
+  admin_role: string | null;
   created_at: Date;
   updated_at: Date;
   deleted_at: Date | null;

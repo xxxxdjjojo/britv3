@@ -1,15 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ROUTE_TO_ROLE } from "@/lib/constants";
+import { dashboardPathForRole } from "@/lib/routes";
 import type { UserRole } from "@/types/auth";
-
-const VALID_ROLES: UserRole[] = [
-  "homebuyer",
-  "renter",
-  "seller",
-  "landlord",
-  "agent",
-  "service_provider",
-];
 
 export default async function RoleDashboardLayout(
   props: Readonly<{
@@ -18,9 +11,10 @@ export default async function RoleDashboardLayout(
   }>,
 ) {
   const { role } = await props.params;
+  const expectedRole = ROUTE_TO_ROLE[role];
 
   // Reject invalid role slugs before any DB call
-  if (!VALID_ROLES.includes(role as UserRole)) {
+  if (!expectedRole) {
     redirect("/dashboard");
   }
 
@@ -49,8 +43,13 @@ export default async function RoleDashboardLayout(
 
   // Enforce: URL role must match active_role
   // Example: homebuyer at /dashboard/landlord → redirect to /dashboard/homebuyer
-  if (profile.active_role !== role) {
-    redirect(`/dashboard/${profile.active_role}`);
+  const activeRole = profile.active_role as UserRole | null;
+  if (activeRole !== expectedRole) {
+    if (!activeRole) {
+      redirect("/dashboard");
+    }
+
+    redirect(dashboardPathForRole(activeRole));
   }
 
   return <>{props.children}</>;
