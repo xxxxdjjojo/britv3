@@ -96,6 +96,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   /* --- Dynamic pages from database --- */
   let propertyPages: MetadataRoute.Sitemap = [];
   let agentPages: MetadataRoute.Sitemap = [];
+  const newHomesPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/new-homes`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+  ];
   try {
     const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
@@ -132,6 +135,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
       }));
     }
+
+    // New-build developments (published only).
+    const { data: developments } = await supabase
+      .from("developments")
+      .select("slug, updated_at")
+      .eq("is_published", true)
+      .limit(2000);
+
+    if (developments) {
+      for (const d of developments as { slug: string; updated_at: string }[]) {
+        newHomesPages.push({
+          url: `${baseUrl}/new-homes/${d.slug}`,
+          lastModified: new Date(d.updated_at),
+          changeFrequency: "weekly",
+          priority: 0.75,
+        });
+      }
+    }
   } catch (err) {
     console.error("[sitemap] DB query failed, using static-only:", err);
   }
@@ -158,6 +179,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...legalPages,
     ...servicePages,
+    ...newHomesPages,
     ...segmentLandingPages,
     ...toolPages,
     ...marketplacePages,
