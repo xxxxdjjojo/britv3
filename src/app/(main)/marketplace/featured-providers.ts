@@ -18,11 +18,10 @@ type FeaturedRow = Readonly<{
   average_rating: number;
   total_reviews: number;
   service_provider_details: {
-    id: string;
     slug: string;
     business_name: string;
     services: string[] | null;
-    city: string | null;
+    service_postcodes: string[] | null;
     profiles: {
       avatar_url: string | null;
       full_name: string | null;
@@ -45,7 +44,7 @@ export async function getFeaturedProviders(limit = 6): Promise<FeaturedProvider[
   const { data } = await supabase
     .from("provider_rating_stats")
     .select(
-      "provider_id, average_rating, total_reviews, service_provider_details!inner(id, slug, business_name, services, city, profiles!inner(avatar_url, full_name:display_name, provider_verification_status))",
+      "provider_id, average_rating, total_reviews, service_provider_details!inner(slug, business_name, services, service_postcodes, profiles!inner(avatar_url, full_name:display_name, provider_verification_status))",
     )
     .order("average_rating", { ascending: false })
     .gt("total_reviews", 5)
@@ -61,7 +60,7 @@ export async function getFeaturedProviders(limit = 6): Promise<FeaturedProvider[
       slug: details.slug,
       businessName: details.business_name,
       displayName: profile.full_name,
-      city: details.city,
+      city: details.service_postcodes?.[0] ?? null,
       services: details.services ?? [],
       avatarUrl: profile.avatar_url,
       isVerified: profile.provider_verification_status === "verified",

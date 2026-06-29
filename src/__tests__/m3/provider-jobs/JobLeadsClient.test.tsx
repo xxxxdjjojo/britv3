@@ -34,8 +34,10 @@ vi.mock("@/services/provider/provider-job-service", () => ({
 function makeLead(overrides: Partial<ProviderLead> = {}): ProviderLead {
   return {
     id: "lead-1",
-    clientName: "Jane Smith",
+    clientName: "Client",
     serviceCategory: "Plumbing",
+    title: "Leaking tap repair",
+    inServiceArea: false,
     description: "Leaking tap",
     location: "Bristol",
     status: "new",
@@ -72,15 +74,11 @@ describe("JobLeadsClient — render with data", () => {
       />,
     );
 
-    // The first lead renders as the featured "hero" card (which shows the
-    // service category but not the client name); the rest render as compact
-    // "grid" cards (which show the client name). The bare category label also
-    // appears in the filter tabs, so assert one card per lead via the unique
-    // card description, which both variants render.
+    // Leads are anonymised (client name is not shown on the card). The bare
+    // category label also appears in the filter tabs, so assert one card per
+    // lead via the unique card description, which both variants render.
     expect(screen.getByText("Plumbing job description")).toBeInTheDocument();
     expect(screen.getByText("Electrical job description")).toBeInTheDocument();
-    // The grid card for lead "b" still shows its client name.
-    expect(screen.getByText("Bob")).toBeInTheDocument();
   });
 
   it("renders the live-listening indicator", () => {

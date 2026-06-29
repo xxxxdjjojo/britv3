@@ -23,9 +23,9 @@ export default function ComparePage() {
     supabase
       .from("service_provider_details")
       .select(
-        "id, slug, business_name, services, city, service_postcodes, accreditations, response_time_hours, pricing, profiles(avatar_url, full_name:display_name, provider_verification_status), provider_rating_stats(average_rating, total_reviews)",
+        "id:user_id, slug, business_name, services, service_postcodes, accreditations, response_time_hours, pricing, profiles(avatar_url, full_name:display_name, provider_verification_status), provider_rating_stats(average_rating, total_reviews)",
       )
-      .in("id", ids)
+      .in("user_id", ids)
       .then(({ data }) => {
         setProviders((data as unknown as CompareProvider[]) ?? []);
         setLoading(false);

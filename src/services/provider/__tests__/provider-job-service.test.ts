@@ -91,13 +91,12 @@ describe("getProviderLeads", () => {
 
     const mockLead = {
       id: "lead-uuid-1",
-      client_id: "client-uuid-1",
-      category: "Plumbing",
+      service_category: "plumber",
       title: "Fix boiler",
       description: "Boiler not heating",
-      budget_range_min: 100,
-      budget_range_max: 500,
-      postcode: "SW1A 1AA",
+      budget_min: 100,
+      budget_max: 500,
+      property_postcode: "SW1A 1AA",
       urgency_level: "normal",
       status: "open",
       created_at: now,
@@ -193,15 +192,14 @@ describe("acceptLead", () => {
         ? null
         : {
             id: "lead-uuid-1",
-            category: "Plumbing",
-            status: scenario === "already-accepted" ? "accepted" : "open",
-            client_id: "client-uuid-1",
+            service_category: "plumber",
+            status: scenario === "already-accepted" ? "awarded" : "open",
           };
 
     const providerRow =
       scenario === "wrong-provider"
-        ? { services: ["Electrical"] }
-        : { services: ["Plumbing"] };
+        ? { services: ["electrician"] }
+        : { services: ["plumber"] };
 
     let callCount = 0;
     return {
@@ -293,7 +291,7 @@ describe("declineLead", () => {
     const leadRow =
       scenario === "not-found"
         ? null
-        : { id: "lead-uuid-1", category, status: "open" };
+        : { id: "lead-uuid-1", service_category: category, status: "open" };
 
     const providerRow =
       scenario === "wrong-provider"
@@ -399,10 +397,10 @@ describe("getJobDetail", () => {
     created_at: NOW,
     service_requests: {
       title: "Fix boiler",
-      category: "Plumbing",
+      service_category: "plumber",
       description: "Boiler not heating",
-      postcode: "SW1A 1AA",
-      client_id: "client-uuid-1",
+      property_postcode: "SW1A 1AA",
+      user_id: "client-uuid-1",
     },
     profiles: {
       id: "client-uuid-1",

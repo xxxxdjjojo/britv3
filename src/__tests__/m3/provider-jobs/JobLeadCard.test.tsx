@@ -24,8 +24,10 @@ vi.mock("@/lib/supabase/client", () => ({
 function makeLead(overrides: Partial<ProviderLead> = {}): ProviderLead {
   return {
     id: "lead-1",
-    clientName: "Jane Smith",
+    clientName: "Client",
     serviceCategory: "Plumbing",
+    title: "Kitchen tap replacement",
+    inServiceArea: false,
     description: "Leaking kitchen tap needs replacing.",
     location: "Bristol",
     status: "new",
@@ -46,7 +48,7 @@ describe("JobLeadCard — render with data", () => {
     render(<JobLeadCard lead={makeLead()} providerId="prov-1" onRemove={vi.fn()} />);
 
     expect(screen.getByText("Plumbing")).toBeInTheDocument();
-    expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+    expect(screen.getByText("Kitchen tap replacement")).toBeInTheDocument();
     expect(screen.getByText("Leaking kitchen tap needs replacing.")).toBeInTheDocument();
     expect(screen.getByText("Bristol")).toBeInTheDocument();
     expect(screen.getByText("£100–£250")).toBeInTheDocument();

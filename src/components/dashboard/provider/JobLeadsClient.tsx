@@ -190,6 +190,10 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
             clientName: "Client",
             serviceCategory:
               (row["service_category"] as string | undefined) ?? "General",
+            title: (row["title"] as string | undefined) ?? "",
+            // Service-area match is computed server-side on the initial fetch;
+            // realtime arrivals default to false until the next refresh.
+            inServiceArea: false,
             description: (row["description"] as string | undefined) ?? "",
             location: (row["property_postcode"] as string | undefined) ?? "",
             status: "new",
