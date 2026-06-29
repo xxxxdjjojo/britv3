@@ -91,6 +91,36 @@ CREATE TABLE IF NOT EXISTS public.developers (
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- ============================================================================
+-- TABLE 2: developer_members  (created before the developers RLS policies that
+-- reference it — CREATE POLICY validates referenced relations at creation time,
+-- so this table must exist first. Its own policy references only auth.uid(), so
+-- it has no forward dependency on developers' policies.)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS public.developer_members (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  developer_id  UUID NOT NULL REFERENCES public.developers(id) ON DELETE CASCADE,
+  user_id       UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  member_role   TEXT NOT NULL DEFAULT 'owner',   -- owner | manager | viewer
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (developer_id, user_id)
+);
+
+ALTER TABLE public.developer_members ENABLE ROW LEVEL SECURITY;
+
+-- A user can see their own membership rows (used to resolve "am I a developer?").
+CREATE POLICY "Users can read their own memberships"
+  ON public.developer_members FOR SELECT TO authenticated
+  USING (user_id = auth.uid());
+
+CREATE INDEX idx_developer_members_user ON public.developer_members (user_id);
+CREATE INDEX idx_developer_members_developer ON public.developer_members (developer_id);
+
+-- ============================================================================
+-- developers RLS (now that developer_members exists for the policy references)
+-- ============================================================================
+
 ALTER TABLE public.developers ENABLE ROW LEVEL SECURITY;
 
 -- Public can read published developers (powers the public new-homes pages).
@@ -116,31 +146,6 @@ CREATE POLICY "Members can update their developer"
 CREATE TRIGGER developers_updated_at
   BEFORE UPDATE ON public.developers
   FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
-
--- ============================================================================
--- TABLE 2: developer_members  (defined before developers' policies run? no —
--- policies reference it, but Postgres only resolves the table at query time, so
--- ordering of CREATE TABLE is fine as long as it exists before any query.)
--- ============================================================================
-
-CREATE TABLE IF NOT EXISTS public.developer_members (
-  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  developer_id  UUID NOT NULL REFERENCES public.developers(id) ON DELETE CASCADE,
-  user_id       UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  member_role   TEXT NOT NULL DEFAULT 'owner',   -- owner | manager | viewer
-  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (developer_id, user_id)
-);
-
-ALTER TABLE public.developer_members ENABLE ROW LEVEL SECURITY;
-
--- A user can see their own membership rows (used to resolve "am I a developer?").
-CREATE POLICY "Users can read their own memberships"
-  ON public.developer_members FOR SELECT TO authenticated
-  USING (user_id = auth.uid());
-
-CREATE INDEX idx_developer_members_user ON public.developer_members (user_id);
-CREATE INDEX idx_developer_members_developer ON public.developer_members (developer_id);
 
 -- ============================================================================
 -- TABLE 3: developments
