@@ -34,6 +34,8 @@ import { LIFECYCLE_SEQUENCES } from "./sequences";
 const mockCreateAdminClient = vi.mocked(createAdminClient);
 const mockCheckPref = vi.mocked(checkUserEmailPref);
 
+const MARKETING_PREF_KEY = "email_marketing";
+
 const onboardingStep = LIFECYCLE_SEQUENCES.renter[0]; // day-0 onboarding
 const marketingStep = LIFECYCLE_SEQUENCES.renter[2]; // +5d marketing
 
@@ -41,13 +43,13 @@ const marketingStep = LIFECYCLE_SEQUENCES.renter[2]; // +5d marketing
  * Chainable admin-client stub.
  *  - lifecycle_email_sends: select…maybeSingle() returns `alreadySent`,
  *    insert() records the send.
- *  - profiles: select…single() returns `preferences` (global-unsub signal).
  *  - email_logs: insert() no-op.
+ *
+ * Note: the global-unsubscribe signal is now read via the shared
+ * checkUserEmailPref (which uses the server client) and is driven through the
+ * mockCheckPref mock, not through this admin-client stub.
  */
-function buildClient(opts: {
-  alreadySent?: boolean;
-  digestFrequency?: string;
-}) {
+function buildClient(opts: { alreadySent?: boolean }) {
   const sendsInsert = vi.fn(async () => ({ error: null }));
   const logsInsert = vi.fn(async () => ({ error: null }));
 
@@ -69,18 +71,6 @@ function buildClient(opts: {
           })),
         })),
         insert: sendsInsert,
-      };
-    }
-    if (table === "profiles") {
-      return {
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            single: vi.fn(async () => ({
-              data: { preferences: { digest_frequency: opts.digestFrequency ?? "daily" } },
-              error: null,
-            })),
-          })),
-        })),
       };
     }
     // email_logs (and any other)
@@ -133,7 +123,10 @@ describe("sendLifecycleStep", () => {
   });
 
   it("skips a marketing step when the marketing preference is off", async () => {
-    mockCheckPref.mockResolvedValue(false);
+    // Marketing toggle off, but NOT globally unsubscribed: the probe key stays true.
+    mockCheckPref.mockImplementation(async (_userId: string, prefKey: string) =>
+      prefKey === MARKETING_PREF_KEY ? false : true,
+    );
     const client = buildClient({ alreadySent: false });
     mockCreateAdminClient.mockReturnValue(client as never);
 
@@ -149,7 +142,10 @@ describe("sendLifecycleStep", () => {
   });
 
   it("still sends an onboarding step even when the marketing preference is off", async () => {
-    mockCheckPref.mockResolvedValue(false);
+    // Marketing off but not globally unsubscribed — onboarding ignores the marketing gate.
+    mockCheckPref.mockImplementation(async (_userId: string, prefKey: string) =>
+      prefKey === MARKETING_PREF_KEY ? false : true,
+    );
     const client = buildClient({ alreadySent: false });
     mockCreateAdminClient.mockReturnValue(client as never);
 
@@ -164,8 +160,13 @@ describe("sendLifecycleStep", () => {
     expect(resendSendMock).toHaveBeenCalledTimes(1);
   });
 
-  it("skips every step when the user is globally unsubscribed", async () => {
-    const client = buildClient({ alreadySent: false, digestFrequency: "never" });
+  it("skips every step when the user is globally unsubscribed (via shared checkUserEmailPref)", async () => {
+    // Global unsubscribe is now detected through the shared checkUserEmailPref,
+    // which returns false for the unmapped global-unsub probe key.
+    mockCheckPref.mockImplementation(async (_userId: string, prefKey: string) =>
+      prefKey === "lifecycle_global_unsub_probe" ? false : true,
+    );
+    const client = buildClient({ alreadySent: false });
     mockCreateAdminClient.mockReturnValue(client as never);
 
     const result = await sendLifecycleStep({

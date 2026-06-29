@@ -32,26 +32,16 @@ function absoluteUrl(href: string): string {
 type SendResult = "sent" | "skipped_idempotent" | "skipped_marketing_pref" | "skipped_unsubscribed" | "failed";
 
 /**
- * Has this user globally unsubscribed from email? The unsubscribe route
- * (src/app/api/notifications/unsubscribe/route.ts) sets
- * profiles.preferences.digest_frequency = "never" and disables every
- * per-type email channel, so "never" is the durable global-unsub signal.
+ * Has this user globally unsubscribed from email? Delegates to the shared
+ * checkUserEmailPref, which honours the durable global-unsub signal
+ * (profiles.preferences.digest_frequency === "never") set by the unsubscribe
+ * route. Using an unmapped pref key means the result reflects ONLY the global
+ * signal — it is true (suppress) only when the user is globally unsubscribed.
  */
-async function isGloballyUnsubscribed(
-  supabase: ReturnType<typeof createAdminClient>,
-  userId: string,
-): Promise<boolean> {
-  try {
-    const { data } = await supabase
-      .from("profiles")
-      .select("preferences")
-      .eq("id", userId)
-      .single();
-    const prefs = (data as { preferences?: { digest_frequency?: string } } | null)?.preferences;
-    return prefs?.digest_frequency === "never";
-  } catch {
-    return false; // fail-open: don't block sends on a read error
-  }
+async function isGloballyUnsubscribed(userId: string): Promise<boolean> {
+  // checkUserEmailPref returns false when globally unsubscribed, true otherwise
+  // (an unmapped key has no per-type toggle, so it never suppresses on its own).
+  return !(await checkUserEmailPref(userId, "lifecycle_global_unsub_probe"));
 }
 
 async function alreadySent(
@@ -131,7 +121,7 @@ export async function sendLifecycleStep(params: {
   }
 
   // Hard stop: global unsubscribe-all suppresses every step, onboarding included.
-  if (await isGloballyUnsubscribed(supabase, userId)) {
+  if (await isGloballyUnsubscribed(userId)) {
     await logEmail({
       userId,
       template,
