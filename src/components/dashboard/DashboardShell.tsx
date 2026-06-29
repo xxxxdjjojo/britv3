@@ -14,6 +14,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
   agent: "Estate Agent",
   service_provider: "Service Provider",
   mortgage_broker: "Mortgage Broker",
+  developer: "Developer",
 };
 
 export function DashboardShell({

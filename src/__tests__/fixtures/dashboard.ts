@@ -34,6 +34,11 @@ export function createMockActivityLogEntry(
 // ---------------------------------------------------------------------------
 
 const STAT_CARDS_BY_ROLE: Record<UserRole, StatCardData[]> = {
+  developer: [
+    { label: "Enquiries", value: 23, change: 6, trend: "up", icon: "Users" },
+    { label: "Reservations", value: 6, change: 2, trend: "up", icon: "Tag" },
+    { label: "Conversion", value: "26%", change: 4, trend: "up", icon: "TrendingUp" },
+  ],
   homebuyer: [
     { label: "Saved Properties", value: 12, change: 3, trend: "up", icon: "Heart" },
     { label: "Active Searches", value: 4, change: 0, trend: "neutral", icon: "Search" },
@@ -79,7 +84,9 @@ export function createMockStatCards(role: UserRole): StatCardData[] {
 // Dashboard data fixtures
 // ---------------------------------------------------------------------------
 
-const DASHBOARD_DATA_BY_ROLE: Record<UserRole, DashboardData> = {
+// `developer` is excluded: the developer dashboard is a dedicated surface and
+// does not use the legacy per-role DashboardData union.
+const DASHBOARD_DATA_BY_ROLE: Record<Exclude<UserRole, "developer">, DashboardData> = {
   homebuyer: {
     role: "homebuyer",
     saved_properties_count: 12,
@@ -207,6 +214,8 @@ const DASHBOARD_DATA_BY_ROLE: Record<UserRole, DashboardData> = {
   },
 };
 
-export function createMockDashboardData(role: UserRole): DashboardData {
+export function createMockDashboardData(
+  role: Exclude<UserRole, "developer">,
+): DashboardData {
   return DASHBOARD_DATA_BY_ROLE[role];
 }
