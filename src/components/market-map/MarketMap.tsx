@@ -16,16 +16,14 @@
  * fall back to a minimal record synthesised from the tile feature props.
  */
 
-import { useRef, useState, useCallback, useEffect, useMemo, type ReactNode } from "react";
-import { Map as MapGL, Source, Layer, Popup, NavigationControl } from "@vis.gl/react-maplibre";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
+import { Map as MapGL, Source, Layer, NavigationControl } from "@vis.gl/react-maplibre";
 import type { MapRef, ViewStateChangeEvent, MapLayerMouseEvent } from "@vis.gl/react-maplibre";
 import type { MapGeoJSONFeature } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { useMarketMap } from "@/hooks/useMarketMap";
 import { useMarketMapVersion } from "@/hooks/useMarketMapVersion";
-import { MarketMapTooltip } from "./MarketMapTooltip";
-import { SoldParcelPopup } from "./SoldParcelPopup";
 import { colourForBucket, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
 import {
   colourForSoldBucket,
@@ -144,12 +142,6 @@ const SOLD_ATTRIBUTIONS = [
   "Energy Performance of Buildings Data © Crown copyright 2026.",
 ].join(" | ");
 
-type SoldPopupState = {
-  longitude: number;
-  latitude: number;
-  parcel: SoldParcel;
-};
-
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
@@ -165,17 +157,9 @@ export type MarketMapProps = Readonly<{
     props: MarketMapFeatureProperties | null,
     anchor?: { longitude: number; latitude: number },
   ) => void;
-  /**
-   * Optional on-map popup anchored at a coordinate (the clicked area). Rendered
-   * as a MapLibre <Popup> so it tracks the map. The parent owns the content
-   * (the area's price card) and the close handler.
-   */
-  areaPopup?: {
-    longitude: number;
-    latitude: number;
-    children: ReactNode;
-    onClose?: () => void;
-  } | null;
+  /** Fired when a sold parcel is clicked (street zoom), or null to clear it
+   *  when empty space or an area is clicked. Parent renders the detail in the panel. */
+  onParcelSelect?: (parcel: SoldParcel | null) => void;
   /** Surfaces metadata (scale_mode, band_label) to parent. */
   onMetadata?: (m: MarketMapMetadata) => void;
   /**
@@ -186,16 +170,6 @@ export type MarketMapProps = Readonly<{
   onFeatures?: (fc: import("@/hooks/useMarketMap").MarketMapFeatureCollection) => void;
   className?: string;
 }>;
-
-// ---------------------------------------------------------------------------
-// Hover/tooltip state
-// ---------------------------------------------------------------------------
-
-type TooltipState = {
-  longitude: number;
-  latitude: number;
-  properties: MarketMapFeatureProperties;
-};
 
 // ---------------------------------------------------------------------------
 // Helper: extract bbox from MapRef
@@ -222,7 +196,7 @@ export function MarketMap({
   fitTo,
   onViewportChange,
   onAreaSelect,
-  areaPopup,
+  onParcelSelect,
   onMetadata,
   onFeatures,
   className,
@@ -234,12 +208,6 @@ export function MarketMap({
     zoom: number;
     bbox?: [number, number, number, number];
   }>({ zoom: DEFAULT_ZOOM });
-
-  // Hover tooltip state
-  const [tooltip, setTooltip] = useState<TooltipState | null>(null);
-
-  // Sold-parcel click popup (street zoom only)
-  const [soldPopup, setSoldPopup] = useState<SoldPopupState | null>(null);
 
   // Selected area id (for highlight layer filter)
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
@@ -386,42 +354,22 @@ export function MarketMap({
     [propsByAreaId, scaleMode],
   );
 
-  const handleMouseMove = useCallback(
-    (e: MapLayerMouseEvent) => {
-      // Hover tooltip is the choropleth's; the sold layer uses click-to-popup.
-      const feature = e.features?.find((f) => f.layer?.id === FILL_LAYER_ID) as
-        | (MapGeoJSONFeature & { properties: TileFeatureProperties })
-        | undefined;
-      if (!feature?.properties?.area_id) {
-        setTooltip(null);
-        return;
-      }
-      setTooltip({
-        longitude: e.lngLat.lng,
-        latitude: e.lngLat.lat,
-        properties: resolveProperties(feature.properties),
-      });
-    },
-    [resolveProperties],
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setTooltip(null);
-  }, []);
-
   const handleClick = useCallback(
     (e: MapLayerMouseEvent) => {
-      // Sold parcels take click priority at street zoom: show the sale popup.
+      // Sold parcels take click priority at street zoom: report to the parent.
       const soldFeature = e.features?.find((f) => f.layer?.id === SOLD_FILL_LAYER_ID);
       if (soldFeature?.properties) {
         const parcel = parseSoldParcelProperties(
           soldFeature.properties as Record<string, unknown>,
         );
         if (parcel) {
-          setSoldPopup({ longitude: e.lngLat.lng, latitude: e.lngLat.lat, parcel });
+          onParcelSelect?.(parcel);
           return;
         }
       }
+
+      // Any non-parcel click clears a prior parcel selection in the parent.
+      onParcelSelect?.(null);
 
       const feature = e.features?.find((f) => f.layer?.id === FILL_LAYER_ID) as
         | (MapGeoJSONFeature & { properties: TileFeatureProperties })
@@ -437,7 +385,7 @@ export function MarketMap({
         latitude: e.lngLat.lat,
       });
     },
-    [onAreaSelect, resolveProperties],
+    [onAreaSelect, onParcelSelect, resolveProperties],
   );
 
   // ---------------------------------------------------------------------------
@@ -486,8 +434,6 @@ export function MarketMap({
         onMoveEnd={handleMoveEnd}
         onZoomEnd={handleMoveEnd}
         onLoad={handleLoad}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
         onClick={handleClick}
         style={{ width: "100%", height: "100%" }}
       >
@@ -591,51 +537,6 @@ export function MarketMap({
             }}
           />
         </Source>
-
-        {/* Hover tooltip */}
-        {tooltip !== null && (
-          <Popup
-            longitude={tooltip.longitude}
-            latitude={tooltip.latitude}
-            closeButton={false}
-            closeOnClick={false}
-            anchor="bottom"
-            maxWidth="300px"
-          >
-            <MarketMapTooltip properties={tooltip.properties} />
-          </Popup>
-        )}
-
-        {/* Sold-parcel click popup (street zoom) */}
-        {soldPopup !== null && (
-          <Popup
-            longitude={soldPopup.longitude}
-            latitude={soldPopup.latitude}
-            closeButton
-            closeOnClick={false}
-            anchor="bottom"
-            maxWidth="320px"
-            onClose={() => setSoldPopup(null)}
-          >
-            <SoldParcelPopup parcel={soldPopup.parcel} />
-          </Popup>
-        )}
-
-        {/* Area click popup — the clicked area's price card, anchored on the map.
-            Content + close handler are owned by the parent (the Explorer). */}
-        {areaPopup != null && (
-          <Popup
-            longitude={areaPopup.longitude}
-            latitude={areaPopup.latitude}
-            closeButton
-            closeOnClick={false}
-            anchor="bottom"
-            maxWidth="340px"
-            onClose={areaPopup.onClose}
-          >
-            {areaPopup.children}
-          </Popup>
-        )}
       </MapGL>
 
       {/* Street-zoom legend for the sold-parcel £/m² ramp (only while active). */}
