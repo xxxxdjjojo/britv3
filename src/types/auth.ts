@@ -15,6 +15,33 @@ export type UserRole =
   | "mortgage_broker"
   | "developer";
 
+/**
+ * Runtime list of every {@link UserRole}. Single source of truth for code that
+ * must iterate over all roles (nav-config contract tests, role pickers, seeds).
+ *
+ * The two guards below make this list IMPOSSIBLE to drift from `UserRole`:
+ * - `satisfies readonly UserRole[]` rejects any entry that is not a real role.
+ * - `_assertEveryRoleListed` fails to compile if a `UserRole` is added without
+ *   being appended here — turning "a new role with no nav config" into a build
+ *   error instead of a production white-screen (see Sidebar / BottomTabBar).
+ */
+export const USER_ROLES = [
+  "homebuyer",
+  "renter",
+  "seller",
+  "landlord",
+  "agent",
+  "service_provider",
+  "mortgage_broker",
+  "developer",
+] as const satisfies readonly UserRole[];
+
+// Compile-time exhaustiveness guard: if a UserRole is missing from USER_ROLES,
+// `Exclude<...>` is a non-never union and this assignment fails to compile.
+type _MissingRoles = Exclude<UserRole, (typeof USER_ROLES)[number]>;
+const _assertEveryRoleListed: _MissingRoles extends never ? true : never = true;
+void _assertEveryRoleListed;
+
 export type VerificationLevel =
   | "basic"
   | "standard"

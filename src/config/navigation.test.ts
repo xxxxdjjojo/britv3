@@ -12,6 +12,7 @@ import {
   footerLinkClasses,
 } from "./navigation";
 import { savedDashboardPathForRole } from "@/lib/routes";
+import { USER_ROLES } from "@/types/auth";
 
 const FORBIDDEN_CANONICAL_HREFS = [
   "/messages",
@@ -20,16 +21,11 @@ const FORBIDDEN_CANONICAL_HREFS = [
   "/advice",
 ] as const;
 
-// Shared constant used across multiple describe blocks
-const ALL_ROLES = [
-  "homebuyer",
-  "renter",
-  "seller",
-  "landlord",
-  "agent",
-  "service_provider",
-  "mortgage_broker",
-] as const;
+// Shared constant used across multiple describe blocks. Derived from the
+// type's single source of truth so a newly-added UserRole is automatically
+// held to every nav contract below (previously this was a hand-maintained
+// list that silently omitted "developer").
+const ALL_ROLES = USER_ROLES;
 
 function collectNavigationHrefs(): string[] {
   return [
@@ -431,6 +427,16 @@ describe("ROLE_PRIMARY_CTA", () => {
     for (const href of allHrefs) {
       expect(href).not.toContain("/listings/new");
     }
+  });
+
+  // Completeness: EVERY role the type system knows about must have a primary
+  // CTA with a real href. The developer-dashboard outage was a missing entry
+  // here (`ROLE_PRIMARY_CTA[activeRole].href` → undefined.href → crash).
+  it.each(USER_ROLES)("has a primary CTA with a valid href for %s", (role) => {
+    const cta = ROLE_PRIMARY_CTA[role];
+    expect(cta).toBeDefined();
+    expect(cta.label.length).toBeGreaterThan(0);
+    expect(cta.href.startsWith("/")).toBe(true);
   });
 });
 

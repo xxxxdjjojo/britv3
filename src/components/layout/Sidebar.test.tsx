@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Sidebar } from "./Sidebar";
-import { ROLE_NAV_ITEMS } from "@/config/navigation";
-import type { UserRole } from "@/types/auth";
+import { ROLE_NAV_ITEMS, ROLE_PRIMARY_CTA } from "@/config/navigation";
+import { USER_ROLES, type UserRole } from "@/types/auth";
 
 let mockActiveRole: UserRole | null = "homebuyer";
 
@@ -151,4 +151,44 @@ describe("Sidebar", () => {
       }
     },
   );
+
+  // ── Developer dashboard regression suite ─────────────────────────────────
+  // The developer dashboard white-screened ("Something went wrong") because
+  // `activeRole` resolves to "developer" client-side (~2s after mount) and the
+  // unguarded `ROLE_PRIMARY_CTA[activeRole].href` threw when the role was absent
+  // from the map. These tests lock the fix at both layers: the developer role
+  // must render its links + CTA, AND an unknown role must degrade gracefully.
+
+  it("renders the developer sidebar links and primary CTA", () => {
+    mockActiveRole = "developer";
+    render(<Sidebar />);
+
+    expect(screen.getByText("Developments").closest("a")).toHaveAttribute(
+      "href",
+      "/dashboard/developer/developments",
+    );
+    // The CTA block is the exact site that crashed on prod
+    // (`ROLE_PRIMARY_CTA[activeRole].href`). Asserting its label renders proves
+    // the block resolves the developer entry without throwing; the href target
+    // itself is verified in navigation.test.ts.
+    expect(
+      screen.getByText(ROLE_PRIMARY_CTA.developer.label),
+    ).toBeInTheDocument();
+  });
+
+  it("does not crash when active role is absent from the nav maps", () => {
+    // `activeRole` is a DB string cast to UserRole — a role the frontend maps
+    // have never seen must never take down the whole dashboard.
+    mockActiveRole = "role_the_frontend_has_never_heard_of" as UserRole;
+
+    expect(() => render(<Sidebar />)).not.toThrow();
+    // Dashboard chrome still renders; the user is never white-screened.
+    expect(screen.getByText("Manage")).toBeInTheDocument();
+    expect(screen.getByText("Account")).toBeInTheDocument();
+  });
+
+  it.each(USER_ROLES)("renders the sidebar without throwing for %s", (role) => {
+    mockActiveRole = role;
+    expect(() => render(<Sidebar />)).not.toThrow();
+  });
 });

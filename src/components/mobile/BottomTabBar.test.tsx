@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { BottomTabBar } from "./BottomTabBar";
 import { TAB_CONFIG } from "@/config/navigation";
-import type { UserRole } from "@/types/auth";
+import { USER_ROLES, type UserRole } from "@/types/auth";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -58,20 +58,25 @@ describe("BottomTabBar", () => {
     expect(links).toHaveLength(5);
   });
 
-  it("all 7 roles have tab configurations", () => {
-    const roles: UserRole[] = [
-      "homebuyer",
-      "renter",
-      "seller",
-      "landlord",
-      "agent",
-      "service_provider",
-      "mortgage_broker",
-    ];
-    for (const role of roles) {
+  // Enumerate from USER_ROLES (the type's single source of truth), NOT a
+  // hand-maintained list — the previous hard-coded 7-role list silently
+  // omitted "developer", which is exactly how the missing-config bug shipped.
+  it("every UserRole has a tab configuration", () => {
+    for (const role of USER_ROLES) {
       expect(TAB_CONFIG[role]).toBeDefined();
       expect(TAB_CONFIG[role].length).toBeGreaterThanOrEqual(4);
     }
+  });
+
+  // Regression guard: a role the tab map doesn't know must hide the bar, never
+  // throw `TAB_CONFIG[role].map(...)` and white-screen the dashboard.
+  it("returns null instead of crashing for a role absent from TAB_CONFIG", () => {
+    mockActiveRole = "role_the_frontend_has_never_heard_of" as UserRole;
+    let container: HTMLElement | undefined;
+    expect(() => {
+      container = render(<BottomTabBar />).container;
+    }).not.toThrow();
+    expect(container?.innerHTML).toBe("");
   });
 
   it("imports TAB_CONFIG from navigation config (no inline definition)", () => {
@@ -94,15 +99,7 @@ describe("BottomTabBar", () => {
     expect(badge).toBeInTheDocument();
   });
 
-  it.each([
-    "homebuyer",
-    "renter",
-    "seller",
-    "landlord",
-    "agent",
-    "service_provider",
-    "mortgage_broker",
-  ] as UserRole[])("renders every configured bottom tab for %s", (role) => {
+  it.each(USER_ROLES)("renders every configured bottom tab for %s", (role) => {
     mockActiveRole = role;
     render(<BottomTabBar />);
 
