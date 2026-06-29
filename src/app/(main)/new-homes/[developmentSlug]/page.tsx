@@ -61,7 +61,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const similar = await getSimilarDevelopments(development.city, development.id, 3);
 
   return (
-    <div className="bg-neutral-50 pb-24 lg:pb-12">
+    <div className="bg-muted pb-24 lg:pb-12">
       <DevelopmentViewTracker developmentId={development.id} />
 
       {/* Breadcrumb */}

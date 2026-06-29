@@ -64,7 +64,7 @@ export function UnitAvailability({
 
   if (units.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center text-sm text-neutral-500">
+      <p className="rounded-xl border border-dashed border-neutral-300 bg-muted p-6 text-center text-sm text-neutral-500">
         Plot availability for this development will be published shortly.
       </p>
     );
@@ -131,7 +131,7 @@ export function UnitAvailability({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center text-sm text-neutral-500">
+        <p className="rounded-xl border border-dashed border-neutral-300 bg-muted p-6 text-center text-sm text-neutral-500">
           No plots match these filters.
         </p>
       ) : view === "plan" ? (
@@ -169,7 +169,7 @@ export function UnitAvailability({
       ) : (
         <div className="overflow-x-auto rounded-xl border border-neutral-200">
           <table className="w-full text-left text-sm">
-            <thead className="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
+            <thead className="bg-muted text-xs uppercase tracking-wide text-neutral-500">
               <tr>
                 <th className="px-3 py-2 font-semibold">Plot</th>
                 <th className="px-3 py-2 font-semibold">Type</th>
@@ -182,7 +182,7 @@ export function UnitAvailability({
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {filtered.map((u) => (
-                <tr key={u.id} className="hover:bg-neutral-50">
+                <tr key={u.id} className="hover:bg-muted">
                   <td className="px-3 py-2 font-semibold text-neutral-900">{u.plotNumber}</td>
                   <td className="px-3 py-2 text-neutral-700">{u.unitType}</td>
                   <td className="px-3 py-2 text-neutral-700">{u.beds}</td>

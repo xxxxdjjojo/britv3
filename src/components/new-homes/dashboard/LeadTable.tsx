@@ -91,7 +91,7 @@ export function LeadTable({ leads }: Readonly<{ leads: DevelopmentLead[] }>) {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
+            <thead className="bg-muted text-xs uppercase tracking-wide text-neutral-500">
               <tr>
                 <th className="px-4 py-2.5 font-semibold">Buyer</th>
                 <th className="px-4 py-2.5 font-semibold">Development</th>
@@ -103,7 +103,7 @@ export function LeadTable({ leads }: Readonly<{ leads: DevelopmentLead[] }>) {
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {filtered.map((lead) => (
-                <tr key={lead.id} className="hover:bg-neutral-50">
+                <tr key={lead.id} className="hover:bg-muted">
                   <td className="px-4 py-3">
                     <p className="font-medium text-neutral-900">{lead.name}</p>
                     <p className="text-xs text-neutral-500">{lead.email}</p>

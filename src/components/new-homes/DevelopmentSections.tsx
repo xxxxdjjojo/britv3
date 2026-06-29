@@ -238,7 +238,7 @@ export function DeveloperProfileBlock({ developer }: Readonly<{ developer: Devel
       {stats.length > 0 ? (
         <div className="mt-4 grid grid-cols-3 gap-3">
           {stats.map((s) => (
-            <div key={s.label} className="rounded-xl bg-neutral-50 p-3 text-center">
+            <div key={s.label} className="rounded-xl bg-muted p-3 text-center">
               <p className="font-heading text-lg font-bold text-brand-primary">{s.value}</p>
               <p className="text-xs text-neutral-500">{s.label}</p>
             </div>

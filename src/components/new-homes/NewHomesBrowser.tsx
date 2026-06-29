@@ -220,7 +220,7 @@ export function NewHomesBrowser({
 
       {/* Grid / empty state */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 py-16 text-center">
+        <div className="rounded-2xl border border-dashed border-neutral-300 bg-muted py-16 text-center">
           <h3 className="font-heading text-lg font-semibold text-neutral-800">
             No developments match your search
           </h3>

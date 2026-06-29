@@ -82,7 +82,7 @@ export default async function NewHomesPage({
       {/* Browser */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         {developments.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 py-20 text-center">
+          <div className="rounded-2xl border border-dashed border-neutral-300 bg-muted py-20 text-center">
             <h2 className="font-heading text-xl font-semibold text-neutral-800">
               New developments are coming soon
             </h2>
