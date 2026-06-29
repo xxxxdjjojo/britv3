@@ -7,6 +7,11 @@ import { logDevelopmentEvent } from "@/services/new-homes/events-service";
 // than leads since one browsing session fires several.
 const eventRateLimiter = createRateLimiter(60, "1 m");
 
+// Postgres-permissive UUID (Zod's .uuid() rejects valid hex ids — see lead-schema).
+const pgUuid = z
+  .string()
+  .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+
 const eventSchema = z.object({
   eventType: z.enum([
     "development_viewed",
@@ -18,8 +23,8 @@ const eventSchema = z.object({
     "reservation_requested",
     "reservation_confirmed",
   ]),
-  developmentId: z.string().uuid().optional().nullable(),
-  unitId: z.string().uuid().optional().nullable(),
+  developmentId: pgUuid.optional().nullable(),
+  unitId: pgUuid.optional().nullable(),
   sessionId: z.string().max(120).optional().nullable(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });

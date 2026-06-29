@@ -4,6 +4,16 @@ import { z } from "zod";
 // interest, book viewing, request brochure, ask a question). The API route and
 // the client forms both parse against this so validation can never drift.
 
+// Postgres accepts any hex UUID; Zod's `.uuid()` enforces RFC-4122 version /
+// variant nibbles and rejects perfectly valid Postgres ids (incl. our seeded
+// fixed-prefix ids). Validate the shape Postgres actually stores instead.
+const pgUuid = z
+  .string()
+  .regex(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    "Invalid identifier",
+  );
+
 export const leadTypeSchema = z.enum([
   "register_interest",
   "book_viewing",
@@ -28,8 +38,8 @@ export const mortgagePositionSchema = z.enum([
 ]);
 
 export const developmentLeadSchema = z.object({
-  developmentId: z.string().uuid("A valid development is required"),
-  unitId: z.string().uuid().optional().nullable(),
+  developmentId: pgUuid,
+  unitId: pgUuid.optional().nullable(),
   leadType: leadTypeSchema,
 
   name: z.string().min(2, "Please enter your full name").max(120),

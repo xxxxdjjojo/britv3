@@ -297,6 +297,7 @@ export const NAV_ITEMS: NavItem[] = [
         heading: "Developers & Traders",
         links: [
           { label: "Developers", href: "/developers" },
+          { label: "Developer Dashboard", href: "/dashboard/developer" },
           { label: "Traders", href: "/traders" },
         ],
       },
