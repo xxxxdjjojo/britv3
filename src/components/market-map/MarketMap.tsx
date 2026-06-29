@@ -3,17 +3,20 @@
 /**
  * MarketMap — choropleth canvas for the multi-scale property price map.
  *
- * Uses @vis.gl/react-maplibre v8 (declarative Map / Source / Layer / Popup).
+ * Uses @vis.gl/react-maplibre v8 (declarative Map / Source / Layer).
  * The choropleth fill is rendered from cached MapLibre vector tiles
  * (GET /api/market-map/tiles/{z}/{x}/{y}?v=<dataVersion>, layer "areas") and
  * coloured client-side from the baked `bucket` prop via colourForBucket();
  * INSUFFICIENT_COLOUR for null/absent buckets.
  *
+ * Nothing pops up over the map: clicks are reported to the parent via
+ * onAreaSelect / onParcelSelect, which renders all detail in the side panel.
+ *
  * Per-area rich stats (area_name, p10/p90, property_type_mix, confidence, date
  * window) are NOT carried in the tiles — they still come from /api/market-map
  * via useMarketMap, which also feeds the "Areas in view" list and the legend.
- * Hover/click look up the full properties by area_id from that collection and
- * fall back to a minimal record synthesised from the tile feature props.
+ * A click looks up the full properties by area_id from that collection and
+ * falls back to a minimal record synthesised from the tile feature props.
  */
 
 import { useRef, useState, useCallback, useEffect, useMemo } from "react";

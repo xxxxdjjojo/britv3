@@ -8,9 +8,11 @@
  * - Area search bar using useMarketSearch + results dropdown
  * - fitTo state — updated on search-result select → fitBoundsFor
  * - Metadata from MarketMap.onMetadata
- * - Selected-area state from MarketMap.onAreaSelect
- * - Desktop: left panel (filters + summary + area list) / map / area detail popover
- * - Mobile: map full-width + vaul bottom sheet for filters/summary
+ * - Selected-area and selected-parcel state from MarketMap.onAreaSelect /
+ *   onParcelSelect — both surface in the side panel, never on the map
+ * - Desktop: map (left) + a Sales/Rent tabbed side panel (filters, area list,
+ *   and area/parcel detail all live in the Sales tab)
+ * - Mobile: map full-width + vaul bottom sheet carrying the same Sales/Rent tabs
  *
  * Screen 2 difference: focusAreaId prop starts the view zoomed to a specific area.
  * The explorer fetches that area's bounds via /api/market-search?q=<areaId> on mount
