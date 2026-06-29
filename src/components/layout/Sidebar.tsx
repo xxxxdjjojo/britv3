@@ -37,6 +37,15 @@ const ROLE_LABELS: Record<UserRole, string> = {
   developer: "Developer",
 };
 
+// Fallback label for a role the frontend maps have never seen (DB↔type drift).
+// Better to show a humanized role than to crash the dashboard.
+function humanizeRole(role: string): string {
+  return role
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function getReturnUrl(): string {
   if (typeof window === "undefined") return "/";
   const stored = sessionStorage.getItem(RETURN_URL_KEY);
@@ -65,7 +74,15 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [returnUrl] = useState(getReturnUrl);
 
+  // Role-keyed lookups are defensive on purpose: `activeRole` originates as a
+  // DB string cast to UserRole, so a role the frontend maps don't know (type↔DB
+  // drift, a freshly-added role) must degrade gracefully — never throw and let
+  // the error boundary white-screen the entire dashboard.
   const navItems = activeRole ? ROLE_NAV_ITEMS[activeRole] ?? [] : [];
+  const roleLabel = activeRole
+    ? ROLE_LABELS[activeRole] ?? humanizeRole(activeRole)
+    : null;
+  const primaryCta = activeRole ? ROLE_PRIMARY_CTA[activeRole] : undefined;
   const displayName = user?.user_metadata?.display_name ?? user?.email ?? "User";
   const initials = displayName
     .split(" ")
@@ -97,13 +114,13 @@ export function Sidebar() {
       </div>
 
       {/* Role eyebrow — Stitch "Welcome back / role" block */}
-      {!collapsed && activeRole && (
+      {!collapsed && roleLabel && (
         <div className="px-5 pb-3 pt-1">
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
             Welcome back
           </p>
           <p className="font-heading text-lg font-bold text-brand-primary-dark">
-            {ROLE_LABELS[activeRole]}
+            {roleLabel}
           </p>
         </div>
       )}
@@ -215,19 +232,21 @@ export function Sidebar() {
         </Link>
       </nav>
 
-      {/* Primary CTA — Stitch dark-green action pinned above account */}
-      {activeRole && (
+      {/* Primary CTA — Stitch dark-green action pinned above account.
+          Gated on `primaryCta` (not just `activeRole`) so an unmapped role
+          simply hides the CTA instead of throwing on `.href`. */}
+      {primaryCta && (
         <div className={cn("mt-auto p-3", collapsed && "px-2")}>
           <Button
             className={cn(
               "w-full gap-2 bg-brand-primary text-white hover:bg-brand-primary-dark",
               collapsed && "px-0",
             )}
-            render={<Link href={ROLE_PRIMARY_CTA[activeRole].href} />}
-            title={collapsed ? ROLE_PRIMARY_CTA[activeRole].label : undefined}
+            render={<Link href={primaryCta.href} />}
+            title={collapsed ? primaryCta.label : undefined}
           >
             <CalendarPlus className="size-4 shrink-0" />
-            {!collapsed && <span>{ROLE_PRIMARY_CTA[activeRole].label}</span>}
+            {!collapsed && <span>{primaryCta.label}</span>}
           </Button>
         </div>
       )}
