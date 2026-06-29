@@ -103,4 +103,51 @@ describe("FOUND-02 — role route authorization", () => {
     expect(mockRedirect).not.toHaveBeenCalledWith("/dashboard/homebuyer");
     expect(result).toBeDefined();
   });
+
+  it("allows mortgage brokers to access the canonical /dashboard/broker slug", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "broker-123" } },
+      error: null,
+    });
+    mockProfileSelect.mockResolvedValue({
+      data: { active_role: "mortgage_broker" },
+      error: null,
+    });
+
+    const { default: RoleDashboardLayout } = await import(
+      "@/app/(protected)/dashboard/[role]/layout"
+    );
+
+    const result = await RoleDashboardLayout({
+      children: "broker content",
+      params: Promise.resolve({ role: "broker" }),
+    });
+
+    expect(mockRedirect).not.toHaveBeenCalled();
+    expect(result).toBeDefined();
+  });
+
+  it("redirects service providers to the canonical /dashboard/provider slug", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "provider-123" } },
+      error: null,
+    });
+    mockProfileSelect.mockResolvedValue({
+      data: { active_role: "service_provider" },
+      error: null,
+    });
+
+    const { default: RoleDashboardLayout } = await import(
+      "@/app/(protected)/dashboard/[role]/layout"
+    );
+
+    await expect(
+      RoleDashboardLayout({
+        children: null,
+        params: Promise.resolve({ role: "homebuyer" }),
+      }),
+    ).rejects.toThrow("REDIRECT");
+
+    expect(mockRedirect).toHaveBeenCalledWith("/dashboard/provider");
+  });
 });

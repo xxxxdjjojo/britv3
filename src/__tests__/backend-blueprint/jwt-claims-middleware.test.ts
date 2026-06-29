@@ -33,6 +33,33 @@ function createRequest(path: string): NextRequest {
   return new NextRequest(new URL(`http://localhost:3000${path}`));
 }
 
+function mockProfile(overrides: Partial<{
+  active_role: string | null;
+  is_admin: boolean;
+  admin_role: string | null;
+  provider_verification_status: string | null;
+  verification_level: string | null;
+}> = {}) {
+  return {
+    active_role: "homebuyer",
+    is_admin: false,
+    admin_role: null,
+    provider_verification_status: null,
+    verification_level: null,
+    ...overrides,
+  };
+}
+
+function mockProfileQuery(data: ReturnType<typeof mockProfile>) {
+  mockFrom.mockReturnValue({
+    select: vi.fn(() => ({
+      eq: vi.fn(() => ({
+        single: vi.fn().mockResolvedValue({ data, error: null }),
+      })),
+    })),
+  });
+}
+
 describe("Middleware — JWT claims path", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -46,27 +73,29 @@ describe("Middleware — JWT claims path", () => {
     });
   });
 
-  it("uses JWT claims for admin check when feature flag is ON", async () => {
+  it("uses the DB profile admin role for /admin even when JWT claims are present", async () => {
     mockIsFeatureEnabled.mockReturnValue(true);
     mockGetUser.mockResolvedValue({
       data: {
         user: {
           id: "user-123",
           app_metadata: {
-            role: "agent",
-            plan: "agent_professional",
-            is_admin: true,
-            // admin_role is required by the admin-role permission gate for
-            // any /admin/* sub-route. super_admin has all permissions.
-            admin_role: "super_admin",
+            role: "homebuyer",
+            plan: "",
+            is_admin: false,
+            admin_role: null,
           },
         },
       },
     });
+    mockProfileQuery(mockProfile({
+      is_admin: true,
+      admin_role: "super_admin",
+    }));
 
-    const response = await proxy(createRequest("/admin/dashboard"));
+    const response = await proxy(createRequest("/admin/users"));
 
-    expect(mockFrom).not.toHaveBeenCalledWith("profiles");
+    expect(mockFrom).toHaveBeenCalledWith("profiles");
     expect(response.status).not.toBe(307);
   });
 
@@ -75,13 +104,7 @@ describe("Middleware — JWT claims path", () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: "user-123", app_metadata: {} } },
     });
-    mockFrom.mockReturnValue({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn().mockResolvedValue({ data: { is_admin: true }, error: null }),
-        })),
-      })),
-    });
+    mockProfileQuery(mockProfile({ is_admin: true, admin_role: "super_admin" }));
 
     const response = await proxy(createRequest("/admin/dashboard"));
 
@@ -93,31 +116,31 @@ describe("Middleware — JWT claims path", () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: "user-123", app_metadata: {} } },
     });
-    mockFrom.mockReturnValue({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn().mockResolvedValue({ data: { is_admin: true }, error: null }),
-        })),
-      })),
-    });
+    mockProfileQuery(mockProfile({ is_admin: true, admin_role: "super_admin" }));
 
     const response = await proxy(createRequest("/admin/dashboard"));
 
     expect(mockFrom).toHaveBeenCalledWith("profiles");
   });
 
-  it("redirects to /forbidden when JWT claims say is_admin is false", async () => {
+  it("redirects to /forbidden when DB profile denies admin despite stale admin JWT claims", async () => {
     mockIsFeatureEnabled.mockReturnValue(true);
     mockGetUser.mockResolvedValue({
       data: {
         user: {
           id: "user-123",
-          app_metadata: { role: "homebuyer", plan: "", is_admin: false },
+          app_metadata: {
+            role: "homebuyer",
+            plan: "",
+            is_admin: true,
+            admin_role: "super_admin",
+          },
         },
       },
     });
+    mockProfileQuery(mockProfile({ is_admin: false, admin_role: null }));
 
-    const response = await proxy(createRequest("/admin/dashboard"));
+    const response = await proxy(createRequest("/admin/users"));
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toContain("/forbidden");
   });
@@ -196,13 +219,7 @@ describe("Middleware — JWT claims path", () => {
       },
     });
     // Provide DB fallback that has no active_role
-    mockFrom.mockReturnValue({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn().mockResolvedValue({ data: { active_role: null }, error: null }),
-        })),
-      })),
-    });
+    mockProfileQuery(mockProfile({ active_role: null }));
 
     const response = await proxy(createRequest("/dashboard/homebuyer"));
 

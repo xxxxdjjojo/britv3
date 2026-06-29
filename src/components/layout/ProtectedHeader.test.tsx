@@ -1,8 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
-import { ProtectedHeader } from "./ProtectedHeader";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, within, waitFor } from "@testing-library/react";
 
-const signOut = vi.fn().mockResolvedValue(undefined);
+const { signOut, mockUser } = vi.hoisted(() => ({
+  signOut: vi.fn().mockResolvedValue(undefined),
+  mockUser: {
+    current: {
+      email: "test@example.com",
+      user_metadata: { display_name: "Test User" },
+    } as {
+      email: string;
+      user_metadata: { display_name: string };
+    } | null,
+  },
+}));
 
 // Mock next/link
 vi.mock("next/link", () => ({
@@ -32,10 +42,7 @@ vi.mock("@/hooks/useBreakpoint", () => ({
 // Mock useAuth (avatar initials + signOut)
 vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({
-    user: {
-      email: "test@example.com",
-      user_metadata: { display_name: "Test User" },
-    },
+    user: mockUser.current,
     signOut,
   }),
 }));
@@ -52,6 +59,8 @@ vi.mock("@/components/messaging/UnreadBadge", () => ({
   default: () => <span data-testid="unread-badge">0</span>,
 }));
 
+import { ProtectedHeader } from "./ProtectedHeader";
+
 // NOTE: the real `dropdown-menu` (Base UI) is intentionally NOT mocked here.
 // A previous version mocked it and masked a runtime crash
 // ("MenuGroupRootContext is missing") caused by a DropdownMenuLabel placed
@@ -61,6 +70,23 @@ vi.mock("@/components/messaging/UnreadBadge", () => ({
 describe("ProtectedHeader", () => {
   beforeEach(() => {
     signOut.mockClear();
+    mockUser.current = {
+      email: "test@example.com",
+      user_metadata: { display_name: "Test User" },
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          data: { is_admin: false, admin_role: null },
+        }),
+      }),
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("renders the brand logo linking to the home page", () => {
@@ -92,6 +118,28 @@ describe("ProtectedHeader", () => {
       "href",
       "/help",
     );
+  });
+
+  it("shows an Admin Console link when the profile has configured admin access", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        data: { is_admin: true, admin_role: "super_admin" },
+      }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<ProtectedHeader />);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith("/api/profile", { cache: "no-store" });
+    });
+    fireEvent.click(screen.getByRole("button", { name: /open profile menu/i }));
+
+    const menu = screen.getByRole("menu");
+    expect(
+      within(menu).getByRole("menuitem", { name: /admin console/i }),
+    ).toHaveAttribute("href", "/admin");
   });
 
   // Regression guard for the real-browser failure: a desktop click is ALWAYS
