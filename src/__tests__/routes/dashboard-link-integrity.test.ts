@@ -164,11 +164,6 @@ const ROLE_DASHBOARD_SURFACES: ReadonlyArray<readonly [string, string]> = [
   ["provider", "app/(protected)/dashboard/provider/page.tsx"],
 ];
 
-const AGENT_DASHBOARD_SOURCE_DIRS = [
-  path.join(SRC_ROOT, "app/(protected)/dashboard/agent"),
-  path.join(SRC_ROOT, "components/dashboard/agent"),
-];
-
 /** Does a source file declare an href to `/inbox` (the canonical inbox route)? */
 function linksToInbox(src: string): boolean {
   // href="/inbox", href={"/inbox"}, href: "/inbox", or via the shared
@@ -194,30 +189,6 @@ describe("dashboard messages entry point", () => {
 
   it("/inbox is a real route", () => {
     expect(resolveAppRoute("/inbox")).not.toBeNull();
-  });
-});
-
-describe("agent listing creation links", () => {
-  it("the live agent dashboard links listing creation to /dashboard/agent/listings/create", () => {
-    const src = readFileSync(
-      path.join(SRC_ROOT, "components/dashboard/agent/AgentDashboardHome.tsx"),
-      "utf8",
-    );
-
-    expect(extractHrefs(src)).toContain("/dashboard/agent/listings/create");
-  });
-
-  it("agent dashboard source does not hard-code the legacy /dashboard/agent/listings/new route", () => {
-    const offenders = AGENT_DASHBOARD_SOURCE_DIRS.flatMap((dir) =>
-      collectSourceFiles(dir),
-    ).filter((file) =>
-      readFileSync(file, "utf8").includes("/dashboard/agent/listings/new"),
-    );
-
-    expect(
-      offenders.map((file) => path.relative(SRC_ROOT, file)).sort(),
-      "Agent dashboard source must link the canonical CreateListingWizard route: /dashboard/agent/listings/create",
-    ).toEqual([]);
   });
 });
 

@@ -136,20 +136,24 @@ export async function getDepositComplianceCounts(
     throw new Error("Authentication required");
   }
 
-  const [{ data: tenancies, error: tErr }, { data: deposits, error: dErr }] =
-    await Promise.all([
-      supabase
-        .from("tenancies")
-        .select("id, deposit_amount")
-        .eq("landlord_id", user.id)
-        .eq("status", "active"),
-      supabase
-        .from("deposit_registrations")
-        .select("tenancy_id, status")
-        .eq("landlord_id", user.id),
-    ]);
+  const { data: tenancies, error: tErr } = await supabase
+    .from("tenancies")
+    .select("id, deposit_amount")
+    .eq("landlord_id", user.id)
+    .eq("status", "active");
 
   if (tErr) throw new Error(`Failed to fetch tenancies: ${tErr.message}`);
+
+  const activeTenancies = tenancies ?? [];
+  const tenancyIds = activeTenancies.map((t) => t.id as string);
+
+  const { data: deposits, error: dErr } = tenancyIds.length > 0
+    ? await supabase
+        .from("deposit_registrations")
+        .select("tenancy_id, status")
+        .in("tenancy_id", tenancyIds)
+    : { data: [], error: null };
+
   if (dErr) throw new Error(`Failed to fetch deposits: ${dErr.message}`);
 
   const statusByTenancy = new Map<string, string>();
@@ -160,8 +164,6 @@ export async function getDepositComplianceCounts(
   let protectedCount = 0;
   let pending = 0;
   let unprotected = 0;
-  const activeTenancies = tenancies ?? [];
-
   for (const t of activeTenancies) {
     const takesDeposit = Number(t.deposit_amount ?? 0) > 0;
     const status = statusByTenancy.get(t.id as string);
