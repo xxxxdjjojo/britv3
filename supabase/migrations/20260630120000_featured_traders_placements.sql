@@ -194,6 +194,9 @@ BEGIN
 END;
 $$;
 
+-- Trigger functions never need a direct EXECUTE grant; revoke the PUBLIC default.
+REVOKE ALL ON FUNCTION public.guard_sponsored_placement_owner_update() FROM PUBLIC;
+
 CREATE TRIGGER trg_guard_sponsored_placement_owner_update
   BEFORE UPDATE ON public.sponsored_placements
   FOR EACH ROW EXECUTE FUNCTION public.guard_sponsored_placement_owner_update();
@@ -348,6 +351,9 @@ BEGIN
 END;
 $$;
 
+-- Lock down to the service role only: Postgres grants EXECUTE to PUBLIC by
+-- default, which would let anon/authenticated forge impressions via /rpc.
+REVOKE ALL ON FUNCTION public.record_placement_event(UUID, TEXT, TEXT, UUID, UUID, TEXT, JSONB) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.record_placement_event(UUID, TEXT, TEXT, UUID, UUID, TEXT, JSONB) TO service_role;
 
 -- ===========================================================================
