@@ -371,7 +371,7 @@ describe("navLinkClasses", () => {
 
   it("returns footer-specific classes for footer variant", () => {
     const classes = navLinkClasses({ variant: "footer" });
-    expect(classes).toContain("text-neutral-400");
+    expect(classes).toContain("text-neutral-300");
     expect(classes).toContain("hover:text-white");
   });
 
@@ -399,7 +399,7 @@ describe("navLinkClasses", () => {
 describe("footerLinkClasses", () => {
   it("returns footer-appropriate classes", () => {
     const classes = footerLinkClasses();
-    expect(classes).toContain("text-neutral-400");
+    expect(classes).toContain("text-neutral-300");
     expect(classes).toContain("hover:text-white");
   });
 });
