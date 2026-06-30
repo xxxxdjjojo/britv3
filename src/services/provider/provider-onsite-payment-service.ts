@@ -99,40 +99,28 @@ async function fetchStripeConnect(
 }
 
 // ---------------------------------------------------------------------------
-// createOnsitePaymentIntent
+// buildInvoicePaymentIntent (shared core)
 // ---------------------------------------------------------------------------
 
 /**
- * Create (or retrieve existing) Stripe PaymentIntent for collecting on-site payment.
+ * Create (or retrieve) the PaymentIntent for a `sent` invoice and persist its id.
  *
- * Steps:
- * 1. Fetch invoice — must exist, be owned by provider, and have status "sent"
- * 2. Fetch Stripe Connect account — must have charges_enabled
- * 3. Idempotency: if invoice already has a stripe_payment_intent_id, retrieve it
- * 4. Create new PaymentIntent with platform fee and destination
- * 5. Update invoice with the new paymentIntentId
+ * Charge model: a platform **destination charge** — the PaymentIntent is created
+ * on the platform with `transfer_data.destination` + `on_behalf_of` set to the
+ * trader's connected account, so the full amount settles to the trader. No
+ * `application_fee_amount` is taken at the default 0% commission rate. Because
+ * the PI lives on the platform account, the existing platform
+ * `payment_intent.succeeded` webhook marks the invoice paid, and the client can
+ * confirm with the platform publishable key (no per-account Stripe.js).
+ *
+ * Caller is responsible for authorising access to the invoice (provider
+ * ownership or a verified customer pay-token) and for the `sent` status check.
  */
-export async function createOnsitePaymentIntent(
-  providerId: string,
-  invoiceId: string,
+async function buildInvoicePaymentIntent(
+  invoice: InvoiceRow,
   supabase: SupabaseClient,
 ): Promise<OnsitePaymentIntent> {
-  // 1. Validate invoice
-  const invoice = await fetchInvoice(invoiceId, supabase);
-
-  if (invoice.provider_id !== providerId) {
-    throw new Error(`Invoice not owned by this provider`);
-  }
-
-  if (invoice.status !== "sent") {
-    throw new Error(
-      `Invoice status must be "sent" to collect payment (current status: "${invoice.status}")`,
-    );
-  }
-
-  // 2. Validate Stripe Connect account
-  const connectAccount = await fetchStripeConnect(providerId, supabase);
-
+  const connectAccount = await fetchStripeConnect(invoice.provider_id, supabase);
   if (!connectAccount.charges_enabled) {
     throw new Error(
       "Stripe Connect charges not enabled for this provider. Complete Stripe onboarding first.",
@@ -148,53 +136,105 @@ export async function createOnsitePaymentIntent(
   }
   const applicationFeeAmount = platformFeePence(amountPence);
 
-  // 3. Idempotency: return existing PaymentIntent if already created
+  // Idempotency: reuse an existing PaymentIntent if one is already attached.
   if (invoice.stripe_payment_intent_id) {
     const existing = await getStripe().paymentIntents.retrieve(
       invoice.stripe_payment_intent_id,
-      { stripeAccount: stripeAccountId },
     );
 
     return {
       clientSecret: existing.client_secret ?? "",
       paymentIntentId: existing.id,
       amountPence,
-      invoiceId,
+      invoiceId: invoice.id,
     };
   }
 
-  // 4. Create new PaymentIntent — a direct charge on the trader's connected
-  // account, so funds settle to the trader. A platform application fee is added
-  // only when the configured commission rate is > 0 (it is 0 by default).
-  const paymentIntent = await getStripe().paymentIntents.create(
-    {
-      amount: amountPence,
-      currency: "gbp",
-      ...(applicationFeeAmount > 0
-        ? { application_fee_amount: applicationFeeAmount }
-        : {}),
-      metadata: {
-        invoice_id: invoiceId,
-        provider_id: providerId,
-        booking_id: invoice.booking_id ?? "",
-      },
+  const paymentIntent = await getStripe().paymentIntents.create({
+    amount: amountPence,
+    currency: "gbp",
+    transfer_data: { destination: stripeAccountId },
+    on_behalf_of: stripeAccountId,
+    ...(applicationFeeAmount > 0
+      ? { application_fee_amount: applicationFeeAmount }
+      : {}),
+    metadata: {
+      invoice_id: invoice.id,
+      provider_id: invoice.provider_id,
+      booking_id: invoice.booking_id ?? "",
     },
-    { stripeAccount: stripeAccountId },
-  );
+  });
 
-  // 5. Update invoice with paymentIntentId
   await supabase
     .from("provider_invoices")
-    .update({ stripe_payment_intent_id: paymentIntent.id, updated_at: new Date().toISOString() })
-    .eq("id", invoiceId)
-    .eq("provider_id", providerId);
+    .update({
+      stripe_payment_intent_id: paymentIntent.id,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", invoice.id)
+    .eq("provider_id", invoice.provider_id);
 
   return {
     clientSecret: paymentIntent.client_secret ?? "",
     paymentIntentId: paymentIntent.id,
     amountPence,
-    invoiceId,
+    invoiceId: invoice.id,
   };
+}
+
+// ---------------------------------------------------------------------------
+// createOnsitePaymentIntent (provider-authed)
+// ---------------------------------------------------------------------------
+
+/**
+ * Provider-initiated on-site collection. The invoice must be owned by the
+ * provider and have status "sent".
+ */
+export async function createOnsitePaymentIntent(
+  providerId: string,
+  invoiceId: string,
+  supabase: SupabaseClient,
+): Promise<OnsitePaymentIntent> {
+  const invoice = await fetchInvoice(invoiceId, supabase);
+
+  if (invoice.provider_id !== providerId) {
+    throw new Error(`Invoice not owned by this provider`);
+  }
+
+  if (invoice.status !== "sent") {
+    throw new Error(
+      `Invoice status must be "sent" to collect payment (current status: "${invoice.status}")`,
+    );
+  }
+
+  return buildInvoicePaymentIntent(invoice, supabase);
+}
+
+// ---------------------------------------------------------------------------
+// createInvoicePaymentIntentForCustomer (pay-by-token)
+// ---------------------------------------------------------------------------
+
+/**
+ * Customer-initiated payment via a secure pay-token. The caller MUST have
+ * already verified the token maps to this invoiceId. The invoice must be "sent".
+ * Pass a service-role client (the customer is unauthenticated).
+ */
+export async function createInvoicePaymentIntentForCustomer(
+  invoiceId: string,
+  supabase: SupabaseClient,
+): Promise<OnsitePaymentIntent> {
+  const invoice = await fetchInvoice(invoiceId, supabase);
+
+  if (invoice.status === "paid") {
+    throw new Error("This invoice has already been paid.");
+  }
+  if (invoice.status !== "sent") {
+    throw new Error(
+      `This invoice is not ready for payment (status: "${invoice.status}").`,
+    );
+  }
+
+  return buildInvoicePaymentIntent(invoice, supabase);
 }
 
 // ---------------------------------------------------------------------------
@@ -210,13 +250,8 @@ export async function confirmOnsitePayment(
   paymentIntentId: string,
   supabase: SupabaseClient,
 ): Promise<PaymentConfirmation> {
-  // Resolve the provider's Stripe account to scope the retrieve
-  const connectAccount = await fetchStripeConnect(providerId, supabase);
-
-  const paymentIntent = await getStripe().paymentIntents.retrieve(
-    paymentIntentId,
-    { stripeAccount: connectAccount.stripe_account_id },
-  );
+  // PI lives on the platform account (destination charge), so no stripeAccount scope.
+  const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
 
   const invoiceId = paymentIntent.metadata?.invoice_id ?? "";
   let paidAt: string | null = null;

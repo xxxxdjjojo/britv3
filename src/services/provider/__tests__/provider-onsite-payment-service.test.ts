@@ -163,6 +163,7 @@ function makeSupabaseMock(opts: {
 
 import {
   createOnsitePaymentIntent,
+  createInvoicePaymentIntentForCustomer,
   confirmOnsitePayment,
 } from "../provider-onsite-payment-service";
 import { markInvoicePaid } from "../provider-invoice-service";
@@ -204,7 +205,6 @@ describe("createOnsitePaymentIntent", () => {
 
     expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
       expect.objectContaining({ amount: 10000 }),
-      expect.anything(),
     );
   });
 
@@ -216,17 +216,20 @@ describe("createOnsitePaymentIntent", () => {
     expect(params.application_fee_amount).toBeUndefined();
   });
 
-  it("does not set transfer_data — direct charge settles to the trader's account", async () => {
+  it("routes the full amount to the trader via a platform destination charge", async () => {
     const supabase = makeSupabaseMock({});
     await createOnsitePaymentIntent("provider-uuid-1", "inv-uuid-1", supabase as never);
 
     const [params, options] = mockPaymentIntentsCreate.mock.calls[0] as [
       Record<string, unknown>,
-      { stripeAccount?: string },
+      unknown,
     ];
-    expect(params.transfer_data).toBeUndefined();
-    // Charge is created on the connected account, so funds belong to the trader.
-    expect(options.stripeAccount).toBe("acct_test_1");
+    // Destination charge: full amount transferred to the trader's connected account.
+    expect(params.transfer_data).toEqual({ destination: "acct_test_1" });
+    expect(params.on_behalf_of).toBe("acct_test_1");
+    // PI is created on the platform account (no per-account scope), so the
+    // platform webhook + platform publishable key handle it.
+    expect(options).toBeUndefined();
   });
 
   it("rejects if invoice not owned by provider", async () => {
@@ -278,7 +281,7 @@ describe("createOnsitePaymentIntent", () => {
     );
 
     expect(mockPaymentIntentsCreate).not.toHaveBeenCalled();
-    expect(mockPaymentIntentsRetrieve).toHaveBeenCalledWith(existingPiId, expect.anything());
+    expect(mockPaymentIntentsRetrieve).toHaveBeenCalledWith(existingPiId);
     expect(result.clientSecret).toBe(existingSecret);
     expect(result.paymentIntentId).toBe(existingPiId);
   });
@@ -308,6 +311,55 @@ describe("createOnsitePaymentIntent", () => {
       amountPence: 10000,
       invoiceId: "inv-uuid-1",
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// createInvoicePaymentIntentForCustomer (pay-by-token)
+// ---------------------------------------------------------------------------
+
+describe("createInvoicePaymentIntentForCustomer", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockPaymentIntentsCreate.mockResolvedValue(defaultPaymentIntent);
+    mockPaymentIntentsRetrieve.mockResolvedValue(defaultPaymentIntent);
+  });
+
+  it("creates a PaymentIntent for a sent invoice without a provider ownership check", async () => {
+    const supabase = makeSupabaseMock({});
+    const result = await createInvoicePaymentIntentForCustomer(
+      "inv-uuid-1",
+      supabase as never,
+    );
+
+    expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: 10000,
+        transfer_data: { destination: "acct_test_1" },
+      }),
+    );
+    expect(result.amountPence).toBe(10000);
+  });
+
+  it("takes 0% commission — no application_fee_amount", async () => {
+    const supabase = makeSupabaseMock({});
+    await createInvoicePaymentIntentForCustomer("inv-uuid-1", supabase as never);
+    const [params] = mockPaymentIntentsCreate.mock.calls[0] as [Record<string, unknown>];
+    expect(params.application_fee_amount).toBeUndefined();
+  });
+
+  it("rejects an already-paid invoice", async () => {
+    const supabase = makeSupabaseMock({ invoice: makeInvoice({ status: "paid" }) });
+    await expect(
+      createInvoicePaymentIntentForCustomer("inv-uuid-1", supabase as never),
+    ).rejects.toThrow(/already been paid/i);
+  });
+
+  it("rejects an invoice that is not yet sent", async () => {
+    const supabase = makeSupabaseMock({ invoice: makeInvoice({ status: "draft" }) });
+    await expect(
+      createInvoicePaymentIntentForCustomer("inv-uuid-1", supabase as never),
+    ).rejects.toThrow(/not ready for payment/i);
   });
 });
 
