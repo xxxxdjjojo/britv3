@@ -4,7 +4,7 @@
 
 **Goal:** Make landlord compliance/maintenance failures permanently harder to reintroduce by gating dashboard routes in CI, removing deposit ownership schema drift, adding landlord Playwright smoke coverage, and making the seeded local E2E runner reliable enough to be a required gate.
 
-**Architecture:** Route safety is enforced by a dedicated `test:routes` script and a separate `route-integrity` CI job so branch protection can require it independently. Deposit authorization is normalized around `deposit_registrations.tenancy_id -> tenancies.landlord_id`; app code and RLS stop relying on a duplicated `deposit_registrations.landlord_id`. Landlord smoke coverage uses the existing Playwright auth fixture and screenshot artifact paths. The local Supabase runner boots only the services needed for auth-backed dashboard smoke tests and fails at startup with a clear diagnostic before attempting `db reset`.
+**Architecture:** Route safety is enforced by a dedicated `test:routes` script and a separate `route-integrity` CI job so branch protection can require it independently. Deposit authorization is normalized around `deposit_registrations.tenancy_id -> tenancies.landlord_id`; app code and RLS stop relying on a duplicated `deposit_registrations.landlord_id`. Landlord smoke coverage uses the existing Playwright auth fixture and screenshot artifact paths. The local Supabase runner boots only the services needed for auth-backed dashboard smoke tests and fails at startup with a clear diagnostic before attempting `db reset`. CI pins the Supabase CLI version so smoke runs do not depend on a rate-limit-prone "latest release" lookup.
 
 **Tech Stack:** Next.js App Router, Vitest, GitHub Actions, Supabase SQL/RLS, Playwright.
 
@@ -167,13 +167,18 @@ Save screenshots to `test-results/landlord-maintenance-compliance/`.
 
 - [ ] **Step 2: Wire CI contract**
 
-Update `src/__tests__/ci/app-ci-workflow.test.ts` to require `landlord-maintenance-compliance-smoke`.
+Update `src/__tests__/ci/app-ci-workflow.test.ts` to require `landlord-maintenance-compliance-smoke` and a pinned Supabase CLI version, not `version: latest`.
 
 - [ ] **Step 3: Wire CI command**
 
 Add a CI step after Chromium install:
 
 ```yaml
+- name: Setup Supabase CLI
+  uses: supabase/setup-cli@v1
+  with:
+    version: 2.108.0
+
 - name: Landlord maintenance/compliance smoke
   run: scripts/e2e-local.sh landlord-maintenance-compliance-smoke
 ```

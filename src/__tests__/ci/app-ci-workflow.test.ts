@@ -51,6 +51,8 @@ describe("app CI workflow contract", () => {
     expect(appCiWorkflow, "missing app CI workflow").toBeDefined();
     expect(appCiWorkflow).toContain("landlord-smoke:");
     expect(appCiWorkflow).toContain("supabase/setup-cli@v1");
+    expect(appCiWorkflow).toContain("version: 2.108.0");
+    expect(appCiWorkflow).not.toContain("version: latest");
     expect(appCiWorkflow).toContain(
       "scripts/e2e-local.sh landlord-maintenance-compliance-smoke",
     );
