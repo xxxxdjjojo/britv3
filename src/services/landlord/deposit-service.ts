@@ -62,7 +62,9 @@ async function getOwnedTenancyIds(
 function withoutOwnershipFields(
   updates: Partial<DepositRegistrationInput>,
 ): Partial<DepositRegistrationInput> {
-  const { landlord_id: _landlordId, tenancy_id: _tenancyId, ...safeUpdates } = updates;
+  const safeUpdates = { ...updates };
+  delete safeUpdates.landlord_id;
+  delete safeUpdates.tenancy_id;
   return safeUpdates;
 }
 
@@ -76,7 +78,8 @@ export async function createDepositRegistration(
   const userId = await getAuthenticatedUserId(supabase);
   await requireOwnedTenancy(supabase, userId, data.tenancy_id);
 
-  const { landlord_id: _landlordId, ...insertData } = data;
+  const insertData = { ...data };
+  delete insertData.landlord_id;
 
   const { data: record, error } = await supabase
     .from("deposit_registrations")
