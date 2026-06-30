@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const E2E_LOCAL_SCRIPT = join(process.cwd(), "scripts", "e2e-local.sh");
+const NEXT_CONFIG = join(process.cwd(), "next.config.ts");
 
 describe("local E2E runner contract", () => {
   it("starts only the Supabase services required by auth-backed dashboard smoke tests", () => {
@@ -60,5 +61,14 @@ describe("local E2E runner contract", () => {
     expect(script).toContain(
       "grant all privileges on all sequences in schema public to service_role",
     );
+  });
+
+  it("pins the Next dev server root to this repo for local Playwright runs", () => {
+    const config = readFileSync(NEXT_CONFIG, "utf8");
+
+    expect(config).toContain("fileURLToPath(import.meta.url)");
+    expect(config).toContain("const repoRoot");
+    expect(config).toContain("turbopack:");
+    expect(config).toContain("root: repoRoot");
   });
 });

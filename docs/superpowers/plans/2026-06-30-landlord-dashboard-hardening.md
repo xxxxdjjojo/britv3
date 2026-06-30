@@ -4,7 +4,7 @@
 
 **Goal:** Make landlord compliance/maintenance failures permanently harder to reintroduce by gating dashboard routes in CI, removing deposit ownership schema drift, adding landlord Playwright smoke coverage, and making the seeded local E2E runner reliable enough to be a required gate.
 
-**Architecture:** Route safety is enforced by a dedicated `test:routes` script and a separate `route-integrity` CI job so branch protection can require it independently. Deposit authorization is normalized around `deposit_registrations.tenancy_id -> tenancies.landlord_id`; app code and RLS stop relying on a duplicated `deposit_registrations.landlord_id`. Landlord smoke coverage uses the existing Playwright auth fixture and screenshot artifact paths. The local Supabase runner boots only the services needed for auth-backed dashboard smoke tests and fails at startup with a clear diagnostic before attempting `db reset`. CI pins the Supabase CLI version so smoke runs do not depend on a rate-limit-prone "latest release" lookup.
+**Architecture:** Route safety is enforced by a dedicated `test:routes` script and a separate `route-integrity` CI job so branch protection can require it independently. Deposit authorization is normalized around `deposit_registrations.tenancy_id -> tenancies.landlord_id`; app code and RLS stop relying on a duplicated `deposit_registrations.landlord_id`. Landlord smoke coverage uses deterministic Playwright auth state and screenshot artifact paths. The local Supabase runner boots only the services needed for auth-backed dashboard smoke tests and fails at startup with a clear diagnostic before attempting `db reset`. CI pins the Supabase CLI version so smoke runs do not depend on a rate-limit-prone "latest release" lookup. Next dev is pinned to the repo root so local Playwright runs cannot be broken by parent-directory lockfiles.
 
 **Tech Stack:** Next.js App Router, Vitest, GitHub Actions, Supabase SQL/RLS, Playwright.
 
@@ -259,6 +259,45 @@ Commit:
 git add scripts/e2e-local.sh src/__tests__/ci/local-e2e-runner.test.ts docs/superpowers/plans/2026-06-30-landlord-dashboard-hardening.md
 git commit -m "ci(e2e): harden local supabase smoke runner"
 ```
+
+### Task 5: Playwright Auth State Hardening
+
+**Files:**
+- Modify: `e2e/auth.setup.ts`
+- Create: `e2e/fixtures/supabase-auth-state.ts`
+- Create: `e2e/fixtures/playwright-env.ts`
+- Modify: `next.config.ts`
+- Modify: `src/__tests__/ci/local-e2e-runner.test.ts`
+- Create: `src/__tests__/ci/playwright-auth-state.test.ts`
+- Create: `src/__tests__/ci/playwright-env.test.ts`
+
+- [ ] **Step 1: Write auth-state regression tests**
+
+Add tests proving:
+- Playwright setup no longer writes `{ cookies: [], origins: [] }` after setup failure.
+- Supabase local storage keys match `supabase-js` defaults (`http://127.0.0.1:54321` -> `sb-127-auth-token`).
+- Supabase SSR cookies are converted into valid Playwright storage state for the app host.
+- Empty auth state is rejected for auth-required smoke specs.
+- Local Playwright setup loads `.env.local` without overriding exported CI/local-Supabase env.
+
+- [ ] **Step 2: Implement deterministic setup**
+
+Replace UI login in `e2e/auth.setup.ts` with direct Supabase password sign-in via `createBrowserClient` and its cookie adapter. Capture the SSR cookies that Supabase writes, convert them into Playwright `storageState`, write the role file, then re-read it and assert a Supabase auth cookie exists. Setup errors must fail the setup project instead of writing an empty auth file.
+
+- [ ] **Step 3: Pin local Next root**
+
+Set `turbopack.root` in `next.config.ts` to the repo directory derived from `import.meta.url`. This prevents local Playwright dev servers from resolving modules from a parent workspace when a parent `package-lock.json` exists.
+
+- [ ] **Step 4: Verify**
+
+Run:
+
+```bash
+corepack pnpm vitest run src/__tests__/ci/playwright-auth-state.test.ts src/__tests__/ci/playwright-env.test.ts src/__tests__/ci/local-e2e-runner.test.ts
+E2E_BASE_URL=http://localhost:3101 PORT=3101 corepack pnpm exec playwright test e2e/landlord-maintenance-compliance-smoke.spec.ts --project=chromium
+```
+
+Expected: PASS, with screenshots refreshed under `test-results/landlord-maintenance-compliance/`.
 
 ### Final Verification
 
