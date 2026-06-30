@@ -36,8 +36,12 @@ const DEFAULT_VAT_RATE = 0.2;
  * Compute invoice totals from line items.
  * VAT rate defaults to 20%. A null/undefined vat_rate is treated as 0%.
  * Returns { subtotal, vat_amount, total_amount } all in pence.
+ *
+ * Exported so payment paths can recompute the payable amount server-side from
+ * the unambiguous `total_pence` line-item fields rather than trusting the
+ * stored `total_amount` column (see invoiceTotalPence).
  */
-function computeTotals(lineItems: InvoiceLineItem[]): {
+export function computeTotals(lineItems: InvoiceLineItem[]): {
   subtotal: number;
   vat_amount: number;
   total_amount: number;
@@ -61,6 +65,19 @@ function computeTotals(lineItems: InvoiceLineItem[]): {
     vat_amount: finalVat,
     total_amount: subtotal + finalVat,
   };
+}
+
+/**
+ * The payable amount of an invoice, in pence, recomputed from its line items.
+ *
+ * Payment code MUST use this rather than reading `provider_invoices.total_amount`
+ * directly: that column's unit is inconsistent across the codebase (written in
+ * pence by generateInvoice, read as pounds by some display services). Line-item
+ * `total_pence` is unambiguous, so recomputing here is the safe source of truth
+ * and satisfies the "never trust stored totals — recompute server-side" rule.
+ */
+export function invoiceTotalPence(lineItems: InvoiceLineItem[]): number {
+  return computeTotals(lineItems).total_amount;
 }
 
 /** Generate a due_date ISO string from today + N days. */
@@ -210,6 +227,51 @@ export async function updateInvoice(
     .single();
 
   if (error) throw new Error(`Failed to update invoice: ${error.message}`);
+  return data as ProviderInvoice;
+}
+
+// ---------------------------------------------------------------------------
+// sendInvoice
+// ---------------------------------------------------------------------------
+
+/**
+ * Transition an invoice to 'sent' so it can be paid by the customer.
+ * Idempotent for an already-sent invoice (allows re-sending). Rejects paid or
+ * cancelled invoices. Returns the updated invoice.
+ */
+export async function sendInvoice(
+  supabase: SupabaseClient,
+  providerId: string,
+  invoiceId: string,
+): Promise<ProviderInvoice> {
+  const { data: existing, error: fetchError } = await supabase
+    .from("provider_invoices")
+    .select("*")
+    .eq("id", invoiceId)
+    .eq("provider_id", providerId)
+    .maybeSingle();
+
+  if (fetchError) throw new Error(`Failed to fetch invoice: ${fetchError.message}`);
+  if (!existing) throw new Error("Invoice not found");
+
+  const invoice = existing as ProviderInvoice;
+  if (invoice.status === "paid") throw new Error("Invoice is already paid");
+  if (invoice.status === "cancelled") throw new Error("Cannot send a cancelled invoice");
+
+  // Only a draft moves to 'sent'. Re-sending an already-sent or overdue invoice
+  // re-delivers it without downgrading an 'overdue' marker back to 'sent'.
+  const nextStatus: InvoiceStatus =
+    invoice.status === "draft" ? "sent" : (invoice.status as InvoiceStatus);
+
+  const { data, error } = await supabase
+    .from("provider_invoices")
+    .update({ status: nextStatus, updated_at: new Date().toISOString() })
+    .eq("id", invoiceId)
+    .eq("provider_id", providerId)
+    .select("*")
+    .single();
+
+  if (error) throw new Error(`Failed to send invoice: ${error.message}`);
   return data as ProviderInvoice;
 }
 

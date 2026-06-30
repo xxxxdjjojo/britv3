@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendQuote } from "@/services/provider/provider-quote-service";
+import { checkProviderCanTransact } from "@/services/provider/provider-transaction-gate";
 
 type Params = Promise<{ id: string }>;
 
@@ -31,6 +32,17 @@ export async function POST(
     .maybeSingle();
 
   const providerId = providerProfile?.id ?? user.id;
+
+  // Action-level gate: a trader can only send LIVE quotes once fully set up.
+  const gate = await checkProviderCanTransact(supabase, user.id, {
+    emailConfirmed: Boolean(user.email_confirmed_at),
+  });
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: gate.message, reason: gate.reason },
+      { status: 403 },
+    );
+  }
 
   try {
     const quote = await sendQuote(supabase, providerId, id);

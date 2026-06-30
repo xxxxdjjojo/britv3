@@ -71,7 +71,7 @@ pnpm test:e2e              # E2E tests (Playwright)
 - **Package Manager**: pnpm (workspace mode)
 - **AI**: Anthropic Claude SDK + pgvector for embeddings
 - **Maps**: MapTiler + MapLibre GL JS
-- **Payments**: Stripe Connect (2.5% platform commission)
+- **Payments**: Stripe Connect — 0% platform commission on trader jobs (traders monetised via monthly subscription only). The single fee lever is `src/lib/payments/platform-fee.ts` (`PLATFORM_FEE_RATE`, env-overridable, default 0).
 - **Email**: Resend + React Email
 - **Monitoring**: Sentry (errors), PostHog (analytics), Upstash Redis (rate limiting)
 

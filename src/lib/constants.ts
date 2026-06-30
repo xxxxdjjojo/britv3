@@ -195,6 +195,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/new-homes",
   "/marketplace",
   "/services",
+  "/professionals",
   "/agents",
   "/mortgage-brokers",
   "/conveyancers",
@@ -236,6 +237,8 @@ export const PUBLIC_ROUTES: readonly string[] = [
   // Pre-launch coming-soon splash + referral queue (public, unauthenticated)
   "/coming-soon",
   "/queue",
+  // Account-free invoice payment via signed pay-token
+  "/pay",
   // System/error state pages — always publicly accessible
   "/forbidden",
   "/maintenance",

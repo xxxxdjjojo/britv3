@@ -5,14 +5,23 @@
  *  - createOnsitePaymentIntent(providerId, invoiceId, supabase)
  *  - confirmOnsitePayment(providerId, paymentIntentId, supabase)
  *
- * All monetary amounts are in pence (GBP × 100).
- * Platform fee is 2.5%.
+ * All monetary amounts are in pence.
+ * Platform commission is 0% (subscription-only monetisation) — no application
+ * fee is taken and the full amount settles to the trader's connected account.
+ * The payable amount is recomputed from line items, not the total_amount column.
  */
 
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
-vi.mock("@/services/provider/provider-invoice-service");
+// Keep the real invoiceTotalPence (used to recompute the charge amount); mock
+// only the DB-writing markInvoicePaid.
+vi.mock("@/services/provider/provider-invoice-service", async (importOriginal) => {
+  const actual = await importOriginal<
+    typeof import("../provider-invoice-service")
+  >();
+  return { ...actual, markInvoicePaid: vi.fn() };
+});
 
 // ---------------------------------------------------------------------------
 // Mock @/lib/stripe (server-only singleton used by the service)
@@ -34,10 +43,19 @@ vi.mock("@/lib/stripe", () => ({
 // Helpers
 // ---------------------------------------------------------------------------
 
+type InvoiceLineItem = {
+  name: string;
+  quantity: number;
+  unit_price_pence: number;
+  total_pence: number;
+  vat_rate?: number;
+};
+
 type InvoiceRow = {
   id: string;
   provider_id: string;
   status: string;
+  line_items: InvoiceLineItem[];
   total_amount: number;
   stripe_payment_intent_id: string | null;
   booking_id: string | null;
@@ -54,7 +72,11 @@ function makeInvoice(overrides?: Partial<InvoiceRow>): InvoiceRow {
     id: "inv-uuid-1",
     provider_id: "provider-uuid-1",
     status: "sent",
-    total_amount: 100, // £100.00 → 10000 pence
+    // £100.00 → 10000 pence, recomputed from line items (vat_rate 0 keeps total = subtotal)
+    line_items: [
+      { name: "Labour", quantity: 1, unit_price_pence: 10000, total_pence: 10000, vat_rate: 0 },
+    ],
+    total_amount: 10000,
     stripe_payment_intent_id: null,
     booking_id: "booking-uuid-1",
     ...overrides,
@@ -141,6 +163,7 @@ function makeSupabaseMock(opts: {
 
 import {
   createOnsitePaymentIntent,
+  createInvoicePaymentIntentForCustomer,
   confirmOnsitePayment,
 } from "../provider-onsite-payment-service";
 import { markInvoicePaid } from "../provider-invoice-service";
@@ -176,38 +199,38 @@ describe("createOnsitePaymentIntent", () => {
     mockMarkInvoicePaid.mockResolvedValue({} as never);
   });
 
-  it("creates PaymentIntent with correct amount from invoice total (£100 → 10000 pence)", async () => {
+  it("creates PaymentIntent with amount recomputed from line items (£100 → 10000 pence)", async () => {
     const supabase = makeSupabaseMock({});
     await createOnsitePaymentIntent("provider-uuid-1", "inv-uuid-1", supabase as never);
 
-    expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
-      expect.objectContaining({ amount: 10000 }),
-      expect.anything(),
-    );
+    const [params] = mockPaymentIntentsCreate.mock.calls[0] as [Record<string, unknown>];
+    expect(params).toEqual(expect.objectContaining({ amount: 10000 }));
   });
 
-  it("applies 2.5% platform fee", async () => {
+  it("takes 0% platform commission — no application_fee_amount", async () => {
     const supabase = makeSupabaseMock({});
     await createOnsitePaymentIntent("provider-uuid-1", "inv-uuid-1", supabase as never);
 
-    expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        application_fee_amount: 250, // 2.5% of 10000
-      }),
-      expect.anything(),
-    );
+    const [params] = mockPaymentIntentsCreate.mock.calls[0] as [Record<string, unknown>];
+    expect(params.application_fee_amount).toBeUndefined();
   });
 
-  it("sets transfer_data.destination to provider's Stripe account", async () => {
+  it("routes the full amount to the trader via a platform destination charge", async () => {
     const supabase = makeSupabaseMock({});
     await createOnsitePaymentIntent("provider-uuid-1", "inv-uuid-1", supabase as never);
 
-    expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        transfer_data: { destination: "acct_test_1" },
-      }),
-      expect.anything(),
-    );
+    const [params, options] = mockPaymentIntentsCreate.mock.calls[0] as [
+      Record<string, unknown>,
+      { idempotencyKey?: string; stripeAccount?: string },
+    ];
+    // Destination charge: full amount transferred to the trader's connected account.
+    expect(params.transfer_data).toEqual({ destination: "acct_test_1" });
+    expect(params.on_behalf_of).toBe("acct_test_1");
+    // PI is created on the platform account (no per-account scope), so the
+    // platform webhook + platform publishable key handle it.
+    expect(options.stripeAccount).toBeUndefined();
+    // Idempotency key guards against duplicate PIs on retry.
+    expect(options.idempotencyKey).toContain("invoice-pi-");
   });
 
   it("rejects if invoice not owned by provider", async () => {
@@ -259,7 +282,7 @@ describe("createOnsitePaymentIntent", () => {
     );
 
     expect(mockPaymentIntentsCreate).not.toHaveBeenCalled();
-    expect(mockPaymentIntentsRetrieve).toHaveBeenCalledWith(existingPiId, expect.anything());
+    expect(mockPaymentIntentsRetrieve).toHaveBeenCalledWith(existingPiId);
     expect(result.clientSecret).toBe(existingSecret);
     expect(result.paymentIntentId).toBe(existingPiId);
   });
@@ -289,6 +312,56 @@ describe("createOnsitePaymentIntent", () => {
       amountPence: 10000,
       invoiceId: "inv-uuid-1",
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// createInvoicePaymentIntentForCustomer (pay-by-token)
+// ---------------------------------------------------------------------------
+
+describe("createInvoicePaymentIntentForCustomer", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockPaymentIntentsCreate.mockResolvedValue(defaultPaymentIntent);
+    mockPaymentIntentsRetrieve.mockResolvedValue(defaultPaymentIntent);
+  });
+
+  it("creates a PaymentIntent for a sent invoice without a provider ownership check", async () => {
+    const supabase = makeSupabaseMock({});
+    const result = await createInvoicePaymentIntentForCustomer(
+      "inv-uuid-1",
+      supabase as never,
+    );
+
+    const [params] = mockPaymentIntentsCreate.mock.calls[0] as [Record<string, unknown>];
+    expect(params).toEqual(
+      expect.objectContaining({
+        amount: 10000,
+        transfer_data: { destination: "acct_test_1" },
+      }),
+    );
+    expect(result.amountPence).toBe(10000);
+  });
+
+  it("takes 0% commission — no application_fee_amount", async () => {
+    const supabase = makeSupabaseMock({});
+    await createInvoicePaymentIntentForCustomer("inv-uuid-1", supabase as never);
+    const [params] = mockPaymentIntentsCreate.mock.calls[0] as [Record<string, unknown>];
+    expect(params.application_fee_amount).toBeUndefined();
+  });
+
+  it("rejects an already-paid invoice", async () => {
+    const supabase = makeSupabaseMock({ invoice: makeInvoice({ status: "paid" }) });
+    await expect(
+      createInvoicePaymentIntentForCustomer("inv-uuid-1", supabase as never),
+    ).rejects.toThrow(/already been paid/i);
+  });
+
+  it("rejects an invoice that is not yet sent", async () => {
+    const supabase = makeSupabaseMock({ invoice: makeInvoice({ status: "draft" }) });
+    await expect(
+      createInvoicePaymentIntentForCustomer("inv-uuid-1", supabase as never),
+    ).rejects.toThrow(/not ready for payment/i);
   });
 });
 
