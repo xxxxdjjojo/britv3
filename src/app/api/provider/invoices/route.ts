@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { generateInvoice } from "@/services/provider/provider-invoice-service";
+import { checkProviderCanTransact } from "@/services/provider/provider-transaction-gate";
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -51,6 +52,17 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
 
   const providerId = (providerProfile?.id as string | null | undefined) ?? user.id;
+
+  // Action-level gate: issuing an invoice requires a fully set-up trader.
+  const gate = await checkProviderCanTransact(supabase, user.id, {
+    emailConfirmed: Boolean(user.email_confirmed_at),
+  });
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: gate.message, reason: gate.reason },
+      { status: 403 },
+    );
+  }
 
   let rawBody: unknown;
   try {
