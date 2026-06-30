@@ -43,4 +43,17 @@ describe("app CI workflow contract", () => {
     expect(appCiWorkflow).toContain("route-integrity:");
     expect(appCiWorkflow).toContain("pnpm test:routes");
   });
+
+  it("runs landlord maintenance/compliance smoke against seeded auth state", () => {
+    const workflows = readWorkflowSources();
+    const appCiWorkflow = workflows.find((source) => source.includes("name: App CI"));
+
+    expect(appCiWorkflow, "missing app CI workflow").toBeDefined();
+    expect(appCiWorkflow).toContain("landlord-smoke:");
+    expect(appCiWorkflow).toContain("supabase/setup-cli@v1");
+    expect(appCiWorkflow).toContain(
+      "scripts/e2e-local.sh landlord-maintenance-compliance-smoke",
+    );
+    expect(appCiWorkflow).toContain("test-results/");
+  });
 });
