@@ -43,4 +43,11 @@ describe("local E2E runner contract", () => {
     expect(resetIndex).toBeGreaterThan(-1);
     expect(statusIndex).toBeLessThan(resetIndex);
   });
+
+  it("waits for PostgREST readiness without depending on table-level grants", () => {
+    const script = readFileSync(E2E_LOCAL_SCRIPT, "utf8");
+
+    expect(script).toContain('"$API_URL/rest/v1/"');
+    expect(script).not.toContain("profiles?select=id&limit=1");
+  });
 });

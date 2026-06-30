@@ -59,13 +59,14 @@ export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
 # reload and the table/RPC writes fail with PGRST002 ("Could not query the
 # database for the schema cache"), which leaves roles/subscriptions unseeded and
 # makes the gate non-deterministic. Nudge a reload and wait until PostgREST
-# answers a real query before seeding.
+# answers at its schema root before seeding. Avoid table-level probes here:
+# grants/RLS can return 401/403 even when PostgREST is ready.
 psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
   -c "NOTIFY pgrst, 'reload schema';" >/dev/null 2>&1 || true
 echo "    waiting for PostgREST schema cache..."
 for _ in $(seq 1 60); do
   code=$(curl -s -o /dev/null -w '%{http_code}' \
-    "$API_URL/rest/v1/profiles?select=id&limit=1" \
+    "$API_URL/rest/v1/" \
     -H "apikey: $SERVICE_ROLE_KEY" -H "Authorization: Bearer $SERVICE_ROLE_KEY")
   [ "$code" = "200" ] && break
   sleep 1
