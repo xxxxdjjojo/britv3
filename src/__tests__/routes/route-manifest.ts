@@ -358,6 +358,7 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/landlord/find-tradespeople",
   "/dashboard/landlord/listings",
   "/dashboard/landlord/listings/new",
+  "/dashboard/landlord/maintenance/new",
   "/dashboard/landlord/moving",
   "/dashboard/landlord/offers",
   "/dashboard/landlord/properties/add",
