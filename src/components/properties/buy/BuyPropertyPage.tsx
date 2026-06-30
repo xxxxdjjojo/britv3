@@ -15,6 +15,8 @@ import { SimilarHomesBlock } from "@/components/properties/blocks/SimilarHomesBl
 import { ActionRail } from "@/components/properties/blocks/ActionRail";
 import { MobileStickyBottomBar } from "@/components/properties/blocks/MobileStickyBottomBar";
 import { FeaturedExperts } from "@/components/placements/FeaturedExperts";
+import { LocalExpertsSection } from "@/components/properties/local-experts/LocalExpertsSection";
+import { assessPermittedDevelopment } from "@/lib/properties/permitted-development-rules";
 import type { createClient } from "@/lib/supabase/server";
 import type {
   PropertyView,
@@ -39,7 +41,11 @@ export function BuyPropertyPage({
   viewer: PropertyViewerState;
   supabase: SupabaseServerClient;
 }) {
-  const { property } = view.detail;
+  const { property, listing } = view.detail;
+  // Renovation trades lead only when the property type actually has renovation /
+  // permitted-development scope (houses); flats / land lead with the buying
+  // journey (surveyor, mortgage, conveyancer).
+  const hasRenovationPotential = assessPermittedDevelopment(property.propertyType).applicable;
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,21 +88,21 @@ export function BuyPropertyPage({
             <LocalIntelligenceBlock view={view} />
             <PropertyDetailBlock view={view} />
             <HistoryPotentialBlock view={view} supabase={supabase} />
-            <DocumentsHub view={view} />
-            <ContactAgentBlock view={view} />
             <Suspense fallback={null}>
-              <FeaturedExperts
-                zone="property_bottom"
-                heading="Need help with this property?"
-                subheading="Architects, builders and trades who could transform it"
-                stage="renovation"
+              <LocalExpertsSection
+                listingId={listing.id}
+                propertyId={property.id}
                 postcode={property.postcode}
                 town={property.city}
-                propertyId={property.id}
-                limit={3}
-                variant="band"
+                region={property.county}
+                address={property.addressLine1}
+                coordinates={property.coordinates}
+                listingType="sale"
+                hasRenovationPotential={hasRenovationPotential}
               />
             </Suspense>
+            <DocumentsHub view={view} />
+            <ContactAgentBlock view={view} />
             <SimilarHomesBlock view={view} />
           </div>
 

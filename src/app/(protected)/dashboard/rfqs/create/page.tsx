@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -61,8 +61,46 @@ const URGENCY_LABELS: Record<UrgencyLevel, string> = {
   emergency: "Emergency -- ASAP",
 };
 
-export default function CreateRfqPage() {
+const PROPERTY_TRADERS_SOURCE = "property_detail_local_traders";
+
+/**
+ * Build pre-filled form defaults from deep-link query params (e.g. when a buyer
+ * clicked "Request Quote" on a trader card on the property page).
+ */
+function prefillFromParams(params: URLSearchParams): Partial<RfqFormValues> {
+  const category = params.get("category");
+  const postcode = params.get("postcode");
+  const address = params.get("address");
+  const source = params.get("source");
+  const isPropertyContext = source === PROPERTY_TRADERS_SOURCE;
+
+  const validCategory =
+    category && category in SERVICE_CATEGORY_LABELS
+      ? (category as ServiceCategory)
+      : undefined;
+
+  const categoryLabel = validCategory ? SERVICE_CATEGORY_LABELS[validCategory] : null;
+
+  return {
+    ...(validCategory ? { service_category: validCategory } : {}),
+    property_postcode: postcode ?? "",
+    ...(address ? { property_address: address } : {}),
+    title: isPropertyContext
+      ? `${categoryLabel ?? "Trade"} help for this property`
+      : "",
+    description: isPropertyContext
+      ? "I'm interested in this property and may need renovation or inspection work. Please could you share your availability and an estimated quote."
+      : "",
+    urgency_level: "normal",
+    ...(source ? { source } : {}),
+    ...(params.get("provider") ? { target_provider_id: params.get("provider")! } : {}),
+    ...(params.get("listing") ? { listing_id: params.get("listing")! } : {}),
+  };
+}
+
+function CreateRfqForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -78,6 +116,7 @@ export default function CreateRfqPage() {
       description: "",
       property_postcode: "",
       urgency_level: "normal",
+      ...prefillFromParams(searchParams),
     },
   });
 
@@ -126,6 +165,11 @@ export default function CreateRfqPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Attribution (hidden) — carried from the property page deep-link. */}
+            <input type="hidden" {...register("source")} />
+            <input type="hidden" {...register("target_provider_id")} />
+            <input type="hidden" {...register("listing_id")} />
+
             {/* Category */}
             <div className="space-y-2">
               <Label>
@@ -285,5 +329,13 @@ export default function CreateRfqPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function CreateRfqPage() {
+  return (
+    <Suspense fallback={null}>
+      <CreateRfqForm />
+    </Suspense>
   );
 }

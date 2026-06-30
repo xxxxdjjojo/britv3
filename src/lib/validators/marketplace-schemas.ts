@@ -51,6 +51,10 @@ const REVIEW_FLAG_REASONS = [
 ] as const;
 
 const UK_POSTCODE_REGEX = /^[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}$/i;
+// Standard UUID shape. We validate the shape rather than using z.uuid(), which
+// has rejected some valid Postgres-generated UUIDs in this codebase.
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // -- Schemas -----------------------------------------------------------------
 
@@ -119,6 +123,10 @@ export const rfqCreateSchema = z
       .default("normal"),
     budget_min: z.number().min(0).optional(),
     budget_max: z.number().min(0).optional(),
+    // Attribution (e.g. launched from the property page's local traders section).
+    source: z.string().max(80).optional(),
+    target_provider_id: z.string().regex(UUID_REGEX, "Invalid provider id").optional(),
+    listing_id: z.string().regex(UUID_REGEX, "Invalid listing id").optional(),
   })
   .refine(
     (data) => {
