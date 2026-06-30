@@ -13,6 +13,7 @@ import { DocumentsHub } from "@/components/properties/blocks/DocumentsHub";
 import { SimilarHomesBlock } from "@/components/properties/blocks/SimilarHomesBlock";
 import { ActionRail } from "@/components/properties/blocks/ActionRail";
 import { MobileStickyBottomBar } from "@/components/properties/blocks/MobileStickyBottomBar";
+import { FeaturedExperts } from "@/components/placements/FeaturedExperts";
 import type { createClient } from "@/lib/supabase/server";
 import type {
   PropertyView,
@@ -61,11 +62,37 @@ export function RentPropertyPage({
         <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
           <div className="space-y-10 min-w-0">
             <TenancyCostBlock view={view} />
+            <Suspense fallback={null}>
+              <FeaturedExperts
+                zone="property_financial"
+                heading="Trusted professionals for your move"
+                subheading="Verified removals, cleaning and handyman experts near here"
+                stage="rent"
+                postcode={property.postcode}
+                town={property.city}
+                propertyId={property.id}
+                limit={3}
+                variant="band"
+              />
+            </Suspense>
             <LocalIntelligenceBlock view={view} />
             <PropertyDetailBlock view={view} />
             <HistoryPotentialBlock view={view} supabase={supabase} />
             <DocumentsHub view={view} />
             <ContactAgentBlock view={view} />
+            <Suspense fallback={null}>
+              <FeaturedExperts
+                zone="property_bottom"
+                heading="Need help settling in?"
+                subheading="Local experts to get your new home move-in ready"
+                stage="rent"
+                postcode={property.postcode}
+                town={property.city}
+                propertyId={property.id}
+                limit={3}
+                variant="band"
+              />
+            </Suspense>
             <SimilarHomesBlock view={view} />
           </div>
 

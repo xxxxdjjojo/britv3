@@ -16,6 +16,12 @@ import { TIER_CONFIGS } from "@/lib/referral-tiers";
 import type { ReferralTier } from "@/types/referrals";
 import { captureException } from "@/lib/observability/capture-exception";
 import { appBaseUrl } from "@/config/brand";
+import {
+  cancelPlacementBySubscription,
+  fulfilPlacementCheckout,
+  isPlacementCheckout,
+  renewPlacementBySubscription,
+} from "@/services/placements/placement-fulfillment";
 
 export type StripeEventProcessResult = Readonly<{
   userId: string | null;
@@ -69,6 +75,13 @@ export async function processStripeEvent(
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       userId = session.metadata?.user_id ?? session.client_reference_id ?? null;
+
+      // Featured Trader boost: separate, recurring advertising subscription.
+      if (isPlacementCheckout(session)) {
+        await fulfilPlacementCheckout(supabase, stripe, session);
+        userId = session.metadata?.provider_id ?? userId;
+        break;
+      }
 
       if (userId && session.mode === "subscription" && session.subscription) {
         const subId = typeof session.subscription === "string"
@@ -385,6 +398,9 @@ export async function processStripeEvent(
         throw new Error(`Failed to cancel subscription: ${error.message}`);
       }
 
+      // Cancel any boost placement tied to this subscription (no-op if none).
+      await cancelPlacementBySubscription(supabase, subscription.id);
+
       revalidateTag("billing", "max");
 
       // Force JWT token refresh to clear plan claim
@@ -459,6 +475,14 @@ export async function processStripeEvent(
       const customerId = typeof invoice.customer === "string"
         ? invoice.customer
         : (invoice.customer as Stripe.Customer)?.id ?? null;
+
+      // Renew any boost placement billed by this invoice (no-op if none).
+      const invoiceSubId = (invoice as unknown as { subscription?: string | { id: string } }).subscription;
+      const placementSubId = typeof invoiceSubId === "string" ? invoiceSubId : invoiceSubId?.id ?? null;
+      if (placementSubId) {
+        const periodEnd = invoice.period_end ? new Date(invoice.period_end * 1000).toISOString() : null;
+        await renewPlacementBySubscription(supabase, placementSubId, periodEnd);
+      }
 
       if (customerId) {
         await supabase

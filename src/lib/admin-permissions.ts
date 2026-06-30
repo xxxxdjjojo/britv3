@@ -102,6 +102,8 @@ export const ADMIN_ROUTE_PERMISSIONS: Record<string, AdminPermission> = {
   "/admin/seo": "manage_seo",
   "/admin/analytics": "view_analytics",
   "/admin/subscriptions": "manage_subscriptions",
+  "/admin/placements": "manage_subscriptions",
+  "/admin/placement-products": "manage_subscriptions",
   "/admin/promo-codes": "manage_promo_codes",
   "/admin/email-campaigns": "send_campaigns",
 };

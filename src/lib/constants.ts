@@ -195,6 +195,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/new-homes",
   "/marketplace",
   "/services",
+  "/professionals",
   "/agents",
   "/mortgage-brokers",
   "/conveyancers",

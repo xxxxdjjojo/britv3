@@ -22,6 +22,7 @@ import { EmptyState } from "@/components/search/EmptyState";
 import MapPropertyCard from "@/components/search/MapPropertyCard";
 import MapProviderPin from "@/components/search/MapProviderPin";
 import { PropertySearchCard } from "@/components/search/PropertySearchCard";
+import { SponsoredSearchSlot } from "@/components/placements/SponsoredSearchSlot";
 import { RefineFilters } from "@/components/search/RefineFilters";
 import type {
   MapProperty,
@@ -404,14 +405,28 @@ function SearchPageInner() {
             />
           ) : (
             <div className="flex flex-col gap-6">
-              {properties.map((property) => (
-                <PropertySearchCard
-                  key={property.id}
-                  property={property}
-                  isSelected={property.id === selectedId}
-                  onSelect={handleCardSelect}
-                />
-              ))}
+              {properties.flatMap((property, index) => {
+                const card = (
+                  <PropertySearchCard
+                    key={property.id}
+                    property={property}
+                    isSelected={property.id === selectedId}
+                    onSelect={handleCardSelect}
+                  />
+                );
+                // Native sponsored expert after every 7 results (self-gates to nothing if none).
+                const showSlot = (index + 1) % 7 === 0 && index + 1 < properties.length;
+                return showSlot
+                  ? [
+                      card,
+                      <SponsoredSearchSlot
+                        key={`sponsored-${index}`}
+                        area={committedState.q || null}
+                        listingType={committedState.listingType}
+                      />,
+                    ]
+                  : [card];
+              })}
             </div>
           )}
         </div>

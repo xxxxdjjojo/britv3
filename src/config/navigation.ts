@@ -341,6 +341,7 @@ export const FOOTER_LINKS: FooterColumn[] = [
     heading: "Services",
     links: [
       { label: "Find Tradespeople", href: "/marketplace" },
+      { label: "Local Professionals", href: "/professionals" },
       { label: "Sellers", href: "/sellers" },
       { label: "Developers", href: "/developers" },
       { label: "Traders", href: "/traders" },
