@@ -28,38 +28,50 @@
 -- Reversible: re-run 20260616000003 to point the view back at ppd_transactions.
 -- ============================================================================
 
-create or replace view public.ppd_with_geography as
-select
-  (t.price * 100)::bigint                  as price_pence,
-  t.date_of_transfer::date                 as transfer_date,
-  -- price_paid_data.property_type is char(1) (D/S/T/F/O); cast to text to keep
-  -- the view column type stable for CREATE OR REPLACE and the aggregate CASE.
-  t.property_type::text                     as property_type,
-  (t.old_new = 'Y')                        as new_build,
-  t.street,
-  t.town,
-  -- normalised street key for street-level grouping
-  lower(trim(coalesce(t.street, ''))) || '|' || lower(trim(coalesce(t.town, ''))) as street_key,
-  g.lad_cd,
-  g.lad_name,
-  g.postcode_district,
-  g.msoa_cd,
-  g.lsoa_cd,
-  g.postcode_sector,
-  g.latitude,
-  g.longitude
-from public.price_paid_data t
-join public.postcode_geography g
-  on upper(replace(t.postcode, ' ', '')) = g.postcode_normalised
-where
-  t.postcode is not null
-  and trim(t.postcode) <> ''
-  and t.price > 0
-  and coalesce(t.record_status, 'A') <> 'D'
-  and t.ppd_category = 'A';
+do $$
+begin
+  if to_regclass('public.price_paid_data') is null then
+    raise notice 'price_paid_data is absent; leaving existing ppd_with_geography view on local fixture data.';
+    return;
+  end if;
 
-comment on view public.ppd_with_geography is
-  'HMLR Price Paid Data (public.price_paid_data, ~31M rows) joined to ONS '
-  'postcode geography. Standard residential only (ppd_category = A). Excludes '
-  'null/empty postcodes, zero/negative prices, and deleted records '
-  '(record_status = D). Failed geo-joins excluded by the inner join. Prices in pence.';
+  execute $view$
+    create or replace view public.ppd_with_geography as
+    select
+      (t.price * 100)::bigint                  as price_pence,
+      t.date_of_transfer::date                 as transfer_date,
+      -- price_paid_data.property_type is char(1) (D/S/T/F/O); cast to text to keep
+      -- the view column type stable for CREATE OR REPLACE and the aggregate CASE.
+      t.property_type::text                    as property_type,
+      (t.old_new = 'Y')                        as new_build,
+      t.street,
+      t.town,
+      -- normalised street key for street-level grouping
+      lower(trim(coalesce(t.street, ''))) || '|' || lower(trim(coalesce(t.town, ''))) as street_key,
+      g.lad_cd,
+      g.lad_name,
+      g.postcode_district,
+      g.msoa_cd,
+      g.lsoa_cd,
+      g.postcode_sector,
+      g.latitude,
+      g.longitude
+    from public.price_paid_data t
+    join public.postcode_geography g
+      on upper(replace(t.postcode, ' ', '')) = g.postcode_normalised
+    where
+      t.postcode is not null
+      and trim(t.postcode) <> ''
+      and t.price > 0
+      and coalesce(t.record_status, 'A') <> 'D'
+      and t.ppd_category = 'A'
+  $view$;
+
+  execute $comment$
+    comment on view public.ppd_with_geography is
+      'HMLR Price Paid Data (public.price_paid_data, ~31M rows) joined to ONS '
+      'postcode geography. Standard residential only (ppd_category = A). Excludes '
+      'null/empty postcodes, zero/negative prices, and deleted records '
+      '(record_status = D). Failed geo-joins excluded by the inner join. Prices in pence.'
+  $comment$;
+end $$;
