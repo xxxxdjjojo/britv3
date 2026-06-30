@@ -381,7 +381,6 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/provider/billing/payment-methods",
   "/dashboard/provider/billing/refund",
   "/dashboard/provider/billing/subscription",
-  "/dashboard/provider/boost",
   "/dashboard/provider/calculators",
   "/dashboard/provider/documents",
   "/dashboard/provider/field",
