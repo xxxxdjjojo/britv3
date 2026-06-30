@@ -24,6 +24,7 @@ import {
   CreditCard,
   Image,
   ArrowRight,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -170,6 +171,12 @@ export default async function ProviderDashboardPage() {
             <Link href="/dashboard/provider/quotes/builder">
               <FileText className="mr-2 size-4" />
               New Quote
+            </Link>
+          </Button>
+          <Button asChild className="bg-brand-secondary text-white hover:bg-brand-secondary/90">
+            <Link href="/dashboard/provider/boost">
+              <Sparkles className="mr-2 size-4" />
+              Boost My Profile
             </Link>
           </Button>
           <Button asChild variant="outline" className="border-border text-neutral-700 hover:bg-surface">
