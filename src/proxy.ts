@@ -361,6 +361,11 @@ export async function proxy(request: NextRequest) {
     "/dashboard/provider/quotes",
     "/dashboard/provider/reviews",
     "/dashboard/provider/payments",
+    // Boost is a sales/eligibility page: it must be viewable by any provider so
+    // they can see what boosting offers and what they need (verify + subscribe).
+    // The page renders its own eligibility banner and the purchase API enforces
+    // canPurchaseBoost server-side, so it is safe before verification/subscription.
+    "/dashboard/provider/boost",
   ] as const;
   const isProviderOpenPage = PROVIDER_OPEN_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
@@ -417,7 +422,7 @@ export async function proxy(request: NextRequest) {
         const isAgent = pathname.startsWith("/dashboard/agent");
 
         const providerVerified =
-          profileData?.provider_verification_status === "approved";
+          profileData?.provider_verification_status === "verified";
         const agentVerified =
           profileData?.verification_level === "professional";
 

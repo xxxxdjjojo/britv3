@@ -44,4 +44,14 @@ describe("provider Boost My Profile is reachable from the live dashboard", () =>
   it("is NOT allowlisted as an off-nav route (it must be in the nav)", () => {
     expect([...KNOWN_OFFNAV_ROUTES]).not.toContain(BOOST_ROUTE);
   });
+
+  it("is exempt from the provider verification/subscription proxy gates (page stays reachable)", () => {
+    const proxy = readFileSync(path.join(process.cwd(), "src/proxy.ts"), "utf8");
+    const start = proxy.indexOf("PROVIDER_OPEN_PREFIXES");
+    const openPrefixesBlock = proxy.slice(start, proxy.indexOf("isProviderOpenPage", start));
+    // Boost is a sales/eligibility page; it must be reachable so a provider can
+    // see what they'd get and the in-page eligibility banner. Purchase is gated
+    // server-side, not by hiding the page.
+    expect(openPrefixesBlock).toContain(BOOST_ROUTE);
+  });
 });

@@ -233,7 +233,7 @@ describe("middleware: subscription gate", () => {
           active_role: "agent",
           is_admin: false,
           admin_role: null,
-          provider_verification_status: "approved",
+          provider_verification_status: "verified",
           verification_level: "professional",
         },
         error: null,
