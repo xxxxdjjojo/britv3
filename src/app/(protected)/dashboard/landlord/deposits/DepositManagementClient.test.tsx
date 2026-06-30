@@ -55,7 +55,6 @@ const MOCK_DEPOSITS = [
   {
     id: "d1",
     tenancy_id: "t1",
-    landlord_id: "11111111-1111-1111-1111-111111111111",
     amount: 1500,
     scheme: "TDS" as const,
     scheme_reference: "TDS-12345",
@@ -73,7 +72,6 @@ const MOCK_DEPOSITS = [
   {
     id: "d2",
     tenancy_id: "t1",
-    landlord_id: "22222222-2222-2222-2222-222222222222",
     amount: 875,
     scheme: "DPS" as const,
     scheme_reference: null,

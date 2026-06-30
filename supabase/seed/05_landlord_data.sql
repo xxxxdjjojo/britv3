@@ -448,7 +448,7 @@ BEGIN
   RAISE NOTICE 'Inserting deposit_registrations...';
 
   INSERT INTO deposit_registrations (
-    id, tenancy_id, landlord_id,
+    id, tenancy_id,
     amount, scheme, scheme_reference,
     registration_date, prescribed_info_sent_date,
     status, notes,
@@ -456,7 +456,7 @@ BEGIN
   ) VALUES
     -- Deposit 1: Sophie's deposit at Canary Riverside — registered with DPS
     (
-      v_dep1, v_tenancy1, v_landlord_id,
+      v_dep1, v_tenancy1,
       2538.46, 'DPS', 'DPS-2025-LM-009281',
       '2025-06-08', '2025-06-10',
       'registered',
@@ -465,7 +465,7 @@ BEGIN
     ),
     -- Deposit 2: James's deposit at Whitechapel — registered with TDS
     (
-      v_dep2, v_tenancy2, v_landlord_id,
+      v_dep2, v_tenancy2,
       2019.23, 'TDS', 'TDS-2025-MC-047553',
       '2025-09-05', '2025-09-08',
       'registered',

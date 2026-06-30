@@ -259,7 +259,6 @@ export type TenantApplication = {
 export type DepositRegistration = {
   id: string;
   tenancy_id: string;
-  landlord_id: string;
   amount: number;
   scheme: DepositScheme;
   scheme_reference: string | null;

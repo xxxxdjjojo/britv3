@@ -8,13 +8,12 @@ import type { DepositRegistration } from "@/types/landlord";
 
 // -- Service functions -------------------------------------------------------
 
-/**
- * Create a new deposit registration record.
- */
-export async function createDepositRegistration(
-  supabase: SupabaseClient,
-  data: Omit<DepositRegistration, "id" | "created_at" | "updated_at">,
-): Promise<DepositRegistration> {
+type DepositRegistrationInput =
+  Omit<DepositRegistration, "id" | "created_at" | "updated_at" | "landlord_id"> & {
+    landlord_id?: string;
+  };
+
+async function getAuthenticatedUserId(supabase: SupabaseClient): Promise<string> {
   const {
     data: { user },
     error: authError,
@@ -24,12 +23,64 @@ export async function createDepositRegistration(
     throw new Error("Authentication required");
   }
 
+  return user.id;
+}
+
+async function requireOwnedTenancy(
+  supabase: SupabaseClient,
+  userId: string,
+  tenancyId: string,
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("tenancies")
+    .select("id")
+    .eq("id", tenancyId)
+    .eq("landlord_id", userId)
+    .single();
+
+  if (error || !data) {
+    throw new Error("Tenancy not found");
+  }
+}
+
+async function getOwnedTenancyIds(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("tenancies")
+    .select("id")
+    .eq("landlord_id", userId);
+
+  if (error) {
+    throw new Error(`Failed to fetch tenancies: ${error.message}`);
+  }
+
+  return (data ?? []).map((tenancy) => tenancy.id as string);
+}
+
+function withoutOwnershipFields(
+  updates: Partial<DepositRegistrationInput>,
+): Partial<DepositRegistrationInput> {
+  const { landlord_id: _landlordId, tenancy_id: _tenancyId, ...safeUpdates } = updates;
+  return safeUpdates;
+}
+
+/**
+ * Create a new deposit registration record.
+ */
+export async function createDepositRegistration(
+  supabase: SupabaseClient,
+  data: DepositRegistrationInput,
+): Promise<DepositRegistration> {
+  const userId = await getAuthenticatedUserId(supabase);
+  await requireOwnedTenancy(supabase, userId, data.tenancy_id);
+
+  const { landlord_id: _landlordId, ...insertData } = data;
+
   const { data: record, error } = await supabase
     .from("deposit_registrations")
-    .insert({
-      ...data,
-      landlord_id: user.id,
-    })
+    .insert(insertData)
     .select()
     .single();
 
@@ -50,20 +101,13 @@ export async function getDepositByTenancy(
   supabase: SupabaseClient,
   tenancyId: string,
 ): Promise<DepositRegistration | null> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Authentication required");
-  }
+  const userId = await getAuthenticatedUserId(supabase);
+  await requireOwnedTenancy(supabase, userId, tenancyId);
 
   const { data, error } = await supabase
     .from("deposit_registrations")
     .select("*")
     .eq("tenancy_id", tenancyId)
-    .eq("landlord_id", user.id)
     .single();
 
   if (error) {
@@ -85,23 +129,21 @@ export async function updateDeposit(
   depositId: string,
   updates: Partial<DepositRegistration>,
 ): Promise<DepositRegistration> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const userId = await getAuthenticatedUserId(supabase);
+  const tenancyIds = await getOwnedTenancyIds(supabase, userId);
 
-  if (authError || !user) {
-    throw new Error("Authentication required");
+  if (tenancyIds.length === 0) {
+    throw new Error("No tenancies found");
   }
 
   const { data, error } = await supabase
     .from("deposit_registrations")
     .update({
-      ...updates,
+      ...withoutOwnershipFields(updates as Partial<DepositRegistrationInput>),
       updated_at: new Date().toISOString(),
     })
     .eq("id", depositId)
-    .eq("landlord_id", user.id)
+    .in("tenancy_id", tenancyIds)
     .select()
     .single();
 
@@ -191,19 +233,17 @@ export async function getDepositComplianceCounts(
 export async function listDeposits(
   supabase: SupabaseClient,
 ): Promise<DepositRegistration[]> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const userId = await getAuthenticatedUserId(supabase);
+  const tenancyIds = await getOwnedTenancyIds(supabase, userId);
 
-  if (authError || !user) {
-    throw new Error("Authentication required");
+  if (tenancyIds.length === 0) {
+    return [];
   }
 
   const { data, error } = await supabase
     .from("deposit_registrations")
     .select("*")
-    .eq("landlord_id", user.id)
+    .in("tenancy_id", tenancyIds)
     .order("created_at", { ascending: false });
 
   if (error) {
