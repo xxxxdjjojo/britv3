@@ -763,6 +763,109 @@ export async function sendNewEnquiry(params: {
 }
 
 // ---------------------------------------------------------------------------
+// Trade invoice → customer (with secure pay link)
+// ---------------------------------------------------------------------------
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/**
+ * Email a customer their trade invoice with a secure, account-free pay link.
+ * Transactional (not pref-gated); best-effort — never throws.
+ */
+export async function sendTradeInvoice(params: {
+  userId: string;
+  email: string;
+  customerName?: string;
+  providerName: string;
+  invoiceNumber: string;
+  amountFormatted: string;
+  payUrl: string;
+  dueDate?: string | null;
+}): Promise<void> {
+  const name = escapeHtml(params.customerName || "there");
+  const provider = escapeHtml(params.providerName);
+  const due = params.dueDate ? `<p style="color:#6b7280;font-size:14px">Due ${escapeHtml(params.dueDate)}</p>` : "";
+  const html = `<div style="font-family:Inter,system-ui,sans-serif;max-width:520px;margin:0 auto">
+    <div style="background:#1B4D3E;color:#fff;padding:16px 24px;border-radius:12px 12px 0 0;font-weight:600">TrueDeed</div>
+    <div style="border:1px solid #e5e7eb;border-top:0;padding:24px;border-radius:0 0 12px 12px">
+      <p>Hi ${name},</p>
+      <p>${provider} has sent you invoice <strong>${escapeHtml(params.invoiceNumber)}</strong>.</p>
+      <p style="font-size:24px;font-weight:700;margin:16px 0">${escapeHtml(params.amountFormatted)}</p>
+      ${due}
+      <a href="${params.payUrl}" style="display:inline-block;background:#1B4D3E;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600">Pay invoice securely</a>
+      <p style="color:#9ca3af;font-size:12px;margin-top:24px">Secured by Stripe · Powered by TrueDeed</p>
+    </div>
+  </div>`;
+
+  try {
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: `Invoice ${params.invoiceNumber} from ${params.providerName} — ${params.amountFormatted}`,
+      html,
+    });
+    if (error) throw error;
+    await logEmail({ userId: params.userId, template: "trade-invoice", recipient: params.email, resendId: data?.id, status: "sent" });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({ userId: params.userId, template: "trade-invoice", recipient: params.email, status: "failed", errorMessage: message });
+    console.error("[email-service] sendTradeInvoice failed", message);
+  }
+}
+
+/**
+ * Notify a trader of their verification outcome. Transactional; best-effort.
+ */
+export async function sendVerificationOutcome(params: {
+  userId: string;
+  email: string;
+  firstName?: string;
+  outcome: "approved" | "rejected" | "needs_more_info";
+  notes?: string;
+}): Promise<void> {
+  const name = escapeHtml(params.firstName || "there");
+  const dashboardUrl = `${BASE_URL}/dashboard/provider/verification`;
+  const copy: Record<typeof params.outcome, { subject: string; body: string }> = {
+    approved: {
+      subject: "You're verified — start sending quotes and invoices",
+      body: `<p>Good news ${name} — your trader account has been approved. You can now send quotes, issue invoices and take payment.</p>`,
+    },
+    rejected: {
+      subject: "Update on your TrueDeed verification",
+      body: `<p>Hi ${name}, we were unable to approve your trader account at this time.${params.notes ? ` Reason: ${escapeHtml(params.notes)}.` : ""}</p>`,
+    },
+    needs_more_info: {
+      subject: "We need a bit more information to verify you",
+      body: `<p>Hi ${name}, we need more information to complete your verification.${params.notes ? ` ${escapeHtml(params.notes)}` : ""}</p>`,
+    },
+  };
+  const c = copy[params.outcome];
+  const html = `<div style="font-family:Inter,system-ui,sans-serif;max-width:520px;margin:0 auto">
+    <div style="background:#1B4D3E;color:#fff;padding:16px 24px;border-radius:12px 12px 0 0;font-weight:600">TrueDeed</div>
+    <div style="border:1px solid #e5e7eb;border-top:0;padding:24px;border-radius:0 0 12px 12px">
+      ${c.body}
+      <p><a href="${dashboardUrl}" style="color:#1B4D3E;font-weight:600">View your verification</a></p>
+    </div>
+  </div>`;
+
+  try {
+    const { data, error } = await resendSend({ from: FROM, to: params.email, subject: c.subject, html });
+    if (error) throw error;
+    await logEmail({ userId: params.userId, template: `verification-${params.outcome}`, recipient: params.email, resendId: data?.id, status: "sent" });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({ userId: params.userId, template: `verification-${params.outcome}`, recipient: params.email, status: "failed", errorMessage: message });
+    console.error("[email-service] sendVerificationOutcome failed", message);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 10. Review Received
 // ---------------------------------------------------------------------------
 

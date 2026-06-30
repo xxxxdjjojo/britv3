@@ -231,6 +231,46 @@ export async function updateInvoice(
 }
 
 // ---------------------------------------------------------------------------
+// sendInvoice
+// ---------------------------------------------------------------------------
+
+/**
+ * Transition an invoice to 'sent' so it can be paid by the customer.
+ * Idempotent for an already-sent invoice (allows re-sending). Rejects paid or
+ * cancelled invoices. Returns the updated invoice.
+ */
+export async function sendInvoice(
+  supabase: SupabaseClient,
+  providerId: string,
+  invoiceId: string,
+): Promise<ProviderInvoice> {
+  const { data: existing, error: fetchError } = await supabase
+    .from("provider_invoices")
+    .select("*")
+    .eq("id", invoiceId)
+    .eq("provider_id", providerId)
+    .maybeSingle();
+
+  if (fetchError) throw new Error(`Failed to fetch invoice: ${fetchError.message}`);
+  if (!existing) throw new Error("Invoice not found");
+
+  const invoice = existing as ProviderInvoice;
+  if (invoice.status === "paid") throw new Error("Invoice is already paid");
+  if (invoice.status === "cancelled") throw new Error("Cannot send a cancelled invoice");
+
+  const { data, error } = await supabase
+    .from("provider_invoices")
+    .update({ status: "sent" as InvoiceStatus, updated_at: new Date().toISOString() })
+    .eq("id", invoiceId)
+    .eq("provider_id", providerId)
+    .select("*")
+    .single();
+
+  if (error) throw new Error(`Failed to send invoice: ${error.message}`);
+  return data as ProviderInvoice;
+}
+
+// ---------------------------------------------------------------------------
 // markInvoicePaid
 // ---------------------------------------------------------------------------
 

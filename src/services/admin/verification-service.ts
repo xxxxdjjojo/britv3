@@ -54,7 +54,6 @@ export async function reviewVerification(
   // unverified|pending_review|verified|suspended|rejected). "approved" maps to
   // the enum's "verified". profiles has no notes column, so review notes are not
   // persisted here.
-  void notes;
   const update: Record<string, unknown> = {
     provider_verification_status: decision === "approved" ? "verified" : "rejected",
   };
@@ -64,5 +63,29 @@ export async function reviewVerification(
     .update(update)
     .eq("id", userId);
 
-  return { success: !error };
+  if (error) return { success: false };
+
+  // Best-effort: notify the trader of the outcome. Never fail the review.
+  try {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email, first_name")
+      .eq("id", userId)
+      .maybeSingle();
+    const email = (profile as { email?: string } | null)?.email;
+    if (email) {
+      const { sendVerificationOutcome } = await import("@/services/email/email-service");
+      await sendVerificationOutcome({
+        userId,
+        email,
+        firstName: (profile as { first_name?: string } | null)?.first_name,
+        outcome: decision,
+        notes,
+      });
+    }
+  } catch {
+    // best-effort notification
+  }
+
+  return { success: true };
 }
