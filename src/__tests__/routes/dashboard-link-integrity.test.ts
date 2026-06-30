@@ -164,6 +164,11 @@ const ROLE_DASHBOARD_SURFACES: ReadonlyArray<readonly [string, string]> = [
   ["provider", "app/(protected)/dashboard/provider/page.tsx"],
 ];
 
+const AGENT_DASHBOARD_SOURCE_DIRS = [
+  path.join(SRC_ROOT, "app/(protected)/dashboard/agent"),
+  path.join(SRC_ROOT, "components/dashboard/agent"),
+];
+
 /** Does a source file declare an href to `/inbox` (the canonical inbox route)? */
 function linksToInbox(src: string): boolean {
   // href="/inbox", href={"/inbox"}, href: "/inbox", or via the shared
@@ -189,6 +194,71 @@ describe("dashboard messages entry point", () => {
 
   it("/inbox is a real route", () => {
     expect(resolveAppRoute("/inbox")).not.toBeNull();
+  });
+});
+
+describe("agent listing creation links", () => {
+  it("the live agent dashboard links listing creation to /dashboard/agent/listings/create", () => {
+    const src = readFileSync(
+      path.join(SRC_ROOT, "components/dashboard/agent/AgentDashboardHome.tsx"),
+      "utf8",
+    );
+
+    expect(extractHrefs(src)).toContain("/dashboard/agent/listings/create");
+  });
+
+  it("agent dashboard source does not hard-code the legacy /dashboard/agent/listings/new route", () => {
+    const offenders = AGENT_DASHBOARD_SOURCE_DIRS.flatMap((dir) =>
+      collectSourceFiles(dir),
+    ).filter((file) =>
+      readFileSync(file, "utf8").includes("/dashboard/agent/listings/new"),
+    );
+
+    expect(
+      offenders.map((file) => path.relative(SRC_ROOT, file)).sort(),
+      "Agent dashboard source must link the canonical CreateListingWizard route: /dashboard/agent/listings/create",
+    ).toEqual([]);
+  });
+});
+
+describe("landlord compliance and maintenance action links", () => {
+  it("landlord compliance action destinations resolve to concrete compliance pages", () => {
+    const expectedRoutes = [
+      "/dashboard/landlord/compliance",
+      "/dashboard/landlord/compliance/alerts",
+      "/dashboard/landlord/compliance/matrix",
+      "/dashboard/landlord/compliance/upload",
+    ];
+
+    for (const href of expectedRoutes) {
+      const resolved = resolveAppRoute(href);
+      expect(resolved, `${href} should resolve to a landlord compliance page`).toContain(
+        `${path.sep}landlord${path.sep}compliance${path.sep}`,
+      );
+      expect(resolved, `${href} should not resolve through a dynamic catch-all`).not.toContain(
+        `${path.sep}[`,
+      );
+    }
+  });
+
+  it("the portfolio maintenance New Request link resolves to a real create page", () => {
+    const src = readFileSync(
+      path.join(
+        SRC_ROOT,
+        "app/(protected)/dashboard/landlord/maintenance/MaintenanceInboxClient.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(extractHrefs(src)).toContain("/dashboard/landlord/maintenance/new");
+
+    const resolved = resolveAppRoute("/dashboard/landlord/maintenance/new");
+    expect(
+      resolved,
+      "/dashboard/landlord/maintenance/new must not be handled as maintenance/[id]",
+    ).toContain(
+      `${path.sep}landlord${path.sep}maintenance${path.sep}new${path.sep}page.tsx`,
+    );
   });
 });
 
