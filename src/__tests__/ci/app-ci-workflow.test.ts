@@ -3,6 +3,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const WORKFLOWS_DIR = join(process.cwd(), ".github", "workflows");
+const PACKAGE_JSON = join(process.cwd(), "package.json");
 
 function readWorkflowSources(): string[] {
   if (!existsSync(WORKFLOWS_DIR)) return [];
@@ -28,5 +29,18 @@ describe("app CI workflow contract", () => {
     expect(appCiWorkflow).toContain("e2e/navigation.spec.ts");
     expect(appCiWorkflow).toContain("e2e/dashboard-navigation.spec.ts");
     expect(appCiWorkflow).toContain("--project=chromium");
+  });
+
+  it("runs route integrity as an independently requireable pull-request check", () => {
+    const packageJson = JSON.parse(readFileSync(PACKAGE_JSON, "utf8")) as {
+      scripts?: Record<string, string>;
+    };
+    const workflows = readWorkflowSources();
+    const appCiWorkflow = workflows.find((source) => source.includes("name: App CI"));
+
+    expect(packageJson.scripts?.["test:routes"]).toBe("vitest run src/__tests__/routes");
+    expect(appCiWorkflow, "missing app CI workflow").toBeDefined();
+    expect(appCiWorkflow).toContain("route-integrity:");
+    expect(appCiWorkflow).toContain("pnpm test:routes");
   });
 });
