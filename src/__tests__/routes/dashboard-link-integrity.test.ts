@@ -192,6 +192,47 @@ describe("dashboard messages entry point", () => {
   });
 });
 
+describe("landlord compliance and maintenance action links", () => {
+  it("landlord compliance action destinations resolve to concrete compliance pages", () => {
+    const expectedRoutes = [
+      "/dashboard/landlord/compliance",
+      "/dashboard/landlord/compliance/alerts",
+      "/dashboard/landlord/compliance/matrix",
+      "/dashboard/landlord/compliance/upload",
+    ];
+
+    for (const href of expectedRoutes) {
+      const resolved = resolveAppRoute(href);
+      expect(resolved, `${href} should resolve to a landlord compliance page`).toContain(
+        `${path.sep}landlord${path.sep}compliance${path.sep}`,
+      );
+      expect(resolved, `${href} should not resolve through a dynamic catch-all`).not.toContain(
+        `${path.sep}[`,
+      );
+    }
+  });
+
+  it("the portfolio maintenance New Request link resolves to a real create page", () => {
+    const src = readFileSync(
+      path.join(
+        SRC_ROOT,
+        "app/(protected)/dashboard/landlord/maintenance/MaintenanceInboxClient.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(extractHrefs(src)).toContain("/dashboard/landlord/maintenance/new");
+
+    const resolved = resolveAppRoute("/dashboard/landlord/maintenance/new");
+    expect(
+      resolved,
+      "/dashboard/landlord/maintenance/new must not be handled as maintenance/[id]",
+    ).toContain(
+      `${path.sep}landlord${path.sep}maintenance${path.sep}new${path.sep}page.tsx`,
+    );
+  });
+});
+
 describe("dashboard link integrity", () => {
   it("every hard-coded dashboard href resolves to a real route", () => {
     const files = SCAN_DIRS.flatMap((d) => collectSourceFiles(d));

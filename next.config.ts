@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const repoRoot = dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: repoRoot,
+  },
   // Packages that read their own on-disk assets via Node APIs and must NOT be
   // bundled into serverless chunks (the bundler rewrites their __dirname so the
   // assets ENOENT at runtime). Keeping them external lets `require()` resolve

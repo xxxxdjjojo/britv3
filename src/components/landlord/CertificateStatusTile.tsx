@@ -49,37 +49,37 @@ export default function CertificateStatusTile({
       <Card className={`h-full border-2 ${borderClass}`}>
         <CardContent className="p-5">
           {/* Header row */}
-          <div className="mb-3 flex items-start justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
+          <div className="mb-3">
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
                 <Icon className="size-5 text-foreground" />
               </div>
-              <div>
-                <p className="text-sm font-semibold leading-tight">
-                  {meta.label}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {meta.description}
-                </p>
-              </div>
-            </div>
 
-            {/* Status pill */}
-            {hasExpired && (
-              <Badge className="shrink-0 border-0 bg-error-light text-error">
-                {expired} expired
-              </Badge>
-            )}
-            {hasExpiringSoon && (
-              <Badge className="shrink-0 border-0 bg-warning-light text-warning">
-                {expiringSoon} expiring soon
-              </Badge>
-            )}
-            {isAllCompliant && (
-              <Badge className="shrink-0 border-0 bg-success-light text-success">
-                All compliant
-              </Badge>
-            )}
+              {/* Status pill */}
+              {hasExpired && (
+                <Badge className="shrink-0 border-0 bg-error-light text-error">
+                  {expired} expired
+                </Badge>
+              )}
+              {hasExpiringSoon && (
+                <Badge className="shrink-0 border-0 bg-warning-light text-warning">
+                  {expiringSoon} expiring soon
+                </Badge>
+              )}
+              {isAllCompliant && (
+                <Badge className="shrink-0 border-0 bg-success-light text-success">
+                  All compliant
+                </Badge>
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold leading-tight">
+                {meta.label}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {meta.description}
+              </p>
+            </div>
           </div>
 
           {/* Count breakdown */}

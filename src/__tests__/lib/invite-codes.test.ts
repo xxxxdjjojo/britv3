@@ -3,7 +3,7 @@
 // MEMO PIVOT v2 — invite-only seed onboarding for the first 50 trades,
 // 10 agents, 20 developers.
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 import {
   generateInviteCode,
@@ -47,6 +47,36 @@ describe("generateInviteCode", () => {
       seen.add(code);
     }
     expect(seen.size).toBe(1_000);
+  });
+
+  it("returns a redeemable code for arbitrary random bytes", async () => {
+    vi.resetModules();
+    const mockedRandomBytes = vi.fn((size: number) =>
+      Buffer.alloc(size, 255),
+    );
+    vi.doMock("node:crypto", async (importOriginal) => {
+      const actual = await importOriginal<typeof import("node:crypto")>();
+      return {
+        ...actual,
+        default: {
+          ...actual,
+          randomBytes: mockedRandomBytes,
+        },
+        randomBytes: mockedRandomBytes,
+      };
+    });
+
+    const invites = await import("@/lib/invite-codes");
+    invites.__resetInviteStoreForTests();
+
+    const code = invites.generateInviteCode("developer");
+
+    expect(code).toMatch(/^BRIT-DEVELOPER-[A-Z0-9]{8}$/);
+    await expect(
+      invites.validateInviteCode(code, { skipPersistence: true }),
+    ).resolves.toMatchObject({ audience: "developer" });
+
+    vi.doUnmock("node:crypto");
   });
 });
 

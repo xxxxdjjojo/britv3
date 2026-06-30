@@ -30,6 +30,7 @@ jobs:
       QUOTE_SIGNING_SECRET: "ci-quote-signing-secret"
       NEXT_PUBLIC_ENABLE_SEARCH_LIVE_DATA: "false"
       PERF_BASE_URL: "http://localhost:3004"
+      PLAYWRIGHT_SKIP_WEB_SERVER: "true"
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -56,7 +57,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Route-status guard (e2e/perf)
-        run: pnpm exec playwright test e2e/perf/critical-routes-status.spec.ts --project=chromium
+        run: pnpm exec playwright test e2e/perf/critical-routes-status.spec.ts --project=chromium --no-deps
 
       - name: Lighthouse CI (report-only)
         run: npx --yes @lhci/cli@0.14.x autorun

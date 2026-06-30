@@ -13,7 +13,6 @@ function buildDeposit(
   return {
     id: "dep-1",
     tenancy_id: "ten-1",
-    landlord_id: "user-1",
     amount: 1500,
     scheme: "TDS",
     scheme_reference: "TDS123456",

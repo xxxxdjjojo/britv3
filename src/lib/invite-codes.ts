@@ -42,10 +42,9 @@ export function generateInviteCode(audience: InviteAudience): string {
     throw new Error(`Unknown invite audience: ${audience}`);
   }
   const prefix = AUDIENCE_PREFIX[audience];
-  // 6 base32 chars = ~30 bits of entropy; collision per 1k generations is
-  // ~10^-6 — fine for a seed batch capped at 80.
-  const random = randomBytes(8).toString("base64").replace(/[^A-Z0-9]/gi, "").slice(0, 8).toUpperCase();
-  return `BRIT-${prefix}-${random || "AAAAAA"}`;
+  // 8 hex chars = 32 bits of entropy and always matches CODE_REGEX.
+  const random = randomBytes(4).toString("hex").toUpperCase();
+  return `BRIT-${prefix}-${random}`;
 }
 
 interface ValidateResult {

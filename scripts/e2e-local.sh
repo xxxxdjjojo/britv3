@@ -26,31 +26,55 @@ PORT="${E2E_PORT:-3100}"
 export PORT
 export E2E_BASE_URL="http://localhost:${PORT}"
 
+SUPABASE_E2E_EXCLUDE_SERVICES="${SUPABASE_E2E_EXCLUDE_SERVICES:-realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor}"
+
+load_supabase_env() {
+  local status_env
+  status_env="$(supabase status -o env 2>/dev/null | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=' || true)"
+  eval "$status_env"
+}
+
 echo "==> [1/4] Ensuring local Supabase is running"
-supabase start >/dev/null 2>&1 || true   # idempotent; no-op if already up
+echo "    excluding nonessential services: $SUPABASE_E2E_EXCLUDE_SERVICES"
+supabase start --exclude "$SUPABASE_E2E_EXCLUDE_SERVICES"
+
+load_supabase_env
+if [ -z "${API_URL:-}" ] || [ -z "${ANON_KEY:-}" ] || [ -z "${SERVICE_ROLE_KEY:-}" ]; then
+  echo "[e2e-local] FATAL: Supabase local stack is not running"
+  exit 1
+fi
 
 echo "==> [2/4] Resetting local DB (applies all migrations)"
 supabase db reset
 
 echo "==> [3/4] Seeding all-role test users"
 # Map machine-readable local status to the names the app + seed expect.
-eval "$(supabase status -o env 2>/dev/null | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=')"
+load_supabase_env
 export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
 export NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY"
 export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
+LDB="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+
+echo "    restoring service_role grants for deterministic local seed..."
+psql "$LDB" >/dev/null <<'SQL'
+grant usage on schema public to service_role;
+grant all privileges on all tables in schema public to service_role;
+grant all privileges on all sequences in schema public to service_role;
+grant execute on all functions in schema public to service_role;
+SQL
 
 # `supabase db reset` restarts the containers and returns before PostgREST has
 # reloaded its schema cache for the new schema. Seeding immediately races that
 # reload and the table/RPC writes fail with PGRST002 ("Could not query the
 # database for the schema cache"), which leaves roles/subscriptions unseeded and
 # makes the gate non-deterministic. Nudge a reload and wait until PostgREST
-# answers a real query before seeding.
-psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
-  -c "NOTIFY pgrst, 'reload schema';" >/dev/null 2>&1 || true
+# answers at its schema root before seeding. Avoid table-level probes here:
+# grants/RLS can return 401/403 even when PostgREST is ready.
+psql "$LDB" -c "NOTIFY pgrst, 'reload schema';" >/dev/null 2>&1 || true
 echo "    waiting for PostgREST schema cache..."
 for _ in $(seq 1 60); do
   code=$(curl -s -o /dev/null -w '%{http_code}' \
-    "$API_URL/rest/v1/profiles?select=id&limit=1" \
+    "$API_URL/rest/v1/" \
     -H "apikey: $SERVICE_ROLE_KEY" -H "Authorization: Bearer $SERVICE_ROLE_KEY")
   [ "$code" = "200" ] && break
   sleep 1
@@ -66,7 +90,6 @@ SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
 # seed failure. Verify the state the gate depends on: all 7 non-admin roles
 # assigned and the 3 gated roles carry an active subscription.
 echo "    verifying seeded state..."
-LDB="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 roles=$(psql "$LDB" -tAc "select count(distinct active_role) from public.profiles where active_role in ('homebuyer','renter','seller','landlord','agent','service_provider','mortgage_broker');")
 subs=$(psql "$LDB" -tAc "select count(*) from public.subscriptions s join public.profiles p on p.id=s.user_id where p.active_role in ('landlord','agent','service_provider') and s.status='active';")
 if [ "${roles:-0}" -lt 7 ] || [ "${subs:-0}" -lt 3 ]; then

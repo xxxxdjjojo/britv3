@@ -13,6 +13,78 @@ on:
   workflow_dispatch:
 
 jobs:
+  route-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Route integrity
+        run: pnpm test:routes
+
+  landlord-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      SKIP_ENV_VALIDATION: "true"
+      STRIPE_SECRET_KEY: "sk_test_ci"
+      STRIPE_WEBHOOK_SECRET: "whsec_ci"
+      QUOTE_SIGNING_SECRET: "ci-quote-signing-secret"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.108.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Landlord maintenance/compliance smoke
+        run: scripts/e2e-local.sh landlord-maintenance-compliance-smoke
+
+      - name: Upload landlord smoke report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: landlord-smoke-playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload landlord smoke screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: landlord-smoke-test-results
+          path: test-results/
+          if-no-files-found: ignore
+
   app:
     runs-on: ubuntu-latest
     env:

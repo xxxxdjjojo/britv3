@@ -92,6 +92,25 @@ describe("CertificateStatusTile — valid/expiring/expired categorisation", () =
     expect(screen.getByText("All compliant")).toBeInTheDocument();
   });
 
+  it("keeps long category labels from clipping the status pill", () => {
+    render(
+      <CertificateStatusTile
+        category="epc"
+        totalProperties={1}
+        expired={0}
+        expiringSoon={0}
+        valid={4}
+      />,
+    );
+
+    const badge = screen.getByText("All compliant");
+    const labelColumn = screen.getByText("Energy Performance").parentElement;
+
+    expect(badge.parentElement).toHaveClass("justify-between");
+    expect(labelColumn).toHaveClass("min-w-0");
+    expect(labelColumn?.parentElement).toHaveClass("mb-3");
+  });
+
   it("renders the category label and pluralised property footer", () => {
     render(
       <CertificateStatusTile

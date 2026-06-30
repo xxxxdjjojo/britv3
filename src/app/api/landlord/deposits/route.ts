@@ -56,7 +56,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as Record<string, unknown>;
     const deposit = await createDepositRegistration(supabase, {
       tenancy_id: String(body.tenancy_id ?? ""),
-      landlord_id: user.id,
       amount: Number(body.amount ?? 0),
       scheme: body.scheme as "TDS" | "DPS" | "mydeposits" | "other",
       scheme_reference: body.scheme_reference ? String(body.scheme_reference) : null,
