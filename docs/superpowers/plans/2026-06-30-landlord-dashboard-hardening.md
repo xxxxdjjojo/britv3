@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make landlord compliance/maintenance failures permanently harder to reintroduce by gating dashboard routes in CI, removing deposit ownership schema drift, and adding landlord Playwright smoke coverage.
+**Goal:** Make landlord compliance/maintenance failures permanently harder to reintroduce by gating dashboard routes in CI, removing deposit ownership schema drift, adding landlord Playwright smoke coverage, and making the seeded local E2E runner reliable enough to be a required gate.
 
-**Architecture:** Route safety is enforced by a dedicated `test:routes` script and a separate `route-integrity` CI job so branch protection can require it independently. Deposit authorization is normalized around `deposit_registrations.tenancy_id -> tenancies.landlord_id`; app code and RLS stop relying on a duplicated `deposit_registrations.landlord_id`. Landlord smoke coverage uses the existing Playwright auth fixture and screenshot artifact paths.
+**Architecture:** Route safety is enforced by a dedicated `test:routes` script and a separate `route-integrity` CI job so branch protection can require it independently. Deposit authorization is normalized around `deposit_registrations.tenancy_id -> tenancies.landlord_id`; app code and RLS stop relying on a duplicated `deposit_registrations.landlord_id`. Landlord smoke coverage uses the existing Playwright auth fixture and screenshot artifact paths. The local Supabase runner boots only the services needed for auth-backed dashboard smoke tests and fails at startup with a clear diagnostic before attempting `db reset`.
 
 **Tech Stack:** Next.js App Router, Vitest, GitHub Actions, Supabase SQL/RLS, Playwright.
 
@@ -175,7 +175,7 @@ Add a CI step after Chromium install:
 
 ```yaml
 - name: Landlord maintenance/compliance smoke
-  run: pnpm exec playwright test e2e/landlord-maintenance-compliance-smoke.spec.ts --project=chromium
+  run: scripts/e2e-local.sh landlord-maintenance-compliance-smoke
 ```
 
 Keep artifacts uploaded from `test-results/`.
@@ -201,17 +201,69 @@ git add e2e/landlord-maintenance-compliance-smoke.spec.ts .github/workflows/app-
 git commit -m "test(e2e): smoke landlord compliance and maintenance"
 ```
 
+### Task 4: Local E2E Runner Bootstrap Hardening
+
+**Files:**
+- Modify: `scripts/e2e-local.sh`
+- Create: `src/__tests__/ci/local-e2e-runner.test.ts`
+
+- [ ] **Step 1: Write the failing runner contract**
+
+Add a static CI contract test that requires:
+- `SUPABASE_E2E_EXCLUDE_SERVICES` exists.
+- `supabase start --exclude` is used.
+- nonessential services (`realtime`, `storage-api`, `imgproxy`, `mailpit`, `postgres-meta`, `studio`, `edge-runtime`, `logflare`, `vector`, `supavisor`) are excluded.
+- Auth/API services (`gotrue`, `kong`, `postgrest`) are not excluded.
+- the script checks `supabase status -o env` before `supabase db reset`.
+- the old hidden startup pattern `supabase start >/dev/null 2>&1 || true` is absent.
+
+Run:
+
+```bash
+corepack pnpm vitest run src/__tests__/ci/local-e2e-runner.test.ts
+```
+
+Expected: FAIL until the runner is hardened.
+
+- [ ] **Step 2: Implement minimal-service startup**
+
+Update `scripts/e2e-local.sh` so `supabase start` is visible and uses:
+
+```bash
+SUPABASE_E2E_EXCLUDE_SERVICES="${SUPABASE_E2E_EXCLUDE_SERVICES:-realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor}"
+supabase start --exclude "$SUPABASE_E2E_EXCLUDE_SERVICES"
+```
+
+Load `API_URL`, `ANON_KEY`, and `SERVICE_ROLE_KEY` from `supabase status -o env` immediately after startup. If any are missing, exit with `[e2e-local] FATAL: Supabase local stack is not running` before `supabase db reset`.
+
+- [ ] **Step 3: Verify and commit**
+
+Run:
+
+```bash
+corepack pnpm vitest run src/__tests__/ci/local-e2e-runner.test.ts src/__tests__/ci/app-ci-workflow.test.ts
+```
+
+Expected: PASS.
+
+Commit:
+
+```bash
+git add scripts/e2e-local.sh src/__tests__/ci/local-e2e-runner.test.ts docs/superpowers/plans/2026-06-30-landlord-dashboard-hardening.md
+git commit -m "ci(e2e): harden local supabase smoke runner"
+```
+
 ### Final Verification
 
 Run:
 
 ```bash
 corepack pnpm test:routes
-corepack pnpm vitest run src/__tests__/ci/app-ci-workflow.test.ts src/__tests__/services/landlord/deposit-service.test.ts src/__tests__/supabase/deposit-rls-contract.test.ts src/__tests__/lib/invite-codes.test.ts
+corepack pnpm vitest run src/__tests__/ci/app-ci-workflow.test.ts src/__tests__/ci/local-e2e-runner.test.ts src/__tests__/services/landlord/deposit-service.test.ts src/__tests__/supabase/deposit-rls-contract.test.ts src/__tests__/lib/invite-codes.test.ts
 corepack pnpm typecheck
 corepack pnpm lint
 corepack pnpm build
 pnpm exec playwright test e2e/landlord-maintenance-compliance-smoke.spec.ts --project=chromium
 ```
 
-Expected: all commands exit 0; lint may retain existing warnings but no errors.
+Expected: all commands exit 0; lint may retain existing warnings but no errors. `scripts/e2e-local.sh landlord-maintenance-compliance-smoke` is the CI gate and requires Docker locally.

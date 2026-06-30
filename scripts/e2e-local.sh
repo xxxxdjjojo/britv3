@@ -26,15 +26,30 @@ PORT="${E2E_PORT:-3100}"
 export PORT
 export E2E_BASE_URL="http://localhost:${PORT}"
 
+SUPABASE_E2E_EXCLUDE_SERVICES="${SUPABASE_E2E_EXCLUDE_SERVICES:-realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor}"
+
+load_supabase_env() {
+  local status_env
+  status_env="$(supabase status -o env 2>/dev/null | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=' || true)"
+  eval "$status_env"
+}
+
 echo "==> [1/4] Ensuring local Supabase is running"
-supabase start >/dev/null 2>&1 || true   # idempotent; no-op if already up
+echo "    excluding nonessential services: $SUPABASE_E2E_EXCLUDE_SERVICES"
+supabase start --exclude "$SUPABASE_E2E_EXCLUDE_SERVICES"
+
+load_supabase_env
+if [ -z "${API_URL:-}" ] || [ -z "${ANON_KEY:-}" ] || [ -z "${SERVICE_ROLE_KEY:-}" ]; then
+  echo "[e2e-local] FATAL: Supabase local stack is not running"
+  exit 1
+fi
 
 echo "==> [2/4] Resetting local DB (applies all migrations)"
 supabase db reset
 
 echo "==> [3/4] Seeding all-role test users"
 # Map machine-readable local status to the names the app + seed expect.
-eval "$(supabase status -o env 2>/dev/null | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=')"
+load_supabase_env
 export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
 export NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY"
 export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
