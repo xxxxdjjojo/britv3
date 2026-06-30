@@ -31,6 +31,8 @@ import {
   CreditCard,
   Tag,
   Mail,
+  Megaphone,
+  Sparkles,
   UserCheck,
   ShieldCheck,
   LogOut,
@@ -102,6 +104,8 @@ const NAV_GROUPS: NavGroup[] = [
     icon: LineChart,
     items: [
       { label: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
+      { label: "Sponsored Placements", href: "/admin/placements", icon: Megaphone },
+      { label: "Placement Pricing", href: "/admin/placement-products", icon: Sparkles },
       { label: "Promo Codes", href: "/admin/promo-codes", icon: Tag },
       { label: "Email Campaigns", href: "/admin/email-campaigns", icon: Mail },
     ],

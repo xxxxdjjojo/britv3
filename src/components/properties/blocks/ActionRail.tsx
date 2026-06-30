@@ -4,6 +4,7 @@ import { FileText } from "lucide-react";
 import { AgentCardSidebar } from "@/components/properties/detail/AgentCardSidebar";
 import { BookViewingModal } from "@/components/properties/detail/BookViewingModal";
 import { RecommendedTradespeople } from "@/components/properties/detail/RecommendedTradespeople";
+import { FeaturedExperts } from "@/components/placements/FeaturedExperts";
 import type {
   PropertyView,
   PropertyViewerState,
@@ -73,6 +74,19 @@ export function ActionRail({
           />
         </div>
       )}
+
+      <Suspense fallback={null}>
+        <FeaturedExperts
+          zone="property_sidebar"
+          heading="Featured local experts"
+          stage={isRent ? "rent" : "buy"}
+          postcode={property.postcode}
+          town={property.city}
+          propertyId={property.id}
+          limit={2}
+          variant="rail"
+        />
+      </Suspense>
 
       <Suspense fallback={null}>
         <RecommendedTradespeople postcode={property.postcode} />

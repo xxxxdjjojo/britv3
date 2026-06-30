@@ -14,6 +14,7 @@ import { DocumentsHub } from "@/components/properties/blocks/DocumentsHub";
 import { SimilarHomesBlock } from "@/components/properties/blocks/SimilarHomesBlock";
 import { ActionRail } from "@/components/properties/blocks/ActionRail";
 import { MobileStickyBottomBar } from "@/components/properties/blocks/MobileStickyBottomBar";
+import { FeaturedExperts } from "@/components/placements/FeaturedExperts";
 import type { createClient } from "@/lib/supabase/server";
 import type {
   PropertyView,
@@ -61,6 +62,20 @@ export function BuyPropertyPage({
         </Suspense>
         <FinancialSnapshot view={view} />
 
+        <Suspense fallback={null}>
+          <FeaturedExperts
+            zone="property_financial"
+            heading="Trusted professionals for this move"
+            subheading="Verified mortgage, legal and survey experts for this purchase"
+            stage="buy"
+            postcode={property.postcode}
+            town={property.city}
+            propertyId={property.id}
+            limit={3}
+            variant="band"
+          />
+        </Suspense>
+
         <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
           <div className="space-y-10 min-w-0">
             <PriceIntelligenceBlock view={view} />
@@ -69,6 +84,19 @@ export function BuyPropertyPage({
             <HistoryPotentialBlock view={view} supabase={supabase} />
             <DocumentsHub view={view} />
             <ContactAgentBlock view={view} />
+            <Suspense fallback={null}>
+              <FeaturedExperts
+                zone="property_bottom"
+                heading="Need help with this property?"
+                subheading="Architects, builders and trades who could transform it"
+                stage="renovation"
+                postcode={property.postcode}
+                town={property.city}
+                propertyId={property.id}
+                limit={3}
+                variant="band"
+              />
+            </Suspense>
             <SimilarHomesBlock view={view} />
           </div>
 
