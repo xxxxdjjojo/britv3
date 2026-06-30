@@ -258,9 +258,14 @@ export async function sendInvoice(
   if (invoice.status === "paid") throw new Error("Invoice is already paid");
   if (invoice.status === "cancelled") throw new Error("Cannot send a cancelled invoice");
 
+  // Only a draft moves to 'sent'. Re-sending an already-sent or overdue invoice
+  // re-delivers it without downgrading an 'overdue' marker back to 'sent'.
+  const nextStatus: InvoiceStatus =
+    invoice.status === "draft" ? "sent" : (invoice.status as InvoiceStatus);
+
   const { data, error } = await supabase
     .from("provider_invoices")
-    .update({ status: "sent" as InvoiceStatus, updated_at: new Date().toISOString() })
+    .update({ status: nextStatus, updated_at: new Date().toISOString() })
     .eq("id", invoiceId)
     .eq("provider_id", providerId)
     .select("*")

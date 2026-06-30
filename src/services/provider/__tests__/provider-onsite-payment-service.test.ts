@@ -203,9 +203,8 @@ describe("createOnsitePaymentIntent", () => {
     const supabase = makeSupabaseMock({});
     await createOnsitePaymentIntent("provider-uuid-1", "inv-uuid-1", supabase as never);
 
-    expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
-      expect.objectContaining({ amount: 10000 }),
-    );
+    const [params] = mockPaymentIntentsCreate.mock.calls[0] as [Record<string, unknown>];
+    expect(params).toEqual(expect.objectContaining({ amount: 10000 }));
   });
 
   it("takes 0% platform commission — no application_fee_amount", async () => {
@@ -222,14 +221,16 @@ describe("createOnsitePaymentIntent", () => {
 
     const [params, options] = mockPaymentIntentsCreate.mock.calls[0] as [
       Record<string, unknown>,
-      unknown,
+      { idempotencyKey?: string; stripeAccount?: string },
     ];
     // Destination charge: full amount transferred to the trader's connected account.
     expect(params.transfer_data).toEqual({ destination: "acct_test_1" });
     expect(params.on_behalf_of).toBe("acct_test_1");
     // PI is created on the platform account (no per-account scope), so the
     // platform webhook + platform publishable key handle it.
-    expect(options).toBeUndefined();
+    expect(options.stripeAccount).toBeUndefined();
+    // Idempotency key guards against duplicate PIs on retry.
+    expect(options.idempotencyKey).toContain("invoice-pi-");
   });
 
   it("rejects if invoice not owned by provider", async () => {
@@ -332,7 +333,8 @@ describe("createInvoicePaymentIntentForCustomer", () => {
       supabase as never,
     );
 
-    expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
+    const [params] = mockPaymentIntentsCreate.mock.calls[0] as [Record<string, unknown>];
+    expect(params).toEqual(
       expect.objectContaining({
         amount: 10000,
         transfer_data: { destination: "acct_test_1" },

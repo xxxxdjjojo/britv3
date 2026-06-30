@@ -51,16 +51,16 @@ function blocked(reason: TransactionGateReason): TransactionGateResult {
  * Determine whether the trader (identified by userId, which is also the
  * provider_id) may perform a transacting action.
  *
- * @param emailConfirmed Pass the value from supabase.auth.getUser() —
- *   `user.email_confirmed_at != null`. Defaults to true when omitted so callers
- *   that have already enforced auth don't accidentally hard-block.
+ * @param opts.emailConfirmed Pass the value from supabase.auth.getUser() —
+ *   `user.email_confirmed_at != null`. Required (not defaulted) so a caller can
+ *   never accidentally fail open on the email-verification check.
  */
 export async function checkProviderCanTransact(
   supabase: SupabaseClient,
   userId: string,
-  opts?: { emailConfirmed?: boolean },
+  opts: { emailConfirmed: boolean },
 ): Promise<TransactionGateResult> {
-  if (opts?.emailConfirmed === false) {
+  if (!opts.emailConfirmed) {
     return blocked("email_unverified");
   }
 

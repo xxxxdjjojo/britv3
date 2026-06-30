@@ -61,6 +61,15 @@ describe("sendInvoice", () => {
     expect(result.status).toBe("sent");
   });
 
+  it("re-sends an overdue invoice without downgrading it to sent", async () => {
+    const supabase = makeSupabase(
+      { id: "inv-1", provider_id: "p-1", status: "overdue" },
+      { id: "inv-1", provider_id: "p-1", status: "overdue" },
+    );
+    const result = await sendInvoice(supabase as never, "p-1", "inv-1");
+    expect(result.status).toBe("overdue");
+  });
+
   it("rejects an already-paid invoice", async () => {
     const supabase = makeSupabase({ id: "inv-1", provider_id: "p-1", status: "paid" });
     await expect(sendInvoice(supabase as never, "p-1", "inv-1")).rejects.toThrow(/already paid/i);

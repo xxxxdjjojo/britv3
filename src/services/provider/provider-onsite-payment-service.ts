@@ -131,39 +131,46 @@ async function buildInvoicePaymentIntent(
   // Recompute the payable amount from line items (unambiguous pence) rather than
   // trusting the stored total_amount column.
   const amountPence = invoiceTotalPence(invoice.line_items ?? []);
-  if (amountPence <= 0) {
+  if (!Number.isFinite(amountPence) || amountPence <= 0) {
     throw new Error("Invoice has no payable amount");
   }
   const applicationFeeAmount = platformFeePence(amountPence);
 
-  // Idempotency: reuse an existing PaymentIntent if one is already attached.
+  // Idempotency: reuse an existing, still-payable PaymentIntent. A canceled PI
+  // can't be paid, so fall through and create a fresh one.
   if (invoice.stripe_payment_intent_id) {
     const existing = await getStripe().paymentIntents.retrieve(
       invoice.stripe_payment_intent_id,
     );
 
-    return {
-      clientSecret: existing.client_secret ?? "",
-      paymentIntentId: existing.id,
-      amountPence,
-      invoiceId: invoice.id,
-    };
+    if (existing.status !== "canceled") {
+      return {
+        clientSecret: existing.client_secret ?? "",
+        paymentIntentId: existing.id,
+        amountPence,
+        invoiceId: invoice.id,
+      };
+    }
   }
 
-  const paymentIntent = await getStripe().paymentIntents.create({
-    amount: amountPence,
-    currency: "gbp",
-    transfer_data: { destination: stripeAccountId },
-    on_behalf_of: stripeAccountId,
-    ...(applicationFeeAmount > 0
-      ? { application_fee_amount: applicationFeeAmount }
-      : {}),
-    metadata: {
-      invoice_id: invoice.id,
-      provider_id: invoice.provider_id,
-      booking_id: invoice.booking_id ?? "",
+  const paymentIntent = await getStripe().paymentIntents.create(
+    {
+      amount: amountPence,
+      currency: "gbp",
+      transfer_data: { destination: stripeAccountId },
+      on_behalf_of: stripeAccountId,
+      ...(applicationFeeAmount > 0
+        ? { application_fee_amount: applicationFeeAmount }
+        : {}),
+      metadata: {
+        invoice_id: invoice.id,
+        provider_id: invoice.provider_id,
+        booking_id: invoice.booking_id ?? "",
+      },
     },
-  });
+    // Guard against a duplicate PI if the DB write below fails and the call is retried.
+    { idempotencyKey: `invoice-pi-${invoice.id}` },
+  );
 
   await supabase
     .from("provider_invoices")
@@ -253,10 +260,16 @@ export async function confirmOnsitePayment(
   // PI lives on the platform account (destination charge), so no stripeAccount scope.
   const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
 
+  // The platform-owned PI is no longer implicitly scoped to the provider's
+  // connected account, so verify ownership explicitly from the PI metadata.
+  if (paymentIntent.metadata?.provider_id !== providerId) {
+    throw new Error("PaymentIntent does not belong to this provider");
+  }
+
   const invoiceId = paymentIntent.metadata?.invoice_id ?? "";
   let paidAt: string | null = null;
 
-  if (paymentIntent.status === "succeeded") {
+  if (paymentIntent.status === "succeeded" && invoiceId) {
     paidAt = new Date().toISOString();
     await markInvoicePaid(supabase, providerId, invoiceId, paidAt);
   }

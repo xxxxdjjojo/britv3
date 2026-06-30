@@ -771,7 +771,18 @@ function escapeHtml(value: string): string {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/** Only allow http(s) links into href attributes; otherwise drop to a no-op. */
+function safeHref(url: string): string {
+  return /^https?:\/\//i.test(url) ? escapeHtml(url) : "#";
+}
+
+/** Strip CR/LF so values interpolated into email subjects can't inject headers. */
+function singleLine(value: string): string {
+  return value.replace(/[\r\n]+/g, " ").trim();
 }
 
 /**
@@ -798,7 +809,7 @@ export async function sendTradeInvoice(params: {
       <p>${provider} has sent you invoice <strong>${escapeHtml(params.invoiceNumber)}</strong>.</p>
       <p style="font-size:24px;font-weight:700;margin:16px 0">${escapeHtml(params.amountFormatted)}</p>
       ${due}
-      <a href="${params.payUrl}" style="display:inline-block;background:#1B4D3E;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600">Pay invoice securely</a>
+      <a href="${safeHref(params.payUrl)}" style="display:inline-block;background:#1B4D3E;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600">Pay invoice securely</a>
       <p style="color:#9ca3af;font-size:12px;margin-top:24px">Secured by Stripe · Powered by TrueDeed</p>
     </div>
   </div>`;
@@ -807,7 +818,9 @@ export async function sendTradeInvoice(params: {
     const { data, error } = await resendSend({
       from: FROM,
       to: params.email,
-      subject: `Invoice ${params.invoiceNumber} from ${params.providerName} — ${params.amountFormatted}`,
+      subject: singleLine(
+        `Invoice ${params.invoiceNumber} from ${params.providerName} — ${params.amountFormatted}`,
+      ),
       html,
     });
     if (error) throw error;
