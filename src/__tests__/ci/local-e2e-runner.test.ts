@@ -50,4 +50,15 @@ describe("local E2E runner contract", () => {
     expect(script).toContain('"$API_URL/rest/v1/"');
     expect(script).not.toContain("profiles?select=id&limit=1");
   });
+
+  it("restores service-role grants before running the seed", () => {
+    const script = readFileSync(E2E_LOCAL_SCRIPT, "utf8");
+
+    expect(script).toContain(
+      "grant all privileges on all tables in schema public to service_role",
+    );
+    expect(script).toContain(
+      "grant all privileges on all sequences in schema public to service_role",
+    );
+  });
 });

@@ -53,6 +53,15 @@ load_supabase_env
 export NEXT_PUBLIC_SUPABASE_URL="$API_URL"
 export NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY"
 export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
+LDB="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+
+echo "    restoring service_role grants for deterministic local seed..."
+psql "$LDB" >/dev/null <<'SQL'
+grant usage on schema public to service_role;
+grant all privileges on all tables in schema public to service_role;
+grant all privileges on all sequences in schema public to service_role;
+grant execute on all functions in schema public to service_role;
+SQL
 
 # `supabase db reset` restarts the containers and returns before PostgREST has
 # reloaded its schema cache for the new schema. Seeding immediately races that
@@ -61,8 +70,7 @@ export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
 # makes the gate non-deterministic. Nudge a reload and wait until PostgREST
 # answers at its schema root before seeding. Avoid table-level probes here:
 # grants/RLS can return 401/403 even when PostgREST is ready.
-psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
-  -c "NOTIFY pgrst, 'reload schema';" >/dev/null 2>&1 || true
+psql "$LDB" -c "NOTIFY pgrst, 'reload schema';" >/dev/null 2>&1 || true
 echo "    waiting for PostgREST schema cache..."
 for _ in $(seq 1 60); do
   code=$(curl -s -o /dev/null -w '%{http_code}' \
@@ -82,7 +90,6 @@ SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
 # seed failure. Verify the state the gate depends on: all 7 non-admin roles
 # assigned and the 3 gated roles carry an active subscription.
 echo "    verifying seeded state..."
-LDB="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 roles=$(psql "$LDB" -tAc "select count(distinct active_role) from public.profiles where active_role in ('homebuyer','renter','seller','landlord','agent','service_provider','mortgage_broker');")
 subs=$(psql "$LDB" -tAc "select count(*) from public.subscriptions s join public.profiles p on p.id=s.user_id where p.active_role in ('landlord','agent','service_provider') and s.status='active';")
 if [ "${roles:-0}" -lt 7 ] || [ "${subs:-0}" -lt 3 ]; then

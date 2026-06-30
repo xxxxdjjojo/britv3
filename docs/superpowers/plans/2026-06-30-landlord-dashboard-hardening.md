@@ -222,6 +222,7 @@ Add a static CI contract test that requires:
 - the script checks `supabase status -o env` before `supabase db reset`.
 - the old hidden startup pattern `supabase start >/dev/null 2>&1 || true` is absent.
 - PostgREST readiness checks use the root endpoint (`$API_URL/rest/v1/`), not a table query that can fail with RLS/grant-driven 401/403 responses.
+- the runner restores `service_role` privileges on local public tables/sequences/functions before seeding, so the seed can create gated-role subscriptions and verification state after a fresh reset.
 
 Run:
 
