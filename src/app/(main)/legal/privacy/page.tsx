@@ -407,7 +407,7 @@ export default function PrivacyPage() {
             your privacy settings; (b) request human review of any AI-generated output that
             significantly affects you; (c) receive meaningful information about the logic involved
             in our AI systems. See our{" "}
-            <Link href="/legal/ai-transparency" className="text-primary hover:underline">
+            <Link href="/legal/ai-transparency" className="text-primary underline">
               AI Transparency Notice
             </Link>
             .
@@ -454,7 +454,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             To exercise any right, use our{" "}
-            <Link href="/legal/gdpr-rights" className="text-primary hover:underline">
+            <Link href="/legal/gdpr-rights" className="text-primary underline">
               GDPR Rights page
             </Link>
             , or email{" "}
@@ -469,7 +469,7 @@ export default function PrivacyPage() {
               href="https://ico.org.uk"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="text-primary underline"
             >
               ico.org.uk
             </a>{" "}
@@ -481,7 +481,7 @@ export default function PrivacyPage() {
           <h2 className="text-2xl font-bold font-heading">10. Cookies</h2>
           <p>
             We use cookies and similar technologies. Please see our{" "}
-            <Link href="/legal/cookies" className="text-primary hover:underline">
+            <Link href="/legal/cookies" className="text-primary underline">
               Cookie Policy
             </Link>{" "}
             for full details, including how to manage your preferences.

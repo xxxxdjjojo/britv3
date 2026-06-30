@@ -210,7 +210,7 @@ export default function HelpContactPage() {
         Looking for quick answers?{" "}
         <Link
           href="/help"
-          className="text-brand-primary underline-offset-4 hover:underline"
+          className="text-brand-primary underline underline-offset-4"
         >
           Browse our Help Centre
         </Link>

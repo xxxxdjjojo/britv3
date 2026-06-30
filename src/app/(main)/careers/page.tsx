@@ -108,7 +108,7 @@ export default function CareersPage() {
           Don&apos;t see your role?{" "}
           <Link
             href="/contact"
-            className="text-brand-primary underline-offset-4 hover:underline"
+            className="text-brand-primary underline underline-offset-4"
           >
             Send us a speculative application
           </Link>

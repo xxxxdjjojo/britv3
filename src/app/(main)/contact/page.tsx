@@ -247,7 +247,7 @@ export default function ContactPage() {
       {/* Help link */}
       <p className="mt-8 text-center text-sm text-neutral-500">
         Looking for quick answers?{" "}
-        <Link href="/help" className="text-brand-primary underline-offset-4 hover:underline">
+        <Link href="/help" className="text-brand-primary underline underline-offset-4">
           Browse our Help Center
         </Link>
       </p>

@@ -84,7 +84,7 @@ export default function AiTransparencyPage() {
           <p>
             3.1. Your search and browsing data is used to personalise recommendations. You can opt out
             of personalised recommendations in your{" "}
-            <Link href="/settings/privacy" className="text-primary hover:underline">
+            <Link href="/settings/privacy" className="text-primary underline">
               privacy settings
             </Link>{" "}
             at any time.
@@ -119,11 +119,11 @@ export default function AiTransparencyPage() {
           <p>
             Contact <a href={`mailto:${brandConfig.emails.privacy}`}>{brandConfig.emails.privacy}</a> to
             exercise these rights, or see our{" "}
-            <Link href="/legal/gdpr-rights" className="text-primary hover:underline">
+            <Link href="/legal/gdpr-rights" className="text-primary underline">
               GDPR Data Subject Rights
             </Link>{" "}
             page for the full process. Our{" "}
-            <Link href="/legal/privacy" className="text-primary hover:underline">
+            <Link href="/legal/privacy" className="text-primary underline">
               Privacy Policy
             </Link>{" "}
             contains further information on how we process personal data.

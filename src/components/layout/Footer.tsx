@@ -58,7 +58,7 @@ function BrandColumn({ column }: Readonly<{ column: FooterColumn }>) {
     <div className="flex flex-col gap-5">
       <Logo size="md" variant="white" />
       {column.tagline && (
-        <p className="text-sm leading-relaxed text-neutral-400">
+        <p className="text-sm leading-relaxed text-neutral-300">
           {column.tagline}
         </p>
       )}
@@ -73,7 +73,7 @@ function BrandColumn({ column }: Readonly<{ column: FooterColumn }>) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="flex size-9 items-center justify-center rounded-full bg-neutral-800 text-neutral-400 transition-colors hover:bg-brand-primary hover:text-white"
+                className="flex size-9 items-center justify-center rounded-full bg-neutral-800 text-neutral-300 transition-colors hover:bg-brand-primary hover:text-white"
               >
                 {Icon && <Icon className="size-4" />}
               </a>
@@ -110,7 +110,7 @@ export function Footer() {
         {/* Divider + copyright */}
         <div className="border-t border-neutral-800 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-neutral-300">
               &copy; 2026 {brandConfig.displayName}. All rights reserved.
               <span className="ml-4 text-neutral-300">Company No. 12345678</span>
             </p>

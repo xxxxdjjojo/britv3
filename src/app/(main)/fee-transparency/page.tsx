@@ -184,7 +184,7 @@ export default function FeeTransparencyPage() {
           should evolve with the market it supports.{" "}
           <Link
             href="/contact"
-            className="text-brand-primary underline-offset-4 hover:underline"
+            className="text-brand-primary underline underline-offset-4"
           >
             Get in touch
           </Link>
