@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import {
   Breadcrumb,
@@ -173,7 +174,7 @@ export function Breadcrumbs(
           {trail.map((entry, index) => {
             const isLast = index === trail.length - 1;
             return (
-              <span key={entry.label + index} className="contents">
+              <Fragment key={entry.label + index}>
                 <BreadcrumbItem className="shrink-0">
                   {isLast ? (
                     <BreadcrumbPage>{entry.label}</BreadcrumbPage>
@@ -188,7 +189,7 @@ export function Breadcrumbs(
                   )}
                 </BreadcrumbItem>
                 {!isLast && <BreadcrumbSeparator className="shrink-0" />}
-              </span>
+              </Fragment>
             );
           })}
         </BreadcrumbList>

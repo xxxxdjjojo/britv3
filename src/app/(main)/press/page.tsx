@@ -50,7 +50,7 @@ export default async function PressPage() {
           </p>
           <Link
             href="/contact"
-            className="mt-4 inline-block text-sm text-brand-primary underline-offset-4 hover:underline"
+            className="mt-4 inline-block text-sm text-brand-primary underline underline-offset-4"
           >
             Contact Us
           </Link>

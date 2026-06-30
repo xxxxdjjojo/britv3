@@ -167,7 +167,7 @@ export default function FeeTransparencyPage() {
           <p>
             If you have questions about fees, contact us at{" "}
             <a href={`mailto:${brandConfig.emails.support}`}>{brandConfig.emails.support}</a> or see our{" "}
-            <Link href="/legal/complaints" className="text-primary hover:underline">
+            <Link href="/legal/complaints" className="text-primary underline">
               Complaints Procedure
             </Link>{" "}
             if you believe you have been charged incorrectly.

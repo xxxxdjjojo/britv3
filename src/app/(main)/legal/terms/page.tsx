@@ -83,15 +83,15 @@ export default function TermsPage() {
           </p>
           <p>
             1.2. By accessing or using the Platform, you agree to be bound by these Terms, our{" "}
-            <Link href="/legal/privacy" className="text-primary hover:underline">
+            <Link href="/legal/privacy" className="text-primary underline">
               Privacy Policy
             </Link>
             ,{" "}
-            <Link href="/legal/cookies" className="text-primary hover:underline">
+            <Link href="/legal/cookies" className="text-primary underline">
               Cookie Policy
             </Link>
             , and{" "}
-            <Link href="/legal/acceptable-use" className="text-primary hover:underline">
+            <Link href="/legal/acceptable-use" className="text-primary underline">
               Acceptable Use Policy
             </Link>{" "}
             (together, the &ldquo;Legal Documents&rdquo;). If you do not agree, you must not use
@@ -175,7 +175,7 @@ export default function TermsPage() {
             Scheme), that you hold appropriate professional indemnity insurance, and that you are
             registered with HMRC for AML supervision. You must display your fees transparently on
             your {brandConfig.displayName} profile in accordance with CMA guidance. See our{" "}
-            <Link href="/legal/fee-transparency" className="text-primary hover:underline">
+            <Link href="/legal/fee-transparency" className="text-primary underline">
               Fee Transparency Policy
             </Link>
             .
@@ -195,7 +195,7 @@ export default function TermsPage() {
             the Platform, a commission of 2.5% of the transaction value may apply. This is
             processed via Stripe Connect. The commission is payable by [SPECIFY: agent/service
             provider/other] and is clearly displayed before any transaction is confirmed. See our{" "}
-            <Link href="/legal/fee-transparency" className="text-primary hover:underline">
+            <Link href="/legal/fee-transparency" className="text-primary underline">
               Fee Transparency Policy
             </Link>{" "}
             for full details.
@@ -252,7 +252,7 @@ export default function TermsPage() {
           <p>
             6.4. <strong>Reviews.</strong> All reviews must be genuine, based on actual experience,
             and comply with our{" "}
-            <Link href="/legal/acceptable-use" className="text-primary hover:underline">
+            <Link href="/legal/acceptable-use" className="text-primary underline">
               Acceptable Use Policy
             </Link>
             . We reserve the right to remove reviews that we reasonably believe are fake,
@@ -264,7 +264,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-bold font-heading">7. Prohibited Uses</h2>
           <p>
             7.1. You must not use the Platform in breach of our{" "}
-            <Link href="/legal/acceptable-use" className="text-primary hover:underline">
+            <Link href="/legal/acceptable-use" className="text-primary underline">
               Acceptable Use Policy
             </Link>
             . In particular, you must not post fraudulent, misleading, or phantom listings; scrape
@@ -286,7 +286,7 @@ export default function TermsPage() {
             data are provided for informational purposes only. We do not verify the accuracy of
             third-party content and do not provide legal, financial, surveying, or mortgage advice.
             See our{" "}
-            <Link href="/legal/disclaimer" className="text-primary hover:underline">
+            <Link href="/legal/disclaimer" className="text-primary underline">
               Disclaimer
             </Link>{" "}
             for full details.
@@ -337,7 +337,7 @@ export default function TermsPage() {
           <p>
             11.1. We may suspend or terminate your account at any time if we reasonably believe you
             have breached these Terms, our{" "}
-            <Link href="/legal/acceptable-use" className="text-primary hover:underline">
+            <Link href="/legal/acceptable-use" className="text-primary underline">
               Acceptable Use Policy
             </Link>
             , or any applicable law. Where practicable, we will give you notice and an opportunity
@@ -366,7 +366,7 @@ export default function TermsPage() {
             12.2. If we cannot resolve a dispute informally, you may refer the matter to an
             alternative dispute resolution (ADR) provider. For consumers, you may use the UK Online
             Dispute Resolution platform. See our{" "}
-            <Link href="/legal/complaints" className="text-primary hover:underline">
+            <Link href="/legal/complaints" className="text-primary underline">
               Complaints Policy
             </Link>{" "}
             for details.
@@ -396,7 +396,7 @@ export default function TermsPage() {
             embeddings) to provide property recommendations, estimated valuations, and search
             matching. These outputs are generated algorithmically and should not be relied upon as
             professional advice. See our{" "}
-            <Link href="/legal/ai-transparency" className="text-primary hover:underline">
+            <Link href="/legal/ai-transparency" className="text-primary underline">
               AI Transparency Notice
             </Link>
             .
