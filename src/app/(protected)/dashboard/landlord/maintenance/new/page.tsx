@@ -45,7 +45,7 @@ export default async function NewPortfolioMaintenancePage({
           </p>
           <Link
             href="/dashboard/landlord/properties/add"
-            className="mt-4 inline-flex rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700"
+            className="mt-4 inline-flex rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-primary/90"
           >
             Add Property
           </Link>
