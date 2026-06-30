@@ -8,6 +8,8 @@ const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 // is no local dev server to manage — Playwright must NOT spin one up or it will
 // see the live URL as "already used" and abort before any test runs.
 const IS_REMOTE_TARGET = !/(localhost|127\.0\.0\.1)/.test(BASE_URL);
+const SHOULD_START_WEB_SERVER =
+  !IS_REMOTE_TARGET && process.env.PLAYWRIGHT_SKIP_WEB_SERVER !== "true";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -40,13 +42,13 @@ export default defineConfig({
       dependencies: ["setup"],
     },
   ],
-  webServer: IS_REMOTE_TARGET
-    ? undefined
-    : {
+  webServer: SHOULD_START_WEB_SERVER
+    ? {
         // `next dev` honours the PORT env var; the gate script sets PORT + E2E_BASE_URL.
         command: "pnpm dev",
         url: BASE_URL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
-      },
+      }
+    : undefined,
 });

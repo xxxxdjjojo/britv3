@@ -60,6 +60,12 @@ test.describe("landlord maintenance and compliance smoke", () => {
       expect(new URL(authenticatedPage.url()).pathname).toBe(route.href);
       await expectNoAppError(authenticatedPage);
       await expect(
+        authenticatedPage
+          .getByRole("navigation", { name: "Dashboard navigation" })
+          .getByRole("link", { name: "Properties" }),
+      ).toHaveAttribute("href", "/dashboard/landlord/properties");
+      await expect(authenticatedPage.getByText("Loading...")).toHaveCount(0);
+      await expect(
         authenticatedPage.getByRole("heading", { name: route.heading }),
       ).toBeVisible();
       expect(
