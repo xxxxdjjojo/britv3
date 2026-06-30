@@ -36,8 +36,12 @@ const DEFAULT_VAT_RATE = 0.2;
  * Compute invoice totals from line items.
  * VAT rate defaults to 20%. A null/undefined vat_rate is treated as 0%.
  * Returns { subtotal, vat_amount, total_amount } all in pence.
+ *
+ * Exported so payment paths can recompute the payable amount server-side from
+ * the unambiguous `total_pence` line-item fields rather than trusting the
+ * stored `total_amount` column (see invoiceTotalPence).
  */
-function computeTotals(lineItems: InvoiceLineItem[]): {
+export function computeTotals(lineItems: InvoiceLineItem[]): {
   subtotal: number;
   vat_amount: number;
   total_amount: number;
@@ -61,6 +65,19 @@ function computeTotals(lineItems: InvoiceLineItem[]): {
     vat_amount: finalVat,
     total_amount: subtotal + finalVat,
   };
+}
+
+/**
+ * The payable amount of an invoice, in pence, recomputed from its line items.
+ *
+ * Payment code MUST use this rather than reading `provider_invoices.total_amount`
+ * directly: that column's unit is inconsistent across the codebase (written in
+ * pence by generateInvoice, read as pounds by some display services). Line-item
+ * `total_pence` is unambiguous, so recomputing here is the safe source of truth
+ * and satisfies the "never trust stored totals — recompute server-side" rule.
+ */
+export function invoiceTotalPence(lineItems: InvoiceLineItem[]): number {
+  return computeTotals(lineItems).total_amount;
 }
 
 /** Generate a due_date ISO string from today + N days. */

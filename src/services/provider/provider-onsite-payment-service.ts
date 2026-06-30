@@ -4,22 +4,29 @@
  * On-site payment collection via Stripe PaymentIntent for the provider dashboard.
  * Allows providers to collect card payments from clients in person or via a payment link.
  *
- * All monetary values are in pence (GBP × 100).
- * Platform fee: 2.5% applied via application_fee_amount.
+ * All monetary values are in pence.
+ *
+ * Platform commission is 0% (TrueDeed monetises traders via subscription only).
+ * The fee is computed through the single configurable lever in
+ * `@/lib/payments/platform-fee`; when it is 0 no application fee is taken and
+ * the full amount settles to the trader's connected account (direct charge).
+ *
+ * The payable amount is recomputed from the invoice line items via
+ * `invoiceTotalPence`, NOT read from `provider_invoices.total_amount` (whose
+ * unit is inconsistent across the codebase).
  */
 
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { InvoiceLineItem } from "@/types/provider-dashboard";
 
 import { getStripe } from "@/lib/stripe";
-import { markInvoicePaid } from "@/services/provider/provider-invoice-service";
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-const PLATFORM_FEE_RATE = 0.025; // 2.5%
+import { platformFeePence } from "@/lib/payments/platform-fee";
+import {
+  invoiceTotalPence,
+  markInvoicePaid,
+} from "@/services/provider/provider-invoice-service";
 
 // ---------------------------------------------------------------------------
 // Return types
@@ -46,6 +53,7 @@ type InvoiceRow = {
   id: string;
   provider_id: string;
   status: string;
+  line_items: InvoiceLineItem[] | null;
   total_amount: number;
   stripe_payment_intent_id: string | null;
   booking_id: string | null;
@@ -62,7 +70,7 @@ async function fetchInvoice(
 ): Promise<InvoiceRow> {
   const { data, error } = await supabase
     .from("provider_invoices")
-    .select("id, provider_id, status, total_amount, stripe_payment_intent_id, booking_id")
+    .select("id, provider_id, status, line_items, total_amount, stripe_payment_intent_id, booking_id")
     .eq("id", invoiceId)
     .maybeSingle();
 
@@ -132,8 +140,13 @@ export async function createOnsitePaymentIntent(
   }
 
   const stripeAccountId = connectAccount.stripe_account_id;
-  const amountPence = Math.round(invoice.total_amount * 100);
-  const applicationFeeAmount = Math.round(amountPence * PLATFORM_FEE_RATE);
+  // Recompute the payable amount from line items (unambiguous pence) rather than
+  // trusting the stored total_amount column.
+  const amountPence = invoiceTotalPence(invoice.line_items ?? []);
+  if (amountPence <= 0) {
+    throw new Error("Invoice has no payable amount");
+  }
+  const applicationFeeAmount = platformFeePence(amountPence);
 
   // 3. Idempotency: return existing PaymentIntent if already created
   if (invoice.stripe_payment_intent_id) {
@@ -150,13 +163,16 @@ export async function createOnsitePaymentIntent(
     };
   }
 
-  // 4. Create new PaymentIntent
+  // 4. Create new PaymentIntent — a direct charge on the trader's connected
+  // account, so funds settle to the trader. A platform application fee is added
+  // only when the configured commission rate is > 0 (it is 0 by default).
   const paymentIntent = await getStripe().paymentIntents.create(
     {
       amount: amountPence,
       currency: "gbp",
-      application_fee_amount: applicationFeeAmount,
-      transfer_data: { destination: stripeAccountId },
+      ...(applicationFeeAmount > 0
+        ? { application_fee_amount: applicationFeeAmount }
+        : {}),
       metadata: {
         invoice_id: invoiceId,
         provider_id: providerId,

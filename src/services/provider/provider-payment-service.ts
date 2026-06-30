@@ -17,6 +17,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 
 import { getCommissionRate } from "@/lib/commission-rates";
+import { platformFeePence } from "@/lib/payments/platform-fee";
 import type { StripeConnectAccount } from "@/types/provider-dashboard";
 
 // ---------------------------------------------------------------------------
@@ -74,7 +75,7 @@ export type TransactionDetail = Readonly<{
   type: string;
   /** Gross amount in pence (before platform fee) */
   grossAmountPence: number;
-  /** Platform fee deducted (2.5%), in pence */
+  /** Platform fee deducted, in pence. 0 — TrueDeed takes no commission on jobs. */
   platformFeePence: number;
   /** Net amount credited to provider in pence */
   netAmountPence: number;
@@ -101,10 +102,15 @@ export type OnboardingLink = Readonly<{
 // ---------------------------------------------------------------------------
 
 /**
- * @deprecated Memo pivot v2 replaces the flat 2.5% rate with per-plan banding.
- * Retained only for legacy read paths that have no recorded plan id.
+ * Displayed platform fee for a trader's actual transactions. Routed through the
+ * single commission lever (`platformFeePence`), which is 0% — TrueDeed takes no
+ * commission on trader jobs. Kept separate from the dormant memo-pivot
+ * `calculatePlatformFee` projection below so what a trader SEES matches what is
+ * actually charged (0).
  */
-const PLATFORM_FEE_RATE = 0.025;
+function displayedPlatformFeePence(grossAmountPence: number): number {
+  return platformFeePence(grossAmountPence);
+}
 
 /**
  * Compute the platform fee for a provider job/transaction.
@@ -396,7 +402,7 @@ export async function getTransactionDetail(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const inv = invoice as any;
     const grossAmountPence = (inv.total_amount as number) ?? 0;
-    const platformFeePence = Math.round(grossAmountPence * PLATFORM_FEE_RATE);
+    const platformFeePence = displayedPlatformFeePence(grossAmountPence);
     const netAmountPence = grossAmountPence - platformFeePence;
 
     const booking = Array.isArray(inv.bookings) ? inv.bookings[0] : inv.bookings;
@@ -443,7 +449,7 @@ export async function getTransactionDetail(
     });
 
     const grossAmountPence = charge.amount;
-    const platformFeePence = Math.round(grossAmountPence * PLATFORM_FEE_RATE);
+    const platformFeePence = displayedPlatformFeePence(grossAmountPence);
     const netAmountPence = grossAmountPence - platformFeePence;
 
     return {

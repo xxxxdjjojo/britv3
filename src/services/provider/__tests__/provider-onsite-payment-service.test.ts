@@ -5,14 +5,23 @@
  *  - createOnsitePaymentIntent(providerId, invoiceId, supabase)
  *  - confirmOnsitePayment(providerId, paymentIntentId, supabase)
  *
- * All monetary amounts are in pence (GBP × 100).
- * Platform fee is 2.5%.
+ * All monetary amounts are in pence.
+ * Platform commission is 0% (subscription-only monetisation) — no application
+ * fee is taken and the full amount settles to the trader's connected account.
+ * The payable amount is recomputed from line items, not the total_amount column.
  */
 
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
-vi.mock("@/services/provider/provider-invoice-service");
+// Keep the real invoiceTotalPence (used to recompute the charge amount); mock
+// only the DB-writing markInvoicePaid.
+vi.mock("@/services/provider/provider-invoice-service", async (importOriginal) => {
+  const actual = await importOriginal<
+    typeof import("../provider-invoice-service")
+  >();
+  return { ...actual, markInvoicePaid: vi.fn() };
+});
 
 // ---------------------------------------------------------------------------
 // Mock @/lib/stripe (server-only singleton used by the service)
@@ -34,10 +43,19 @@ vi.mock("@/lib/stripe", () => ({
 // Helpers
 // ---------------------------------------------------------------------------
 
+type InvoiceLineItem = {
+  name: string;
+  quantity: number;
+  unit_price_pence: number;
+  total_pence: number;
+  vat_rate?: number;
+};
+
 type InvoiceRow = {
   id: string;
   provider_id: string;
   status: string;
+  line_items: InvoiceLineItem[];
   total_amount: number;
   stripe_payment_intent_id: string | null;
   booking_id: string | null;
@@ -54,7 +72,11 @@ function makeInvoice(overrides?: Partial<InvoiceRow>): InvoiceRow {
     id: "inv-uuid-1",
     provider_id: "provider-uuid-1",
     status: "sent",
-    total_amount: 100, // £100.00 → 10000 pence
+    // £100.00 → 10000 pence, recomputed from line items (vat_rate 0 keeps total = subtotal)
+    line_items: [
+      { name: "Labour", quantity: 1, unit_price_pence: 10000, total_pence: 10000, vat_rate: 0 },
+    ],
+    total_amount: 10000,
     stripe_payment_intent_id: null,
     booking_id: "booking-uuid-1",
     ...overrides,
@@ -176,7 +198,7 @@ describe("createOnsitePaymentIntent", () => {
     mockMarkInvoicePaid.mockResolvedValue({} as never);
   });
 
-  it("creates PaymentIntent with correct amount from invoice total (£100 → 10000 pence)", async () => {
+  it("creates PaymentIntent with amount recomputed from line items (£100 → 10000 pence)", async () => {
     const supabase = makeSupabaseMock({});
     await createOnsitePaymentIntent("provider-uuid-1", "inv-uuid-1", supabase as never);
 
@@ -186,28 +208,25 @@ describe("createOnsitePaymentIntent", () => {
     );
   });
 
-  it("applies 2.5% platform fee", async () => {
+  it("takes 0% platform commission — no application_fee_amount", async () => {
     const supabase = makeSupabaseMock({});
     await createOnsitePaymentIntent("provider-uuid-1", "inv-uuid-1", supabase as never);
 
-    expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        application_fee_amount: 250, // 2.5% of 10000
-      }),
-      expect.anything(),
-    );
+    const [params] = mockPaymentIntentsCreate.mock.calls[0] as [Record<string, unknown>];
+    expect(params.application_fee_amount).toBeUndefined();
   });
 
-  it("sets transfer_data.destination to provider's Stripe account", async () => {
+  it("does not set transfer_data — direct charge settles to the trader's account", async () => {
     const supabase = makeSupabaseMock({});
     await createOnsitePaymentIntent("provider-uuid-1", "inv-uuid-1", supabase as never);
 
-    expect(mockPaymentIntentsCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        transfer_data: { destination: "acct_test_1" },
-      }),
-      expect.anything(),
-    );
+    const [params, options] = mockPaymentIntentsCreate.mock.calls[0] as [
+      Record<string, unknown>,
+      { stripeAccount?: string },
+    ];
+    expect(params.transfer_data).toBeUndefined();
+    // Charge is created on the connected account, so funds belong to the trader.
+    expect(options.stripeAccount).toBe("acct_test_1");
   });
 
   it("rejects if invoice not owned by provider", async () => {

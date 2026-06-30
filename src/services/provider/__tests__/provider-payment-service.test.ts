@@ -417,7 +417,7 @@ describe("getTransactionDetail", () => {
     }
   });
 
-  it("platformFeePence is approximately 2.5% of grossAmountPence", async () => {
+  it("platformFeePence is 0 — TrueDeed takes no commission on trader jobs", async () => {
     const client = makeSupabaseMock("provider-uuid-1");
     const result = await getTransactionDetail(
       "txn-uuid-1",
@@ -425,10 +425,10 @@ describe("getTransactionDetail", () => {
       client as never,
     );
 
-    if (result !== null && result.grossAmountPence > 0) {
-      const expectedFee = Math.round(result.grossAmountPence * 0.025);
-      // Allow ±1 pence rounding tolerance
-      expect(Math.abs(result.platformFeePence - expectedFee)).toBeLessThanOrEqual(1);
+    if (result !== null) {
+      expect(result.platformFeePence).toBe(0);
+      // The trader keeps 100% of the payment.
+      expect(result.netAmountPence).toBe(result.grossAmountPence);
     }
   });
 
