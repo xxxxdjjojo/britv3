@@ -1,4 +1,5 @@
 
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -83,16 +84,16 @@ export default function TenancyPage() {
                             <div className="flex items-center gap-2"><User className="size-4 text-muted-foreground" /><span>Mr. & Mrs. Chen</span></div>
                             <div className="flex items-center gap-2"><Phone className="size-4 text-muted-foreground" /><span>020 7946 0123</span></div>
                             <div className="flex items-center gap-2"><Mail className="size-4 text-muted-foreground" /><span>chen@email.com</span></div>
-                            <Button variant="outline" className="w-full">Message Landlord</Button>
+                            <Button variant="outline" className="w-full" render={<Link href="/inbox" />}>Message Landlord</Button>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader><CardTitle className="text-base">Quick Actions</CardTitle></CardHeader>
                         <CardContent className="space-y-2">
-                            <Button variant="outline" className="w-full justify-start"><Wrench className="mr-2 size-4" />Report Maintenance</Button>
-                            <Button variant="outline" className="w-full justify-start"><FileText className="mr-2 size-4" />View Lease Agreement</Button>
-                            <Button variant="outline" className="w-full justify-start"><PoundSterling className="mr-2 size-4" />Payment History</Button>
+                            <Button variant="outline" className="w-full justify-start" render={<Link href="/post-a-job" />}><Wrench className="mr-2 size-4" />Report Maintenance</Button>
+                            <Button variant="outline" className="w-full justify-start" render={<Link href="/dashboard/renter/documents" />}><FileText className="mr-2 size-4" />View Lease Agreement</Button>
+                            <Button variant="outline" className="w-full justify-start" render={<Link href="/dashboard/renter/billing/invoices" />}><PoundSterling className="mr-2 size-4" />Payment History</Button>
                         </CardContent>
                     </Card>
 
