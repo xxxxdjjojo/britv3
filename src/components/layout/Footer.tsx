@@ -28,9 +28,9 @@ function FooterLinkColumn({ column }: Readonly<{ column: FooterColumn }>) {
 
   return (
     <div>
-      <h4 className="mb-5 text-xs font-semibold uppercase tracking-widest text-white">
+      <h2 className="mb-5 text-xs font-semibold uppercase tracking-widest text-white">
         {column.heading}
-      </h4>
+      </h2>
       <ul className="flex flex-col gap-3">
         {column.links?.map((link) => (
           <li key={link.href}>
@@ -56,7 +56,7 @@ function FooterLinkColumn({ column }: Readonly<{ column: FooterColumn }>) {
 function BrandColumn({ column }: Readonly<{ column: FooterColumn }>) {
   return (
     <div className="flex flex-col gap-5">
-      <Logo size="md" />
+      <Logo size="md" variant="white" />
       {column.tagline && (
         <p className="text-sm leading-relaxed text-neutral-400">
           {column.tagline}
@@ -112,7 +112,7 @@ export function Footer() {
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-neutral-400">
               &copy; 2026 {brandConfig.displayName}. All rights reserved.
-              <span className="ml-4 text-neutral-600">Company No. 12345678</span>
+              <span className="ml-4 text-neutral-300">Company No. 12345678</span>
             </p>
             <BackToTopButton />
           </div>
