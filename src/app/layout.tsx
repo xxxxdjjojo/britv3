@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Analytics } from "@vercel/analytics/next";
 import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { BreakpointProvider } from "@/contexts/BreakpointContext";
@@ -72,6 +73,7 @@ export default function RootLayout({
             </BreakpointProvider>
           </PostHogProvider>
         </CookieConsentProvider>
+        <Analytics />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(webSiteJsonLd) }} />
       </body>
