@@ -8,8 +8,8 @@ import {
 } from "@/content/blog";
 
 describe("blog links and helpers", () => {
-  it("getAllSlugs returns 14 entries", () => {
-    expect(getAllSlugs()).toHaveLength(14);
+  it("getAllSlugs returns 32 entries", () => {
+    expect(getAllSlugs()).toHaveLength(32);
   });
 
   it("categoryToSlug round-trips for every category", () => {

@@ -121,7 +121,7 @@ describe("first-time-buyer hub — internal linking web", () => {
   it("each member links to >=3 other hub articles", () => {
     for (const post of getHubPosts()) {
       const siblings = siblingBlogLinks(post.body, post.slug).filter((s) =>
-        FTB_HUB_MEMBER_SLUGS.includes(s),
+        (FTB_HUB_MEMBER_SLUGS as readonly string[]).includes(s),
       );
       expect(
         new Set(siblings).size,

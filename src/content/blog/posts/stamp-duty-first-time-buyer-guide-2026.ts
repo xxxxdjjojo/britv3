@@ -25,7 +25,8 @@ export const post: BlogPost = {
     description:
       "How stamp duty works for first-time buyers in 2026: SDLT relief thresholds, who qualifies, what you'll pay, and the costly mistakes to avoid.",
   },
-  featured: true,
+  hub: "first-time-buyer",
+  journeyStage: "Consideration",
   body: [
     {
       type: "paragraph",
@@ -131,6 +132,76 @@ export const post: BlogPost = {
     {
       type: "paragraph",
       text: "Stamp duty relief is one of the most valuable advantages first-time buyers have, but it rewards buyers who check the detail. Confirm your eligibility early, watch the £500,000 cliff edge carefully, and never assume an estimate is accurate. A few minutes spent calculating the real figure now protects you from a five-figure shock later — and lets you make an offer with complete confidence in what your home will truly cost.",
+    },
+    {
+      type: "links",
+      heading: "Continue your first-time buyer journey",
+      items: [
+        {
+          href: "/blog/how-to-buy-a-house-uk",
+          label: "How to buy a house in the UK: the complete guide",
+        },
+        {
+          href: "/blog/how-much-deposit-to-buy-a-house-2026",
+          label: "How much deposit do you actually need?",
+        },
+        {
+          href: "/blog/mortgage-affordability-how-much-can-i-borrow",
+          label: "How much can I borrow? Affordability explained",
+        },
+        {
+          href: "/blog/what-happens-on-completion-day",
+          label: "What happens on completion day",
+        },
+      ],
+    },
+    {
+      type: "faq",
+      items: [
+        {
+          question: "What stamp duty do first-time buyers pay in 2026?",
+          answer:
+            "First-time buyers in England and Northern Ireland pay 0% on the first £300,000 and 5% on any portion between £300,001 and £500,000. Above £500,000 the relief is lost entirely and standard rates apply to the whole price.",
+        },
+        {
+          question: "Do first-time buyers pay stamp duty under £300,000?",
+          answer:
+            "No. If you qualify for first-time buyer relief and the purchase price is £300,000 or less, you pay no stamp duty at all in England and Northern Ireland. Scotland and Wales operate separate systems with different thresholds.",
+        },
+        {
+          question: "Who counts as a first-time buyer for stamp duty?",
+          answer:
+            "You and everyone named on the purchase must never have owned a residential property anywhere in the world, including inherited shares and buy-to-let. If one buyer has owned before, the whole purchase loses the relief.",
+        },
+        {
+          question: "When do you pay stamp duty?",
+          answer:
+            "Your conveyancer files the SDLT return and pays the tax within 14 days of completion, using funds you provide. It cannot usually be added to your mortgage, so keep the cash ready alongside your deposit and fees.",
+        },
+        {
+          question: "Is stamp duty different in Scotland and Wales?",
+          answer:
+            "Yes. Scotland charges Land and Buildings Transaction Tax with its own first-time buyer relief, and Wales charges Land Transaction Tax with no specific first-time buyer relief. Always check the rules for the nation where you are buying.",
+        },
+      ],
+    },
+    {
+      type: "links",
+      heading: "Trusted sources",
+      items: [
+        {
+          href: "https://www.gov.uk/stamp-duty-land-tax/residential-property-rates",
+          label: "GOV.UK — Stamp Duty Land Tax rates",
+        },
+        {
+          href: "https://www.moneyhelper.org.uk/en/homes/buying-a-home/what-is-stamp-duty",
+          label: "MoneyHelper — What is stamp duty?",
+        },
+      ],
+    },
+    {
+      type: "paragraph",
+      text: "This guide is for informational purposes only and does not constitute financial or tax advice. Stamp duty rules and thresholds change and vary by circumstance — always confirm the current rates and speak to a qualified conveyancer or tax adviser before you buy.",
     },
   ],
 };

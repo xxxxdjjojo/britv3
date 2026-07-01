@@ -16,6 +16,26 @@ import { post as conveyancing } from "./posts/conveyancing-timeline-explained";
 import { post as buyToLet } from "./posts/buy-to-let-still-worth-it-2026";
 import { post as yieldVsGrowth } from "./posts/rental-yield-vs-capital-growth";
 
+// ── First-Time Buyer content hub (18 new + stamp-duty & conveyancing reused) ──
+import { post as howToBuyAHouse } from "./posts/how-to-buy-a-house-uk";
+import { post as howMuchDeposit } from "./posts/how-much-deposit-to-buy-a-house-2026";
+import { post as saveDepositFast } from "./posts/how-to-save-for-a-house-deposit-fast";
+import { post as lifetimeIsa } from "./posts/lifetime-isa-first-time-buyer";
+import { post as agreementInPrinciple } from "./posts/mortgage-agreement-in-principle";
+import { post as affordability } from "./posts/mortgage-affordability-how-much-can-i-borrow";
+import { post as interestRates } from "./posts/mortgage-interest-rates-uk-2026";
+import { post as badCreditMortgage } from "./posts/bad-credit-mortgage-first-time-buyer";
+import { post as sharedOwnership } from "./posts/shared-ownership-scheme-worth-it-2026";
+import { post as firstHomesScheme } from "./posts/first-homes-scheme-first-time-buyers";
+import { post as rightToBuy } from "./posts/right-to-buy-rent-to-buy-schemes";
+import { post as newBuildVsOld } from "./posts/new-build-vs-old-house";
+import { post as leaseholdVsFreehold } from "./posts/leasehold-vs-freehold-first-time-buyers";
+import { post as gazumping } from "./posts/gazumping-and-gazundering-explained";
+import { post as surveyTypes } from "./posts/homebuyer-survey-vs-building-survey";
+import { post as propertyChains } from "./posts/property-chains-explained";
+import { post as exchangeCompletion } from "./posts/exchange-and-completion-explained";
+import { post as completionDay } from "./posts/what-happens-on-completion-day";
+
 /** All blog posts, newest first. */
 export const BLOG_POSTS: readonly BlogPost[] = [
   stampDutyFirstTimeBuyer,
@@ -32,6 +52,24 @@ export const BLOG_POSTS: readonly BlogPost[] = [
   conveyancing,
   buyToLet,
   yieldVsGrowth,
+  howToBuyAHouse,
+  howMuchDeposit,
+  saveDepositFast,
+  lifetimeIsa,
+  agreementInPrinciple,
+  affordability,
+  interestRates,
+  badCreditMortgage,
+  sharedOwnership,
+  firstHomesScheme,
+  rightToBuy,
+  newBuildVsOld,
+  leaseholdVsFreehold,
+  gazumping,
+  surveyTypes,
+  propertyChains,
+  exchangeCompletion,
+  completionDay,
 ]
   .slice()
   .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));

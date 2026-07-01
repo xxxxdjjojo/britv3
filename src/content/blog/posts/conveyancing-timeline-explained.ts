@@ -25,6 +25,8 @@ export const post: BlogPost = {
     description:
       "The conveyancing process explained step by step, plus how long conveyancing takes, what causes delays, and how to keep your purchase moving.",
   },
+  hub: "first-time-buyer",
+  journeyStage: "Decision",
   body: [
     {
       type: "paragraph",
@@ -154,6 +156,76 @@ export const post: BlogPost = {
     {
       type: "paragraph",
       text: "The conveyancing process can feel slow and mysterious, but it follows a logical sequence from instruction through searches and enquiries to exchange and completion. Understanding where you are in that journey lets you anticipate the next step, respond quickly, and keep your purchase on the fastest realistic path to your new front door.",
+    },
+    {
+      type: "links",
+      heading: "Continue your first-time buyer journey",
+      items: [
+        {
+          href: "/blog/how-to-buy-a-house-uk",
+          label: "How to buy a house in the UK: the complete guide",
+        },
+        {
+          href: "/blog/homebuyer-survey-vs-building-survey",
+          label: "Which survey do you actually need?",
+        },
+        {
+          href: "/blog/exchange-and-completion-explained",
+          label: "Exchange and completion: the difference",
+        },
+        {
+          href: "/blog/what-happens-on-completion-day",
+          label: "What happens on completion day",
+        },
+      ],
+    },
+    {
+      type: "faq",
+      items: [
+        {
+          question: "How long does conveyancing take in 2026?",
+          answer:
+            "A straightforward freehold purchase usually takes around eight to twelve weeks from offer to completion. Leasehold properties, long chains, mortgage issues and slow searches can extend this, while a chain-free cash buyer can complete faster.",
+        },
+        {
+          question: "What is the difference between a conveyancer and a solicitor?",
+          answer:
+            "A licensed conveyancer is a property-law specialist, while a solicitor is a qualified lawyer who may handle conveyancing among other work. Both can legally handle your purchase; for a standard home either is fine.",
+        },
+        {
+          question: "Can I do my own conveyancing?",
+          answer:
+            "In theory yes, but in practice it is rarely advisable and most mortgage lenders will not allow it. The searches, title checks and money handling carry real legal and financial risk, so almost all buyers instruct a professional.",
+        },
+        {
+          question: "What searches are done during conveyancing?",
+          answer:
+            "Typically a local authority search, an environmental search and a water and drainage search, plus any property-specific searches your conveyancer recommends. They reveal planning history, flood risk, contamination and how the home connects to utilities.",
+        },
+        {
+          question: "When do I pay my conveyancer?",
+          answer:
+            "You usually pay search fees up front, transfer your deposit before exchange, and settle the balance of fees and disbursements on completion. Ask for a full quote at the start so there are no surprises later.",
+        },
+      ],
+    },
+    {
+      type: "links",
+      heading: "Trusted sources",
+      items: [
+        {
+          href: "https://www.gov.uk/buy-sell-your-home/conveyancing",
+          label: "GOV.UK — Conveyancing",
+        },
+        {
+          href: "https://www.moneyhelper.org.uk/en/homes/buying-a-home/conveyancing-and-property-surveys",
+          label: "MoneyHelper — Conveyancing and surveys",
+        },
+      ],
+    },
+    {
+      type: "paragraph",
+      text: "This guide is for informational purposes only and does not constitute legal advice. Conveyancing timescales and requirements vary by property and circumstance — always instruct and take guidance from a qualified conveyancer or solicitor.",
     },
   ],
 };
