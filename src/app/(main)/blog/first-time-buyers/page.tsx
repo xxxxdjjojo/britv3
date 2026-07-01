@@ -242,7 +242,8 @@ export default function FirstTimeBuyerHubPage() {
         {/* ── Journey stages ── */}
         <div className="space-y-16">
           {JOURNEY_STAGES.map((stage) => {
-            const posts = byStage[stage];
+            // The pillar already headlines the page as the "Start here" card.
+            const posts = byStage[stage].filter((p) => p.slug !== pillar?.slug);
             if (posts.length === 0) return null;
             const { icon: Icon, blurb } = STAGE_META[stage];
 

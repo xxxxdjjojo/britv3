@@ -86,10 +86,13 @@ export function ArticleBody({ blocks }: { blocks: readonly ArticleBlock[] }) {
             return (
               <section
                 key={i}
-                aria-label="Frequently asked questions"
+                aria-labelledby="faq-heading"
                 className="my-10"
               >
-                <h2 className="mb-5 font-heading text-2xl font-bold text-neutral-900">
+                <h2
+                  id="faq-heading"
+                  className="mb-5 font-heading text-2xl font-bold text-neutral-900"
+                >
                   Frequently asked questions
                 </h2>
                 <div className="divide-y divide-neutral-100 overflow-hidden rounded-2xl border border-neutral-100 bg-white">
