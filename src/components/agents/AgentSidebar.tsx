@@ -25,8 +25,11 @@ export default function AgentSidebar({
 
   return (
     <aside className="space-y-6 lg:sticky lg:top-24">
-      {/* Free Valuation CTA card */}
-      <div className="bg-brand-primary text-white rounded-2xl p-8 shadow-xl">
+      {/* Free Valuation / contact CTA card — target of the hero "Contact Agent" link */}
+      <div
+        id="agent-enquiry"
+        className="bg-brand-primary text-white rounded-2xl p-8 shadow-xl scroll-mt-24"
+      >
         <h3 className="text-2xl font-bold mb-2 text-white">Free Valuation</h3>
         <p className="text-white/80 text-sm mb-6 leading-relaxed">
           Thinking of selling or letting? Get an expert valuation from our local

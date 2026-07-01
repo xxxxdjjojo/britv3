@@ -187,18 +187,15 @@ export async function fetchAgentBySlug(
 ): Promise<AgentPublicProfile | null> {
   const supabase = await createClient();
 
+  // NOTE: agent_agency_profiles has NO foreign key to `profiles` (its FKs point
+  // to auth.users), so a PostgREST `profiles(...)` embed cannot resolve a
+  // relationship and errors — which previously returned null here and 404'd
+  // every estate-agent profile. The public profile only needs fields the agent
+  // row already carries, so we select the row and synthesize the `profiles`
+  // shape from its own columns (also avoids the anon RLS block on profiles).
   const { data, error } = await supabase
     .from("agent_agency_profiles")
-    .select(
-      `
-      *,
-      profiles (
-        id,
-        avatar_url,
-        full_name:display_name
-      )
-    `,
-    )
+    .select("*")
     .eq("slug", slug)
     .single();
 
@@ -206,7 +203,16 @@ export async function fetchAgentBySlug(
     return null;
   }
 
-  return data as unknown as AgentPublicProfile;
+  const row = data as Record<string, unknown>;
+  const profiles = {
+    id: (row.user_id as string | null) ?? (row.id as string),
+    avatar_url: (row.logo_url as string | null) ?? null,
+    full_name: (row.display_name as string | null) ?? null,
+    email:
+      (row.email as string | null) ?? (row.contact_email as string | null) ?? null,
+  };
+
+  return { ...row, profiles } as unknown as AgentPublicProfile;
 }
 
 /**
@@ -319,20 +325,11 @@ export async function fetchAgentTeam(
 ): Promise<AgentTeamMember[]> {
   const supabase = await createClient();
 
+  // See fetchAgentBySlug: no FK to `profiles`, so read the name/logo from the
+  // agent_agency_profiles row's own columns instead of a (failing) embed.
   const { data, error } = await supabase
     .from("agent_agency_profiles")
-    .select(
-      `
-      id,
-      user_id,
-      profiles (
-        full_name:display_name,
-        avatar_url
-      ),
-      role,
-      bio
-    `,
-    )
+    .select("id, user_id, display_name, logo_url, role, bio")
     .eq("agency_id", agencyId)
     .order("created_at", { ascending: true });
 
@@ -341,14 +338,14 @@ export async function fetchAgentTeam(
   }
 
   return data.map((member) => {
-    const profile = (Array.isArray(member.profiles) ? member.profiles[0] : member.profiles) as { full_name: string | null; avatar_url: string | null } | null;
+    const row = member as Record<string, unknown>;
     return {
-      id: member.id as string,
-      user_id: member.user_id as string,
-      full_name: profile?.full_name ?? null,
-      avatar_url: profile?.avatar_url ?? null,
-      role: (member.role as string | null) ?? null,
-      bio: (member.bio as string | null) ?? null,
+      id: row.id as string,
+      user_id: row.user_id as string,
+      full_name: (row.display_name as string | null) ?? null,
+      avatar_url: (row.logo_url as string | null) ?? null,
+      role: (row.role as string | null) ?? null,
+      bio: (row.bio as string | null) ?? null,
     };
   });
 }
