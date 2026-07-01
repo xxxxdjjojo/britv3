@@ -7,6 +7,7 @@ import { BadgeCheck, Clock, MapPin, Star, User } from "lucide-react";
 
 import { useImpressionTracking } from "@/hooks/useImpressionTracking";
 import { trackPlacementEvent } from "@/lib/placements/track-placement-event";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 import type { FeaturedExpert, PlacementZone } from "@/types/sponsored-placements";
 
 type Props = Readonly<{
@@ -45,7 +46,7 @@ export function FeaturedExpertCard({ expert, zone, propertyId, sponsored = true,
   const fire = (eventType: "click" | "profile_view" | "enquiry_started") =>
     trackPlacementEvent({ placementId: expert.placementId, providerId: expert.providerId, eventType, zone, propertyId });
 
-  const profileHref = `/services/tradespeople/${expert.slug}`;
+  const profileHref = tradespersonProfilePath(expert.slug);
   const responseLabel = formatResponse(expert.responseTimeHours);
 
   return (

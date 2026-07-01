@@ -26,7 +26,7 @@ describe("ProviderSearchCard", () => {
     } as unknown as ServiceProviderPublicProfile;
 
     expect(() =>
-      render(<ProviderSearchCard provider={flat} category="plumber" />),
+      render(<ProviderSearchCard provider={flat} />),
     ).not.toThrow();
     expect(screen.getByText("Joe's Plumbing")).toBeInTheDocument();
   });
@@ -44,7 +44,7 @@ describe("ProviderSearchCard", () => {
       provider_rating_stats: { average_rating: 4.8, total_reviews: 30 },
     } as unknown as ServiceProviderPublicProfile;
 
-    render(<ProviderSearchCard provider={nested} category="electrician" />);
+    render(<ProviderSearchCard provider={nested} />);
     expect(screen.getByText("Spark Electrics")).toBeInTheDocument();
     expect(screen.getByText(/Verified/)).toBeInTheDocument();
     expect(screen.getByText("4.8")).toBeInTheDocument();

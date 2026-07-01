@@ -18,14 +18,8 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import {
-  fetchProviderBySlug,
-  fetchProviderReviews,
-  fetchPortfolioItems,
-  fetchProviderServices,
-} from "@/services/providers/public-profile-service";
-import { buildProviderJsonLd } from "@/lib/providers/jsonld";
+import { fetchProviderBySlug } from "@/services/providers/public-profile-service";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 import { SLUG_TO_CATEGORY, CATEGORY_SLUGS } from "@/lib/providers/category-slugs";
 import { isLocationSlug } from "@/lib/providers/location-slugs";
 import {
@@ -36,14 +30,7 @@ import {
 } from "@/lib/providers/seo-utils";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import ProviderHero from "@/components/providers/ProviderHero";
-import ProviderSidebar from "@/components/providers/ProviderSidebar";
-import StarRatingBreakdown from "@/components/providers/StarRatingBreakdown";
-import { ReviewsTab } from "@/components/providers/ReviewsTab";
-import { PortfolioTab } from "@/components/providers/PortfolioTab";
-import { ServicesTab } from "@/components/providers/ServicesTab";
-import { ServicesTabWithModal } from "@/components/providers/ServicesTabWithModal";
-import { ProfileTabs } from "./ProfileTabs";
+import { TradespersonProfile } from "@/components/providers/TradespersonProfile";
 import { ProviderSearchCard } from "@/components/providers/ProviderSearchCard";
 import { CategoryPageFAQ } from "@/components/seo/CategoryPageFAQ";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
@@ -107,6 +94,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     description:
       provider.description ??
       `View ${provider.business_name}'s profile, reviews, portfolio and pricing on TrueDeed.`,
+    // Consolidate SEO onto the canonical, category-free profile URL.
+    alternates: { canonical: tradespersonProfilePath(slug) },
     openGraph: {
       title: provider.business_name,
       description: provider.description ?? undefined,
@@ -241,7 +230,6 @@ async function CategoryLocationPage({
                 <ProviderSearchCard
                   key={provider.id}
                   provider={provider as unknown as ServiceProviderPublicProfile}
-                  category={category}
                 />
               ))
             )}
@@ -290,96 +278,7 @@ export default async function TradespersonProfilePage({ params }: Params) {
     return <CategoryLocationPage category={category} location={slug} />;
   }
 
-  // Provider profile path
-  const provider = await fetchProviderBySlug(slug);
-  if (!provider) {
-    notFound();
-  }
-
-  const jsonLd = buildProviderJsonLd(provider, category);
-
-  // Fetch initial data for all tabs in parallel
-  const [reviews, portfolio, services] = await Promise.all([
-    fetchProviderReviews(provider.id, 1),
-    fetchPortfolioItems(provider.id),
-    fetchProviderServices(provider.id),
-  ]);
-
-  // Service names for the QuoteModal dropdown
-  const serviceNames = services.map((s) => s.name);
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <div className="min-h-screen bg-surface dark:bg-slate-950">
-        <ProviderHero provider={provider} category={category} />
-        <main className="max-w-7xl mx-auto px-6 py-8 relative">
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="flex-1">
-              <ProfileTabs
-                about={
-                  <div className="space-y-8">
-                    {/* About section */}
-                    <section>
-                      <h3 className="text-2xl font-bold mb-4">
-                        About {provider.business_name}
-                      </h3>
-                      <p className="text-muted-foreground dark:text-slate-400 leading-relaxed max-w-3xl">
-                        {provider.description ?? "No description provided."}
-                      </p>
-                    </section>
-
-                    {/* Rating breakdown */}
-                    {provider.provider_rating_stats && (
-                      <StarRatingBreakdown stats={provider.provider_rating_stats} />
-                    )}
-
-                    {/* Recent reviews preview */}
-                    <section>
-                      <h3 className="text-xl font-bold mb-4">Recent Reviews</h3>
-                      <p className="text-muted-foreground text-sm">
-                        See Reviews tab for all {reviews.total} reviews.
-                      </p>
-                    </section>
-                  </div>
-                }
-                services={
-                  <ServicesTabWithModal
-                    providerId={provider.id}
-                    providerName={provider.business_name}
-                    serviceNames={serviceNames}
-                  >
-                    <ServicesTab
-                      services={services}
-                      providerId={provider.id}
-                    />
-                  </ServicesTabWithModal>
-                }
-                portfolio={
-                  <PortfolioTab
-                    items={portfolio}
-                    providerName={provider.business_name}
-                  />
-                }
-                reviews={
-                  <ReviewsTab
-                    reviews={reviews.reviews}
-                    total={reviews.total}
-                    providerName={provider.business_name}
-                    providerId={provider.id}
-                  />
-                }
-              />
-            </div>
-            <aside className="lg:w-[380px]">
-              <ProviderSidebar provider={provider} />
-            </aside>
-          </div>
-        </main>
-      </div>
-    </>
-  );
+  // Provider profile — delegate to the shared component so this legacy route and
+  // the canonical /services/tradespeople/[slug] route render identically.
+  return TradespersonProfile({ slug, categorySlug: category });
 }

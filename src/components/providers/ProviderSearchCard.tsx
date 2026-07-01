@@ -9,10 +9,10 @@
 import { MapPin, ShieldCheck, Star } from "lucide-react";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 import { CompareButton } from "@/components/providers/CompareButton";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 
 type Props = Readonly<{
   provider: ServiceProviderPublicProfile;
-  category: string;
   /** Optional latest review text passed from the page-level fetch */
   latestReview?: string | null;
 }>;
@@ -35,7 +35,7 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-export function ProviderSearchCard({ provider, category, latestReview }: Props) {
+export function ProviderSearchCard({ provider, latestReview }: Props) {
   const { provider_rating_stats, slug } = provider;
   // Guard the nested JOIN shape: search results come from the flat
   // search_providers RPC where `profiles`/`provider_rating_stats` may be
@@ -174,13 +174,13 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
         {/* Bottom CTA row */}
         <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
           <a
-            href={`/services/${category}/${slug}`}
+            href={tradespersonProfilePath(slug)}
             className="bg-brand-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-brand-primary-light transition-colors"
           >
             View Profile
           </a>
           <a
-            href={`/services/${category}/${slug}#services`}
+            href={tradespersonProfilePath(slug, { hash: "services" })}
             className="border border-slate-300 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:border-brand-primary hover:text-brand-primary transition-colors"
           >
             Get a Quote

@@ -11,6 +11,7 @@ import { RatingStars } from "@/components/reviews/RatingStars";
 import { cn } from "@/lib/utils";
 import type { ServiceCategory } from "@/types/marketplace";
 import { CATEGORY_LABELS } from "@/lib/marketplace/category-labels";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 
 type ProviderCardProps = Readonly<{
   slug: string;
@@ -37,7 +38,7 @@ export function ProviderCard({
   const extraCount = services.length - 3;
 
   return (
-    <Link href={`/services/${services[0] ?? "other"}/${slug}`} className="block">
+    <Link href={tradespersonProfilePath(slug)} className="block">
       <Card
         className={cn(
           "transition-shadow hover:shadow-md hover:ring-brand-primary/20",

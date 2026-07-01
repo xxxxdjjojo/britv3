@@ -10,6 +10,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -300,7 +301,7 @@ export default function FindTradespeopleePage() {
                     className="mt-1 w-fit"
                     render={
                       <Link
-                        href={`/services/${primaryCat ?? "other"}/${person.slug}`}
+                        href={tradespersonProfilePath(person.slug)}
                         target="_blank"
                         rel="noopener noreferrer"
                       />

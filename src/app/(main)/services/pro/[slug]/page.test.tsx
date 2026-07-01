@@ -62,7 +62,7 @@ beforeEach(() => {
   fetchProviderServices.mockResolvedValue([]);
 });
 
-describe("TradespersonProfilePage (/services/tradespeople/[slug])", () => {
+describe("TradespersonProfilePage (/services/pro/[slug])", () => {
   it("renders the provider's business name as the page heading", async () => {
     fetchProviderBySlug.mockResolvedValue(PROVIDER);
     render(
@@ -71,7 +71,7 @@ describe("TradespersonProfilePage (/services/tradespeople/[slug])", () => {
       }),
     );
     expect(
-      screen.getByRole("heading", { name: /Marcus Sterling Plumbing/i }),
+      screen.getByRole("heading", { level: 1, name: /Marcus Sterling Plumbing/i }),
     ).toBeInTheDocument();
   });
 

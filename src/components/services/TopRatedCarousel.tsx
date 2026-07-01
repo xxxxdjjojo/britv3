@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, ShieldCheck, Star, MapPin } from "lucide-react";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 import { trackEvent } from "@/lib/analytics/track-event";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 
 const CATEGORY_LABELS: Record<string, string> = {
   plumber: "Plumber",
@@ -166,7 +167,7 @@ export default function TopRatedCarousel({
 
                   {/* CTA */}
                   <Link
-                    href={`/services/${firstCategory}/${provider.slug}`}
+                    href={tradespersonProfilePath(provider.slug, { hash: "quote" })}
                     onClick={() =>
                       trackEvent("services_get_quote_click", {
                         slug: provider.slug,

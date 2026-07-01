@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ShieldCheck, Clock, MapPin, Star, Plus } from "lucide-react";
 import { useCompare } from "@/components/compare/useCompare";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 import type { CompareProvider } from "@/types/providers";
 
 type CompareTableProps = Readonly<{ providers: CompareProvider[] }>;
@@ -237,8 +238,8 @@ export function CompareTable({ providers }: CompareTableProps) {
                   <td key={provider.id} className="p-6 text-center">
                     <div className="flex flex-col items-center gap-3">
                       <Link
-                        href={`/services/${provider.slug}`}
-                        className="w-full px-4 py-2.5 rounded-lg bg-[#2563EB] text-white text-sm font-semibold hover:bg-blue-700 transition-colors text-center"
+                        href={tradespersonProfilePath(provider.slug)}
+                        className="w-full px-4 py-2.5 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors text-center"
                       >
                         View Profile
                       </Link>

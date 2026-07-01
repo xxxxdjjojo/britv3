@@ -94,11 +94,11 @@ describe("TopRatedCarousel", () => {
     expect(screen.getByText("London")).toBeInTheDocument();
   });
 
-  it("links Get Quote to /services/{category}/{slug}", () => {
+  it("links Get Quote to the canonical tradesperson profile", () => {
     const provider = makeMockProvider({ slug: "acme-plumbing", services: ["plumber"] });
     render(<TopRatedCarousel providers={[provider]} />);
     const link = screen.getByRole("link", { name: /get quote/i });
-    expect(link).toHaveAttribute("href", "/services/plumber/acme-plumbing");
+    expect(link).toHaveAttribute("href", "/services/pro/acme-plumbing#quote");
   });
 
   it("renders prev/next arrow buttons", () => {

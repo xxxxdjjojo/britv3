@@ -32,10 +32,10 @@ const LINK_SITES = [
 ];
 
 describe("tradesperson profile canonical route", () => {
-  it("has an on-disk route at /services/tradespeople/[slug]", () => {
-    const match = resolveAppRoute("/services/tradespeople/marcus-sterling");
+  it("has an on-disk route at /services/pro/[slug]", () => {
+    const match = resolveAppRoute("/services/pro/marcus-sterling");
     expect(match).not.toBeNull();
-    expect(match).toContain("tradespeople");
+    expect(match).toContain("pro");
     expect(match).toContain("[slug]");
   });
 
@@ -47,13 +47,13 @@ describe("tradesperson profile canonical route", () => {
 describe("tradespersonProfilePath helper", () => {
   it("builds the canonical path", () => {
     expect(tradespersonProfilePath("marcus-sterling")).toBe(
-      "/services/tradespeople/marcus-sterling",
+      "/services/pro/marcus-sterling",
     );
   });
 
   it("supports an intent query param", () => {
     expect(tradespersonProfilePath("marcus-sterling", { intent: "quote" })).toBe(
-      "/services/tradespeople/marcus-sterling?intent=quote",
+      "/services/pro/marcus-sterling?intent=quote",
     );
   });
 
