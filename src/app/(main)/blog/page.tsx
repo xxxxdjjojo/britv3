@@ -91,6 +91,13 @@ export default async function BlogPage({
                 One concise email a week. No spam, unsubscribe any time.
               </p>
             </div>
+            <Link
+              href="/blog/first-time-buyers"
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-primary/30 bg-white px-4 py-2 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-primary-lighter"
+            >
+              First-time buyer? Start with our 20-guide hub
+              <ArrowRight className="size-4" />
+            </Link>
           </div>
         </div>
       </section>

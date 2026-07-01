@@ -21,13 +21,32 @@ const EXPECTED_SLUGS = [
   "conveyancing-timeline-explained",
   "buy-to-let-still-worth-it-2026",
   "rental-yield-vs-capital-growth",
+  // First-Time Buyer hub (18 new)
+  "how-to-buy-a-house-uk",
+  "how-much-deposit-to-buy-a-house-2026",
+  "how-to-save-for-a-house-deposit-fast",
+  "lifetime-isa-first-time-buyer",
+  "mortgage-agreement-in-principle",
+  "mortgage-affordability-how-much-can-i-borrow",
+  "mortgage-interest-rates-uk-2026",
+  "bad-credit-mortgage-first-time-buyer",
+  "shared-ownership-scheme-worth-it-2026",
+  "first-homes-scheme-first-time-buyers",
+  "right-to-buy-rent-to-buy-schemes",
+  "new-build-vs-old-house",
+  "leasehold-vs-freehold-first-time-buyers",
+  "gazumping-and-gazundering-explained",
+  "homebuyer-survey-vs-building-survey",
+  "property-chains-explained",
+  "exchange-and-completion-explained",
+  "what-happens-on-completion-day",
 ] as const;
 
 describe("blog content integrity", () => {
   const posts = getAllPosts();
 
-  it("ships exactly the 14 expected posts", () => {
-    expect(posts).toHaveLength(14);
+  it("ships exactly the 32 expected posts", () => {
+    expect(posts).toHaveLength(32);
   });
 
   it("resolves each expected slug via getPostBySlug", () => {

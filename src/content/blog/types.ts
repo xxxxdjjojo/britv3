@@ -17,13 +17,25 @@ export const BLOG_CATEGORIES = [
 
 export type BlogCategory = (typeof BLOG_CATEGORIES)[number];
 
+export type FaqItem = Readonly<{ question: string; answer: string }>;
+
+export type LinkItem = Readonly<{ href: string; label: string }>;
+
 export type ArticleBlock =
   | { type: "paragraph"; text: string }
   | { type: "h2"; text: string }
   | { type: "h3"; text: string }
   | { type: "blockquote"; text: string }
   | { type: "list"; items: readonly string[] }
-  | { type: "cta"; text: string; href: string; label: string };
+  | { type: "cta"; text: string; href: string; label: string }
+  /** FAQ accordion — also emitted as FAQPage JSON-LD by the article page. */
+  | { type: "faq"; items: readonly FaqItem[] }
+  /**
+   * In-body link list: internal hub cross-links ("Continue reading") or
+   * external authoritative citations ("Trusted sources"). Internal hrefs start
+   * with "/" and render via next/link; external hrefs render with rel=noopener.
+   */
+  | { type: "links"; heading: string; items: readonly LinkItem[] };
 
 export type BlogAuthor = Readonly<{
   name: string;
@@ -56,4 +68,19 @@ export type BlogPost = Readonly<{
   body: readonly ArticleBlock[];
   /** At most one post should be featured per category surface. */
   featured?: boolean;
+  /** Content-hub membership key, e.g. "first-time-buyer". */
+  hub?: HubKey;
+  /** Buyer-journey stage — groups the article on the hub landing page. */
+  journeyStage?: JourneyStage;
 }>;
+
+/** Content hubs — curated pillar collections that span multiple categories. */
+export type HubKey = "first-time-buyer";
+
+export const JOURNEY_STAGES = [
+  "Awareness",
+  "Consideration",
+  "Decision",
+] as const;
+
+export type JourneyStage = (typeof JOURNEY_STAGES)[number];

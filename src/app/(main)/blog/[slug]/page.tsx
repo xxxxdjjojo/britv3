@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Calendar, Clock, Linkedin, Twitter } from "lucide-react";
+import { Calendar, Clock, Linkedin, Twitter } from "lucide-react";
 import { CopyLinkButton } from "./CopyLinkButton";
+import { ArticleBody } from "@/components/blog/ArticleBody";
 import { NewsletterForm } from "@/components/blog/NewsletterForm";
 import {
   categoryToSlug,
@@ -11,7 +12,6 @@ import {
   getPostBySlug,
   getRelatedPosts,
 } from "@/content/blog";
-import type { ArticleBlock } from "@/content/blog/types";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -55,86 +55,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-function ArticleBody({ blocks }: { blocks: readonly ArticleBlock[] }) {
-  return (
-    <>
-      {blocks.map((block, i) => {
-        switch (block.type) {
-          case "paragraph":
-            return (
-              <p
-                key={i}
-                className="mb-5 text-base leading-relaxed text-neutral-700"
-              >
-                {block.text}
-              </p>
-            );
-          case "h2":
-            return (
-              <h2
-                key={i}
-                className="mb-4 mt-10 font-heading text-2xl font-bold text-neutral-900"
-              >
-                {block.text}
-              </h2>
-            );
-          case "h3":
-            return (
-              <h3
-                key={i}
-                className="mb-3 mt-8 font-heading text-xl font-bold text-neutral-900"
-              >
-                {block.text}
-              </h3>
-            );
-          case "blockquote":
-            return (
-              <blockquote
-                key={i}
-                className="my-6 rounded-r-xl border-l-4 border-brand-primary bg-brand-primary-lighter px-6 py-4 font-medium italic leading-relaxed text-brand-primary"
-              >
-                &ldquo;{block.text}&rdquo;
-              </blockquote>
-            );
-          case "list":
-            return (
-              <ul
-                key={i}
-                className="mb-5 list-inside list-disc space-y-2 text-neutral-700"
-              >
-                {block.items.map((item, j) => (
-                  <li key={j} className="leading-relaxed">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            );
-          case "cta":
-            return (
-              <div
-                key={i}
-                className="my-8 flex flex-col gap-4 rounded-2xl border border-brand-primary/15 bg-brand-primary-lighter p-6 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <p className="text-base font-medium leading-relaxed text-brand-primary">
-                  {block.text}
-                </p>
-                <Link
-                  href={block.href}
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-light"
-                >
-                  {block.label}
-                  <ArrowRight className="size-4" />
-                </Link>
-              </div>
-            );
-          default:
-            return null;
-        }
-      })}
-    </>
-  );
-}
-
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
@@ -172,6 +92,20 @@ export default async function BlogPostPage({ params }: Props) {
     },
   };
 
+  // FAQPage rich-result schema, built from any FAQ block in the body.
+  const faqBlock = post.body.find((block) => block.type === "faq");
+  const faqJsonLd = faqBlock
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqBlock.items.map((qa) => ({
+          "@type": "Question",
+          name: qa.question,
+          acceptedAnswer: { "@type": "Answer", text: qa.answer },
+        })),
+      }
+    : null;
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <script
@@ -179,6 +113,12 @@ export default async function BlogPostPage({ params }: Props) {
         // JSON-LD is generated from trusted internal content, not user input.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {faqJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      ) : null}
 
       {/* Breadcrumbs */}
       <nav
