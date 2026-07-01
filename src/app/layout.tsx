@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { BreakpointProvider } from "@/contexts/BreakpointContext";
 import { CommandPaletteProvider } from "@/contexts/CommandPaletteContext";
 import { CommandPaletteLazy } from "@/components/layout/CommandPaletteLazy";
@@ -62,6 +63,7 @@ export default function RootLayout({
         className={`${plusJakartaSans.variable} ${inter.variable} antialiased`}
       >
         <CookieConsentProvider>
+          <GoogleAnalytics />
           <PostHogProvider>
             <BreakpointProvider>
               <CommandPaletteProvider>
