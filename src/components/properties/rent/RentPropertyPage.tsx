@@ -14,6 +14,7 @@ import { SimilarHomesBlock } from "@/components/properties/blocks/SimilarHomesBl
 import { ActionRail } from "@/components/properties/blocks/ActionRail";
 import { MobileStickyBottomBar } from "@/components/properties/blocks/MobileStickyBottomBar";
 import { FeaturedExperts } from "@/components/placements/FeaturedExperts";
+import { LocalExpertsSection } from "@/components/properties/local-experts/LocalExpertsSection";
 import type { createClient } from "@/lib/supabase/server";
 import type {
   PropertyView,
@@ -37,7 +38,7 @@ export function RentPropertyPage({
   viewer: PropertyViewerState;
   supabase: SupabaseServerClient;
 }) {
-  const { property } = view.detail;
+  const { property, listing } = view.detail;
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,21 +79,21 @@ export function RentPropertyPage({
             <LocalIntelligenceBlock view={view} />
             <PropertyDetailBlock view={view} />
             <HistoryPotentialBlock view={view} supabase={supabase} />
-            <DocumentsHub view={view} />
-            <ContactAgentBlock view={view} />
             <Suspense fallback={null}>
-              <FeaturedExperts
-                zone="property_bottom"
-                heading="Need help settling in?"
-                subheading="Local experts to get your new home move-in ready"
-                stage="rent"
+              <LocalExpertsSection
+                listingId={listing.id}
+                propertyId={property.id}
                 postcode={property.postcode}
                 town={property.city}
-                propertyId={property.id}
-                limit={3}
-                variant="band"
+                region={property.county}
+                address={property.addressLine1}
+                coordinates={property.coordinates}
+                listingType="rent"
+                hasRenovationPotential={false}
               />
             </Suspense>
+            <DocumentsHub view={view} />
+            <ContactAgentBlock view={view} />
             <SimilarHomesBlock view={view} />
           </div>
 
