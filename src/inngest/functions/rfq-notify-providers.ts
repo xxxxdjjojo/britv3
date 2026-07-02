@@ -11,6 +11,7 @@
 import { inngest } from "@/inngest/client";
 import { matchProvidersForRfq } from "@/services/marketplace/rfq-service";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendProviderRfqEmail } from "@/services/notifications/email-service";
 
 export const rfqNotifyProviders = inngest.createFunction(
   {
@@ -40,7 +41,7 @@ export const rfqNotifyProviders = inngest.createFunction(
         // Get RFQ details for notification content
         const { data: rfq } = await supabase
           .from("service_requests")
-          .select("title, service_category")
+          .select("title, service_category, target_provider_id")
           .eq("id", rfqId)
           .single();
 
@@ -48,6 +49,8 @@ export const rfqNotifyProviders = inngest.createFunction(
           console.warn(`RFQ ${rfqId} not found when creating notifications`);
           return ids;
         }
+
+        const isDirect = Boolean(rfq.target_provider_id);
 
         // Check if notifications table exists (from Phase 3)
         const { error: tableCheck } = await supabase
@@ -68,9 +71,13 @@ export const rfqNotifyProviders = inngest.createFunction(
             .insert({
               user_id: provider.user_id,
               type: "rfq_match",
-              title: "New quote request matches your services",
-              body: `"${rfq.title}" in ${rfq.service_category} -- submit a quote to win this job.`,
-              link: `/dashboard/service_provider/rfqs/${rfqId}`,
+              title: isDirect
+                ? "You've received a direct quote request"
+                : "New quote request matches your services",
+              body: isDirect
+                ? `A customer chose you specifically for "${rfq.title}" -- respond with a quote to win the job.`
+                : `"${rfq.title}" in ${rfq.service_category} -- submit a quote to win this job.`,
+              link: `/dashboard/provider/jobs/leads`,
               read: false,
             })
             .select("id")
@@ -108,9 +115,13 @@ export const rfqNotifyProviders = inngest.createFunction(
       // Get RFQ details for email
       const { data: rfq } = await supabase
         .from("service_requests")
-        .select("title, service_category")
+        .select("title, service_category, target_provider_id")
         .eq("id", rfqId)
         .single();
+
+      if (!rfq) {
+        return { emailsSent: 0 };
+      }
 
       // Get email addresses for unread providers
       const unreadUserIds = unread.map(
@@ -119,13 +130,22 @@ export const rfqNotifyProviders = inngest.createFunction(
 
       const { data: users } = await supabase.auth.admin.listUsers();
       const unreadEmails = (users?.users ?? [])
-        .filter((u) => unreadUserIds.includes(u.id))
-        .map((u) => ({ id: u.id, email: u.email }));
+        .filter((u) => unreadUserIds.includes(u.id) && u.email)
+        .map((u) => ({ id: u.id, email: u.email as string }));
 
-      // TODO: Resend integration deferred to communication phase.
-      // Currently we count unread providers but do not actually email.
-      void rfq;
-      return { emailsSent: unreadEmails.length };
+      let emailsSent = 0;
+      for (const recipient of unreadEmails) {
+        const result = await sendProviderRfqEmail(
+          recipient.email,
+          rfq.title as string,
+          Boolean(rfq.target_provider_id),
+        );
+        if (result.sent) {
+          emailsSent += 1;
+        }
+      }
+
+      return { emailsSent };
     });
 
     return {

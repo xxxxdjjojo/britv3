@@ -125,6 +125,50 @@ export async function sendCriticalEmail(
 }
 
 // ---------------------------------------------------------------------------
+// Provider RFQ lead email (Inngest fallback)
+// ---------------------------------------------------------------------------
+
+/**
+ * Notify a provider of an unread RFQ lead by email. Sent by the Inngest
+ * fallback when the in-app notification has gone unread for an hour.
+ * Rate limited to 5 per hour per recipient email.
+ */
+export async function sendProviderRfqEmail(
+  to: string,
+  rfqTitle: string,
+  isDirect: boolean,
+): Promise<SendEmailResult> {
+  // Rate limit check
+  const { success } = await emailRateLimiter.limit(to);
+  if (!success) {
+    return { sent: false, rateLimited: true };
+  }
+
+  const resend = getResend();
+  if (!resend) {
+    return { sent: false, error: "Email service not configured" };
+  }
+
+  const subject = isDirect
+    ? `You've received a direct quote request - ${brandConfig.displayName}`
+    : `New job lead matching your services - ${brandConfig.displayName}`;
+
+  try {
+    await resend.emails.send({
+      from: FROM_ADDRESS,
+      to,
+      subject,
+      html: renderProviderRfqEmailHtml(rfqTitle, isDirect),
+    });
+
+    return { sent: true };
+  } catch (err) {
+    console.error("[email-service] Failed to send provider RFQ email:", err);
+    return { sent: false, error: "Send failed" };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Daily digest dispatch
 // ---------------------------------------------------------------------------
 
@@ -182,6 +226,46 @@ function renderCriticalEmailHtml(event: PlatformEvent): string {
     <p style="font-size:14px;color:#666;margin:0 0 24px 0;">from ${actor}</p>
     <a href="${cta.url}" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;">
       ${cta.label}
+    </a>
+  </div>
+  <p style="text-align:center;font-size:12px;color:#999;margin-top:16px;">
+    You received this email because of your notification preferences on ${brandConfig.displayName}.
+  </p>
+</div>
+</body>
+</html>`;
+}
+
+/** Escape user-supplied text for interpolation into email HTML. */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderProviderRfqEmailHtml(rfqTitle: string, isDirect: boolean): string {
+  const heading = isDirect
+    ? "A customer chose you specifically for this job"
+    : "A new quote request matches your services";
+  const leadsUrl = appUrl("/dashboard/provider/jobs/leads");
+  const safeTitle = escapeHtml(rfqTitle);
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<div style="max-width:600px;margin:0 auto;padding:20px;">
+  <div style="background-color:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
+    <h1 style="color:#ffffff;margin:0;font-size:20px;">${brandConfig.displayName}</h1>
+  </div>
+  <div style="background-color:#ffffff;padding:32px;border-radius:0 0 8px 8px;">
+    <p style="font-size:16px;color:#333;margin:0 0 8px 0;font-weight:600;">${heading}</p>
+    <p style="font-size:14px;color:#666;margin:0 0 24px 0;">&ldquo;${safeTitle}&rdquo; &mdash; respond with a quote to win the job.</p>
+    <a href="${leadsUrl}" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;">
+      View lead
     </a>
   </div>
   <p style="text-align:center;font-size:12px;color:#999;margin-top:16px;">

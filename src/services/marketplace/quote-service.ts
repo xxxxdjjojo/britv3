@@ -8,6 +8,8 @@ import type { QuoteCreateInput } from "@/lib/validators/marketplace-schemas";
 import { quoteCreateSchema } from "@/lib/validators/marketplace-schemas";
 import type { Quote } from "@/types/marketplace";
 import { signQuote } from "@/lib/marketplace/quote-signer";
+import { createPlatformEvent } from "@/services/notifications/notification-service";
+import { captureException } from "@/lib/observability/capture-exception";
 
 const UNIQUE_CONSTRAINT_CODE = "23505";
 
@@ -123,6 +125,28 @@ export async function createQuote(
       .from("service_requests")
       .update(updates)
       .eq("id", service_request_id);
+  }
+
+  // Notify the homeowner their quote has arrived (in-app + critical email).
+  // Guests (user_id NULL) are emailed directly. Failures never block creation.
+  try {
+    await createPlatformEvent(supabase, {
+      event_type: "quote_received",
+      entity_type: "rfq",
+      entity_id: service_request_id,
+      actor_id: providerId,
+      metadata: {
+        quote_id: quote.id,
+        total_amount: totalAmount,
+      },
+    });
+  } catch (notifyError) {
+    captureException(notifyError, {
+      module: "marketplace",
+      feature: "quote-service",
+      operation: "createQuote.notifyQuoteReceived",
+      extra: { quoteId: quote.id, serviceRequestId: service_request_id },
+    });
   }
 
   return quote as Quote;

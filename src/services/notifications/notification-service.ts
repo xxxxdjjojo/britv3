@@ -264,6 +264,16 @@ export async function getUserEntityIds(
     entityIds.push(...listings.map((l) => l.id));
   }
 
+  // Service requests (RFQs) owned by the user — so quote_received events surface
+  const { data: rfqs } = await supabase
+    .from("service_requests")
+    .select("id")
+    .eq("user_id", userId);
+
+  if (rfqs) {
+    entityIds.push(...rfqs.map((r) => r.id));
+  }
+
   return entityIds;
 }
 
@@ -300,6 +310,22 @@ async function dispatchCriticalEmail(
         if (property?.user_id && property.user_id !== event.actor_id) {
           recipientIds.push(property.user_id);
         }
+      }
+    } else if (event.entity_type === "rfq") {
+      // Quote landed on a service request — notify its owner. Guest RFQs
+      // (user_id NULL) have no account, so email the captured address directly.
+      const { data: rfq } = await supabase
+        .from("service_requests")
+        .select("user_id, contact_email, contact_name, title")
+        .eq("id", event.entity_id)
+        .single();
+
+      if (rfq?.user_id && rfq.user_id !== event.actor_id) {
+        recipientIds.push(rfq.user_id);
+      } else if (!rfq?.user_id && rfq?.contact_email) {
+        const subject = getEmailSubject(event);
+        await sendCriticalEmail(rfq.contact_email, subject, event);
+        return;
       }
     } else {
       // Default: find users associated via conversations
