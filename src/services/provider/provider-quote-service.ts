@@ -7,6 +7,8 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { createPlatformEvent } from "@/services/notifications/notification-service";
+import { captureException } from "@/lib/observability/capture-exception";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -227,9 +229,7 @@ export async function updateQuote(
 /**
  * Transitions a quote from 'draft' to 'sent' status.
  * Throws if the quote is not in draft status.
- *
- * TODO: fire Inngest event `provider/quote.sent` with { quoteId, providerId }
- * so that downstream notifications (email to client) can be triggered.
+ * Emits a `quote_received` platform event to notify the RFQ owner.
  */
 export async function sendQuote(
   supabase: SupabaseClient,
@@ -264,6 +264,31 @@ export async function sendQuote(
     .single();
 
   if (error) throw new Error(`Failed to send quote: ${error.message}`);
+
+  // Notify the homeowner their quote has arrived (in-app + critical email).
+  // Guests (user_id NULL) are emailed directly. Failures never block sending.
+  if (quote.service_request_id) {
+    try {
+      await createPlatformEvent(supabase, {
+        event_type: "quote_received",
+        entity_type: "rfq",
+        entity_id: quote.service_request_id,
+        actor_id: providerId,
+        metadata: {
+          quote_id: quoteId,
+          total_amount: quote.total_amount,
+        },
+      });
+    } catch (notifyError) {
+      captureException(notifyError, {
+        module: "provider",
+        feature: "provider-quote-service",
+        operation: "sendQuote.notifyQuoteReceived",
+        extra: { quoteId, serviceRequestId: quote.service_request_id },
+      });
+    }
+  }
+
   return data as Quote;
 }
 

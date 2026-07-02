@@ -183,6 +183,11 @@ function HeroLeadCard({
             <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${badge.className}`}>
               {lead.serviceCategory}
             </span>
+            {lead.isDirect && (
+              <span className="inline-flex items-center rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-xs font-semibold text-brand-primary">
+                Direct request
+              </span>
+            )}
             {lead.inServiceArea && (
               <span className="inline-flex items-center gap-1 rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-xs font-medium text-brand-primary">
                 <MapPin className="size-3" />
@@ -296,8 +301,15 @@ function GridLeadCard({
     <div className="flex flex-col rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition hover:shadow-md">
       {/* Top row: urgency chip + posted time */}
       <div className="flex items-center justify-between gap-2 mb-3">
-        <span className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${chip.className}`}>
-          {chip.label}
+        <span className="flex items-center gap-1.5">
+          <span className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${chip.className}`}>
+            {chip.label}
+          </span>
+          {lead.isDirect && (
+            <span className="inline-flex items-center rounded-full bg-brand-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand-primary">
+              Direct request
+            </span>
+          )}
         </span>
         <span className="text-[11px] text-neutral-400">
           Posted {relativeTime(lead.createdAt)}

@@ -4,8 +4,14 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { RfqCreateInput } from "@/lib/validators/marketplace-schemas";
-import { rfqCreateSchema } from "@/lib/validators/marketplace-schemas";
+import type {
+  RfqCreateInput,
+  RfqGuestCreateInput,
+} from "@/lib/validators/marketplace-schemas";
+import {
+  rfqCreateSchema,
+  rfqGuestCreateSchema,
+} from "@/lib/validators/marketplace-schemas";
 import type { RfqStatus, ServiceRequest } from "@/types/marketplace";
 import { geocodePostcode } from "@/services/geocoding/postcodes-io";
 import { inngest } from "@/inngest/client";
@@ -76,6 +82,65 @@ export async function createRfq(
   }
 
   // Dispatch async provider matching/notification via Inngest
+  await inngest.send({
+    name: "marketplace/rfq.created",
+    data: { rfqId: rfq.id },
+  });
+
+  return rfq as ServiceRequest;
+}
+
+/**
+ * Create an RFQ on behalf of a logged-out guest.
+ * MUST be called with the service-role (admin) client — there is deliberately
+ * no anon INSERT policy on service_requests. Quotes reach the guest by email.
+ */
+export async function createGuestRfq(
+  supabase: SupabaseClient,
+  data: RfqGuestCreateInput,
+): Promise<ServiceRequest> {
+  const parsed = rfqGuestCreateSchema.parse(data);
+
+  const geo = await geocodePostcode(parsed.property_postcode);
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + DEFAULT_EXPIRY_DAYS);
+
+  const { data: rfq, error } = await supabase
+    .from("service_requests")
+    .insert({
+      user_id: null,
+      contact_name: parsed.contact_name,
+      contact_email: parsed.contact_email,
+      contact_phone: parsed.contact_phone ?? null,
+      service_category: parsed.service_category,
+      title: parsed.title,
+      description: parsed.description,
+      property_address: parsed.property_address ?? null,
+      property_postcode: parsed.property_postcode,
+      property_location: geo
+        ? `POINT(${geo.longitude} ${geo.latitude})`
+        : null,
+      preferred_start_date: parsed.preferred_start_date?.toISOString() ?? null,
+      urgency_level: parsed.urgency_level,
+      budget_min: parsed.budget_min ?? null,
+      budget_max: parsed.budget_max ?? null,
+      source: parsed.source ?? null,
+      target_provider_id: parsed.target_provider_id ?? null,
+      listing_id: parsed.listing_id ?? null,
+      attachments: [],
+      status: "open" as const,
+      expires_at: expiresAt.toISOString(),
+      view_count: 0,
+      quote_count: 0,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create guest RFQ: ${error.message}`);
+  }
+
   await inngest.send({
     name: "marketplace/rfq.created",
     data: { rfqId: rfq.id },
@@ -171,6 +236,7 @@ export async function listProviderMatchedRfqs(
     .select("*", { count: "exact" })
     .eq("status", "open")
     .in("service_category", categories)
+    .or(`target_provider_id.is.null,target_provider_id.eq.${providerId}`)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -206,6 +272,24 @@ export async function matchProvidersForRfq(
 
   if (rfqError || !rfq) {
     throw new Error(`RFQ not found: ${rfqId}`);
+  }
+
+  // Targeted RFQ: the buyer chose a specific trader — notify ONLY them.
+  if (rfq.target_provider_id) {
+    const { data: target } = await supabase
+      .from("service_provider_details")
+      .select("user_id, business_name")
+      .eq("user_id", rfq.target_provider_id)
+      .single();
+
+    if (!target) return [];
+    return [
+      {
+        user_id: target.user_id as string,
+        business_name: target.business_name as string,
+        score: SCORE_CATEGORY_MATCH + SCORE_POSTCODE_OVERLAP + SCORE_PROXIMITY,
+      },
+    ];
   }
 
   // Find providers matching the category

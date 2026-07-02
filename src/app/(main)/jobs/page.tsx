@@ -85,6 +85,7 @@ export default async function JobBoardPage({
       { count: "exact" },
     )
     .eq("status", "open")
+    .is("target_provider_id", null)
     .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: false })
     .range(offset, offset + PAGE_SIZE - 1);

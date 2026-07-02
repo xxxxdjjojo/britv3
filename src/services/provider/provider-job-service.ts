@@ -27,6 +27,8 @@ export type ProviderLead = Readonly<{
   title: string;
   /** True when the job's postcode falls inside the provider's service area */
   inServiceArea: boolean;
+  /** True when the homeowner requested THIS provider directly (targeted RFQ) */
+  isDirect: boolean;
   /**
    * Lead status:
    * 'new' | 'accepted' | 'declined' | 'expired' | 'converted'
@@ -223,7 +225,10 @@ export async function getProviderLeads(
     // 2. Cutoff: 48h ago (leads older than this are considered expired)
     const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
-    // 3. Query open service_requests matching provider's categories
+    // 3. Query open service_requests matching provider's categories.
+    //    Broadcast leads (no target) respect the 48h freshness window;
+    //    leads targeted at THIS provider always show; leads targeted at
+    //    another provider never show.
     let query = supabase
       .from("service_requests")
       .select(
@@ -237,12 +242,15 @@ export async function getProviderLeads(
         property_postcode,
         urgency_level,
         status,
-        created_at
+        created_at,
+        target_provider_id
       `,
       )
       .eq("status", "open")
       .in("service_category", services)
-      .gte("created_at", cutoff)
+      .or(
+        `and(target_provider_id.is.null,created_at.gte.${cutoff}),target_provider_id.eq.${providerId}`,
+      )
       .order("created_at", { ascending: false });
 
     if (filters?.category) {
@@ -274,6 +282,7 @@ export async function getProviderLeads(
           location: postcode,
           inServiceArea:
             serviceAreas.size > 0 && serviceAreas.has(outwardCode(postcode)),
+          isDirect: row["target_provider_id"] === providerId,
           status: "new",
           budgetMinPence: toPence(row["budget_min"] as number | null),
           budgetMaxPence: toPence(row["budget_max"] as number | null),
@@ -283,10 +292,11 @@ export async function getProviderLeads(
       },
     );
 
-    // 5. Surface in-area leads first, keeping recency order within each group
+    // 5. Direct requests first, then in-area, then the rest (recency within each)
     return [
-      ...leads.filter((l) => l.inServiceArea),
-      ...leads.filter((l) => !l.inServiceArea),
+      ...leads.filter((l) => l.isDirect),
+      ...leads.filter((l) => !l.isDirect && l.inServiceArea),
+      ...leads.filter((l) => !l.isDirect && !l.inServiceArea),
     ];
   } catch {
     return [];
