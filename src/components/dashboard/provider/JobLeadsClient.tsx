@@ -194,6 +194,9 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
             // Service-area match is computed server-side on the initial fetch;
             // realtime arrivals default to false until the next refresh.
             inServiceArea: false,
+            isDirect:
+              (row["target_provider_id"] as string | null | undefined) ===
+              providerId,
             description: (row["description"] as string | undefined) ?? "",
             location: (row["property_postcode"] as string | undefined) ?? "",
             status: "new",
@@ -217,7 +220,7 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, []);
+  }, [providerId]);
 
   function handleRemove(leadId: string) {
     setLeads((prev) => prev.filter((l) => l.id !== leadId));

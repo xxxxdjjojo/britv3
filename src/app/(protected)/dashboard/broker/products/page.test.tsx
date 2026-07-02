@@ -25,10 +25,11 @@ describe("ProductsPage (broker products)", () => {
     expect(screen.getAllByText("Barclays").length).toBeGreaterThan(0);
   });
 
-  it("renders a Request Quote button for each product", () => {
+  it("does not render the dead Request Quote button (removed — mock products carry no provider)", () => {
     render(<ProductsPage />);
-    const quoteButtons = screen.getAllByRole("button", { name: /request quote/i });
-    expect(quoteButtons.length).toBeGreaterThan(0);
+    expect(
+      screen.queryByRole("button", { name: /request quote/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the Market Trends Analysis section", () => {

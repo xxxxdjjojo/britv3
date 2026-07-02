@@ -99,7 +99,7 @@ export default async function SurveyorProfilePage({ params }: Params) {
               <SpecialistSidebar
                 provider={provider}
                 ctaLabel="Book Survey"
-                ctaHref="#quote"
+                category="surveying"
               />
             </aside>
           </div>

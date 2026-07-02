@@ -101,62 +101,90 @@ export const documentUploadSchema = z.object({
 
 export type DocumentUploadInput = z.infer<typeof documentUploadSchema>;
 
-/** RFQ (service request) creation form */
-export const rfqCreateSchema = z
-  .object({
-    service_category: z.enum(SERVICE_CATEGORIES),
-    title: z
-      .string()
-      .min(10, "Title must be at least 10 characters")
-      .max(200, "Title must be at most 200 characters"),
-    description: z
-      .string()
-      .min(50, "Description must be at least 50 characters")
-      .max(5000, "Description must be at most 5000 characters"),
-    property_address: z.string().optional(),
-    property_postcode: z
-      .string()
-      .regex(UK_POSTCODE_REGEX, "Enter a valid UK postcode"),
-    preferred_start_date: z.coerce.date().optional(),
-    urgency_level: z
-      .enum(["low", "normal", "high", "emergency"])
-      .default("normal"),
-    budget_min: z.number().min(0).optional(),
-    budget_max: z.number().min(0).optional(),
-    // Attribution (e.g. launched from the property page's local traders section).
-    source: z.string().max(80).optional(),
-    target_provider_id: z.string().regex(UUID_REGEX, "Invalid provider id").optional(),
-    listing_id: z.string().regex(UUID_REGEX, "Invalid listing id").optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.budget_min != null && data.budget_max != null) {
-        return data.budget_max >= data.budget_min;
-      }
-      return true;
-    },
-    {
-      message:
-        "Maximum budget must be greater than or equal to minimum",
-      path: ["budget_max"],
-    },
-  )
-  .refine(
-    (data) => {
-      if (data.preferred_start_date) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return data.preferred_start_date >= today;
-      }
-      return true;
-    },
-    {
-      message: "Preferred start date cannot be in the past",
-      path: ["preferred_start_date"],
-    },
-  );
+/** RFQ (service request) creation form — base object (pre-refinement) */
+const rfqCreateBaseSchema = z.object({
+  service_category: z.enum(SERVICE_CATEGORIES),
+  title: z
+    .string()
+    .min(10, "Title must be at least 10 characters")
+    .max(200, "Title must be at most 200 characters"),
+  description: z
+    .string()
+    .min(50, "Description must be at least 50 characters")
+    .max(5000, "Description must be at most 5000 characters"),
+  property_address: z.string().optional(),
+  property_postcode: z
+    .string()
+    .regex(UK_POSTCODE_REGEX, "Enter a valid UK postcode"),
+  preferred_start_date: z.coerce.date().optional(),
+  urgency_level: z
+    .enum(["low", "normal", "high", "emergency"])
+    .default("normal"),
+  budget_min: z.number().min(0).optional(),
+  budget_max: z.number().min(0).optional(),
+  // Attribution (e.g. launched from the property page's local traders section).
+  source: z.string().max(80).optional(),
+  target_provider_id: z.string().regex(UUID_REGEX, "Invalid provider id").optional(),
+  listing_id: z.string().regex(UUID_REGEX, "Invalid listing id").optional(),
+});
+
+/** Guest (logged-out) RFQ submission — base fields + contact details.
+ * target_provider_id is REQUIRED: guests may only submit TARGETED requests,
+ * so their contact details are never broadcast to all providers. */
+const rfqGuestCreateBaseSchema = rfqCreateBaseSchema.extend({
+  target_provider_id: z.string().regex(UUID_REGEX, "Invalid provider id"),
+  contact_name: z
+    .string()
+    .min(2, "Enter your full name")
+    .max(100),
+  contact_email: z.string().email("Enter a valid email address"),
+  contact_phone: z.string().max(30).optional(),
+});
+
+// Cross-field refinements are duplicated on both RFQ create schemas below:
+// a shared generic helper fights the type-checker across the two object
+// shapes, and working duplication beats a clever generic.
+
+const BUDGET_ORDER_REFINEMENT = {
+  message: "Maximum budget must be greater than or equal to minimum",
+  path: ["budget_max"],
+};
+
+const START_DATE_REFINEMENT = {
+  message: "Preferred start date cannot be in the past",
+  path: ["preferred_start_date"],
+};
+
+function isBudgetOrdered(data: {
+  budget_min?: number;
+  budget_max?: number;
+}): boolean {
+  if (data.budget_min != null && data.budget_max != null) {
+    return data.budget_max >= data.budget_min;
+  }
+  return true;
+}
+
+function isStartDateNotPast(data: { preferred_start_date?: Date }): boolean {
+  if (data.preferred_start_date) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return data.preferred_start_date >= today;
+  }
+  return true;
+}
+
+export const rfqCreateSchema = rfqCreateBaseSchema
+  .refine(isBudgetOrdered, BUDGET_ORDER_REFINEMENT)
+  .refine(isStartDateNotPast, START_DATE_REFINEMENT);
 
 export type RfqCreateInput = z.infer<typeof rfqCreateSchema>;
+
+export const rfqGuestCreateSchema = rfqGuestCreateBaseSchema
+  .refine(isBudgetOrdered, BUDGET_ORDER_REFINEMENT)
+  .refine(isStartDateNotPast, START_DATE_REFINEMENT);
+
+export type RfqGuestCreateInput = z.infer<typeof rfqGuestCreateSchema>;
 
 /** Quote creation form (provider submitting a quote) */
 export const quoteCreateSchema = z.object({

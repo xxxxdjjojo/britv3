@@ -57,6 +57,21 @@ describe("tradespersonProfilePath helper", () => {
     );
   });
 
+  it("appends source attribution when intent is present", () => {
+    expect(
+      tradespersonProfilePath("marcus-sterling", {
+        intent: "quote",
+        source: "search_card",
+      }),
+    ).toBe("/services/pro/marcus-sterling?intent=quote&source=search_card");
+  });
+
+  it("ignores source without an intent (no dangling query)", () => {
+    expect(
+      tradespersonProfilePath("marcus-sterling", { source: "search_card" }),
+    ).toBe("/services/pro/marcus-sterling");
+  });
+
   it("produces a path that resolves to a real route", () => {
     expect(resolveAppRoute(tradespersonProfilePath("any-provider"))).not.toBeNull();
   });

@@ -158,7 +158,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
               <SpecialistSidebar
                 provider={provider}
                 ctaLabel="Discuss Your Project"
-                ctaHref="#quote"
+                category="architect"
               />
             </aside>
           </div>

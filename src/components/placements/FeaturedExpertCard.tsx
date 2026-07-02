@@ -116,7 +116,7 @@ export function FeaturedExpertCard({ expert, zone, propertyId, sponsored = true,
 
       <div className="mt-3 flex items-center gap-2">
         <Link
-          href={`${profileHref}?intent=quote`}
+          href={tradespersonProfilePath(expert.slug, { intent: "quote", source: "sponsored_placement" })}
           onClick={() => {
             fire("click");
             fire("enquiry_started");

@@ -4,10 +4,13 @@
  * ProviderSidebar — Client Component
  *
  * Renders the sticky "Get a Free Quote" sidebar widget and trust card for
- * a tradesperson public profile page. Opens QuoteModal on CTA click.
+ * a tradesperson public profile page. Opens QuoteModal on CTA click, and
+ * auto-opens it when the page is visited with ?intent=quote (emitted by
+ * quote CTAs on cards/other pages).
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 import { QuoteModal } from "@/components/providers/QuoteModal";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
@@ -16,12 +19,28 @@ type ProviderSidebarProps = Readonly<{
   provider: ServiceProviderPublicProfile;
 }>;
 
-export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
-  const [quoteOpen, setQuoteOpen] = useState(false);
+const SOURCE_MAX_LENGTH = 80;
+const SOURCE_PATTERN = /^[a-z0-9_]+$/i;
 
-  const serviceNames = (provider.services ?? []).map((svc) =>
-    String(svc).replace(/_/g, " "),
-  );
+/** Sanitise the ?source= attribution param; undefined falls back to the
+ *  QuoteModal default ("trader_profile_modal"). */
+function sanitiseSource(raw: string | null): string | undefined {
+  if (!raw) return undefined;
+  if (raw.length > SOURCE_MAX_LENGTH || !SOURCE_PATTERN.test(raw)) {
+    return undefined;
+  }
+  return raw;
+}
+
+export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
+  const searchParams = useSearchParams();
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const source = sanitiseSource(searchParams.get("source"));
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- auto-open the quote modal when arriving with ?intent=quote
+    if (searchParams.get("intent") === "quote") setQuoteOpen(true);
+  }, [searchParams]);
 
   return (
     <div className="sticky top-24 space-y-6" id="quote">
@@ -105,9 +124,10 @@ export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
 
       {/* QuoteModal */}
       <QuoteModal
-        providerId={provider.id}
+        providerUserId={provider.user_id}
         providerName={provider.business_name}
-        services={serviceNames}
+        categories={provider.services ?? []}
+        source={source}
         open={quoteOpen}
         onOpenChange={setQuoteOpen}
       />

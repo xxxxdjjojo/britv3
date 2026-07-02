@@ -99,7 +99,7 @@ export default async function MortgageBrokerProfilePage({ params }: Params) {
               <SpecialistSidebar
                 provider={provider}
                 ctaLabel="Get Free Advice"
-                ctaHref="#quote"
+                category="mortgage_broker"
               />
             </aside>
           </div>

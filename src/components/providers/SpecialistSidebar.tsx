@@ -1,25 +1,32 @@
+"use client";
+
 /**
- * SpecialistSidebar — Server Component
+ * SpecialistSidebar — Client Component
  *
  * Simplified sidebar for specialist professional profiles (mortgage brokers,
- * conveyancers, surveyors). Renders a CTA card, contact info card, and a
- * TrueDeed protection blurb.
+ * conveyancers, surveyors, architects). Renders a CTA card that opens the
+ * targeted QuoteModal, a contact info card, and a TrueDeed protection blurb.
+ * The wrapper keeps id="quote" so SpecialistHero's #quote anchor scrolls here.
  */
 
+import { useState } from "react";
 import { ShieldCheck, Phone, Mail } from "lucide-react";
+import { QuoteModal } from "@/components/providers/QuoteModal";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 
 type SpecialistSidebarProps = Readonly<{
   provider: ServiceProviderPublicProfile;
   ctaLabel: string;
-  ctaHref: string;
+  /** Raw service category enum value for this vertical, e.g. "conveyancing". */
+  category: string;
 }>;
 
 export default function SpecialistSidebar({
   provider,
   ctaLabel,
-  ctaHref,
+  category,
 }: SpecialistSidebarProps) {
+  const [quoteOpen, setQuoteOpen] = useState(false);
   // Response time from the pricing JSONB if available, else default 24h
   const pricingData = (provider as unknown as Record<string, unknown>)["pricing"];
   const responseTimeHours =
@@ -41,12 +48,13 @@ export default function SpecialistSidebar({
           {provider.business_name} typically responds within{" "}
           <strong>{responseTimeHours}h</strong>
         </p>
-        <a
-          href={ctaHref}
+        <button
+          type="button"
+          onClick={() => setQuoteOpen(true)}
           className="mt-5 block w-full text-center bg-white text-brand-primary font-bold py-3 px-4 rounded-xl text-sm shadow-lg hover:bg-green-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-primary"
         >
           {ctaLabel}
-        </a>
+        </button>
       </div>
 
       {/* Contact info card */}
@@ -90,6 +98,16 @@ export default function SpecialistSidebar({
           </div>
         </div>
       </div>
+
+      {/* QuoteModal — targeted RFQ to this specialist */}
+      <QuoteModal
+        providerUserId={provider.user_id}
+        providerName={provider.business_name}
+        categories={[category]}
+        source="specialist_profile_modal"
+        open={quoteOpen}
+        onOpenChange={setQuoteOpen}
+      />
     </div>
   );
 }

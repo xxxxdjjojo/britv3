@@ -28,6 +28,7 @@ function makeLead(overrides: Partial<ProviderLead> = {}): ProviderLead {
     serviceCategory: "Plumbing",
     title: "Kitchen tap replacement",
     inServiceArea: false,
+    isDirect: false,
     description: "Leaking kitchen tap needs replacing.",
     location: "Bristol",
     status: "new",

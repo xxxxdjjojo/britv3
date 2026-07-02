@@ -49,8 +49,14 @@ function LeadCard({ lead }: { lead: ProviderLead }) {
     <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
       <div className="mb-1 flex items-start justify-between gap-2">
         <p className="text-base font-semibold text-neutral-900">{lead.serviceCategory}</p>
-        <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
-          New lead
+        <span
+          className={
+            lead.isDirect
+              ? "inline-flex items-center rounded-full bg-brand-primary/10 px-2 py-0.5 text-xs font-semibold text-brand-primary"
+              : "inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800"
+          }
+        >
+          {lead.isDirect ? "Direct request" : "New lead"}
         </span>
       </div>
 
@@ -125,11 +131,11 @@ export default async function FieldJobsPage() {
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = (providerProfile?.id as string | null) ?? user.id;
+  const providerId = (providerProfile?.user_id as string | null) ?? user.id;
 
   const [leads, activeJobs] = await Promise.all([
     getProviderLeads(providerId, supabase),

@@ -180,7 +180,7 @@ export function ProviderSearchCard({ provider, latestReview }: Props) {
             View Profile
           </a>
           <a
-            href={tradespersonProfilePath(slug, { hash: "services" })}
+            href={tradespersonProfilePath(slug, { intent: "quote", source: "search_card" })}
             className="border border-slate-300 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:border-brand-primary hover:text-brand-primary transition-colors"
           >
             Get a Quote

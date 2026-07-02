@@ -45,6 +45,7 @@ function makeQueryMock(resolveValue: unknown) {
     "lte",
     "gt",
     "lt",
+    "or",
     "ilike",
     "order",
     "limit",
@@ -122,7 +123,7 @@ describe("getProviderLeads", () => {
         }
         // service_requests query — must return a thenable chain
         const chain: Record<string, unknown> = {};
-        const methods = ["select", "eq", "in", "gte", "order", "limit", "range", "not", "ilike"];
+        const methods = ["select", "eq", "in", "gte", "or", "order", "limit", "range", "not", "ilike"];
         for (const m of methods) {
           chain[m] = vi.fn(() => chain);
         }

@@ -22,6 +22,7 @@ import type {
 } from "@/types/marketplace";
 import { CATEGORY_LABELS } from "@/lib/marketplace/category-labels";
 import { sanitizeUrl } from "@/lib/validation/sanitize-text";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 
 type ProviderData = {
   user_id: string;
@@ -127,7 +128,7 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
           </div>
         </div>
         <Link
-          href={`/marketplace?category=${provider.services[0] ?? ""}`}
+          href={tradespersonProfilePath(provider.slug, { intent: "quote", source: "marketplace_profile" })}
           className="shrink-0"
         >
           <Button size="lg">Request Quote</Button>

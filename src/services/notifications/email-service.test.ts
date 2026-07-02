@@ -21,7 +21,11 @@ vi.mock("@/lib/cache/redis", () => ({
   })),
 }));
 
-import { sendCriticalEmail, sendDailyDigest } from "@/services/notifications/email-service";
+import {
+  sendCriticalEmail,
+  sendDailyDigest,
+  sendGuestQuoteEmail,
+} from "@/services/notifications/email-service";
 
 function event(overrides: Partial<PlatformEvent> = {}): PlatformEvent {
   return {
@@ -51,8 +55,44 @@ describe("notification email branding", () => {
     const payload = resendSendMock.mock.calls[0][0] as { from: string; subject: string; html: string };
     expect(payload.from).toBe("TrueDeed <hello@truedeed.co.uk>");
     expect(payload.html).toContain("TrueDeed");
-    expect(payload.html).toContain("https://truedeed.co.uk/quotes/rfq-1");
+    // quote_received CTA must hit a real route: entity_id is the RFQ id, and
+    // the owner's quote lives at /dashboard/rfqs/[id] (/quotes/[id] is a 404).
+    expect(payload.html).toContain("https://truedeed.co.uk/dashboard/rfqs/rfq-1");
+    expect(payload.html).not.toContain("https://truedeed.co.uk/quotes/rfq-1");
     expect(`${payload.from} ${payload.subject} ${payload.html}`).not.toMatch(/Britestate|britestate\./);
+  });
+
+  it("guest quote email carries the amount, escapes the provider name, and nudges sign-up", async () => {
+    await sendGuestQuoteEmail(
+      "jane@example.com",
+      "Quote received - TrueDeed",
+      event({
+        actor_name: 'Bob\'s "Plumbing" <script>',
+        metadata: { quote_id: "quote-1", total_amount: 45000 },
+      }),
+    );
+
+    const payload = resendSendMock.mock.calls[0][0] as { to: string; html: string };
+    expect(payload.to).toBe("jane@example.com");
+    // Amount formatted for en-GB
+    expect(payload.html).toContain("&pound;45,000");
+    // Sign-up nudge CTA (guests have no dashboard)
+    expect(payload.html).toContain("https://truedeed.co.uk/signup");
+    // Provider-controllable display name is escaped
+    expect(payload.html).not.toContain("<script>");
+    expect(payload.html).toContain("&lt;script&gt;");
+  });
+
+  it("guest quote email omits the amount line when metadata has no numeric total", async () => {
+    await sendGuestQuoteEmail(
+      "jane@example.com",
+      "Quote received - TrueDeed",
+      event({ metadata: {} }),
+    );
+
+    const payload = resendSendMock.mock.calls[0][0] as { html: string };
+    expect(payload.html).not.toContain("&pound;");
+    expect(payload.html).toContain("https://truedeed.co.uk/signup");
   });
 
   it("uses TrueDeed sender, subject, body and fallback dashboard URL for daily digests", async () => {
