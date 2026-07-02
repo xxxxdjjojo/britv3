@@ -76,6 +76,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/compliance/pre-launch-audit-2026`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     { url: `${baseUrl}/agent-briefing`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${baseUrl}/agent-briefing/archive`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
+    /* Phase 2 — data narrative */
+    { url: `${baseUrl}/reports`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${baseUrl}/reports/reality-gap`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/reports/reality-gap/league`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${baseUrl}/reports/reality-gap/methodology`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/reports/time-to-sell`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${baseUrl}/reports/time-to-sell/methodology`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/metrics`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
   ];
 
   /* --- Marketplace --- */

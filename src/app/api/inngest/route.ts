@@ -39,6 +39,8 @@ import {
 } from "@/inngest/functions/truedeed-dispute-emails";
 import { referencingInitiate } from "@/inngest/functions/referencing-initiate";
 import { lifecycleDrip } from "@/inngest/functions/lifecycle-drip";
+import { truedeedReportSnapshots } from "@/inngest/functions/truedeed-report-snapshots";
+import { platformMetricsDaily } from "@/inngest/functions/platform-metrics-daily";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -74,5 +76,7 @@ export const { GET, POST, PUT } = serve({
     truedeedInvoiceChargedBack,
     referencingInitiate,
     lifecycleDrip,
+    truedeedReportSnapshots,
+    platformMetricsDaily,
   ],
 });

@@ -193,7 +193,7 @@ describe("buildOgProps", () => {
     it("caps area length at 80 characters", () => {
       const props = buildOgProps("league", search({ area: "a".repeat(200) }));
       expect(props?.kind).toBe("league");
-      expect(props && "area" in props ? props.area.length : 0).toBe(80);
+      expect(props?.kind === "league" ? props.area.length : 0).toBe(80);
     });
   });
 

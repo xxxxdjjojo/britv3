@@ -24,6 +24,7 @@ import type { RecentSale, SectorTrend } from "@/services/truedeed/ppd-postcode-s
 import type { FitBoundsParams } from "@/lib/market-map/fit-bounds";
 import { geographyLevelForZoom } from "@/lib/market-map/geography";
 import { RecentSalesList } from "./RecentSalesList";
+import { StreetReportCard, StreetReportCardActions } from "./StreetReportCard";
 import { TrendSparkline } from "./TrendSparkline";
 import {
   bandSubtitle,
@@ -76,6 +77,7 @@ export function AreaPricesExplorer() {
   const [fitTo, setFitTo] = useState<FitBoundsParams | null>(null);
   const [detail, setDetail] = useState<PostcodeDetail | null>(null);
   const [activePostcode, setActivePostcode] = useState<string | null>(null);
+  const [showReportCard, setShowReportCard] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   // Monotonic lookup id so a slow detail response never lands on a newer card.
   const lookupSeq = useRef(0);
@@ -127,6 +129,7 @@ export function AreaPricesExplorer() {
     setCard(null);
     setDetail(null);
     setActivePostcode(null);
+    setShowReportCard(false);
 
     // Resolve free text / postcode → a single postcode via the adapter seam.
     let postcode: string | null = null;
@@ -382,6 +385,44 @@ export function AreaPricesExplorer() {
           className="flex flex-col gap-7"
         >
           {detail && <RecentSalesList postcode={activePostcode} sales={detail.recentSales} />}
+
+          {/* Street report card — printable, date-stamped, real PPD rows only */}
+          {detail && (
+            <div className="flex flex-col gap-4">
+              {showReportCard ? (
+                <>
+                  <StreetReportCard
+                    postcode={activePostcode}
+                    areaName={locationHeadline(card?.location ?? null) || undefined}
+                    flatMedianPounds={card?.flat.median}
+                    houseMedianPounds={card?.house.median}
+                    recentSales={detail.recentSales}
+                    trend={detail.trend}
+                    generatedOn={new Date().toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  />
+                  <StreetReportCardActions
+                    postcode={activePostcode}
+                    areaName={locationHeadline(card?.location ?? null) || undefined}
+                    flatMedianPounds={card?.flat.median}
+                    houseMedianPounds={card?.house.median}
+                  />
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowReportCard(true)}
+                  className="self-start rounded-full border border-brand-primary px-5 py-2.5 font-sans text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+                >
+                  Create report card
+                </button>
+              )}
+            </div>
+          )}
+
           <MethodologyFooter sources={PPD_SOURCES} caveats={PPD_CAVEATS} />
         </section>
       )}
