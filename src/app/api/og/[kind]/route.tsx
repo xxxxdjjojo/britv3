@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { brandConfig } from "@/config/brand";
 import { createRateLimiter } from "@/lib/cache/redis";
-import { buildOgProps, type OgProps, type PostcodeOgProps } from "@/lib/og/og-props";
+import { buildOgProps, type OgProps, type PostcodeOgProps, type ReportOgProps } from "@/lib/og/og-props";
 
 // ImageResponse rendering is CPU-heavy and the valid-parameter space is large
 // (every postcode/title is a distinct CDN cache key), so cap per-IP generation.
@@ -23,10 +23,13 @@ const KICKERS: Record<OgProps["kind"], string> = {
   pledge: "TrueDeed pledge",
   briefing: "Independent Agent Briefing",
   tool: "TrueDeed tools",
+  league: "Postcode Truth League",
+  report: "TrueDeed reports",
 };
 
 function headlineFor(props: OgProps): string {
   if (props.kind === "postcode") return `Median sold price in ${props.postcode}`;
+  if (props.kind === "league") return `How honest are asking prices in ${props.area}?`;
   return props.title;
 }
 
@@ -38,13 +41,21 @@ function subFor(props: OgProps): string | undefined {
       return props.edition;
     case "tool":
       return props.subtitle;
+    case "league": {
+      const parts: string[] = [];
+      if (props.rank) parts.push(`#${props.rank} of UK districts`);
+      if (props.gapPct) parts.push(`asking vs sold gap: ${props.gapPct}`);
+      return parts.length > 0 ? parts.join(" · ") : undefined;
+    }
+    case "report":
+      return props.edition;
     default:
       return undefined;
   }
 }
 
 function footerFor(props: OgProps): string {
-  if (props.kind === "postcode") {
+  if (props.kind === "postcode" || props.kind === "league") {
     return `Source: HM Land Registry price paid data · ${brandConfig.canonicalDomain}`;
   }
   return brandConfig.canonicalDomain;
@@ -67,6 +78,20 @@ function MedianRow({ props }: Readonly<{ props: PostcodeOgProps }>) {
     <div style={{ display: "flex", flexDirection: "row", marginTop: 40 }}>
       {props.flatMedian ? <MedianFigure label="Flat" value={props.flatMedian} /> : null}
       {props.houseMedian ? <MedianFigure label="House" value={props.houseMedian} /> : null}
+    </div>
+  );
+}
+
+function ReportStat({ props }: Readonly<{ props: ReportOgProps }>) {
+  if (!props.stat) return null;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", marginTop: 40 }}>
+      <div style={{ display: "flex", fontSize: 72, fontWeight: 700 }}>{props.stat}</div>
+      {props.statLabel ? (
+        <div style={{ display: "flex", fontSize: 26, fontWeight: 600, color: ACCENT_GREEN, textTransform: "uppercase", letterSpacing: 2, marginTop: 8 }}>
+          {props.statLabel}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -109,6 +134,7 @@ function OgCard({ props }: Readonly<{ props: OgProps }>) {
           <div style={{ display: "flex", fontSize: 32, marginTop: 20, opacity: 0.85 }}>{sub}</div>
         ) : null}
         {props.kind === "postcode" ? <MedianRow props={props} /> : null}
+        {props.kind === "report" ? <ReportStat props={props} /> : null}
       </div>
 
       <div
