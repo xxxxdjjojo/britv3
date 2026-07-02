@@ -440,8 +440,8 @@ export function MarketMap({
         onClick={handleClick}
         style={{ width: "100%", height: "100%" }}
       >
-        {/* Navigation controls — top-right to avoid overlapping the detail card at bottom-right */}
-        <NavigationControl position="top-right" showCompass={false} />
+        {/* Navigation controls — bottom-right for thumb reach on mobile (F19) */}
+        <NavigationControl position="bottom-right" showCompass={false} />
 
         {/*
          * Choropleth source — cached MapLibre vector tiles from

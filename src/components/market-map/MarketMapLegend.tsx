@@ -57,7 +57,7 @@ export function MarketMapLegend({ loPrice, hiPrice, className }: Props) {
       >
         {/* Label */}
         <span
-          className="font-sans text-[10px] font-bold uppercase tracking-[0.1em] text-[#46464F]"
+          className="font-sans text-xs font-bold uppercase tracking-[0.1em] text-[#46464F]"
           aria-hidden="true"
         >
           Median sold price
@@ -79,7 +79,7 @@ export function MarketMapLegend({ loPrice, hiPrice, className }: Props) {
 
           {hiPrice != null && (
             <>
-              <span className="font-sans text-[10px] font-normal text-[#C4C4CE]">|</span>
+              <span className="font-sans text-xs font-normal text-[#C4C4CE]">|</span>
               <span className="font-sans text-[11px] font-bold text-[#003629]">
                 {formatPrice(hiPrice)}
               </span>
@@ -94,7 +94,7 @@ export function MarketMapLegend({ loPrice, hiPrice, className }: Props) {
             style={{ backgroundColor: INSUFFICIENT_COLOUR, opacity: 0.5 }}
             aria-hidden="true"
           />
-          <span className="font-sans text-[10px] font-bold uppercase tracking-[0.08em] text-[#46464F]">
+          <span className="font-sans text-xs font-bold uppercase tracking-[0.08em] text-[#46464F]">
             No data
           </span>
         </div>
