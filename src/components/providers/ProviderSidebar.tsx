@@ -4,10 +4,13 @@
  * ProviderSidebar — Client Component
  *
  * Renders the sticky "Get a Free Quote" sidebar widget and trust card for
- * a tradesperson public profile page. Opens QuoteModal on CTA click.
+ * a tradesperson public profile page. Opens QuoteModal on CTA click, and
+ * auto-opens it when the page is visited with ?intent=quote (emitted by
+ * quote CTAs on cards/other pages).
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 import { QuoteModal } from "@/components/providers/QuoteModal";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
@@ -17,11 +20,13 @@ type ProviderSidebarProps = Readonly<{
 }>;
 
 export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
+  const searchParams = useSearchParams();
   const [quoteOpen, setQuoteOpen] = useState(false);
 
-  const serviceNames = (provider.services ?? []).map((svc) =>
-    String(svc).replace(/_/g, " "),
-  );
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- auto-open the quote modal when arriving with ?intent=quote
+    if (searchParams.get("intent") === "quote") setQuoteOpen(true);
+  }, [searchParams]);
 
   return (
     <div className="sticky top-24 space-y-6" id="quote">
@@ -105,9 +110,9 @@ export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
 
       {/* QuoteModal */}
       <QuoteModal
-        providerId={provider.id}
+        providerUserId={provider.user_id}
         providerName={provider.business_name}
-        services={serviceNames}
+        categories={provider.services ?? []}
         open={quoteOpen}
         onOpenChange={setQuoteOpen}
       />

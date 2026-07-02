@@ -12,6 +12,7 @@
  * `return await TradespersonProfile(...)` and let notFound() propagate.
  */
 
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import {
   fetchProviderBySlug,
@@ -61,8 +62,6 @@ export async function TradespersonProfile({ slug, categorySlug }: TradespersonPr
     fetchProviderServices(provider.id),
   ]);
 
-  const serviceNames = services.map((s) => s.name);
-
   return (
     <>
       <script
@@ -106,9 +105,9 @@ export async function TradespersonProfile({ slug, categorySlug }: TradespersonPr
                     label: "Services & Pricing",
                     content: (
                       <ServicesTabWithModal
-                        providerId={provider.id}
+                        providerUserId={provider.user_id}
                         providerName={provider.business_name}
-                        serviceNames={serviceNames}
+                        categories={provider.services ?? []}
                       >
                         <ServicesTab services={services} providerId={provider.id} />
                       </ServicesTabWithModal>
@@ -140,7 +139,9 @@ export async function TradespersonProfile({ slug, categorySlug }: TradespersonPr
               />
             </div>
             <aside className="lg:w-[380px]">
-              <ProviderSidebar provider={provider} />
+              <Suspense fallback={null}>
+                <ProviderSidebar provider={provider} />
+              </Suspense>
             </aside>
           </div>
         </main>

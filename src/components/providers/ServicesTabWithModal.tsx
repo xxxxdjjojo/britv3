@@ -18,16 +18,18 @@ import { QuoteModal } from "@/components/providers/QuoteModal";
 
 type ServicesTabWithModalProps = Readonly<{
   children: ReactNode;
-  providerId: string;
+  /** service_provider_details.user_id — the targeted provider */
+  providerUserId: string;
   providerName: string;
-  serviceNames: string[];
+  /** Raw service category enum values, e.g. "plumber" */
+  categories: string[];
 }>;
 
 export function ServicesTabWithModal({
   children,
-  providerId,
+  providerUserId,
   providerName,
-  serviceNames,
+  categories,
 }: ServicesTabWithModalProps) {
   const [open, setOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("");
@@ -47,9 +49,9 @@ export function ServicesTabWithModal({
     <div ref={containerRef} onClick={handleContainerClick}>
       {children}
       <QuoteModal
-        providerId={providerId}
+        providerUserId={providerUserId}
         providerName={providerName}
-        services={serviceNames}
+        categories={categories}
         open={open}
         initialService={selectedService}
         onOpenChange={setOpen}
