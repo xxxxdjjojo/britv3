@@ -104,20 +104,14 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
           </div>
         </div>
 
-        {/* CTA buttons */}
+        {/* CTA — links to the enquiry card in the sidebar (working contact flow) */}
         <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            className="flex-1 md:flex-none border border-brand-primary text-brand-primary font-bold px-6 py-3 rounded-xl hover:bg-brand-primary/5 transition-colors"
-          >
-            Follow
-          </button>
-          <button
-            type="button"
-            className="flex-1 md:flex-none bg-brand-primary text-white font-bold px-8 py-3 rounded-xl hover:bg-brand-primary-light transition-all"
+          <a
+            href="#agent-enquiry"
+            className="flex-1 md:flex-none bg-brand-primary text-white font-bold px-8 py-3 rounded-xl hover:bg-brand-primary-light transition-all text-center"
           >
             Contact Agent
-          </button>
+          </a>
         </div>
       </div>
 

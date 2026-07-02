@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { categoryFromSlug, categoryLabel, townFromSlug } from "@/lib/placements/category-slugs";
 import { FeaturedExperts } from "@/components/placements/FeaturedExperts";
 import { listAreaProviders } from "@/services/placements/area-directory-service";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 
 export const dynamic = "force-dynamic";
 
@@ -88,7 +89,7 @@ export default async function AreaProfessionalsPage({ params }: { params: Promis
             {providers.map((p) => (
               <li key={p.userId}>
                 <Link
-                  href={`/services/tradespeople/${p.slug}`}
+                  href={tradespersonProfilePath(p.slug)}
                   className="flex items-start gap-3 rounded-xl border bg-card p-4 transition-shadow hover:shadow-md"
                 >
                   <div className="relative size-11 shrink-0 overflow-hidden rounded-lg bg-muted">

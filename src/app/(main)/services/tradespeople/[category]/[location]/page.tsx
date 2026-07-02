@@ -280,11 +280,7 @@ export default async function CategoryLocationPage({ params }: PageProps) {
             </p>
             <div className="space-y-4">
               {providers.map((provider) => (
-                <ProviderSearchCard
-                  key={provider.id}
-                  provider={provider}
-                  category={category}
-                />
+                <ProviderSearchCard key={provider.id} provider={provider} />
               ))}
             </div>
           </>

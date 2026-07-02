@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, Wrench, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { tradespersonProfilePath } from "@/lib/providers/profile-path";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -148,7 +149,7 @@ function TradespersonCard({ tp }: Readonly<{ tp: TradespersonRow }>) {
 
       {/* Link */}
       <Link
-        href={`/services/tradespeople/${tp.slug}`}
+        href={tradespersonProfilePath(tp.slug)}
         className="shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold border border-[color:var(--brand-primary,#1B4D3E)] text-[color:var(--brand-primary,#1B4D3E)] hover:bg-[color:var(--brand-primary,#1B4D3E)] hover:text-white transition-colors"
       >
         View

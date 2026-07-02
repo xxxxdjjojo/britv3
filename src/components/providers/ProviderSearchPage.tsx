@@ -372,15 +372,7 @@ export function ProviderSearchPage({
             ) : (
               <div className="space-y-4">
                 {providers.map((provider) => (
-                  <ProviderSearchCard
-                    key={provider.id}
-                    provider={provider}
-                    category={
-                      provider.services[0] ??
-                      defaultCategory ??
-                      "other"
-                    }
-                  />
+                  <ProviderSearchCard key={provider.id} provider={provider} />
                 ))}
               </div>
             )}
