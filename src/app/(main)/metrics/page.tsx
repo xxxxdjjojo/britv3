@@ -10,6 +10,7 @@ import {
   type MetricKey,
   type MetricSnapshot,
 } from "@/services/metrics/platform-metrics-service";
+import { TIME_TO_SELL_MIN_PAIRS } from "@/services/reports/time-to-sell-service";
 
 import { MetricSparkline } from "./MetricSparkline";
 
@@ -211,7 +212,7 @@ export default async function OpenMetricsPage() {
           {/* Time to sell — gated on matched-sale coverage (suppression flag). */}
           <CardShell
             label="Median days to sell"
-            definition="Median days to sell = median days from listing to Land Registry completion, computed only from confirmed matched sales (our listing ↔ HM Land Registry Price Paid pair), published only when the matched sample clears the disclosed threshold of 15 pairs."
+            definition={`Median days to sell = median days from listing to Land Registry completion, computed only from confirmed matched sales (our listing ↔ HM Land Registry Price Paid pair), published only when the matched sample clears the disclosed threshold of ${TIME_TO_SELL_MIN_PAIRS} pairs.`}
           >
             {data.timeToSell && !data.timeToSell.suppressed && data.timeToSell.medianDays !== null ? (
               <>
@@ -225,8 +226,8 @@ export default async function OpenMetricsPage() {
               </>
             ) : (
               <p className="mt-3 text-sm leading-relaxed text-neutral-600">
-                Coming soon — arrives with matched-sale coverage. This figure unlocks once at least
-                15 of our listings have been confirmed against HM Land Registry completions
+                Coming soon — arrives with matched-sale coverage. This figure unlocks once at least{" "}
+                {TIME_TO_SELL_MIN_PAIRS} of our listings have been confirmed against HM Land Registry completions
                 {data.timeToSell ? (
                   <> (currently {data.timeToSell.sampleN.toLocaleString("en-GB")})</>
                 ) : null}

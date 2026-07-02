@@ -3,6 +3,11 @@ import Link from "next/link";
 
 import { ContentVersionStamp } from "@/components/trust/ContentVersionStamp";
 import { MethodologyFooter } from "@/components/trust/MethodologyFooter";
+import {
+  AREA_MEDIAN_MIN_ASKING_N,
+  AREA_MEDIAN_MIN_SOLD_N,
+  MATCHED_PAIR_MIN_N,
+} from "@/services/reports/reality-gap-service";
 
 const TITLE = "Reality Gap methodology";
 const DESCRIPTION =
@@ -105,12 +110,15 @@ export default function RealityGapMethodologyPage() {
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-neutral-600">
             <li>
               <strong>Area-median cells:</strong> at least{" "}
-              <strong>20 asking prices</strong> AND at least{" "}
-              <strong>100 sold transactions</strong>.
+              <strong>{AREA_MEDIAN_MIN_ASKING_N} asking prices</strong> AND at
+              least <strong>{AREA_MEDIAN_MIN_SOLD_N} sold transactions</strong>.
             </li>
             <li>
               <strong>Matched-pair cells:</strong> at least{" "}
-              <strong>10 confirmed listing-to-sale pairs</strong>.
+              <strong>
+                {MATCHED_PAIR_MIN_N} confirmed listing-to-sale pairs
+              </strong>
+              .
             </li>
           </ul>
           <p className={BODY}>

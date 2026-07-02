@@ -11,6 +11,10 @@ import {
   pressPackToPlainText,
   type PressPack,
 } from "@/content/data-wire/templates";
+import {
+  AREA_MEDIAN_MIN_ASKING_N,
+  AREA_MEDIAN_MIN_SOLD_N,
+} from "@/services/reports/reality-gap-thresholds";
 import type { WireArea } from "@/services/data-wire/data-wire-service";
 
 type Props = Readonly<{
@@ -181,7 +185,8 @@ export function DataWireClient({ period, areas }: Props) {
           </p>
           <p className="text-xs text-neutral-500">
             Packs are only available for districts above the disclosed sample
-            thresholds (at least 20 asking prices and 100 recorded sales).
+            thresholds (at least {AREA_MEDIAN_MIN_ASKING_N} asking prices and{" "}
+            {AREA_MEDIAN_MIN_SOLD_N} recorded sales).
           </p>
         </div>
         <div className="w-full sm:w-64">

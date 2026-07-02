@@ -8,6 +8,9 @@ import { ReportShell } from "@/components/reports/ReportShell";
 import { ReportStatRow } from "@/components/reports/ReportStatRow";
 import { ReportViewTracker } from "@/components/reports/ReportViewTracker";
 import {
+  AREA_MEDIAN_MIN_ASKING_N,
+  AREA_MEDIAN_MIN_SOLD_N,
+  MATCHED_PAIR_MIN_N,
   PROPERTY_TYPE_LABELS,
   PROPERTY_TYPE_ORDER,
   formatGapPct,
@@ -127,9 +130,10 @@ function HoldingCopy() {
       </h2>
       <p className="mt-3 text-sm leading-relaxed text-neutral-600">
         Small-but-honest is the point: we publish nothing below the disclosed
-        thresholds (20 asking prices and 100 sold transactions per area-median
-        cell; 10 confirmed pairs per matched-pair cell) rather than dress thin
-        samples up as findings. As listing coverage and confirmed
+        thresholds ({AREA_MEDIAN_MIN_ASKING_N} asking prices and{" "}
+        {AREA_MEDIAN_MIN_SOLD_N} sold transactions per area-median cell;{" "}
+        {MATCHED_PAIR_MIN_N} confirmed pairs per matched-pair cell) rather than
+        dress thin samples up as findings. As listing coverage and confirmed
         listing-to-sale matches grow, the national gap by property type appears
         first, then the district Truth League — each cell publishes
         automatically the quarter it clears its threshold.
@@ -220,7 +224,7 @@ export default async function RealityGapReportPage({ searchParams }: Props) {
             caveats: [
               "Land Registry registrations lag completions by around 3 months, so the most recent sold prices are not yet in the data.",
               "Area medians compare two different populations (what is for sale now vs what sold in the trailing 12 months) — they are cruder than matched pairs.",
-              "Cells below the disclosed sample thresholds (20 asking / 100 sold per area cell; 10 matched pairs) are suppressed, never estimated.",
+              `Cells below the disclosed sample thresholds (${AREA_MEDIAN_MIN_ASKING_N} asking / ${AREA_MEDIAN_MIN_SOLD_N} sold per area cell; ${MATCHED_PAIR_MIN_N} matched pairs) are suppressed, never estimated.`,
             ],
             methodologyHref: "/reports/reality-gap/methodology",
           }}

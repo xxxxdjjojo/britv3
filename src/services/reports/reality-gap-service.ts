@@ -19,6 +19,16 @@ import { createClient } from "@/lib/supabase/server";
  * exported in the CSV.
  */
 
+// Disclosed suppression thresholds — must mirror the c_min_* constants in
+// supabase/migrations/20260702210504_reality_gap_snapshots.sql (the DB fn is
+// the computer, these are the disclosed copy). Defined in the pure
+// reality-gap-thresholds module so client-safe copy can quote them too.
+export {
+  AREA_MEDIAN_MIN_ASKING_N,
+  AREA_MEDIAN_MIN_SOLD_N,
+  MATCHED_PAIR_MIN_N,
+} from "./reality-gap-thresholds";
+
 export type RealityGapTier = "matched_pair" | "area_median";
 
 export type RealityGapPropertyType =

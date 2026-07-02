@@ -7,6 +7,11 @@
  * the boilerplate (sample thresholds, trailing window, Land Registry lag).
  */
 
+import {
+  AREA_MEDIAN_MIN_ASKING_N,
+  AREA_MEDIAN_MIN_SOLD_N,
+} from "@/services/reports/reality-gap-thresholds";
+
 export type PressPackInput = Readonly<{
   areaName: string;
   areaId: string;
@@ -54,7 +59,8 @@ const BOILERPLATE =
   "Methodology: sold prices are medians from HM Land Registry Price Paid Data " +
   "over a trailing 12-month window; asking prices are medians of TrueDeed " +
   "listings over the same window. A district is only published when it clears " +
-  "the disclosed sample thresholds (at least 20 asking prices and at least 100 " +
+  `the disclosed sample thresholds (at least ${AREA_MEDIAN_MIN_ASKING_N} asking ` +
+  `prices and at least ${AREA_MEDIAN_MIN_SOLD_N} ` +
   "recorded sales). Land Registry records arrive with a lag of roughly three " +
   "months, so the most recent sales may not yet appear. Asking and sold medians " +
   "describe two different sets of properties, so the gap is indicative rather " +

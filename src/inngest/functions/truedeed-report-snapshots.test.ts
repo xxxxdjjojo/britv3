@@ -65,6 +65,23 @@ describe("truedeedReportSnapshots", () => {
     });
   });
 
+  it("skips the refresh (no RPC calls) when the manual period is invalid", async () => {
+    const step = makeStep();
+    const result = await handler({
+      event: {
+        name: "truedeed/report-snapshots.refresh-requested",
+        data: { period: "2026-Q5; drop table" },
+      },
+      step,
+    });
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      status: "skipped_invalid_period",
+      period: "2026-Q5; drop table",
+    });
+  });
+
   it("throws (so Inngest retries) when an RPC fails", async () => {
     rpc.mockResolvedValueOnce({ error: { message: "boom" } } as never);
     const step = makeStep();
