@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { browserAuthCallbackUrl } from "@/lib/auth/signup-confirmation";
+import { getSignupSource } from "@/lib/analytics/signup-attribution";
 import type { UserRole } from "@/types/auth";
 
 function getSupabase() {
@@ -13,6 +14,9 @@ export async function signUp(
   roleIntent: UserRole = "homebuyer",
 ) {
   const supabase = getSupabase();
+  // First-touch attribution (utm/referrer/landing path) travels with the
+  // signup metadata when available so cohorts can be attributed at source.
+  const signupSource = getSignupSource();
   return supabase.auth.signUp({
     email,
     password,
@@ -22,6 +26,7 @@ export async function signUp(
       data: {
         ...(displayName ? { display_name: displayName } : {}),
         role_intent: roleIntent,
+        ...(signupSource ? { signup_source: signupSource } : {}),
       },
       emailRedirectTo: browserAuthCallbackUrl(),
     },

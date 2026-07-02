@@ -1918,5 +1918,64 @@ export async function sendNewsletterWelcome({ to }: { to: string }): Promise<voi
   }
 }
 
+// ---------------------------------------------------------------------------
+// 22. Independent Agent Briefing (double-opt-in confirm + welcome — editorial,
+//     brand in footer only, no pref check, no user record)
+// ---------------------------------------------------------------------------
+
+export async function sendBriefingConfirm({
+  to,
+  confirmUrl,
+}: {
+  to: string;
+  confirmUrl: string;
+}): Promise<void> {
+  try {
+    const client = getResend();
+    if (!client) return;
+
+    const { AgentBriefingConfirmEmail } = await import("@/emails/agent-briefing-confirm");
+    const { render } = await import("@react-email/components");
+    const html = await render(AgentBriefingConfirmEmail({ confirmUrl }));
+
+    await client.emails.send({
+      from: FROM,
+      to,
+      subject: "Confirm your subscription — the Independent Agent Briefing",
+      html,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[email-service] sendBriefingConfirm failed", message);
+  }
+}
+
+export async function sendBriefingWelcome({
+  to,
+  unsubscribeUrl,
+}: {
+  to: string;
+  unsubscribeUrl: string;
+}): Promise<void> {
+  try {
+    const client = getResend();
+    if (!client) return;
+
+    const { AgentBriefingWelcomeEmail } = await import("@/emails/agent-briefing-welcome");
+    const { render } = await import("@react-email/components");
+    const html = await render(AgentBriefingWelcomeEmail({ unsubscribeUrl }));
+
+    await client.emails.send({
+      from: FROM,
+      to,
+      subject: "You're subscribed to the Independent Agent Briefing",
+      html,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[email-service] sendBriefingWelcome failed", message);
+  }
+}
+
 // Re-export BASE_URL for use in other modules that build email links
 export { BASE_URL };

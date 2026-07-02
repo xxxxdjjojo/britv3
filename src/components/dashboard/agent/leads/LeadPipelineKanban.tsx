@@ -28,8 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserPlus, Search, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { UserPlus, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { LeadCard } from "./LeadCard";
+import { LeadsExportButton } from "./LeadsExportButton";
 import type { AgentLead, LeadStage, LeadSource } from "@/types/agent";
 import { LEAD_STAGES, LEAD_SOURCES } from "@/types/agent";
 
@@ -383,11 +384,8 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
             {Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length}
           </span>
 
-          {/* Export (presentational) */}
-          <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
-            <Download className="size-3.5" />
-            Export
-          </Button>
+          {/* Export — "Your Data, Your Leads" CSV download */}
+          <LeadsExportButton />
 
           {/* Add Lead */}
           <Dialog open={addLeadOpen} onOpenChange={setAddLeadOpen}>
