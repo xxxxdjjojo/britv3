@@ -4,7 +4,9 @@ import { join, relative } from "node:path";
 
 const ROOT = process.cwd();
 const SCAN_DIRS = ["src/app", "src/components"];
-const INTERNAL_ANCHOR_RE = /<a\b[^>]*\bhref=(["'`])\/(?!\/)(.*?)\1/gs;
+// /api/* is exempt: API endpoints (e.g. CSV downloads) are documents, not app
+// routes — next/link client navigation would be wrong for them.
+const INTERNAL_ANCHOR_RE = /<a\b[^>]*\bhref=(["'`])\/(?!\/)(?!api\/)(.*?)\1/gs;
 const SKIP_FILE_RE = /\.(test|spec)\.tsx$/;
 const STALE_INTERNAL_HREFS = [
   {

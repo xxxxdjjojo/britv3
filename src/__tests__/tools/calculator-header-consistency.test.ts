@@ -21,6 +21,8 @@ const TOOL_SLUGS = [
   "moving-cost-estimator",
   "first-time-buyer-guide",
   "rent-affordability-calculator",
+  "renters-rights-checker",
+  "portal-cost-calculator",
 ] as const;
 
 const TOOLS_DIR = join(process.cwd(), "src/app/(main)/tools");

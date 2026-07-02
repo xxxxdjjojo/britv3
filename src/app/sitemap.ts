@@ -55,10 +55,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${baseUrl}/tools/mortgage-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${baseUrl}/tools/stamp-duty-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${baseUrl}/tools/buy-vs-rent`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/tools/rental-yield`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/buy-vs-rent-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/rental-yield-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/tools/energy-bill-estimator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/tools/moving-cost-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/moving-cost-estimator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/affordability-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/mortgage-comparison`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/remortgage-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/rent-affordability-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/first-time-buyer-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/tools/renters-rights-checker`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+  ];
+
+  /* --- Influence-strategy truth surfaces (Phase 1) --- */
+  const truthPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/pledges`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/pledges/no-premium-placement`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/pledges/your-data-your-leads`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/compliance`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/compliance/pre-launch-audit-2026`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
+    { url: `${baseUrl}/agent-briefing`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/agent-briefing/archive`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
   ];
 
   /* --- Marketplace --- */
@@ -182,6 +199,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...newHomesPages,
     ...segmentLandingPages,
     ...toolPages,
+    ...truthPages,
     ...marketplacePages,
     ...blogPostPages,
     ...areaPages,
