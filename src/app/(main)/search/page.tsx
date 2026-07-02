@@ -23,6 +23,7 @@ import MapPropertyCard from "@/components/search/MapPropertyCard";
 import MapProviderPin from "@/components/search/MapProviderPin";
 import { PropertySearchCard } from "@/components/search/PropertySearchCard";
 import { SponsoredSearchSlot } from "@/components/placements/SponsoredSearchSlot";
+import { RankingDisclosure } from "@/components/search/RankingDisclosure";
 import { RefineFilters } from "@/components/search/RefineFilters";
 import type {
   MapProperty,
@@ -372,6 +373,7 @@ function SearchPageInner() {
                   ? "Searching…"
                   : `Found ${resultCount} matching ${resultCount === 1 ? "result" : "results"}`}
               </p>
+              <RankingDisclosure className="mt-1" />
             </div>
             <label className="flex items-center gap-2 text-sm font-semibold text-neutral-500">
               <span className="hidden sm:inline">Sort by:</span>

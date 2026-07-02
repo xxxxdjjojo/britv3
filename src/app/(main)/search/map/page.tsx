@@ -12,6 +12,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { MarketMapExplorerLoader } from "@/components/market-map/MarketMapExplorerLoader";
+import { RankingDisclosure } from "@/components/search/RankingDisclosure";
 import { brandConfig } from "@/config/brand";
 
 export const metadata: Metadata = {
@@ -31,25 +32,25 @@ export default function MapPage() {
         UK Property Price Map
       </h1>
 
-      {/* Slim breadcrumb bar */}
-      <nav
-        aria-label="Breadcrumb"
-        className="flex shrink-0 items-center gap-2 border-b border-[#E2E2E8] bg-white px-4 py-2"
-      >
-        <Link
-          href="/search"
-          className="flex items-center gap-1 font-sans text-xs text-[#7A7A88] hover:text-brand-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-        >
-          <ArrowLeft className="size-3" aria-hidden="true" />
-          Search
-        </Link>
-        <span className="font-sans text-xs text-[#C4C4CE]" aria-hidden="true">
-          /
-        </span>
-        <span className="font-sans text-xs font-medium text-[#2E2E33]">
-          Price Map
-        </span>
-      </nav>
+      {/* Slim header bar: breadcrumb + ranking disclosure */}
+      <div className="flex shrink-0 items-center gap-2 border-b border-[#E2E2E8] bg-white px-4 py-2">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2">
+          <Link
+            href="/search"
+            className="flex items-center gap-1 font-sans text-xs text-[#7A7A88] hover:text-brand-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            <ArrowLeft className="size-3" aria-hidden="true" />
+            Search
+          </Link>
+          <span className="font-sans text-xs text-[#C4C4CE]" aria-hidden="true">
+            /
+          </span>
+          <span className="font-sans text-xs font-medium text-[#2E2E33]">
+            Price Map
+          </span>
+        </nav>
+        <RankingDisclosure className="ml-auto hidden sm:block" />
+      </div>
 
       {/* Full-height explorer */}
       <section

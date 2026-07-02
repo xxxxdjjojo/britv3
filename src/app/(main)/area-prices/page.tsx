@@ -12,6 +12,7 @@ import type { Metadata } from "next";
 import { AreaPricesExplorer } from "./AreaPricesExplorer";
 import { AreaPricesSeoContent, AREA_PRICES_FAQ } from "./AreaPricesSeoContent";
 import { brandConfig, appUrl } from "@/config/brand";
+import { normalisePostcode } from "@/lib/market-map/postcode";
 import { faqJsonLd } from "@/lib/seo/faq-jsonld";
 import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
 import { safeJsonLd } from "@/lib/seo/safe-json-ld";
@@ -20,7 +21,7 @@ const TITLE = `Area Prices — What Homes Sell For Near You | ${brandConfig.disp
 const DESCRIPTION =
   "Enter your postcode to see the typical (median) sold price for your area, split by flats and houses, from HM Land Registry data. Free, no sign-up.";
 
-export const metadata: Metadata = {
+const BASE_METADATA: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: "/area-prices" },
@@ -31,6 +32,40 @@ export const metadata: Metadata = {
     url: appUrl("/area-prices"),
   },
 };
+
+/**
+ * Default metadata, upgraded to a per-postcode OG card when `?postcode=` holds
+ * a plausible full UK postcode (deep-linked shares). The postcode is only
+ * passed through to the OG image route — no data fetch happens here.
+ */
+export async function generateMetadata({
+  searchParams,
+}: Readonly<{
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}>): Promise<Metadata> {
+  const params = (await searchParams) ?? {};
+  const raw = typeof params.postcode === "string" ? params.postcode : null;
+  const postcode = normalisePostcode(raw)?.display ?? null;
+  if (!postcode) return BASE_METADATA;
+
+  const title = `Median sold price in ${postcode} | ${brandConfig.displayName}`;
+  const ogImage = appUrl(`/api/og/postcode?postcode=${encodeURIComponent(postcode)}`);
+  return {
+    ...BASE_METADATA,
+    title,
+    openGraph: {
+      ...BASE_METADATA.openGraph,
+      title,
+      images: [ogImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: DESCRIPTION,
+      images: [ogImage],
+    },
+  };
+}
 
 const webPageJsonLd = {
   "@context": "https://schema.org",

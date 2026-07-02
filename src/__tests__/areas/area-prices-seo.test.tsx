@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
 import { act, render, screen, within } from "@testing-library/react";
-import AreaPricesPage, { metadata } from "@/app/(main)/area-prices/page";
+import AreaPricesPage, { generateMetadata } from "@/app/(main)/area-prices/page";
 import { AreaPricesSeoContent } from "@/app/(main)/area-prices/AreaPricesSeoContent";
 
 describe("/area-prices metadata", () => {
-  it("keeps the canonical and headline title + adds openGraph", () => {
+  it("keeps the canonical and headline title + adds openGraph", async () => {
+    // No ?postcode= → the default surface metadata, unchanged.
+    const metadata = await generateMetadata({ searchParams: Promise.resolve({}) });
     expect(metadata.title).toMatch(/Area Prices/i);
     expect(metadata.alternates?.canonical).toBe("/area-prices");
     expect(metadata.openGraph?.title).toMatch(/Area Prices/i);
