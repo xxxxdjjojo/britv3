@@ -12,8 +12,10 @@
  * - The portal passthrough line reuses `buildPortalCostEstimate` and the
  *   sourced defaults in `@/config/portal-cost-assumptions` — it is always
  *   labelled an estimate.
- * - TrueDeed's own tiers come straight from `@/lib/billing-config`
- *   (SELLER_PLANS, prices in pence) — never re-hardcoded shorthand.
+ * - TrueDeed's own tiers are never re-hardcoded shorthand: callers map
+ *   SELLER_PLANS (prices in pence, server-only billing config) to the
+ *   serialisable `SellerPlanSummary` shape in a Server Component and pass it
+ *   in — this module stays client-safe and pure.
  */
 
 import type { BuyerType } from "@/types/calculators";
@@ -22,7 +24,6 @@ import { calculateLbtt } from "@/lib/calculators/lbtt";
 import { calculateLtt } from "@/lib/calculators/ltt";
 import { buildPortalCostEstimate } from "@/lib/calculators/portal-cost";
 import { PORTAL_COST_ASSUMPTIONS } from "@/config/portal-cost-assumptions";
-import { SELLER_PLANS, type Plan } from "@/lib/billing-config";
 
 export type MovingStackLocation = "england" | "ni" | "scotland" | "wales";
 
@@ -53,10 +54,24 @@ export type MovingStackResult = Readonly<{
   totalHigh: number;
 }>;
 
+/**
+ * Serialisable summary of a seller plan, mapped from the server-only billing
+ * config's SELLER_PLANS by a Server Component.
+ */
+export type SellerPlanSummary = Readonly<{
+  id: string;
+  name: string;
+  /** Upfront fixed fee in pence (the billing config's priceMonthly). */
+  priceMonthlyPence: number;
+  /** Commission rate on completion (0..1 decimal; 0 when the plan has none). */
+  commissionRate: number;
+  commissionLabel?: string;
+}>;
+
 export type TrueDeedTierCost = Readonly<{
   id: string;
   name: string;
-  /** Upfront fixed fee in GBP (converted from billing-config pence). */
+  /** Upfront fixed fee in GBP (converted from the plan summary's pence). */
   fixedFee: number;
   /** Commission rate on completion (0..1 decimal). */
   commissionRate: number;
@@ -276,29 +291,34 @@ export function buildMovingStack(input: MovingStackInput): MovingStackResult {
 }
 
 // ---------------------------------------------------------------------------
-// TrueDeed comparison — real tiers from billing-config, no shorthand.
+// TrueDeed comparison — real tiers, mapped from the billing config by the caller.
 // ---------------------------------------------------------------------------
 
-function tierCost(plan: Plan, price: number): TrueDeedTierCost {
-  const fixedFee = plan.priceMonthly / 100; // pence → GBP
-  const commissionRate = plan.commissionRate ?? 0;
-  const commissionAtPrice = price * commissionRate;
+function tierCost(plan: SellerPlanSummary, price: number): TrueDeedTierCost {
+  const fixedFee = plan.priceMonthlyPence / 100; // pence → GBP
+  const commissionAtPrice = price * plan.commissionRate;
   return {
     id: plan.id,
     name: plan.name,
     fixedFee,
-    commissionRate,
+    commissionRate: plan.commissionRate,
     commissionLabel: plan.commissionLabel ?? "No commission",
     commissionAtPrice,
     total: fixedFee + commissionAtPrice,
   };
 }
 
-export function buildTrueDeedComparison(price: number): TrueDeedComparison {
+export function buildTrueDeedComparison(
+  price: number,
+  plans: ReadonlyArray<SellerPlanSummary>,
+): TrueDeedComparison {
   if (!Number.isFinite(price) || price <= 0) {
     throw new RangeError(`price must be a positive finite number, got ${price}`);
   }
-  const tiers = SELLER_PLANS.map((plan) => tierCost(plan, price));
+  if (plans.length === 0) {
+    throw new RangeError("plans must contain at least one seller plan");
+  }
+  const tiers = plans.map((plan) => tierCost(plan, price));
   const cheapest = tiers.reduce((best, tier) =>
     tier.total < best.total ? tier : best,
   );

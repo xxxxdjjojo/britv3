@@ -6,7 +6,23 @@ import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHea
 import { MovingStackCalculator } from "@/components/tools/moving-stack/MovingStackCalculator";
 import { MethodologyFooter } from "@/components/trust/MethodologyFooter";
 import { ShareBar } from "@/components/trust/ShareBar";
-import { buildMovingStack } from "@/lib/calculators/moving-stack";
+import { SELLER_PLANS } from "@/lib/billing-config";
+import {
+  buildMovingStack,
+  type SellerPlanSummary,
+} from "@/lib/calculators/moving-stack";
+
+// Serialisable seller-tier summaries for the client calculator. Mapped here
+// (a Server Component) from server-only billing-config so the fee numbers
+// stay single-sourced and never re-hardcoded.
+const SELLER_PLAN_SUMMARIES: ReadonlyArray<SellerPlanSummary> =
+  SELLER_PLANS.map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+    priceMonthlyPence: plan.priceMonthly,
+    commissionRate: plan.commissionRate ?? 0,
+    commissionLabel: plan.commissionLabel,
+  }));
 
 export const metadata: Metadata = {
   title: "Total Cost of Moving Calculator | TrueDeed",
@@ -82,7 +98,7 @@ export default function MovingCostEstimatorPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Main content */}
           <div className="space-y-8 lg:col-span-8">
-            <MovingStackCalculator />
+            <MovingStackCalculator sellerPlans={SELLER_PLAN_SUMMARIES} />
 
             <ShareBar title="Total Cost of Moving" toolKey="moving_cost_stack" />
 

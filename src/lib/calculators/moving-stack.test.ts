@@ -10,7 +10,20 @@ import {
   buildMovingStack,
   buildTrueDeedComparison,
   type MovingStackInput,
+  type SellerPlanSummary,
 } from "@/lib/calculators/moving-stack";
+
+// The same server-side mapping the page performs: fee numbers come straight
+// from billing-config constants, never re-hardcoded here.
+const PLAN_SUMMARIES: ReadonlyArray<SellerPlanSummary> = SELLER_PLANS.map(
+  (plan) => ({
+    id: plan.id,
+    name: plan.name,
+    priceMonthlyPence: plan.priceMonthly,
+    commissionRate: plan.commissionRate ?? 0,
+    commissionLabel: plan.commissionLabel,
+  }),
+);
 
 const BASE_INPUT: MovingStackInput = {
   propertyPrice: 300000,
@@ -185,7 +198,7 @@ describe("buildMovingStack", () => {
 describe("buildTrueDeedComparison", () => {
   it("computes each tier from the imported billing-config constants", () => {
     const price = 300000;
-    const { tiers } = buildTrueDeedComparison(price);
+    const { tiers } = buildTrueDeedComparison(price, PLAN_SUMMARIES);
 
     expect(tiers).toHaveLength(SELLER_PLANS.length);
     for (const plan of SELLER_PLANS) {
@@ -202,12 +215,16 @@ describe("buildTrueDeedComparison", () => {
 
   it("flags the genuinely cheapest tier at the given price", () => {
     const price = 300000;
-    const { tiers, cheapestId } = buildTrueDeedComparison(price);
+    const { tiers, cheapestId } = buildTrueDeedComparison(price, PLAN_SUMMARIES);
     const minTotal = Math.min(...tiers.map((t) => t.total));
     expect(tiers.find((t) => t.id === cheapestId)?.total).toBe(minTotal);
   });
 
   it("rejects non-positive prices", () => {
-    expect(() => buildTrueDeedComparison(-1)).toThrow(RangeError);
+    expect(() => buildTrueDeedComparison(-1, PLAN_SUMMARIES)).toThrow(RangeError);
+  });
+
+  it("rejects an empty plans array", () => {
+    expect(() => buildTrueDeedComparison(300000, [])).toThrow(RangeError);
   });
 });

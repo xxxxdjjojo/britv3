@@ -24,6 +24,7 @@ import {
   buildTrueDeedComparison,
   type MovingStackLineItem,
   type MovingStackLocation,
+  type SellerPlanSummary,
 } from "@/lib/calculators/moving-stack";
 import type { BuyerType } from "@/types/calculators";
 
@@ -79,10 +80,13 @@ function KindBadge({ kind }: Readonly<{ kind: MovingStackLineItem["kind"] }>) {
  * Total Cost of Moving Stack. Every line item shows its figure with a source
  * citation (SourcedFigure) or an explicit assumption/estimate label. Taxes
  * come from the same pure calculators as the stamp-duty page — never
- * re-implemented. When selling, TrueDeed's real seller tiers (from
- * billing-config) are shown against the traditional commission.
+ * re-implemented. When selling, TrueDeed's real seller tiers (mapped from
+ * server-only billing-config by the page and passed as `sellerPlans`) are
+ * shown against the traditional commission.
  */
-export function MovingStackCalculator() {
+export function MovingStackCalculator({
+  sellerPlans,
+}: Readonly<{ sellerPlans: ReadonlyArray<SellerPlanSummary> }>) {
   const [propertyPrice, setPropertyPrice] = useState(DEFAULT_PRICE);
   const [location, setLocation] = useState<MovingStackLocation>("england");
   const [buyerType, setBuyerType] = useState<BuyerType>("standard");
@@ -108,7 +112,12 @@ export function MovingStackCalculator() {
     selling,
     agentCommissionRate,
   });
-  const comparison = selling ? buildTrueDeedComparison(propertyPrice > 0 ? propertyPrice : DEFAULT_PRICE) : null;
+  const comparison = selling
+    ? buildTrueDeedComparison(
+        propertyPrice > 0 ? propertyPrice : DEFAULT_PRICE,
+        sellerPlans,
+      )
+    : null;
 
   // Fire tool_completed once, on the first calculation render after the user
   // has actually interacted (the stack recomputes live on every input change).
