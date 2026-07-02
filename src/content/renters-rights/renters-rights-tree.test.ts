@@ -107,3 +107,17 @@ describe.each(ROLES)("renters' rights tree: %s", (role) => {
     }
   });
 });
+
+describe("cross-tree version consistency", () => {
+  // The checker page renders a single ContentVersionStamp for all three role
+  // trees. That is only truthful while every tree shares the same version and
+  // checkedDate — if one tree is revised alone, this forces the stamp (or the
+  // page) to be reconsidered.
+  it("all role trees share the same version and checkedDate", () => {
+    const trees = ROLES.map((role) => RENTERS_RIGHTS_TREES[role]);
+    const versions = new Set(trees.map((t) => t.version));
+    const dates = new Set(trees.map((t) => t.checkedDate));
+    expect(versions.size, "role trees have diverging versions").toBe(1);
+    expect(dates.size, "role trees have diverging checkedDates").toBe(1);
+  });
+});

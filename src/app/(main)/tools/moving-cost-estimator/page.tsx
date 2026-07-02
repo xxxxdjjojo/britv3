@@ -72,7 +72,7 @@ const CAVEATS = [
 const FAQS = [
   {
     q: "Do I need a property survey?",
-    a: "While not legally required, a survey is strongly recommended. A basic HomeBuyer Report (Level 2) costs around £300-£500 and can reveal issues that save you thousands. For older or unusual properties, a full Building Survey (Level 3) at £500-£700+ is advisable.",
+    a: "While not legally required, a survey is strongly recommended. A HomeBuyer Report (Level 2) sits at the lower end of the sourced survey range in the stack above, and a full Building Survey (Level 3) at the upper end — the HomeOwners Alliance survey-cost guide linked in our sources breaks the levels down in detail.",
   },
   {
     q: "Can I negotiate solicitor fees?",
@@ -80,7 +80,7 @@ const FAQS = [
   },
   {
     q: "Are there any costs I'm missing?",
-    a: "This estimator covers the main costs. Other potential expenses include mortgage arrangement fees (£0-£2,000), buildings insurance (required on exchange), redirected mail, new furniture, and utility connection fees.",
+    a: "This estimator covers the main costs. Other potential expenses we don't model include mortgage arrangement fees (these vary widely by lender — check your mortgage offer), buildings insurance (required on exchange), redirected mail, new furniture, and utility connection fees.",
   },
 ];
 

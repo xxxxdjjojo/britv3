@@ -10,8 +10,8 @@ import type { Citation } from "./types";
 
 export const RRA_2025: Citation = {
   instrument: "Renters' Rights Act 2025",
-  section: "Act as enacted",
-  url: "https://www.legislation.gov.uk/ukpga/2025",
+  section: "Act as enacted (c. 26)",
+  url: "https://www.legislation.gov.uk/ukpga/2025/26/contents",
 };
 
 export const RRA_2025_GUIDANCE: Citation = {

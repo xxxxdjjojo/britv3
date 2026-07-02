@@ -14,6 +14,11 @@ import {
 // trumps the rate-limit on a transient outage).
 const newsletterLimiter = createRateLimiter(10, "1 m");
 
+// Confirmation emails additionally limited PER EMAIL ADDRESS: an attacker
+// rotating IPs must not be able to flood a pending subscriber's inbox with
+// confirmation mail (subscribe-bomb).
+const confirmEmailLimiter = createRateLimiter(1, "15 m");
+
 const SubscribeSchema = z.object({
   email: z.string().email(),
   source: z.string().min(1).max(64).optional(),
@@ -69,16 +74,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // a send problem never blocks a successful subscription response.
   if (result.requiresConfirmation) {
     // Double-opt-in audiences get a confirmation link instead of a welcome.
-    // Re-subscribing while still pending re-sends the confirmation.
-    const token = generateNewsletterToken(
-      email.trim().toLowerCase(),
-      audience,
-      "confirm",
+    // Re-subscribing while still pending re-sends the confirmation, but at
+    // most once per 15 minutes per email address (anti subscribe-bomb).
+    const normalisedEmail = email.trim().toLowerCase();
+    const emailRl = await confirmEmailLimiter.limit(
+      `newsletter-confirm:${audience}:${normalisedEmail}`,
     );
-    await sendBriefingConfirm({
-      to: email,
-      confirmUrl: appUrl(`/api/newsletter/confirm?token=${encodeURIComponent(token)}`),
-    });
+    if (emailRl.success) {
+      const token = generateNewsletterToken(normalisedEmail, audience, "confirm");
+      await sendBriefingConfirm({
+        to: email,
+        confirmUrl: appUrl(`/api/newsletter/confirm?token=${encodeURIComponent(token)}`),
+      });
+    }
+    // Response is identical whether or not a mail was sent — no oracle.
     return NextResponse.json({ ok: true, requiresConfirmation: true });
   }
 

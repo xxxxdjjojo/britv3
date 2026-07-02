@@ -13,6 +13,10 @@
 
 const FIRST_TOUCH_KEY = "truedeed_first_touch";
 
+// Attacker-controlled URL/referrer values: cap lengths so oversized junk never
+// reaches localStorage or signup metadata.
+const MAX_FIELD_LENGTH = 200;
+
 type FirstTouch = {
   utm_source: string | null;
   utm_medium: string | null;
@@ -28,12 +32,14 @@ export function captureFirstTouch(): void {
     if (window.localStorage.getItem(FIRST_TOUCH_KEY) !== null) return;
 
     const params = new URLSearchParams(window.location.search);
+    const capped = (value: string | null): string | null =>
+      value ? value.slice(0, MAX_FIELD_LENGTH) : null;
     const firstTouch: FirstTouch = {
-      utm_source: params.get("utm_source"),
-      utm_medium: params.get("utm_medium"),
-      utm_campaign: params.get("utm_campaign"),
-      referrer: document.referrer || null,
-      landing_path: window.location.pathname,
+      utm_source: capped(params.get("utm_source")),
+      utm_medium: capped(params.get("utm_medium")),
+      utm_campaign: capped(params.get("utm_campaign")),
+      referrer: capped(document.referrer || null),
+      landing_path: window.location.pathname.slice(0, MAX_FIELD_LENGTH),
       captured_at: new Date().toISOString(),
     };
     window.localStorage.setItem(FIRST_TOUCH_KEY, JSON.stringify(firstTouch));

@@ -53,8 +53,10 @@ function sign(
   purpose: NewsletterTokenPurpose,
   timestamp: number,
 ): string {
+  // JSON payload: unambiguous field boundaries even if a field value contains
+  // the "." delimiter (emails routinely do).
   return createHmac("sha256", getSecret())
-    .update(`${email}.${audience}.${purpose}.${timestamp}`)
+    .update(JSON.stringify({ email, audience, purpose, timestamp }))
     .digest("hex");
 }
 

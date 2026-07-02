@@ -1,6 +1,12 @@
 import { ImageResponse } from "next/og";
 import { brandConfig } from "@/config/brand";
+import { createRateLimiter } from "@/lib/cache/redis";
 import { buildOgProps, type OgProps, type PostcodeOgProps } from "@/lib/og/og-props";
+
+// ImageResponse rendering is CPU-heavy and the valid-parameter space is large
+// (every postcode/title is a distinct CDN cache key), so cap per-IP generation.
+// 60/min still covers every legitimate social-share crawler burst.
+const ogLimiter = createRateLimiter(60, "1 m");
 
 // Note: unlike src/app/opengraph-image.tsx (edge), this route handler uses the
 // default Node.js runtime — ImageResponse works on both, and nodejs avoids the
@@ -129,6 +135,13 @@ export async function GET(
 
   if (!props) {
     return new Response("Not found", { status: 404 });
+  }
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rl = await ogLimiter.limit(`og:${ip}`);
+  if (!rl.success) {
+    return new Response("Rate limited", { status: 429 });
   }
 
   return new ImageResponse(<OgCard props={props} />, {
