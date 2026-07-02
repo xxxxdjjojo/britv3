@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { RFQCreateForm } from "@/components/marketplace/RFQCreateForm";
+import { CATEGORY_LABELS } from "@/lib/marketplace/category-labels";
+import type { ServiceCategory } from "@/types/marketplace";
 
 export const metadata: Metadata = {
   title: "Post a Job — Get Free Quotes | TrueDeed",
@@ -71,7 +73,21 @@ const TRUST_SIGNALS = [
   },
 ] as const;
 
-export default async function PostAJobPage() {
+/** Returns the value only if it is a real service category enum key. */
+function validCategory(service: string | undefined): ServiceCategory | undefined {
+  return service && service in CATEGORY_LABELS
+    ? (service as ServiceCategory)
+    : undefined;
+}
+
+type SearchParams = Promise<{ service?: string; postcode?: string }>;
+
+export default async function PostAJobPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { service, postcode } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -138,7 +154,11 @@ export default async function PostAJobPage() {
                       Provide as much detail as possible to get the most
                       accurate quotes from professionals.
                     </p>
-                    <RFQCreateForm className="rounded-none border-0 p-0 shadow-none" />
+                    <RFQCreateForm
+                      defaultCategory={validCategory(service)}
+                      defaultPostcode={postcode}
+                      className="rounded-none border-0 p-0 shadow-none"
+                    />
                   </>
                 ) : (
                   <div className="space-y-4 text-center">

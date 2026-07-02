@@ -328,12 +328,6 @@ export default function ProductsPage() {
                     >
                       <Eye className="size-4" />
                     </button>
-                    <Button
-                      size="sm"
-                      className="bg-brand-primary text-white hover:bg-brand-primary/90"
-                    >
-                      Request Quote
-                    </Button>
                   </div>
                 </div>
 

@@ -20,11 +20,13 @@ const SERVICE_CATEGORY_LABELS = CATEGORY_LABELS;
 
 type RFQCreateFormProps = Readonly<{
   defaultCategory?: ServiceCategory;
+  defaultPostcode?: string;
   className?: string;
 }>;
 
 export function RFQCreateForm({
   defaultCategory,
+  defaultPostcode,
   className,
 }: RFQCreateFormProps) {
   const [submitState, setSubmitState] = useState<
@@ -44,7 +46,7 @@ export function RFQCreateForm({
       urgency_level: "normal" as const,
       title: "",
       description: "",
-      property_postcode: "",
+      property_postcode: defaultPostcode ?? "",
       preferred_start_date: undefined as unknown as Date,
       budget_min: undefined as unknown as number,
       budget_max: undefined as unknown as number,

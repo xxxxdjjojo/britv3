@@ -99,7 +99,7 @@ export default async function ConveyancerProfilePage({ params }: Params) {
               <SpecialistSidebar
                 provider={provider}
                 ctaLabel="Get a Quote"
-                ctaHref="#quote"
+                category="conveyancing"
               />
             </aside>
           </div>

@@ -27,7 +27,6 @@ import {
   Calendar,
   FileText,
   MapPin,
-  CreditCard,
   CheckCheck,
 } from "lucide-react";
 import { useMessages, useMarkAsRead } from "@/hooks/useMessages";
@@ -42,7 +41,6 @@ const QUICK_ACTIONS = [
   { label: "Schedule Viewing", icon: Calendar },
   { label: "Send Document", icon: FileText },
   { label: "Share Location", icon: MapPin },
-  { label: "Request Quote", icon: CreditCard },
 ] as const;
 
 /* ---------- Helpers ---------- */
