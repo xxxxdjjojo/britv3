@@ -11,10 +11,24 @@ const notFound = vi.fn(() => {
 
 vi.mock("next/navigation", () => ({
   notFound: () => notFound(),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: async () => ({ auth: { getUser: vi.fn() } }),
+}));
+
+// QuoteModal (rendered via ProviderSidebar) calls useAuth, which uses the
+// browser Supabase client — stub it so the passive effect doesn't explode.
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: () => ({
+    auth: {
+      getUser: vi.fn().mockResolvedValue({ data: { user: null } }),
+      onAuthStateChange: vi.fn(() => ({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      })),
+    },
+  }),
 }));
 
 vi.mock("@/services/providers/public-profile-service", () => ({
