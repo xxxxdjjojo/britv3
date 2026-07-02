@@ -19,9 +19,9 @@ const globalsCss = readFileSync(join(ROOT, "app/globals.css"), "utf8");
 
 describe("form control mobile-first font sizing", () => {
   it("select trigger uses 16px font on mobile to prevent iOS auto-zoom", () => {
-    // SelectTrigger className must contain text-base (16px floor) and md:text-sm
-    expect(selectTsx).toContain("text-base");
-    expect(selectTsx).toContain("md:text-sm");
+    // text-base (16px floor) must come first, md:text-sm later — ordered so a
+    // breakpoint inversion (text-sm base + md:text-base) cannot pass
+    expect(selectTsx).toMatch(/text-base[\s\S]*md:text-sm/);
   });
 
   it("select item uses 16px font on mobile to prevent iOS auto-zoom in dropdown", () => {
@@ -31,8 +31,7 @@ describe("form control mobile-first font sizing", () => {
   });
 
   it("input already uses 16px font on mobile (locks the existing good pattern)", () => {
-    expect(inputTsx).toContain("text-base");
-    expect(inputTsx).toContain("md:text-sm");
+    expect(inputTsx).toMatch(/text-base[\s\S]*md:text-sm/);
   });
 });
 
