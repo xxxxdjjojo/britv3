@@ -128,8 +128,11 @@ const rfqCreateBaseSchema = z.object({
   listing_id: z.string().regex(UUID_REGEX, "Invalid listing id").optional(),
 });
 
-/** Guest (logged-out) RFQ submission — base fields + contact details */
+/** Guest (logged-out) RFQ submission — base fields + contact details.
+ * target_provider_id is REQUIRED: guests may only submit TARGETED requests,
+ * so their contact details are never broadcast to all providers. */
 const rfqGuestCreateBaseSchema = rfqCreateBaseSchema.extend({
+  target_provider_id: z.string().regex(UUID_REGEX, "Invalid provider id"),
   contact_name: z
     .string()
     .min(2, "Enter your full name")

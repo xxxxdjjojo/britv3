@@ -17,6 +17,8 @@ export const TRADESPERSON_PROFILE_BASE = "/services/pro";
 type ProfilePathOptions = Readonly<{
   /** Attribution/intent flag consumed by analytics on the destination page. */
   intent?: string;
+  /** Source surface attribution (e.g. "search_card"), forwarded into the RFQ. */
+  source?: string;
   /** In-page anchor (e.g. "quote", "services", "reviews"). */
   hash?: string;
 }>;
@@ -26,7 +28,13 @@ export function tradespersonProfilePath(
   options: ProfilePathOptions = {},
 ): string {
   const base = `${TRADESPERSON_PROFILE_BASE}/${slug}`;
-  const query = options.intent ? `?intent=${encodeURIComponent(options.intent)}` : "";
+  const source =
+    options.intent && options.source
+      ? `&source=${encodeURIComponent(options.source)}`
+      : "";
+  const query = options.intent
+    ? `?intent=${encodeURIComponent(options.intent)}${source}`
+    : "";
   const hash = options.hash ? `#${options.hash}` : "";
   return `${base}${query}${hash}`;
 }

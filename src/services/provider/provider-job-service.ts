@@ -216,7 +216,6 @@ export async function getProviderLeads(
       service_postcodes: string[] | null;
     };
     const services: string[] = provider.services ?? [];
-    if (services.length === 0) return [];
 
     const serviceAreas = new Set(
       (provider.service_postcodes ?? []).map(outwardCode),
@@ -225,10 +224,15 @@ export async function getProviderLeads(
     // 2. Cutoff: 48h ago (leads older than this are considered expired)
     const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
-    // 3. Query open service_requests matching provider's categories.
-    //    Broadcast leads (no target) respect the 48h freshness window;
-    //    leads targeted at THIS provider always show; leads targeted at
-    //    another provider never show.
+    // 3. Query open service_requests. The category match applies ONLY to
+    //    broadcast leads (no target) — a lead targeted at THIS provider
+    //    always shows regardless of category (and even when the provider has
+    //    no registered services yet). Broadcast leads also respect the 48h
+    //    freshness window; leads targeted at another provider never show.
+    const broadcastArm =
+      services.length > 0
+        ? `and(target_provider_id.is.null,service_category.in.(${services.join(",")}),created_at.gte.${cutoff}),`
+        : "";
     let query = supabase
       .from("service_requests")
       .select(
@@ -247,10 +251,7 @@ export async function getProviderLeads(
       `,
       )
       .eq("status", "open")
-      .in("service_category", services)
-      .or(
-        `and(target_provider_id.is.null,created_at.gte.${cutoff}),target_provider_id.eq.${providerId}`,
-      )
+      .or(`${broadcastArm}target_provider_id.eq.${providerId}`)
       .order("created_at", { ascending: false });
 
     if (filters?.category) {

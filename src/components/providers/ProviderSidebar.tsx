@@ -19,9 +19,23 @@ type ProviderSidebarProps = Readonly<{
   provider: ServiceProviderPublicProfile;
 }>;
 
+const SOURCE_MAX_LENGTH = 80;
+const SOURCE_PATTERN = /^[a-z0-9_]+$/i;
+
+/** Sanitise the ?source= attribution param; undefined falls back to the
+ *  QuoteModal default ("trader_profile_modal"). */
+function sanitiseSource(raw: string | null): string | undefined {
+  if (!raw) return undefined;
+  if (raw.length > SOURCE_MAX_LENGTH || !SOURCE_PATTERN.test(raw)) {
+    return undefined;
+  }
+  return raw;
+}
+
 export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
   const searchParams = useSearchParams();
   const [quoteOpen, setQuoteOpen] = useState(false);
+  const source = sanitiseSource(searchParams.get("source"));
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- auto-open the quote modal when arriving with ?intent=quote
@@ -113,6 +127,7 @@ export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
         providerUserId={provider.user_id}
         providerName={provider.business_name}
         categories={provider.services ?? []}
+        source={source}
         open={quoteOpen}
         onOpenChange={setQuoteOpen}
       />

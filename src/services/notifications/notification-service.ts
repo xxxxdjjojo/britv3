@@ -7,8 +7,9 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { brandConfig } from "@/config/brand";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { PlatformEvent, EventType, EntityType } from "@/types/notifications";
-import { sendCriticalEmail } from "./email-service";
+import { sendCriticalEmail, sendGuestQuoteEmail } from "./email-service";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -291,6 +292,9 @@ async function dispatchCriticalEmail(
 ): Promise<void> {
   try {
     const recipientIds: string[] = [];
+    // Client used for the recipient profile lookups below. The rfq branch
+    // swaps this for the service-role client (see comment there).
+    let recipientClient: SupabaseClient = supabase;
 
     if (event.entity_type === "maintenance_request") {
       // Look up the property owner (landlord) from maintenance_requests -> properties
@@ -314,7 +318,18 @@ async function dispatchCriticalEmail(
     } else if (event.entity_type === "rfq") {
       // Quote landed on a service request — notify its owner. Guest RFQs
       // (user_id NULL) have no account, so email the captured address directly.
-      const { data: rfq } = await supabase
+      //
+      // MUST read via the service-role client: the caller here is the quoting
+      // PROVIDER, whose only SELECT grant on service_requests requires
+      // status = 'open' — and quote-service flips the status to
+      // 'quotes_received' BEFORE emitting this event, so the caller's client
+      // returns no row. (Same precedent as
+      // src/services/messaging/message-notifications.ts.) The recipient's
+      // profile is equally not readable by the provider, so the profile
+      // lookup below uses the admin client too.
+      const admin = createAdminClient();
+      recipientClient = admin;
+      const { data: rfq } = await admin
         .from("service_requests")
         .select("user_id, contact_email, contact_name, title")
         .eq("id", event.entity_id)
@@ -324,7 +339,7 @@ async function dispatchCriticalEmail(
         recipientIds.push(rfq.user_id);
       } else if (!rfq?.user_id && rfq?.contact_email) {
         const subject = getEmailSubject(event);
-        await sendCriticalEmail(rfq.contact_email, subject, event);
+        await sendGuestQuoteEmail(rfq.contact_email, subject, event);
         return;
       }
     } else {
@@ -345,7 +360,7 @@ async function dispatchCriticalEmail(
 
     // Dispatch email to each recipient
     for (const recipientId of recipientIds) {
-      const { data: profile } = await supabase
+      const { data: profile } = await recipientClient
         .from("profiles")
         .select("email, display_name, notification_preferences")
         .eq("id", recipientId)

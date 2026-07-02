@@ -128,7 +128,7 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
           </div>
         </div>
         <Link
-          href={tradespersonProfilePath(provider.slug, { intent: "quote" })}
+          href={tradespersonProfilePath(provider.slug, { intent: "quote", source: "marketplace_profile" })}
           className="shrink-0"
         >
           <Button size="lg">Request Quote</Button>

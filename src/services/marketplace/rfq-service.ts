@@ -229,14 +229,21 @@ export async function listProviderMatchedRfqs(
     throw new Error("Provider not found or not a service provider");
   }
 
-  const categories = provider.services as string[];
+  const categories = (provider.services ?? []) as string[];
+
+  // Category match applies ONLY to broadcast RFQs (no target) — an RFQ
+  // targeted at THIS provider always surfaces, regardless of category and
+  // even when the provider has no registered services yet.
+  const broadcastArm =
+    categories.length > 0
+      ? `and(target_provider_id.is.null,service_category.in.(${categories.join(",")})),`
+      : "";
 
   const { data, error, count } = await supabase
     .from("service_requests")
     .select("*", { count: "exact" })
     .eq("status", "open")
-    .in("service_category", categories)
-    .or(`target_provider_id.is.null,target_provider_id.eq.${providerId}`)
+    .or(`${broadcastArm}target_provider_id.eq.${providerId}`)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -283,6 +290,16 @@ export async function matchProvidersForRfq(
       .single();
 
     if (!target) return [];
+
+    // Only notify a VERIFIED target — mirrors the RLS SELECT policy on
+    // service_requests, which an unverified provider cannot pass anyway.
+    const { data: targetProfile } = await supabase
+      .from("profiles")
+      .select("provider_verification_status")
+      .eq("id", rfq.target_provider_id)
+      .single();
+
+    if (targetProfile?.provider_verification_status !== "verified") return [];
     return [
       {
         user_id: target.user_id as string,

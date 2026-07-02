@@ -3,15 +3,18 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createRfq, createGuestRfq } from "@/services/marketplace/rfq-service";
 import { rfqGuestCreateSchema } from "@/lib/validators/marketplace-schemas";
+import { redis, createRateLimiter } from "@/lib/cache/redis";
 import { createInMemoryRateLimiter } from "@/lib/rate-limit-memory";
 
 // Guests: 5 quote requests per hour per IP. Authed users are covered by RLS.
+// Upstash sliding window (shared across instances, survives restarts); the
+// per-instance in-memory limiter is only the fallback when Redis env is
+// unconfigured — createRateLimiter alone would degrade to a NO-OP there.
 const GUEST_MAX_REQUESTS = 5;
 const GUEST_WINDOW_MS = 60 * 60 * 1000;
-const guestRateLimiter = createInMemoryRateLimiter(
-  GUEST_MAX_REQUESTS,
-  GUEST_WINDOW_MS,
-);
+const guestRateLimiter = redis
+  ? createRateLimiter(GUEST_MAX_REQUESTS, "1 h")
+  : createInMemoryRateLimiter(GUEST_MAX_REQUESTS, GUEST_WINDOW_MS);
 
 export async function POST(request: Request) {
   try {

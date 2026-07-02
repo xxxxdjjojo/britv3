@@ -27,11 +27,11 @@ export async function POST(
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   // Action-level gate: a trader can only send LIVE quotes once fully set up.
   const gate = await checkProviderCanTransact(supabase, user.id, {

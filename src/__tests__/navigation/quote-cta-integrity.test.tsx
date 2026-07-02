@@ -131,12 +131,15 @@ const EXPERT: FeaturedExpert = {
 };
 
 describe("quote CTA integrity", () => {
-  it("ProviderSearchCard 'Get a Quote' deep-links to the canonical profile with intent=quote", () => {
+  it("ProviderSearchCard 'Get a Quote' deep-links to the canonical profile with intent=quote and search_card attribution", () => {
     render(<ProviderSearchCard provider={SEARCH_PROVIDER} />);
     const cta = screen.getByRole("link", { name: /get a quote/i });
     expect(cta).toHaveAttribute(
       "href",
-      tradespersonProfilePath("richards-plumbing", { intent: "quote" }),
+      tradespersonProfilePath("richards-plumbing", {
+        intent: "quote",
+        source: "search_card",
+      }),
     );
   });
 
@@ -151,16 +154,20 @@ describe("quote CTA integrity", () => {
     const href = cta.getAttribute("href") ?? "";
     expect(href.startsWith("/services/pro/")).toBe(true);
     expect(href).toContain("intent=quote");
+    expect(href).toContain("source=marketplace_profile");
     expect(href).not.toContain("/marketplace");
     vi.unstubAllGlobals();
   });
 
-  it("FeaturedExpertCard 'Request Quote' keeps intent=quote (regression guard)", () => {
+  it("FeaturedExpertCard 'Request Quote' keeps intent=quote with sponsored_placement attribution", () => {
     render(<FeaturedExpertCard expert={EXPERT} zone="property_sidebar" />);
     const cta = screen.getByRole("link", { name: /request quote/i });
     expect(cta).toHaveAttribute(
       "href",
-      `${tradespersonProfilePath("ealing-plumbing")}?intent=quote`,
+      tradespersonProfilePath("ealing-plumbing", {
+        intent: "quote",
+        source: "sponsored_placement",
+      }),
     );
   });
 

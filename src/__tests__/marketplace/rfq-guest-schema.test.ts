@@ -34,6 +34,16 @@ describe("rfqGuestCreateSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("rejects a guest submission without a target provider (guests may only submit targeted requests)", () => {
+    const { target_provider_id: _drop, ...noTarget } = VALID_BASE;
+    const result = rfqGuestCreateSchema.safeParse({
+      ...noTarget,
+      contact_name: "Jane Smith",
+      contact_email: "jane@example.com",
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("rejects an invalid email", () => {
     const result = rfqGuestCreateSchema.safeParse({
       ...VALID_BASE,

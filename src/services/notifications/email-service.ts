@@ -169,6 +169,47 @@ export async function sendProviderRfqEmail(
 }
 
 // ---------------------------------------------------------------------------
+// Guest quote email (guest RFQs have no account/dashboard)
+// ---------------------------------------------------------------------------
+
+/**
+ * Notify a GUEST (logged-out) requester that a quote has arrived on their RFQ.
+ * Unlike the critical email, guests cannot open the dashboard, so the email
+ * carries the quote amount inline plus a sign-up nudge.
+ * Rate limited to 5 per hour per recipient email.
+ */
+export async function sendGuestQuoteEmail(
+  to: string,
+  subject: string,
+  event: PlatformEvent,
+): Promise<SendEmailResult> {
+  // Rate limit check
+  const { success } = await emailRateLimiter.limit(to);
+  if (!success) {
+    return { sent: false, rateLimited: true };
+  }
+
+  const resend = getResend();
+  if (!resend) {
+    return { sent: false, error: "Email service not configured" };
+  }
+
+  try {
+    await resend.emails.send({
+      from: FROM_ADDRESS,
+      to,
+      subject,
+      html: renderGuestQuoteEmailHtml(event),
+    });
+
+    return { sent: true };
+  } catch (err) {
+    console.error("[email-service] Failed to send guest quote email:", err);
+    return { sent: false, error: "Send failed" };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Daily digest dispatch
 // ---------------------------------------------------------------------------
 
@@ -276,6 +317,41 @@ function renderProviderRfqEmailHtml(rfqTitle: string, isDirect: boolean): string
 </html>`;
 }
 
+function renderGuestQuoteEmailHtml(event: PlatformEvent): string {
+  // Actor name is the provider's display name — provider-controllable text.
+  const actor = escapeHtml(event.actor_name ?? "A tradesperson");
+  const rawAmount = event.metadata["total_amount"];
+  const amountLine =
+    typeof rawAmount === "number" && Number.isFinite(rawAmount)
+      ? `<p style="font-size:22px;color:#1B4D3E;margin:0 0 24px 0;font-weight:700;">&pound;${rawAmount.toLocaleString("en-GB")}</p>`
+      : "";
+  const signupUrl = appUrl("/signup");
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<div style="max-width:600px;margin:0 auto;padding:20px;">
+  <div style="background-color:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
+    <h1 style="color:#ffffff;margin:0;font-size:20px;">${brandConfig.displayName}</h1>
+  </div>
+  <div style="background-color:#ffffff;padding:32px;border-radius:0 0 8px 8px;">
+    <p style="font-size:16px;color:#333;margin:0 0 8px 0;font-weight:600;">You received a new quote</p>
+    <p style="font-size:14px;color:#666;margin:0 0 8px 0;">from ${actor}</p>
+    ${amountLine}
+    <p style="font-size:14px;color:#666;margin:0 0 24px 0;">Create a free ${brandConfig.displayName} account to review the full quote, message ${actor}, and track your request.</p>
+    <a href="${signupUrl}" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;">
+      Sign up free
+    </a>
+  </div>
+  <p style="text-align:center;font-size:12px;color:#999;margin-top:16px;">
+    You received this email because you requested a quote on ${brandConfig.displayName}.
+  </p>
+</div>
+</body>
+</html>`;
+}
+
 function renderDailyDigestHtml(
   recipientName: string,
   events: PlatformEvent[],
@@ -335,9 +411,13 @@ function getEventContent(event: PlatformEvent): {
         cta: { label: "View conversation", url: `${baseUrl}/messages/${event.entity_id}` },
       };
     case "quote_received":
+      // entity_id is the RFQ id — /quotes/[id] does not exist as a route.
       return {
         title: "You received a new quote",
-        cta: { label: "View quote", url: `${baseUrl}/quotes/${event.entity_id}` },
+        cta: {
+          label: "View quote",
+          url: `${baseUrl}/dashboard/rfqs/${event.entity_id}`,
+        },
       };
     case "quote_sent":
       return {

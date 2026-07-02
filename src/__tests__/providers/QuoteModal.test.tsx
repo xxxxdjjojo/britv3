@@ -79,6 +79,42 @@ describe("QuoteModal (targeted RFQ)", () => {
     expect(body.target_provider_id).toBe("prov-user-1");
   });
 
+  it("preselects the trader's first service category by default (spec §A)", () => {
+    mockUseAuth.mockReturnValue({ user: { id: "user-1" }, loading: false });
+    render(<QuoteModal {...BASE_PROPS} />);
+    expect(
+      (screen.getByLabelText(/service type/i) as HTMLSelectElement).value,
+    ).toBe("plumber");
+  });
+
+  it("shows the trader identity on step 1", () => {
+    mockUseAuth.mockReturnValue({ user: { id: "user-1" }, loading: false });
+    render(<QuoteModal {...BASE_PROPS} />);
+    expect(screen.getByText(/request to richards plumbing/i)).toBeInTheDocument();
+  });
+
+  it("uses a custom initialService name in the title but keeps the category enum", async () => {
+    mockUseAuth.mockReturnValue({ user: { id: "user-1" }, loading: false });
+    // initialService is provider_services.name — a display name, NOT an enum.
+    render(<QuoteModal {...BASE_PROPS} initialService="Boiler Installation & Repair" />);
+
+    // Category stays preselected from the trader's services, never matched
+    // against the custom name.
+    expect(
+      (screen.getByLabelText(/service type/i) as HTMLSelectElement).value,
+    ).toBe("plumber");
+
+    fillStepOne();
+    fireEvent.click(screen.getByRole("button", { name: /submit request/i }));
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+    const body = JSON.parse(
+      (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body,
+    );
+    expect(body.title).toBe("Boiler Installation & Repair needed in SW1A 1AA");
+    expect(body.service_category).toBe("plumber");
+  });
+
   it("shows a visible error when the API rejects", async () => {
     mockUseAuth.mockReturnValue({ user: { id: "user-1" }, loading: false });
     (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({

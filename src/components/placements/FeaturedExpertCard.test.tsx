@@ -48,6 +48,9 @@ describe("FeaturedExpertCard", () => {
   it("offers a Request Quote call to action linking to the provider profile", () => {
     render(<FeaturedExpertCard expert={expert()} zone="property_sidebar" />);
     const cta = screen.getByRole("link", { name: "Request Quote" });
-    expect(cta).toHaveAttribute("href", "/services/pro/ealing-plumbing?intent=quote");
+    expect(cta).toHaveAttribute(
+      "href",
+      "/services/pro/ealing-plumbing?intent=quote&source=sponsored_placement",
+    );
   });
 });

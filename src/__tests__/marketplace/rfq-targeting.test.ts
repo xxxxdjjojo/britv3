@@ -94,9 +94,9 @@ describe("createGuestRfq", () => {
 });
 
 describe("listProviderMatchedRfqs targeting filter", () => {
-  it("applies an or-filter limiting to broadcast or own-targeted RFQs", async () => {
+  function makeClient(services: string[]) {
     const providerChain = chainMock({
-      data: { services: ["plumber"] },
+      data: { services },
       error: null,
     });
     const rfqCalls: unknown[][] = [];
@@ -112,18 +112,40 @@ describe("listProviderMatchedRfqs targeting filter", () => {
           : rfqChain.chain,
       ),
     };
+    return { supabase, rfqCalls, rfqChain };
+  }
+
+  it("scopes the category filter to broadcast rows inside a single or-filter", async () => {
+    const { supabase, rfqCalls, rfqChain } = makeClient(["plumber", "builder"]);
 
     await listProviderMatchedRfqs(supabase as never, "provider-1");
 
-    expect(rfqCalls.flat().join(" ")).toContain("target_provider_id.is.null");
-    expect(rfqCalls.flat().join(" ")).toContain(
-      "target_provider_id.eq.provider-1",
+    const flat = rfqCalls.flat().join(" ");
+    // Broadcast arm: no target AND category match
+    expect(flat).toContain(
+      "and(target_provider_id.is.null,service_category.in.(plumber,builder))",
     );
+    // Targeted arm: own-targeted rows surface regardless of category
+    expect(flat).toContain("target_provider_id.eq.provider-1");
+    // No standalone AND-filter on category across ALL rows (it would hide
+    // targeted RFQs in categories the provider hasn't registered)
+    expect(rfqChain.chain.in).not.toHaveBeenCalled();
+  });
+
+  it("still surfaces own-targeted RFQs when the provider has no services", async () => {
+    const { supabase, rfqCalls } = makeClient([]);
+
+    await listProviderMatchedRfqs(supabase as never, "provider-1");
+
+    const flat = rfqCalls.flat().join(" ");
+    expect(flat).toContain("target_provider_id.eq.provider-1");
+    // Empty category list must not produce an invalid in.() arm
+    expect(flat).not.toContain("service_category.in.()");
   });
 });
 
 describe("matchProvidersForRfq targeted short-circuit", () => {
-  it("returns only the target provider for a targeted RFQ", async () => {
+  function makeTargetedClient(verificationStatus: string | null) {
     const rfqChain = chainMock({
       data: {
         id: "rfq-1",
@@ -140,15 +162,46 @@ describe("matchProvidersForRfq targeted short-circuit", () => {
       },
       error: null,
     });
-    let call = 0;
+    const profilesChain = chainMock({
+      data:
+        verificationStatus === null
+          ? null
+          : { provider_verification_status: verificationStatus },
+      error: null,
+    });
     const supabase = {
-      from: vi.fn(() => (call++ === 0 ? rfqChain.chain : targetChain.chain)),
+      from: vi.fn((table: string) => {
+        if (table === "service_requests") return rfqChain.chain;
+        if (table === "profiles") return profilesChain.chain;
+        return targetChain.chain;
+      }),
     };
+    return { supabase };
+  }
+
+  it("returns only the target provider for a targeted RFQ (verified target)", async () => {
+    const { supabase } = makeTargetedClient("verified");
 
     const matched = await matchProvidersForRfq(supabase as never, "rfq-1");
 
     expect(matched).toHaveLength(1);
     expect(matched[0].user_id).toBe("target-provider-uuid");
+  });
+
+  it("returns [] when the targeted provider is not verified", async () => {
+    const { supabase } = makeTargetedClient("pending");
+
+    const matched = await matchProvidersForRfq(supabase as never, "rfq-1");
+
+    expect(matched).toEqual([]);
+  });
+
+  it("returns [] when the targeted provider has no profile row", async () => {
+    const { supabase } = makeTargetedClient(null);
+
+    const matched = await matchProvidersForRfq(supabase as never, "rfq-1");
+
+    expect(matched).toEqual([]);
   });
 });
 
@@ -184,9 +237,9 @@ describe("getProviderLeads targeting", () => {
     target_provider_id: PROVIDER_ID,
   };
 
-  function makeClient() {
+  function makeClient(services: string[] = ["plumber"]) {
     const providerChain = chainMock({
-      data: { services: ["plumber"], service_postcodes: ["SW1A 1AA"] },
+      data: { services, service_postcodes: ["SW1A 1AA"] },
       error: null,
     });
     const orCalls: unknown[][] = [];
@@ -205,17 +258,34 @@ describe("getProviderLeads targeting", () => {
           : rfqChain.chain,
       ),
     };
-    return { supabase, orCalls };
+    return { supabase, orCalls, rfqChain };
   }
 
-  it("queries with an or-filter covering broadcast-recent and own-targeted leads", async () => {
-    const { supabase, orCalls } = makeClient();
+  it("queries with an or-filter covering broadcast-recent-in-category and own-targeted leads", async () => {
+    const { supabase, orCalls, rfqChain } = makeClient();
 
     await getProviderLeads(PROVIDER_ID, supabase as never);
 
     const flat = orCalls.flat().join(" ");
-    expect(flat).toContain("target_provider_id.is.null");
+    // Category + freshness constrain the BROADCAST arm only
+    expect(flat).toMatch(
+      /and\(target_provider_id\.is\.null,service_category\.in\.\(plumber\),created_at\.gte\./,
+    );
     expect(flat).toContain(`target_provider_id.eq.${PROVIDER_ID}`);
+    // No standalone AND category filter across all rows — it would hide
+    // targeted leads outside the provider's registered categories
+    expect(rfqChain.chain.in).not.toHaveBeenCalled();
+  });
+
+  it("still queries (and surfaces targeted leads) when the provider has no services", async () => {
+    const { supabase, orCalls } = makeClient([]);
+
+    const leads = await getProviderLeads(PROVIDER_ID, supabase as never);
+
+    const flat = orCalls.flat().join(" ");
+    expect(flat).toContain(`target_provider_id.eq.${PROVIDER_ID}`);
+    expect(flat).not.toContain("service_category.in.()");
+    expect(leads.some((l) => l.id === "lead-direct")).toBe(true);
   });
 
   it("flags targeted leads isDirect and sorts them first", async () => {

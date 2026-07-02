@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("@/services/notifications/email-service", () => ({
   sendCriticalEmail: vi.fn().mockResolvedValue({ sent: true }),
+  sendGuestQuoteEmail: vi.fn().mockResolvedValue({ sent: true }),
   shouldSendEmail: vi.fn().mockReturnValue(true),
   sendDailyDigest: vi.fn().mockResolvedValue({ sent: true }),
   sendProviderRfqEmail: vi.fn().mockResolvedValue({ sent: true }),
@@ -18,11 +19,22 @@ vi.mock("@/lib/cache/redis", () => ({
   })),
 }));
 
+// The rfq branch must resolve the recipient via the SERVICE-ROLE client: the
+// caller is the quoting provider, whose RLS grant on service_requests requires
+// status='open' — already flipped to 'quotes_received' before the event fires.
+const { adminFrom } = vi.hoisted(() => ({ adminFrom: vi.fn() }));
+vi.mock("@/lib/supabase/admin", () => ({
+  createAdminClient: vi.fn(() => ({ from: adminFrom })),
+}));
+
 import {
   createPlatformEvent,
   getUserEntityIds,
 } from "@/services/notifications/notification-service";
-import { sendCriticalEmail } from "@/services/notifications/email-service";
+import {
+  sendCriticalEmail,
+  sendGuestQuoteEmail,
+} from "@/services/notifications/email-service";
 
 // ---------------------------------------------------------------------------
 // Helpers (chainable builder, mirrors src/__tests__/services/notification-service.test.ts)
@@ -82,11 +94,11 @@ beforeEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("quote_received rfq recipient resolution", () => {
-  it("emails the guest contact_email directly when the RFQ has no owner", async () => {
+  it("emails the guest contact_email (guest template) via the admin client when the RFQ has no owner", async () => {
     const eventsBuilder = makeTableBuilder({
       single: mockSingleResult(RFQ_EVENT_ROW),
     });
-    const profilesBuilder = makeTableBuilder({
+    const actorNamesBuilder = makeTableBuilder({
       then: mockListResult([
         { id: "prov-1", display_name: "Richards Plumbing" },
       ]),
@@ -99,11 +111,13 @@ describe("quote_received rfq recipient resolution", () => {
         title: "Fix leaking kitchen tap",
       }),
     });
+    // Caller (provider) client: platform_events insert + actor-name lookup only
     const from = vi.fn().mockImplementation((table: string) => {
-      if (table === "profiles") return profilesBuilder;
-      if (table === "service_requests") return rfqBuilder;
+      if (table === "profiles") return actorNamesBuilder;
       return eventsBuilder;
     });
+    // Service-role client serves the service_requests recipient lookup
+    adminFrom.mockImplementation(() => rfqBuilder);
 
     await createPlatformEvent({ from } as never, {
       event_type: "quote_received",
@@ -113,33 +127,37 @@ describe("quote_received rfq recipient resolution", () => {
     });
     await flushAsync();
 
-    expect(from).toHaveBeenCalledWith("service_requests");
-    expect(sendCriticalEmail).toHaveBeenCalledTimes(1);
-    expect(sendCriticalEmail).toHaveBeenCalledWith(
+    // The rfq lookup must use the ADMIN client — the provider's own client
+    // cannot read a service_request once its status leaves 'open'.
+    expect(adminFrom).toHaveBeenCalledWith("service_requests");
+    expect(from).not.toHaveBeenCalledWith("service_requests");
+    expect(sendGuestQuoteEmail).toHaveBeenCalledTimes(1);
+    expect(sendGuestQuoteEmail).toHaveBeenCalledWith(
       "jane@example.com",
       expect.stringContaining("sent you a quote"),
       expect.objectContaining({ entity_id: "rfq-1" }),
     );
+    expect(sendCriticalEmail).not.toHaveBeenCalled();
   });
 
-  it("emails the RFQ owner's profile email for authed RFQs", async () => {
+  it("emails the RFQ owner's profile email for authed RFQs (looked up via the admin client)", async () => {
     const eventsBuilder = makeTableBuilder({
       single: mockSingleResult(RFQ_EVENT_ROW),
     });
-    // profiles serves both resolveActorNames (awaited list) and the
-    // recipient email lookup (.single()).
-    const profilesBuilder = makeTableBuilder({
+    // Caller-client profiles read = resolveActorNames (awaited list) only.
+    const actorNamesBuilder = makeTableBuilder({
       then: mockListResult([
         { id: "prov-1", display_name: "Richards Plumbing" },
       ]),
     });
-    profilesBuilder.single = vi.fn().mockResolvedValue(
-      mockSingleResult({
+    // Admin-client profiles read = the recipient email lookup (.single()).
+    const recipientProfileBuilder = makeTableBuilder({
+      single: mockSingleResult({
         email: "owner@test.com",
         display_name: "Owner",
         notification_preferences: null,
       }),
-    );
+    });
     const rfqBuilder = makeTableBuilder({
       single: mockSingleResult({
         user_id: "owner-1",
@@ -149,10 +167,12 @@ describe("quote_received rfq recipient resolution", () => {
       }),
     });
     const from = vi.fn().mockImplementation((table: string) => {
-      if (table === "profiles") return profilesBuilder;
-      if (table === "service_requests") return rfqBuilder;
+      if (table === "profiles") return actorNamesBuilder;
       return eventsBuilder;
     });
+    adminFrom.mockImplementation((table: string) =>
+      table === "profiles" ? recipientProfileBuilder : rfqBuilder,
+    );
 
     await createPlatformEvent({ from } as never, {
       event_type: "quote_received",
@@ -162,6 +182,9 @@ describe("quote_received rfq recipient resolution", () => {
     });
     await flushAsync();
 
+    expect(adminFrom).toHaveBeenCalledWith("service_requests");
+    expect(adminFrom).toHaveBeenCalledWith("profiles");
+    expect(from).not.toHaveBeenCalledWith("service_requests");
     expect(sendCriticalEmail).toHaveBeenCalledTimes(1);
     expect(sendCriticalEmail).toHaveBeenCalledWith(
       "owner@test.com",
@@ -187,9 +210,9 @@ describe("quote_received rfq recipient resolution", () => {
     });
     const from = vi.fn().mockImplementation((table: string) => {
       if (table === "profiles") return profilesBuilder;
-      if (table === "service_requests") return rfqBuilder;
       return eventsBuilder;
     });
+    adminFrom.mockImplementation(() => rfqBuilder);
 
     await createPlatformEvent({ from } as never, {
       event_type: "quote_received",
@@ -200,6 +223,7 @@ describe("quote_received rfq recipient resolution", () => {
     await flushAsync();
 
     expect(sendCriticalEmail).not.toHaveBeenCalled();
+    expect(sendGuestQuoteEmail).not.toHaveBeenCalled();
   });
 });
 

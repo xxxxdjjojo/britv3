@@ -32,6 +32,10 @@ type QuoteModalProps = Readonly<{
   categories: string[];
   source?: string;
   open: boolean;
+  /**
+   * The provider's CUSTOM service display name (provider_services.name, NOT a
+   * category enum value) — used verbatim in the generated RFQ title.
+   */
   initialService?: string;
   onOpenChange: (open: boolean) => void;
 }>;
@@ -110,12 +114,13 @@ export function QuoteModal({
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // Spec §A: the category select is preselected from the trader's services.
+  const defaultCategory = categories[0] ?? "";
   const [formData, setFormData] = useState<FormData>({
     ...EMPTY_FORM,
-    serviceCategory: categories.includes(initialService) ? initialService : "",
+    serviceCategory: defaultCategory,
   });
 
-  // Sync initialService into form when it changes (e.g. clicking different service card)
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
       if (!nextOpen) {
@@ -123,19 +128,12 @@ export function QuoteModal({
         setTimeout(() => {
           setStep(1);
           setSubmitError(null);
-          setFormData(EMPTY_FORM);
+          setFormData({ ...EMPTY_FORM, serviceCategory: defaultCategory });
         }, 300);
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          serviceCategory: categories.includes(initialService)
-            ? initialService
-            : prev.serviceCategory,
-        }));
       }
       onOpenChange(nextOpen);
     },
-    [onOpenChange, initialService, categories],
+    [onOpenChange, defaultCategory],
   );
 
   function updateField<K extends keyof FormData>(key: K, value: FormData[K]) {
@@ -159,9 +157,14 @@ export function QuoteModal({
     setSubmitting(true);
     setSubmitError(null);
 
+    const category = formData.serviceCategory || defaultCategory || "other";
+    // initialService is a custom display name, not an enum — never matched
+    // against category values, only used verbatim in the generated title.
+    const titleSubject = initialService.trim() || humanise(category);
+
     const payload = {
-      service_category: formData.serviceCategory || categories[0] || "other",
-      title: `${humanise(formData.serviceCategory || categories[0] || "other")} needed in ${formData.postcode.trim().toUpperCase()}`,
+      service_category: category,
+      title: `${titleSubject} needed in ${formData.postcode.trim().toUpperCase()}`,
       description: formData.description.trim(),
       property_postcode: formData.postcode.trim(),
       preferred_start_date: formData.preferredDate || undefined,
@@ -235,6 +238,9 @@ export function QuoteModal({
               <DialogTitle className="text-lg font-bold">
                 What do you need help with?
               </DialogTitle>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Request to {providerName}
+              </p>
             </DialogHeader>
             <div className="space-y-4 pt-2">
               {/* Service type */}
