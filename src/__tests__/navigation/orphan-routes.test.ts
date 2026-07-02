@@ -48,6 +48,12 @@ const ORPHAN_ALLOWLIST = new Set<string>([
   "/legal/third-party-services",
   // Hub-linked sub-pages reached from their parent hub, not the global nav.
   "/help/contact", // linked from /help
+  "/pledges/no-premium-placement", // linked from /pledges hub + search-results disclosure line
+  "/pledges/your-data-your-leads", // linked from /pledges hub
+  "/compliance/pre-launch-audit-2026", // linked from /compliance index
+  "/agent-briefing/archive", // linked from /agent-briefing landing
+  "/tools/true-equity-checker", // redirect stub → /area-prices (branded tool entry point)
+  "/tools/portal-cost-calculator", // feature-flag dark until Decision Gate 4 legal sign-off (off = 404)
   "/blog/first-time-buyers", // first-time-buyer content hub, linked from /blog + articles
   "/market-trends/national", // redirect stub → /area-prices (route file retained so the 308 fires)
   "/services/architects", // linked from /services

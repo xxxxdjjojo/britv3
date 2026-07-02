@@ -48,3 +48,22 @@ export const METHODOLOGY_NOTE =
   "Median sold prices from HM Land Registry Price Paid Data (England & Wales). " +
   "“Houses” combines detached, semi-detached and terraced sales. These figures " +
   "describe the wider area — not a valuation of any specific property.";
+
+/** Sources for the MethodologyFooter under the recent-sales / trend widgets. */
+export const PPD_SOURCES: ReadonlyArray<{ label: string; url: string }> = [
+  {
+    label: "HM Land Registry Price Paid Data (gov.uk)",
+    url: "https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads",
+  },
+  {
+    label: "ONS National Statistics Postcode Lookup (postcode → area)",
+    url: "https://geoportal.statistics.gov.uk/",
+  },
+];
+
+/** Honest limitations, rendered prominently — never hidden in small print. */
+export const PPD_CAVEATS: ReadonlyArray<string> = [
+  "Registered sales appear in Price Paid Data roughly 3 months after completion, so the newest sales may not show yet.",
+  "Small samples are suppressed: the sector trend only shows with at least 30 sales in the last 12 months.",
+  "All figures are medians of actual sold prices for the surrounding area — they are not a valuation of any specific property.",
+];

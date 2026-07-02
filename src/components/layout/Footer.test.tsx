@@ -63,13 +63,16 @@ describe("Footer", () => {
     expect(screen.getByText("Popular Areas")).toBeInTheDocument();
   });
 
-  it("has total link count <= 45", () => {
-    // Footer link count smell check. Limit raised from 35 -> 40 in 2026-05 and
+  it("has total link count <= 48", () => {
+    // Footer link count smell check. Limit raised from 35 -> 40 in 2026-05,
     // 40 -> 45 in 2026-06 as 5 new legal pages were wired into the footer Legal
-    // column (feature/marketing-legal-pages). Treat as a smell signal, not a hard rule.
+    // column (feature/marketing-legal-pages), and 45 -> 48 in 2026-07 as the
+    // influence-strategy truth surfaces (pledges, compliance library, agent
+    // briefing) were wired into the Company column. Treat as a smell signal,
+    // not a hard rule.
     const { container } = render(<Footer />);
     const allLinks = container.querySelectorAll("a");
-    expect(allLinks.length).toBeLessThanOrEqual(45);
+    expect(allLinks.length).toBeLessThanOrEqual(48);
   });
 
   it("all links have href attributes", () => {

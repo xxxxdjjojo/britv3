@@ -12,13 +12,26 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { Search, MapPin, Loader2 } from "lucide-react";
 import { MarketMapPriceCard } from "@/components/market-map/MarketMapPriceCard";
+import { MethodologyFooter } from "@/components/trust/MethodologyFooter";
+import { ShareBar } from "@/components/trust/ShareBar";
+import { trackReportViewed } from "@/lib/analytics/influence-events";
 import type { PostcodeAreaCard } from "@/services/market-map/postcode-card-service";
 import type { AddressSuggestion } from "@/services/address/address-provider";
+import type { RecentSale, SectorTrend } from "@/services/truedeed/ppd-postcode-service";
 import type { FitBoundsParams } from "@/lib/market-map/fit-bounds";
 import { geographyLevelForZoom } from "@/lib/market-map/geography";
-import { bandSubtitle, locationHeadline, METHODOLOGY_NOTE } from "./copy";
+import { RecentSalesList } from "./RecentSalesList";
+import { TrendSparkline } from "./TrendSparkline";
+import {
+  bandSubtitle,
+  locationHeadline,
+  METHODOLOGY_NOTE,
+  PPD_CAVEATS,
+  PPD_SOURCES,
+} from "./copy";
 
 const MarketMap = dynamic(
   () => import("@/components/market-map/MarketMap").then((m) => ({ default: m.MarketMap })),
@@ -50,14 +63,22 @@ function fitToPostcode(lat: number, lng: number): FitBoundsParams {
 
 type Status = "idle" | "loading" | "ready" | "empty" | "invalid" | "error";
 
+/** Real-PPD add-ons for a successful lookup (recent sales + sector trend). */
+type PostcodeDetail = { recentSales: RecentSale[]; trend: SectorTrend };
+
 export function AreaPricesExplorer() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [card, setCard] = useState<PostcodeAreaCard | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [fitTo, setFitTo] = useState<FitBoundsParams | null>(null);
+  const [detail, setDetail] = useState<PostcodeDetail | null>(null);
+  const [activePostcode, setActivePostcode] = useState<string | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+  // Monotonic lookup id so a slow detail response never lands on a newer card.
+  const lookupSeq = useRef(0);
 
   // Debounced postcode suggestions from the address adapter. All state updates
   // happen inside the debounce callback (never synchronously in the effect body).
@@ -100,9 +121,12 @@ export function AreaPricesExplorer() {
   const runLookup = useCallback(async (raw: string) => {
     const text = raw.trim();
     if (!text) return;
+    const seq = ++lookupSeq.current;
     setOpen(false);
     setStatus("loading");
     setCard(null);
+    setDetail(null);
+    setActivePostcode(null);
 
     // Resolve free text / postcode → a single postcode via the adapter seam.
     let postcode: string | null = null;
@@ -133,11 +157,50 @@ export function AreaPricesExplorer() {
         setFitTo(fitToPostcode(data.location.lat, data.location.lng));
       }
       const bothEmpty = data.flat.insufficient && data.house.insufficient;
-      setStatus(!data.found || bothEmpty ? "empty" : "ready");
+      const isReady = data.found && !bothEmpty;
+      setStatus(isReady ? "ready" : "empty");
+
+      if (isReady) {
+        const displayPostcode = data.location?.postcodeDisplay ?? postcode;
+        setActivePostcode(displayPostcode);
+        trackReportViewed(`true_equity_checker:${displayPostcode}`);
+        // Deep-linkable shares: reflect the searched postcode in the URL.
+        router.replace(`/area-prices?postcode=${encodeURIComponent(displayPostcode)}`, {
+          scroll: false,
+        });
+
+        // Real-PPD add-ons (recent sales + sector trend) — additive: a failure
+        // here never disturbs the already-rendered card.
+        try {
+          const detailRes = await fetch(
+            `/api/area-prices/postcode-detail?postcode=${encodeURIComponent(displayPostcode)}`,
+          );
+          if (detailRes.ok && seq === lookupSeq.current) {
+            setDetail((await detailRes.json()) as PostcodeDetail);
+          }
+        } catch {
+          /* detail unavailable — the card stands on its own */
+        }
+      }
     } catch {
       setStatus("error");
     }
-  }, []);
+  }, [router]);
+
+  // Deep-link support: landing on /area-prices?postcode=M1+1AE runs the lookup
+  // once on mount. router.replace above rewrites the same param, but nothing
+  // reads searchParams reactively, so there is no refetch loop. State updates
+  // happen inside the deferred callback (never synchronously in the effect
+  // body), matching the debounce effect above.
+  useEffect(() => {
+    const initial = new URLSearchParams(window.location.search).get("postcode");
+    if (!initial) return;
+    const id = setTimeout(() => {
+      setQuery(initial);
+      void runLookup(initial);
+    }, 0);
+    return () => clearTimeout(id);
+  }, [runLookup]);
 
   function handleSelect(suggestion: AddressSuggestion) {
     setQuery(suggestion.label);
@@ -290,6 +353,15 @@ export function AreaPricesExplorer() {
               />
             )}
 
+            {status === "ready" && detail && <TrendSparkline trend={detail.trend} />}
+
+            {status === "ready" && activePostcode && (
+              <ShareBar
+                title={`Median sold price in ${activePostcode}`}
+                toolKey="true_equity_checker"
+              />
+            )}
+
             <p className="font-sans text-xs leading-relaxed text-brand-primary-dark/45">
               {METHODOLOGY_NOTE}
             </p>
@@ -300,6 +372,17 @@ export function AreaPricesExplorer() {
               <MarketMap propertyType="all" months={12} scaleMode="national" fitTo={fitTo} />
             </div>
           </div>
+        </section>
+      )}
+
+      {/* Real recent PPD sales + sources/caveats — only after a successful lookup */}
+      {status === "ready" && activePostcode && (
+        <section
+          aria-label={`Recent sales and methodology for ${activePostcode}`}
+          className="flex flex-col gap-7"
+        >
+          {detail && <RecentSalesList postcode={activePostcode} sales={detail.recentSales} />}
+          <MethodologyFooter sources={PPD_SOURCES} caveats={PPD_CAVEATS} />
         </section>
       )}
     </div>

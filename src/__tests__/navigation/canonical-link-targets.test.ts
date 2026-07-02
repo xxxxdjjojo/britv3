@@ -64,7 +64,10 @@ describe("canonical internal link targets", () => {
   it("does not render stale dashboard, advice, or seller settings hrefs", () => {
     for (const forbiddenHref of FORBIDDEN_INTERNAL_HREFS) {
       const escapedHref = forbiddenHref.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const violations = findSourceMatches(new RegExp(escapedHref, "g"));
+      // Match only internal href literals (quote/backtick-prefixed) so external
+      // URLs that merely contain the path (e.g. hoa.org.uk/advice/...) don't
+      // false-positive.
+      const violations = findSourceMatches(new RegExp(`["'\`]${escapedHref}`, "g"));
 
       expect(violations, `${forbiddenHref} violations`).toEqual([]);
     }

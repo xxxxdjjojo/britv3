@@ -1,148 +1,96 @@
-"use client";
-
-import { useState } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Calculator,
-  Truck,
-  Info,
-  Home,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { Calculator, Home, Info, Truck } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { CalculatorPageHeader } from "@/components/calculators/CalculatorPageHeader";
-import { calculateSdlt } from "@/lib/calculators/sdlt";
-import { calculateLbtt } from "@/lib/calculators/lbtt";
-import { calculateLtt } from "@/lib/calculators/ltt";
-import type { BuyerType } from "@/types/calculators";
+import { MovingStackCalculator } from "@/components/tools/moving-stack/MovingStackCalculator";
+import { MethodologyFooter } from "@/components/trust/MethodologyFooter";
+import { ShareBar } from "@/components/trust/ShareBar";
+import { SELLER_PLANS } from "@/lib/billing-config";
+import {
+  buildMovingStack,
+  type SellerPlanSummary,
+} from "@/lib/calculators/moving-stack";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// Serialisable seller-tier summaries for the client calculator. Mapped here
+// (a Server Component) from server-only billing-config so the fee numbers
+// stay single-sourced and never re-hardcoded.
+const SELLER_PLAN_SUMMARIES: ReadonlyArray<SellerPlanSummary> =
+  SELLER_PLANS.map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+    priceMonthlyPence: plan.priceMonthly,
+    commissionRate: plan.commissionRate ?? 0,
+    commissionLabel: plan.commissionLabel,
+  }));
 
-const gbp = (value: number) =>
-  new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    maximumFractionDigits: 0,
-  }).format(value);
-
-// LBTT and LTT calculations imported from @/lib/calculators/
-
-// ---------------------------------------------------------------------------
-// Cost ranges
-// ---------------------------------------------------------------------------
-
-type CostItem = {
-  label: string;
-  low: number;
-  high: number;
-  color: string;
+export const metadata: Metadata = {
+  title: "Total Cost of Moving Calculator | TrueDeed",
+  description:
+    "The full, itemised cost of buying and moving home — stamp duty (exact), conveyancing, survey, removals, EPC, agent commission and portal passthrough. Every figure sourced or labelled an estimate.",
 };
 
-function getCostBreakdown(
-  propertyPrice: number,
-  firstTimeBuyer: boolean,
-  location: string,
-): { items: CostItem[]; stampDuty: number } {
-  // Stamp duty varies by location
-  let stampDuty = 0;
-  const buyerType: BuyerType = firstTimeBuyer ? "first_time" : "standard";
-
-  switch (location) {
-    case "england":
-    case "ni":
-      stampDuty = calculateSdlt(propertyPrice, buyerType).totalTax;
-      break;
-    case "scotland":
-      stampDuty = calculateLbtt(propertyPrice, firstTimeBuyer).totalTax;
-      break;
-    case "wales":
-      stampDuty = calculateLtt(propertyPrice).totalTax;
-      break;
-  }
-
-  const items: CostItem[] = [
-    {
-      label: location === "scotland" ? "LBTT" : location === "wales" ? "LTT" : "Stamp Duty (SDLT)",
-      low: stampDuty,
-      high: stampDuty,
-      color: "bg-brand-primary",
-    },
-    {
-      label: "Solicitor / Conveyancing",
-      low: 1200,
-      high: 1800,
-      color: "bg-brand-primary-dark",
-    },
-    {
-      label: "Survey / Valuation",
-      low: 300,
-      high: 700,
-      color: "bg-brand-gold",
-    },
-    {
-      label: "Removals",
-      low: 500,
-      high: 1500,
-      color: "bg-brand-primary-light",
-    },
-    {
-      label: "EPC Certificate",
-      low: 60,
-      high: 120,
-      color: "bg-brand-primary-lighter",
-    },
+// Enumerate every source the stack can cite (selling includes all line items)
+// so the methodology footer always matches what the calculator renders.
+const ALL_SOURCES = (() => {
+  const items = [
+    ...buildMovingStack({
+      propertyPrice: 300000,
+      location: "england",
+      buyerType: "standard",
+      selling: true,
+    }).items,
+    ...buildMovingStack({
+      propertyPrice: 300000,
+      location: "scotland",
+      buyerType: "standard",
+      selling: false,
+    }).items,
+    ...buildMovingStack({
+      propertyPrice: 300000,
+      location: "wales",
+      buyerType: "standard",
+      selling: false,
+    }).items,
   ];
+  return items
+    .flatMap((item) => (item.source ? [item.source] : []))
+    .filter(
+      (source, index, all) =>
+        all.findIndex((s) => s.url === source.url) === index,
+    );
+})();
 
-  return { items, stampDuty };
-}
+const CAVEATS = [
+  "Figures are typical published ranges from consumer guides, not quotes — your actual costs will vary.",
+  "Stamp duty / LBTT / LTT are computed exactly from current published rates via the same calculators as our stamp-duty tool; tax rates are subject to change.",
+  "Scotland's Additional Dwelling Supplement and Wales's higher LTT rates for additional properties are not modelled.",
+  "The portal passthrough line is an estimate built from published portal ARPA and a stated listings-per-branch assumption — edit those assumptions on the Portal Cost Calculator.",
+  "TrueDeed tier costs are our published seller prices (upfront fee plus commission on completion).",
+];
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+const FAQS = [
+  {
+    q: "Do I need a property survey?",
+    a: "While not legally required, a survey is strongly recommended. A HomeBuyer Report (Level 2) sits at the lower end of the sourced survey range in the stack above, and a full Building Survey (Level 3) at the upper end — the HomeOwners Alliance survey-cost guide linked in our sources breaks the levels down in detail.",
+  },
+  {
+    q: "Can I negotiate solicitor fees?",
+    a: "Yes. Many solicitors offer fixed-fee conveyancing packages. It's worth getting 3-4 quotes. Online conveyancers are often cheaper but may offer less personal service. Always check that any quote includes disbursements (search fees, Land Registry fees, etc.).",
+  },
+  {
+    q: "Are there any costs I'm missing?",
+    a: "This estimator covers the main costs. Other potential expenses we don't model include mortgage arrangement fees (these vary widely by lender — check your mortgage offer), buildings insurance (required on exchange), redirected mail, new furniture, and utility connection fees.",
+  },
+];
 
 export default function MovingCostEstimatorPage() {
-  const [propertyPrice, setPropertyPrice] = useState(300000);
-  const [firstTimeBuyer, setFirstTimeBuyer] = useState(false);
-  const [location, setLocation] = useState("england");
-
-  const handleNumberInput =
-    (setter: (v: number) => void, min = 0) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const parsed = parseFloat(e.target.value);
-      if (!isNaN(parsed) && parsed >= min) setter(parsed);
-      else if (e.target.value === "" || e.target.value === "-") setter(0);
-    };
-
-  const { items } = getCostBreakdown(propertyPrice, firstTimeBuyer, location);
-
-  const totalLow = items.reduce((sum, i) => sum + i.low, 0);
-  const totalHigh = items.reduce((sum, i) => sum + i.high, 0);
-  const totalMid = Math.round((totalLow + totalHigh) / 2);
-  const maxHigh = Math.max(...items.map((i) => i.high), 1);
-
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
         <CalculatorPageHeader
-          title="Moving Cost Estimator"
-          description="Get a complete breakdown of the costs involved in buying and moving into a new home, including stamp duty, legal fees, surveys, and removals."
+          title="Total Cost of Moving"
+          description="The complete, itemised stack of what it really costs to buy — and sell — a home: exact stamp duty, sourced fee ranges, and the estimated portal cost hidden in your listing."
         />
       </div>
 
@@ -150,123 +98,9 @@ export default function MovingCostEstimatorPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Main content */}
           <div className="space-y-8 lg:col-span-8">
-            {/* Inputs */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Property Details</CardTitle>
-                <CardDescription>
-                  Enter your property price and location to estimate total moving
-                  costs.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="property-price">Property Price</Label>
-                    <Input
-                      id="property-price"
-                      type="number"
-                      min={0}
-                      step={5000}
-                      value={propertyPrice}
-                      onChange={handleNumberInput(setPropertyPrice)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Property Location</Label>
-                    <Select value={location} onValueChange={(value: string | null) => setLocation(value ?? "")}>
-                      <SelectTrigger id="location">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="england">England</SelectItem>
-                        <SelectItem value="wales">Wales</SelectItem>
-                        <SelectItem value="scotland">Scotland</SelectItem>
-                        <SelectItem value="ni">Northern Ireland</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+            <MovingStackCalculator sellerPlans={SELLER_PLAN_SUMMARIES} />
 
-                <div className="flex items-center gap-3">
-                  <Switch
-                    checked={firstTimeBuyer}
-                    onCheckedChange={setFirstTimeBuyer}
-                    id="ftb-toggle"
-                  />
-                  <Label htmlFor="ftb-toggle" className="cursor-pointer">
-                    I am a first-time buyer
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Cost breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Cost Breakdown</CardTitle>
-                <CardDescription>
-                  Estimated range of costs for a {gbp(propertyPrice)} property
-                  in{" "}
-                  {location === "ni"
-                    ? "Northern Ireland"
-                    : location.charAt(0).toUpperCase() + location.slice(1)}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                {items.map((item) => {
-                  const barWidth = (item.high / maxHigh) * 100;
-                  return (
-                    <div key={item.label}>
-                      <div className="mb-1.5 flex items-center justify-between">
-                        <span className="text-sm font-medium text-neutral-900 dark:text-white">
-                          {item.label}
-                        </span>
-                        <span className="text-sm tabular-nums text-neutral-600 dark:text-neutral-400">
-                          {item.low === item.high
-                            ? gbp(item.low)
-                            : `${gbp(item.low)} – ${gbp(item.high)}`}
-                        </span>
-                      </div>
-                      <div className="h-3 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
-                        <div
-                          className={`h-full rounded-full ${item.color} transition-all duration-300`}
-                          style={{ width: `${barWidth}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Totals */}
-                <div className="mt-6 rounded-xl border border-neutral-200 bg-muted p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
-                  <div className="grid gap-4 sm:grid-cols-3 text-center">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Low Estimate</p>
-                      <p className="text-lg font-bold tabular-nums">
-                        {gbp(totalLow)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        Mid Estimate
-                      </p>
-                      <p className="text-2xl font-bold tabular-nums text-brand-primary">
-                        {gbp(totalMid)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        High Estimate
-                      </p>
-                      <p className="text-lg font-bold tabular-nums">
-                        {gbp(totalHigh)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ShareBar title="Total Cost of Moving" toolKey="moving_cost_stack" />
 
             {/* What's included */}
             <article className="prose prose-neutral max-w-none dark:prose-invert">
@@ -277,10 +111,13 @@ export default function MovingCostEstimatorPage() {
                 Buying a home involves more than just the purchase price. Stamp
                 duty (or LBTT in Scotland, LTT in Wales) is typically the
                 largest additional cost. You will also need to budget for a
-                solicitor to handle conveyancing, a property survey, an EPC
-                certificate, and removal costs. First-time buyers in England and
-                Northern Ireland may benefit from stamp duty relief on
-                properties up to &pound;500,000.
+                solicitor to handle conveyancing, a property survey, and removal
+                costs. If you are selling at the same time, add an EPC
+                certificate, the estate agent&apos;s commission, and — less
+                visibly — the portal fees your agent pays to advertise your
+                home. First-time buyers in England and Northern Ireland may
+                benefit from stamp duty relief on properties up to
+                &pound;500,000.
               </p>
             </article>
 
@@ -289,20 +126,7 @@ export default function MovingCostEstimatorPage() {
               <h3 className="font-heading text-xl font-bold text-neutral-900 dark:text-white">
                 Frequently Asked Questions
               </h3>
-              {[
-                {
-                  q: "Do I need a property survey?",
-                  a: "While not legally required, a survey is strongly recommended. A basic HomeBuyer Report (Level 2) costs around £300-£500 and can reveal issues that save you thousands. For older or unusual properties, a full Building Survey (Level 3) at £500-£700+ is advisable.",
-                },
-                {
-                  q: "Can I negotiate solicitor fees?",
-                  a: "Yes. Many solicitors offer fixed-fee conveyancing packages. It's worth getting 3-4 quotes. Online conveyancers are often cheaper but may offer less personal service. Always check that any quote includes disbursements (search fees, Land Registry fees, etc.).",
-                },
-                {
-                  q: "Are there any costs I'm missing?",
-                  a: "This estimator covers the main costs. Other potential expenses include mortgage arrangement fees (£0-£2,000), buildings insurance (required on exchange), redirected mail, new furniture, and utility connection fees.",
-                },
-              ].map((faq) => (
+              {FAQS.map((faq) => (
                 <details
                   key={faq.q}
                   className="group rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
@@ -316,6 +140,8 @@ export default function MovingCostEstimatorPage() {
                 </details>
               ))}
             </section>
+
+            <MethodologyFooter sources={ALL_SOURCES} caveats={CAVEATS} />
           </div>
 
           {/* Sidebar */}
@@ -385,9 +211,10 @@ export default function MovingCostEstimatorPage() {
               <div className="flex gap-3">
                 <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
                 <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">
-                  Disclaimer: Costs shown are estimated ranges based on typical
-                  UK market data. Actual costs may vary. Tax rates are subject to
-                  change. Always seek professional advice.
+                  Disclaimer: Costs shown are exact taxes plus estimated ranges
+                  based on published UK market guidance. Actual costs may vary.
+                  Tax rates are subject to change. Always seek professional
+                  advice.
                 </p>
               </div>
             </div>

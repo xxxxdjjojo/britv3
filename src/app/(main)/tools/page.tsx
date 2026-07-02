@@ -144,12 +144,36 @@ const TOOLS: Tool[] = [
     stat: "5",
     statLabel: "Government schemes covered",
   },
+  {
+    href: "/tools/renters-rights-checker",
+    icon: Scale,
+    title: "Renters' Rights Checker",
+    description:
+      "Answer a few questions and get a plain-English statement of your rights or duties under the post-May-2026 Renters' Rights Act regime, with the statutory ground cited for every answer.",
+    badge: "New",
+    color: "bg-brand-primary/10 text-brand-primary",
+    stat: "3",
+    statLabel: "Roles covered: tenant, landlord, agent",
+  },
+  {
+    href: "/area-prices",
+    icon: TrendingUp,
+    title: "True Equity Checker",
+    description:
+      "Real HM Land Registry sold prices for any postcode: median price bands, a 12-month trend, and the actual recent sales on your street. No estimates, no invented valuations.",
+    badge: "New",
+    color: "bg-brand-primary/10 text-brand-primary",
+    stat: "HMLR",
+    statLabel: "Real sold-price data only",
+  },
+  // NOTE: /tools/portal-cost-calculator is intentionally NOT listed while it is
+  // feature-flag dark (Decision Gate 4 — comparative-claims legal review).
 ];
 
 const STATS = [
   { value: "50,000+", label: "Monthly Users" },
   { value: "£0", label: "Completely Free" },
-  { value: "10", label: "Property Tools" },
+  { value: `${TOOLS.length}`, label: "Property Tools" },
   { value: "4.9★", label: "User Rating" },
 ];
 
