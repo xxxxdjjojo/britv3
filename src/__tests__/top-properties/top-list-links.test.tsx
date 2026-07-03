@@ -36,6 +36,12 @@ vi.mock("next/link", () => ({
   }) => createElement("a", { href, ...rest }, children),
 }));
 
+// Client-only leaf that needs CookieConsentProvider — irrelevant to link
+// integrity, so stub it out of the Footer render.
+vi.mock("@/components/layout/CookiePreferencesButton", () => ({
+  CookiePreferencesButton: () => null,
+}));
+
 vi.mock("next/image", () => ({
   default: (props: Record<string, unknown>) =>
     createElement("img", { ...props, priority: undefined, fill: undefined }),

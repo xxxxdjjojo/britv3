@@ -216,6 +216,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/how-it-works",
   "/legal",
   "/tools",
+  "/top-properties",
   "/renter-tools",
   "/valuation",
   "/value-my-property",
