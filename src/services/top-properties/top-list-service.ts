@@ -101,19 +101,37 @@ const LISTING_SELECT = `
   )
 `;
 
+/**
+ * Only URLs next/image can actually optimise: app-relative paths and the
+ * Supabase storage hosts allowed in next.config. Anything else (e.g. seed
+ * rows pointing at external placeholder services) falls back to the
+ * no-photo state instead of crashing the page at render.
+ */
+function renderableImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith("/")) return url;
+  try {
+    const { protocol, hostname } = new URL(url);
+    if (protocol === "https:" && hostname.endsWith(".supabase.co")) return url;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 function pickImage(media: MediaRow[] | null): {
   imageUrl: string | null;
   imageAlt: string | null;
 } {
   const photos = (media ?? [])
-    .filter((m) => (m.media_type ?? "photo") === "photo")
+    .filter((m) => (m.media_type ?? "image") === "image")
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
-  const first = photos[0];
-  if (!first) return { imageUrl: null, imageAlt: null };
-  return {
-    imageUrl: first.thumbnail_url ?? first.url ?? null,
-    imageAlt: first.alt_text ?? null,
-  };
+  for (const photo of photos) {
+    const url =
+      renderableImageUrl(photo.thumbnail_url) ?? renderableImageUrl(photo.url);
+    if (url) return { imageUrl: url, imageAlt: photo.alt_text ?? null };
+  }
+  return { imageUrl: null, imageAlt: null };
 }
 
 /** Largest genuine reduction in the listing's recorded price history. */

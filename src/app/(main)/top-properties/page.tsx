@@ -12,7 +12,8 @@ import { brandConfig } from "@/config/brand";
 
 export const revalidate = 3600;
 
-const TITLE = `Top Properties — Ranked Homes for Sale | ${brandConfig.displayName}`;
+// Root layout appends the brand via its title template — no suffix here.
+const TITLE = "Top Properties — Ranked Homes for Sale";
 const DESCRIPTION = `Ranked lists of homes for sale on ${brandConfig.displayName}: priced below the local sold-price benchmark, best price per square foot, strongest buyer interest, and more — every ranking explained.`;
 
 export const metadata: Metadata = {

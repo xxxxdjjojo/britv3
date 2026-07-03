@@ -20,7 +20,6 @@ import {
   getTopListCategory,
 } from "@/lib/top-properties/top-list-config";
 import { getTopList } from "@/services/top-properties/top-list-service";
-import { brandConfig } from "@/config/brand";
 
 export const revalidate = 3600;
 
@@ -36,12 +35,13 @@ export async function generateMetadata({
   const { slug } = await params;
   const category = getTopListCategory(slug);
   if (!category) {
-    return { title: `List Not Found | ${brandConfig.displayName}` };
+    // Root layout's title template appends the brand suffix.
+    return { title: "List Not Found" };
   }
   // Thin lists are noindexed (robots) while staying followable, and are
   // excluded from the sitemap by getIndexableTopListSlugs.
   const result = await getTopList(slug);
-  const title = `${category.metaTitle} | ${brandConfig.displayName}`;
+  const title = category.metaTitle;
   return {
     title,
     description: category.metaDescription,

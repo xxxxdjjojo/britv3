@@ -64,11 +64,12 @@ function makeRow(overrides: Partial<Row> = {}, property: Row = {}): Row {
     },
     property_media: [
       {
-        url: "https://cdn.example.com/full.jpg",
-        thumbnail_url: "https://cdn.example.com/thumb.jpg",
+        url: "https://abc.supabase.co/storage/v1/object/public/media/full.jpg",
+        thumbnail_url:
+          "https://abc.supabase.co/storage/v1/object/public/media/thumb.jpg",
         alt_text: "Terraced house frontage",
         sort_order: 0,
-        media_type: "photo",
+        media_type: "image",
       },
     ],
     price_history: [],
@@ -144,7 +145,9 @@ describe("getTopList", () => {
     expect(item.listingSlug).toMatch(/^db-home-/);
     expect(item.price).toBe(450_000);
     expect(item.city).toBe("London");
-    expect(item.imageUrl).toBe("https://cdn.example.com/thumb.jpg");
+    expect(item.imageUrl).toBe(
+      "https://abc.supabase.co/storage/v1/object/public/media/thumb.jpg",
+    );
     expect(item.imageAlt).toBe("Terraced house frontage");
   });
 
@@ -165,6 +168,52 @@ describe("getTopList", () => {
     const { getTopList } = await service();
     const result = await getTopList("newly-listed-homes");
     expect(result!.itemCount).toBe(1);
+  });
+
+  it("picks the first 'image' media and never a floor plan (real media_type enum)", async () => {
+    listingRows = [
+      makeRow({
+        property_media: [
+          {
+            url: "/images/demo/plan.jpg",
+            thumbnail_url: null,
+            alt_text: "Floor plan",
+            sort_order: 0,
+            media_type: "floor_plan",
+          },
+          {
+            url: "/images/demo/exterior.jpg",
+            thumbnail_url: "/images/demo/thumbs/exterior.jpg",
+            alt_text: "Front exterior",
+            sort_order: 1,
+            media_type: "image",
+          },
+        ],
+      }),
+    ];
+    const { getTopList } = await service();
+    const result = await getTopList("newly-listed-homes");
+    expect(result!.items[0].imageUrl).toBe("/images/demo/thumbs/exterior.jpg");
+    expect(result!.items[0].imageAlt).toBe("Front exterior");
+  });
+
+  it("drops image URLs next/image cannot render (unconfigured hosts) instead of crashing", async () => {
+    listingRows = [
+      makeRow({
+        property_media: [
+          {
+            url: "https://placehold.co/400x300?text=Photo",
+            thumbnail_url: "https://placehold.co/100x75?text=Thumb",
+            alt_text: "Placeholder",
+            sort_order: 0,
+            media_type: "image",
+          },
+        ],
+      }),
+    ];
+    const { getTopList } = await service();
+    const result = await getTopList("newly-listed-homes");
+    expect(result!.items[0].imageUrl).toBeNull();
   });
 
   it("returns null for an unknown slug", async () => {
