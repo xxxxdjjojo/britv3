@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { useRole } from "@/hooks/useRole";
 import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
 import { cn } from "@/lib/utils";
-import { TAB_CONFIG } from "@/config/navigation";
+import { TAB_CONFIG, ROLE_NAV_ITEMS } from "@/config/navigation";
+import { MoreDrawer } from "./MoreDrawer";
 
 // ---------------------------------------------------------------------------
 // Component
@@ -24,6 +25,9 @@ export function BottomTabBar() {
   const tabs = TAB_CONFIG[activeRole] ?? [];
   if (tabs.length === 0) return null;
 
+  const firstFourTabs = tabs.slice(0, 4);
+  const excludeHrefs = firstFourTabs.map((t) => t.href);
+
   return (
     <nav
       aria-label="Mobile navigation"
@@ -32,7 +36,7 @@ export function BottomTabBar() {
         keyboardOpen && "translate-y-full",
       )}
     >
-      {tabs.map((tab) => {
+      {firstFourTabs.map((tab) => {
         const isActive =
           tab.href === "/"
             ? pathname === tab.href
@@ -67,6 +71,10 @@ export function BottomTabBar() {
           </Link>
         );
       })}
+      <MoreDrawer
+        roleNavItems={ROLE_NAV_ITEMS[activeRole] ?? []}
+        excludeHrefs={excludeHrefs}
+      />
     </nav>
   );
 }
