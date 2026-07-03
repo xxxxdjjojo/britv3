@@ -56,7 +56,7 @@ export default async function TopPropertiesHubPage() {
       </header>
 
       {visible.length === 0 ? (
-        <div className="mt-12 rounded-2xl border border-neutral-200 bg-neutral-50 p-10 text-center">
+        <div className="mt-12 rounded-2xl border border-neutral-200 bg-muted p-10 text-center">
           <h2 className="font-heading text-lg font-bold text-neutral-900">
             Rankings are warming up
           </h2>

@@ -21,7 +21,7 @@ export function TopListMethodology({ methodology, generatedAt }: Props) {
   return (
     <section
       aria-labelledby="methodology-heading"
-      className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 sm:p-6"
+      className="rounded-2xl border border-neutral-200 bg-muted p-5 sm:p-6"
     >
       <h2
         id="methodology-heading"
