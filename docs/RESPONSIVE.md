@@ -77,6 +77,13 @@ breakpoints.
 
 ## Verification
 
+Guard tests (run in the gating vitest suite):
+- `src/__tests__/responsive/form-control-sizing.test.ts` — 16px mobile font
+  floor on form controls + 44px coarse-pointer floors + fluid type tokens.
+- `src/__tests__/responsive/dvh-heights.test.ts` — bans `h-screen`,
+  `min-h-screen`, `max-h-screen`, and `calc(100vh…)` in `src/components` +
+  `src/app` (email templates excluded — email clients don't support `dvh`).
+
 `scripts/responsive-audit.mjs` (not CI-wired) scans routes × 9 viewports for
 per-element horizontal overflow, sub-44px tap targets, and sub-16px form
 controls. `body { overflow-x: hidden }` masks page-level overflow — always

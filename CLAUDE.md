@@ -148,6 +148,9 @@ The property page's "Local area" section (`src/components/properties/detail/Loca
 - Theme via CSS custom properties in `globals.css`
 - Dark mode via `prefers-color-scheme` + `dark:` prefix
 - No CSS modules
+- Responsive/mobile conventions (fluid type, `dvh` rule, 44px touch floors,
+  card grids): see [docs/RESPONSIVE.md](docs/RESPONSIVE.md) — guard-tested in
+  `src/__tests__/responsive/`
 
 ### Formatting
 - Double quotes, semicolons required, 2-space indent, trailing commas
