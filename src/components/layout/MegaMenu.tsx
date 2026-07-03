@@ -83,7 +83,7 @@ export function MegaMenu() {
   return (
     <nav
       ref={navRef}
-      className="hidden items-center gap-1 md:flex relative"
+      className="hidden items-center gap-1 lg:flex relative"
       aria-label="Main navigation"
     >
       {NAV_ITEMS.map((item, index) => (

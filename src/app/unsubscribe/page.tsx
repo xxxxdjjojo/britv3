@@ -15,7 +15,7 @@ export default async function UnsubscribePage({ searchParams }: PageProps) {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-semibold mb-2">Invalid Link</h1>
           <p className="text-muted-foreground">
@@ -33,7 +33,7 @@ export default async function UnsubscribePage({ searchParams }: PageProps) {
       return <UnsubscribeClient token={token} status="expired" />;
     }
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-semibold mb-2">Invalid Link</h1>
           <p className="text-muted-foreground">

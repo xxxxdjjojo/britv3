@@ -288,7 +288,7 @@ export function ProviderSearchPage({
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Hero */}
       <div className="border-b border-slate-200 dark:border-slate-800 bg-gradient-to-br from-brand-primary-lighter to-white dark:from-slate-900 dark:to-background py-12 px-4">
         <div className="mx-auto max-w-5xl space-y-4">

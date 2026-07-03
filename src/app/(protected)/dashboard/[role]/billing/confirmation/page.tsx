@@ -75,7 +75,7 @@ export default function PaymentConfirmationPage() {
   // Polling state — waiting for webhook to confirm subscription
   if (status === "polling") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
+      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
         <div className="w-full max-w-md space-y-6 text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 dark:bg-brand-primary/20">
             <Loader2
@@ -103,7 +103,7 @@ export default function PaymentConfirmationPage() {
   // Timeout state — webhook took too long, show a softer message
   if (status === "timeout") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
+      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
         <div className="w-full max-w-md space-y-6 text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/20">
             <CheckCircle2 className="text-amber-600 dark:text-amber-400" size={44} />
@@ -150,7 +150,7 @@ export default function PaymentConfirmationPage() {
 
   // Success state — webhook confirmed, subscription is active
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
+    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
       <div className="w-full max-w-md space-y-6 text-center">
         {/* Success icon */}
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 dark:bg-brand-primary/20">

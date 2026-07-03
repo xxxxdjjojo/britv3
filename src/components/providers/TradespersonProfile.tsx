@@ -68,7 +68,7 @@ export async function TradespersonProfile({ slug, categorySlug }: TradespersonPr
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-surface dark:bg-slate-950">
+      <div className="min-h-dvh bg-surface dark:bg-slate-950">
         <ProviderHero provider={provider} category={category} />
         <main className="max-w-7xl mx-auto px-6 py-8 relative">
           <div className="flex flex-col lg:flex-row gap-8">

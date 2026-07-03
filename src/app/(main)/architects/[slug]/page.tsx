@@ -60,7 +60,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-surface dark:bg-slate-950">
+      <div className="min-h-dvh bg-surface dark:bg-slate-950">
         <ProviderHero provider={provider} category="architect" />
         <main className="max-w-7xl mx-auto px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

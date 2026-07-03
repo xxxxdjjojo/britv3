@@ -231,7 +231,7 @@ export default async function CategoryLocationPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Page header */}
       <div className="bg-gradient-to-br from-brand-primary-dark to-brand-primary py-12 px-4">
         <div className="mx-auto max-w-5xl">

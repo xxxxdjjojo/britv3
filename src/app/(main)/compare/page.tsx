@@ -34,14 +34,14 @@ export default function ComparePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface dark:bg-slate-950">
+    <div className="min-h-dvh bg-surface dark:bg-slate-950">
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-10">
           <h1 className="text-4xl font-heading font-bold text-brand-primary-dark mb-3 tracking-tight">

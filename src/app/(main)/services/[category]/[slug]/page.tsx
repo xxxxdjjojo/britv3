@@ -168,7 +168,7 @@ async function CategoryLocationPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localJsonLd) }}
       />
-      <div className="min-h-screen bg-surface dark:bg-slate-950">
+      <div className="min-h-dvh bg-surface dark:bg-slate-950">
         <main className="max-w-7xl mx-auto px-4 py-8">
           {/* Breadcrumb */}
           <nav className="flex text-xs text-muted-foreground mb-4 gap-2 items-center">

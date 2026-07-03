@@ -179,7 +179,7 @@ const STATS = [
 
 export default function ToolsHubPage() {
   return (
-    <div className="min-h-screen bg-surface dark:bg-neutral-950">
+    <div className="min-h-dvh bg-surface dark:bg-neutral-950">
       {/* Hero */}
       <section className="relative overflow-hidden bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(27,77,62,0.08),transparent)]" />

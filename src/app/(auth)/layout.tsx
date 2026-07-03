@@ -8,7 +8,7 @@ export default async function AuthLayout({
   children: ReactNode;
 }>) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-dvh">
       {/* Left panel — 44% on desktop, full width on mobile */}
       <div className="flex w-full flex-col justify-center overflow-y-auto px-6 py-12 md:w-[44%] md:px-12 lg:px-16">
         {/* Logo */}

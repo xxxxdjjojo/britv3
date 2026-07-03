@@ -45,7 +45,7 @@ export default async function FieldLayout({
   };
 
   return (
-    <div className="min-h-screen bg-surface pb-20">
+    <div className="min-h-dvh bg-surface pb-20">
       <ProviderContextWrapper initialData={initialData}>
         <main className="mx-auto max-w-lg px-4 py-4">{children}</main>
       </ProviderContextWrapper>

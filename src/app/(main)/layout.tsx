@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 export default function MainLayout(props: Readonly<{ children: ReactNode }>) {
   return (
     <QueryProvider>
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-dvh flex-col">
           <Header />
           <BreadcrumbsWrapper />
           <main id="main-content" className="flex-1">{props.children}</main>

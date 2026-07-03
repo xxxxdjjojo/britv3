@@ -48,7 +48,7 @@ export function BuyPropertyPage({
   const hasRenovationPotential = assessPermittedDevelopment(property.propertyType).applicable;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <PropertyTopChrome view={view} />
 
       <StickySummaryBar
