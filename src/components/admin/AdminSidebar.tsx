@@ -32,6 +32,7 @@ import {
   Tag,
   Mail,
   Megaphone,
+  Newspaper,
   Sparkles,
   UserCheck,
   ShieldCheck,
@@ -108,6 +109,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Placement Pricing", href: "/admin/placement-products", icon: Sparkles },
       { label: "Promo Codes", href: "/admin/promo-codes", icon: Tag },
       { label: "Email Campaigns", href: "/admin/email-campaigns", icon: Mail },
+      { label: "Data Wire", href: "/admin/data-wire", icon: Newspaper },
     ],
   },
   {

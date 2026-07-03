@@ -142,6 +142,95 @@ describe("buildOgProps", () => {
       expect(buildOgProps("tool", search({}))).toBeNull();
     });
   });
+
+  describe("league kind", () => {
+    it("builds full props with rank and a sign-formatted 1dp gap", () => {
+      expect(buildOgProps("league", search({ area: "Ealing", rank: "3", gapPct: "-2.4" }))).toEqual({
+        kind: "league",
+        area: "Ealing",
+        rank: "3",
+        gapPct: "−2.4%",
+      });
+    });
+
+    it("builds props without optionals", () => {
+      expect(buildOgProps("league", search({ area: "Ealing" }))).toEqual({
+        kind: "league",
+        area: "Ealing",
+        rank: undefined,
+        gapPct: undefined,
+      });
+    });
+
+    it("formats a positive gap with a plus sign and 1dp", () => {
+      expect(buildOgProps("league", search({ area: "Leeds", gapPct: "5" }))).toMatchObject({
+        gapPct: "+5.0%",
+      });
+    });
+
+    it("drops garbage rank and gapPct instead of rendering them raw", () => {
+      expect(
+        buildOgProps("league", search({ area: "Ealing", rank: "not-a-rank", gapPct: "<script>" })),
+      ).toEqual({ kind: "league", area: "Ealing", rank: undefined, gapPct: undefined });
+
+      for (const badRank of ["0", "-3", "12345", "1.5"]) {
+        expect(buildOgProps("league", search({ area: "Ealing", rank: badRank }))).toMatchObject({
+          rank: undefined,
+        });
+      }
+
+      for (const badGap of ["-250", "5000", "NaN", "2.4%"]) {
+        expect(buildOgProps("league", search({ area: "Ealing", gapPct: badGap }))).toMatchObject({
+          gapPct: undefined,
+        });
+      }
+    });
+
+    it("returns null when area is missing", () => {
+      expect(buildOgProps("league", search({ rank: "3", gapPct: "1.2" }))).toBeNull();
+    });
+
+    it("caps area length at 80 characters", () => {
+      const props = buildOgProps("league", search({ area: "a".repeat(200) }));
+      expect(props?.kind).toBe("league");
+      expect(props?.kind === "league" ? props.area.length : 0).toBe(80);
+    });
+  });
+
+  describe("report kind", () => {
+    it("builds full props with stat, statLabel and edition", () => {
+      expect(
+        buildOgProps(
+          "report",
+          search({
+            title: "State of the market",
+            stat: "£4,200",
+            statLabel: "median overpricing per listing",
+            edition: "Q3 2026",
+          }),
+        ),
+      ).toEqual({
+        kind: "report",
+        title: "State of the market",
+        stat: "£4,200",
+        statLabel: "median overpricing per listing",
+        edition: "Q3 2026",
+      });
+    });
+
+    it("returns null without a title", () => {
+      expect(buildOgProps("report", search({ stat: "£4,200" }))).toBeNull();
+    });
+
+    it("caps stat at 40 and statLabel at 80 characters", () => {
+      const props = buildOgProps(
+        "report",
+        search({ title: "Long stats", stat: "9".repeat(100), statLabel: "b".repeat(200) }),
+      );
+      expect(props && "stat" in props ? props.stat?.length : 0).toBe(40);
+      expect(props && "statLabel" in props ? props.statLabel?.length : 0).toBe(80);
+    });
+  });
 });
 
 describe("GET /api/og/[kind]", () => {
@@ -206,6 +295,42 @@ describe("GET /api/og/[kind]", () => {
     expect(text).toContain("Independent Agent Briefing");
     expect(text).toContain("Market pulse");
     expect(text).toContain("July 2026");
+    expect(text).toContain("truedeed.co.uk");
+  });
+
+  it("renders the league card with kicker, rank, gap and source footer", async () => {
+    const { GET } = await import("@/app/api/og/[kind]/route");
+
+    const response = await GET(
+      new Request("https://truedeed.co.uk/api/og/league?area=Ealing&rank=3&gapPct=-2.4"),
+      { params: Promise.resolve({ kind: "league" }) },
+    ) as unknown as { element: ReactNode };
+
+    const text = textFrom(response.element);
+    expect(text).toContain("Postcode Truth League");
+    expect(text).toContain("How honest are asking prices in Ealing?");
+    expect(text).toContain("#3 of UK districts");
+    expect(text).toContain("asking vs sold gap: −2.4%");
+    expect(text).toContain("HM Land Registry");
+    expect(text).toContain("truedeed.co.uk");
+  });
+
+  it("renders the report card with its kicker and big stat", async () => {
+    const { GET } = await import("@/app/api/og/[kind]/route");
+
+    const response = await GET(
+      new Request(
+        "https://truedeed.co.uk/api/og/report?title=State+of+the+market&stat=%C2%A34%2C200&statLabel=median+overpricing&edition=Q3+2026",
+      ),
+      { params: Promise.resolve({ kind: "report" }) },
+    ) as unknown as { element: ReactNode };
+
+    const text = textFrom(response.element);
+    expect(text).toContain("TrueDeed reports");
+    expect(text).toContain("State of the market");
+    expect(text).toContain("£4,200");
+    expect(text).toContain("median overpricing");
+    expect(text).toContain("Q3 2026");
     expect(text).toContain("truedeed.co.uk");
   });
 });

@@ -48,6 +48,10 @@ const ORPHAN_ALLOWLIST = new Set<string>([
   "/legal/third-party-services",
   // Hub-linked sub-pages reached from their parent hub, not the global nav.
   "/help/contact", // linked from /help
+  "/reports", // reports hub, linked from each report page
+  "/reports/reality-gap/league", // linked from /reports/reality-gap
+  "/reports/reality-gap/methodology", // linked from /reports/reality-gap
+  "/reports/time-to-sell/methodology", // linked from /reports/time-to-sell
   "/pledges/no-premium-placement", // linked from /pledges hub + search-results disclosure line
   "/pledges/your-data-your-leads", // linked from /pledges hub
   "/compliance/pre-launch-audit-2026", // linked from /compliance index

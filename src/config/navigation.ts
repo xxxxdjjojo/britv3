@@ -257,6 +257,9 @@ export const NAV_ITEMS: NavItem[] = [
         links: [
           { label: "Renters' Rights Checker", href: "/tools/renters-rights-checker" },
           { label: "True Equity Checker", href: "/area-prices" },
+          { label: "Reality Gap Report", href: "/reports/reality-gap" },
+          { label: "Time to Sell", href: "/reports/time-to-sell" },
+          { label: "Open Metrics", href: "/metrics" },
           { label: "Our Pledges", href: "/pledges" },
           { label: "Compliance Library", href: "/compliance" },
           { label: "Agent Briefing", href: "/agent-briefing" },

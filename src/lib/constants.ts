@@ -225,10 +225,12 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/press",
   "/pricing",
   "/fee-transparency",
-  // Influence-strategy truth surfaces (Phase 1)
+  // Influence-strategy truth surfaces (Phases 1-2)
   "/pledges",
   "/compliance",
   "/agent-briefing",
+  "/reports",
+  "/metrics",
   "/sellers",
   "/developers",
   "/traders",

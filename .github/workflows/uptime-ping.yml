@@ -1,0 +1,46 @@
+name: Uptime ping
+
+# External availability probe for the Open Metrics page (/metrics).
+# Every 15 minutes: curl https://www.truedeed.co.uk/api/health, then record
+# the result (ok / latency) into public.uptime_checks via the same
+# SUPABASE_DB_URL Actions secret the mobility backfill uses. The insert runs
+# in BOTH branches — a failed curl must still be recorded as ok=false, that
+# is the whole point of an uptime tracker.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: uptime-ping
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest # psql preinstalled
+    timeout-minutes: 5
+    steps:
+      - name: Probe /api/health and record result
+        env:
+          # Supabase pooler connection string (postgres). Add via:
+          #   gh secret set SUPABASE_DB_URL
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -u
+          if probe=$(curl -sS -o /dev/null --max-time 10 \
+              -w "%{http_code} %{time_total}" \
+              https://www.truedeed.co.uk/api/health); then
+            http_code="${probe% *}"
+            time_total="${probe#* }"
+            latency_ms=$(awk -v t="$time_total" 'BEGIN { printf "%d", t * 1000 }')
+            if [ "$http_code" = "200" ]; then ok=true; else ok=false; fi
+            echo "Probe: http=$http_code latency=${latency_ms}ms ok=$ok"
+            psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
+              "insert into public.uptime_checks (ok, latency_ms, source) values ($ok, $latency_ms, 'github-actions');"
+          else
+            # curl itself failed (timeout / DNS / connect refused) → site down.
+            echo "Probe: curl failed (timeout or connection error) ok=false"
+            psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
+              "insert into public.uptime_checks (ok, latency_ms, source) values (false, null, 'github-actions');"
+          fi
