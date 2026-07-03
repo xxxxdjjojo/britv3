@@ -12,10 +12,13 @@ export async function pingSupabase(): Promise<ServiceStatus> {
   try {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (!url) return { name: "Supabase DB", status: "down", latencyMs: null, error: "Service not configured" };
-    const res = await fetch(`${url}/rest/v1/`, {
+    // GoTrue's purpose-built health endpoint. The PostgREST root (/rest/v1/)
+    // is NOT usable here: on this project it responds 401 "Only the
+    // service_role API key can be used for this endpoint" to the anon key,
+    // which made this probe report "degraded" forever.
+    const res = await fetch(`${url}/auth/v1/health`, {
       headers: {
         apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""}`,
       },
       cache: "no-store",
       signal: AbortSignal.timeout(5000),
