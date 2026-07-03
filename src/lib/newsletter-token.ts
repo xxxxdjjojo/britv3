@@ -35,12 +35,15 @@ function getSecret(): string {
   return _secret;
 }
 
-export type NewsletterTokenPurpose = "confirm" | "unsubscribe";
+// "calendar" authorises the read-only .ics deadline feed (Landlord Deadline
+// Diary) — long-lived like unsubscribe, since calendar apps poll the URL.
+export type NewsletterTokenPurpose = "confirm" | "unsubscribe" | "calendar";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const TTL_BY_PURPOSE: Record<NewsletterTokenPurpose, number> = {
   confirm: 7 * DAY_MS,
   unsubscribe: 365 * DAY_MS,
+  calendar: 365 * DAY_MS,
 };
 
 function b64(s: string): string {

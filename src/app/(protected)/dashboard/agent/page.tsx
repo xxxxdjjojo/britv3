@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAgentDashboardKpis, getAgentActivityFeed, getTodaysDiary } from "@/services/agent/agent-dashboard-service";
 import { AgentDashboardHome } from "@/components/dashboard/agent/AgentDashboardHome";
 import type { DiaryViewingSlot } from "@/types/agent";
+import { AwardStandingPanel } from "./AwardStandingPanel";
 
 export default async function AgentDashboardPage() {
   const supabase = await createClient();
@@ -46,11 +47,16 @@ export default async function AgentDashboardPage() {
   }
 
   return (
-    <AgentDashboardHome
-      kpis={kpis}
-      activityFeed={activityFeed}
-      agentName={user.email ?? "Agent"}
-      todaysDiary={todaysDiary}
-    />
+    <>
+      <AgentDashboardHome
+        kpis={kpis}
+        activityFeed={activityFeed}
+        agentName={user.email ?? "Agent"}
+        todaysDiary={todaysDiary}
+      />
+      <section aria-label="Honest Agent Awards standing" className="mt-6">
+        <AwardStandingPanel />
+      </section>
+    </>
   );
 }
