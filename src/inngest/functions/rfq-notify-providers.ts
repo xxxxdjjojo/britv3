@@ -1,17 +1,27 @@
 /**
  * Inngest function: Notify matched providers when an RFQ is created.
  *
- * Flow:
+ * Direct (targeted) request — the customer chose this specific trader:
+ * 1. Create an in-app notification for the target provider
+ * 2. Email them immediately (no fallback wait; latency matters for won jobs)
+ *
+ * Broadcast request:
  * 1. Find matching providers by category/location/rating
  * 2. Create in-app notifications
  * 3. Wait 1 hour
- * 4. Email fallback for unread notifications
+ * 4. Email fallback for providers whose notification is still unread
  */
 
 import { inngest } from "@/inngest/client";
 import { matchProvidersForRfq } from "@/services/marketplace/rfq-service";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendProviderRfqEmail } from "@/services/notifications/email-service";
+
+type RfqRow = Readonly<{
+  title: string;
+  service_category: string;
+  target_provider_id: string | null;
+}>;
 
 export const rfqNotifyProviders = inngest.createFunction(
   {
@@ -23,7 +33,7 @@ export const rfqNotifyProviders = inngest.createFunction(
     const { rfqId } = event.data as { rfqId: string };
     const supabase = createAdminClient();
 
-    // Step 1: Get matching providers
+    // Step 1: Get matching providers (a targeted RFQ matches only its target)
     const providers = await step.run("get-matching-providers", async () => {
       return matchProvidersForRfq(supabase, rfqId);
     });
@@ -33,71 +43,90 @@ export const rfqNotifyProviders = inngest.createFunction(
     }
 
     // Step 2: Create in-app notifications for each matched provider
-    const notificationIds = await step.run(
-      "send-in-app-notifications",
-      async () => {
-        const ids: string[] = [];
+    const notified = await step.run("send-in-app-notifications", async () => {
+      const ids: string[] = [];
 
-        // Get RFQ details for notification content
-        const { data: rfq } = await supabase
-          .from("service_requests")
-          .select("title, service_category, target_provider_id")
-          .eq("id", rfqId)
+      const { data: rfqRow } = await supabase
+        .from("service_requests")
+        .select("title, service_category, target_provider_id")
+        .eq("id", rfqId)
+        .single();
+
+      if (!rfqRow) {
+        console.warn(`RFQ ${rfqId} not found when creating notifications`);
+        return { ids, rfq: null as RfqRow | null };
+      }
+
+      const rfq = rfqRow as RfqRow;
+      const isDirect = Boolean(rfq.target_provider_id);
+
+      for (const provider of providers) {
+        const { data: notification, error } = await supabase
+          .from("notifications")
+          .insert({
+            user_id: provider.user_id,
+            type: "rfq_match",
+            title: isDirect
+              ? "You've received a direct quote request"
+              : "New quote request matches your services",
+            body: isDirect
+              ? `A customer chose you specifically for "${rfq.title}" -- respond with a quote to win the job.`
+              : `"${rfq.title}" in ${rfq.service_category} -- submit a quote to win this job.`,
+            link: `/dashboard/provider/jobs/leads`,
+            read: false,
+          })
+          .select("id")
           .single();
 
-        if (!rfq) {
-          console.warn(`RFQ ${rfqId} not found when creating notifications`);
-          return ids;
-        }
-
-        const isDirect = Boolean(rfq.target_provider_id);
-
-        // Check if notifications table exists (from Phase 3)
-        const { error: tableCheck } = await supabase
-          .from("notifications")
-          .select("id")
-          .limit(0);
-
-        if (tableCheck) {
+        if (error) {
           console.warn(
-            "Notifications table not available yet (Phase 3); skipping in-app notifications",
+            `Failed to create rfq_match notification for ${provider.user_id}: ${error.message}`,
           );
-          return ids;
+        } else if (notification) {
+          ids.push(notification.id as string);
+        }
+      }
+
+      return { ids, rfq };
+    });
+
+    // Direct request: email the target immediately — no 1h fallback dance.
+    if (notified.rfq?.target_provider_id) {
+      const directResult = await step.run("send-direct-email", async () => {
+        const rfq = notified.rfq as RfqRow;
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("id", rfq.target_provider_id as string)
+          .single();
+
+        if (!profile?.email) {
+          return { emailsSent: 0 };
         }
 
-        for (const provider of providers) {
-          const { data: notification, error } = await supabase
-            .from("notifications")
-            .insert({
-              user_id: provider.user_id,
-              type: "rfq_match",
-              title: isDirect
-                ? "You've received a direct quote request"
-                : "New quote request matches your services",
-              body: isDirect
-                ? `A customer chose you specifically for "${rfq.title}" -- respond with a quote to win the job.`
-                : `"${rfq.title}" in ${rfq.service_category} -- submit a quote to win this job.`,
-              link: `/dashboard/provider/jobs/leads`,
-              read: false,
-            })
-            .select("id")
-            .single();
+        const result = await sendProviderRfqEmail(
+          profile.email as string,
+          rfq.title,
+          true,
+        );
+        return { emailsSent: result.sent ? 1 : 0 };
+      });
 
-          if (!error && notification) {
-            ids.push(notification.id as string);
-          }
-        }
-
-        return ids;
-      },
-    );
+      return {
+        status: "completed_direct",
+        rfqId,
+        matchedProviders: providers.length,
+        notificationsCreated: notified.ids.length,
+        emailsSent: directResult.emailsSent,
+      };
+    }
 
     // Step 3: Wait 1 hour before email fallback
     await step.sleep("wait-for-in-app-view", "1h");
 
     // Step 4: Email fallback for unread notifications
     await step.run("send-email-fallback", async () => {
-      if (notificationIds.length === 0) {
+      if (notified.ids.length === 0) {
         return { emailsSent: 0 };
       }
 
@@ -105,7 +134,7 @@ export const rfqNotifyProviders = inngest.createFunction(
       const { data: unread } = await supabase
         .from("notifications")
         .select("user_id")
-        .in("id", notificationIds)
+        .in("id", notified.ids)
         .eq("read", false);
 
       if (!unread || unread.length === 0) {
@@ -138,7 +167,7 @@ export const rfqNotifyProviders = inngest.createFunction(
         const result = await sendProviderRfqEmail(
           recipient.email,
           rfq.title as string,
-          Boolean(rfq.target_provider_id),
+          false,
         );
         if (result.sent) {
           emailsSent += 1;
@@ -152,7 +181,7 @@ export const rfqNotifyProviders = inngest.createFunction(
       status: "completed",
       rfqId,
       matchedProviders: providers.length,
-      notificationsCreated: notificationIds.length,
+      notificationsCreated: notified.ids.length,
     };
   },
 );
