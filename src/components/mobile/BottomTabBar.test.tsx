@@ -51,11 +51,16 @@ describe("BottomTabBar", () => {
     }
   });
 
-  it("mortgage_broker role has 5 tabs", () => {
+  // The 5th bottom-bar slot is now a "More" bottom-sheet trigger (F3), not a
+  // Profile link — so the bar renders the first 4 TAB_CONFIG items as links
+  // plus the More button. Everything beyond the first 4 lives in the drawer.
+  it("mortgage_broker role renders 4 tab links plus a More trigger", () => {
     mockActiveRole = "mortgage_broker";
     render(<BottomTabBar />);
-    const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(5);
+    expect(screen.getAllByRole("link")).toHaveLength(4);
+    expect(
+      screen.getByRole("button", { name: "More options" }),
+    ).toBeInTheDocument();
   });
 
   // Enumerate from USER_ROLES (the type's single source of truth), NOT a
@@ -83,11 +88,12 @@ describe("BottomTabBar", () => {
     // Verify TAB_CONFIG is exported from the config module
     expect(TAB_CONFIG).toBeDefined();
     expect(typeof TAB_CONFIG).toBe("object");
-    // Verify the component renders tabs matching the config
+    // The bar renders the first 4 TAB_CONFIG items as links (the rest, incl.
+    // Profile, move into the More drawer), so link count is min(4, config len).
     mockActiveRole = "homebuyer";
     render(<BottomTabBar />);
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(TAB_CONFIG.homebuyer.length);
+    expect(links).toHaveLength(Math.min(4, TAB_CONFIG.homebuyer.length));
   });
 
   it("renders Messages tab with badge container", () => {
@@ -99,11 +105,13 @@ describe("BottomTabBar", () => {
     expect(badge).toBeInTheDocument();
   });
 
-  it.each(USER_ROLES)("renders every configured bottom tab for %s", (role) => {
+  it.each(USER_ROLES)("renders the first 4 bottom tabs for %s", (role) => {
     mockActiveRole = role;
     render(<BottomTabBar />);
 
-    for (const tab of TAB_CONFIG[role]) {
+    // Only the first 4 TAB_CONFIG items render as top-level links; anything
+    // beyond that (e.g. Profile) is reachable via the More drawer instead.
+    for (const tab of TAB_CONFIG[role].slice(0, 4)) {
       const link = screen.getByText(tab.label).closest("a");
 
       expect(link).toBeInTheDocument();
