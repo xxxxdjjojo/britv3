@@ -132,6 +132,7 @@ export function SearchPage() {
             <PropertyMap
               properties={mapPoints}
               onPropertyClick={handlePropertyClick}
+              cooperativeGestures={false}
             />
           </div>
         )}
@@ -152,6 +153,7 @@ export function SearchPage() {
               <PropertyMap
                 properties={mapPoints}
                 onPropertyClick={handlePropertyClick}
+                cooperativeGestures={false}
               />
             </div>
           </div>

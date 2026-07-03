@@ -30,6 +30,7 @@ type PropertyMapProps = Readonly<{
   onBoundsChange?: (bounds: MapBounds) => void;
   initialViewState?: Partial<MapViewState>;
   children?: ReactNode;
+  cooperativeGestures?: boolean;
 }>;
 
 export function PropertyMap({
@@ -38,6 +39,7 @@ export function PropertyMap({
   onBoundsChange,
   initialViewState,
   children,
+  cooperativeGestures = true,
 }: PropertyMapProps) {
   const mapRef = useRef<MapRef>(null);
   const geojson = propertiesToGeoJSON(properties);
@@ -99,6 +101,7 @@ export function PropertyMap({
       initialViewState={{ ...DEFAULT_VIEW_STATE, ...initialViewState }}
       style={{ width: "100%", height: "100%" }}
       mapStyle={MAPTILER_STYLE}
+      cooperativeGestures={cooperativeGestures}
       interactiveLayerIds={["clusters", "unclustered-point"]}
       onClick={(e) => {
         const clusterFeature = e.features?.find(

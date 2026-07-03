@@ -116,6 +116,7 @@ export function ServiceAreaMapEditor({
         style: `https://api.maptiler.com/maps/streets/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? ""}`,
         center: MAP_CENTER,
         zoom: MAP_ZOOM,
+        cooperativeGestures: true,
       });
 
       map.on("load", () => {

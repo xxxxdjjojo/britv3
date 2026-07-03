@@ -64,6 +64,7 @@ export default function DetailLayeredMapInner({
           initialViewState={{ latitude, longitude, zoom: 13 }}
           mapStyle={MAPTILER_STYLE}
           style={{ width: "100%", height: "100%" }}
+          cooperativeGestures
         >
           <NavigationControl position="top-right" showCompass={false} />
 

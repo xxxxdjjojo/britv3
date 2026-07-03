@@ -57,6 +57,7 @@ export default function PropertyMapInner({
           initialViewState={{ latitude, longitude, zoom: 14 }}
           mapStyle={MAPTILER_STYLE}
           style={{ width: "100%", height: "100%" }}
+          cooperativeGestures
         >
           {/* Property pin marker */}
           <Marker latitude={latitude} longitude={longitude}>

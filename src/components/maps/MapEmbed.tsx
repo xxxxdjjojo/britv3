@@ -31,6 +31,7 @@ export function MapEmbed({
         initialViewState={{ latitude, longitude, zoom }}
         mapStyle={mapStyle}
         style={{ width: "100%", height: "100%" }}
+        cooperativeGestures
       >
         <Marker latitude={latitude} longitude={longitude} />
       </Map>

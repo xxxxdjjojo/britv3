@@ -178,6 +178,7 @@ function SearchMap({
         style: initialStyle,
         center: UK_CENTER,
         zoom: DEFAULT_ZOOM,
+        cooperativeGestures: true,
       });
     } catch {
       // Defer out of the effect body to avoid a synchronous cascading render.
