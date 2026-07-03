@@ -78,7 +78,7 @@ export function SearchPage() {
   }, [params]);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col">
+    <div className="flex h-[calc(100dvh-4rem)] flex-col">
       {/* Search bar */}
       <div className="border-b bg-background px-4 py-3">
         <SearchBar />

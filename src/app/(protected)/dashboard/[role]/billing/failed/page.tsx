@@ -101,7 +101,7 @@ function PaymentFailedContent() {
   const basePath = `/dashboard/${params.role}/billing`;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-50 to-white p-6 dark:from-gray-900 dark:to-gray-950">
+    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-red-50 to-white p-6 dark:from-gray-900 dark:to-gray-950">
       <div className="w-full max-w-md space-y-6 text-center">
         {/* Failed icon */}
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
@@ -196,7 +196,7 @@ export default function PaymentFailedPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-dvh items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
         </div>
       }

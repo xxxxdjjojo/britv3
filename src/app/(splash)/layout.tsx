@@ -8,7 +8,7 @@ type SplashLayoutProps = Readonly<{
 
 export default function SplashLayout({ children }: SplashLayoutProps) {
   return (
-    <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-[#04130C] text-white">
+    <div className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-[#04130C] text-white">
       <header className="absolute inset-x-0 top-0 z-30 flex items-center px-6 py-6 sm:px-10 sm:py-8">
         <Link
           href="/"

@@ -27,7 +27,7 @@ export default async function ComingSoonPage({
   const count = await getWaitlistCount().catch(() => WAITLIST_BASELINE);
 
   return (
-    <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-28 sm:px-10">
+    <main className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 py-28 sm:px-10">
       <HeroVideo />
       <div className="w-full max-w-3xl">
         <ComingSoonExperience count={count} referredBy={ref ?? null} />

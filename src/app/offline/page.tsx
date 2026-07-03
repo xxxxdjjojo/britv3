@@ -71,7 +71,7 @@ export default function OfflinePage() {
   }, [isOnline]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-dvh flex-col bg-neutral-50">
       {/* ── Header ─────────────────────────────────────────────── */}
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-brand-primary/10 bg-white px-6 py-3">
         <Logo />

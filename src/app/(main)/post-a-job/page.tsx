@@ -95,7 +95,7 @@ export default async function PostAJobPage({
   const isAuthenticated = !!user;
 
   return (
-    <div className="min-h-screen bg-[#f6f8f7]">
+    <div className="min-h-dvh bg-[#f6f8f7]">
       <main className="mx-auto max-w-7xl px-4 py-8 lg:py-12">
         <div className="grid grid-cols-12 gap-8">
           {/* Left — wizard */}

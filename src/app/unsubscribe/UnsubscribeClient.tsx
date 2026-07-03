@@ -18,7 +18,7 @@ export default function UnsubscribeClient({ token, status }: Props) {
 
   if (status === "expired") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="max-w-md text-center space-y-4">
           <div className="flex justify-center">
             <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
@@ -54,7 +54,7 @@ export default function UnsubscribeClient({ token, status }: Props) {
 
   if (state === "done") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-dvh flex items-center justify-center p-4">
         <div className="max-w-md text-center space-y-4">
           <div className="flex justify-center">
             <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
@@ -98,7 +98,7 @@ export default function UnsubscribeClient({ token, status }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-dvh flex items-center justify-center p-4">
       <div className="max-w-md text-center space-y-4">
         <div className="flex justify-center">
           <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center">

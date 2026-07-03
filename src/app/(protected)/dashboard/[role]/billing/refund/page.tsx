@@ -61,7 +61,7 @@ export default function RefundRequestPage() {
 
   if (isSubmitted) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-6">
+      <div className="flex min-h-dvh items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
             <CheckCircle2 className="text-green-500" size={36} />

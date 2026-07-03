@@ -571,7 +571,7 @@ export function SaleProgressionKanban({
         onDragEnd={handleDragEnd}
       >
         {/* Two-pane layout */}
-        <div className="flex h-[calc(100vh-10rem)] min-h-[500px] gap-0 overflow-hidden rounded-xl border border-border bg-surface">
+        <div className="flex h-[calc(100dvh-10rem)] min-h-[500px] gap-0 overflow-hidden rounded-xl border border-border bg-surface">
           {/* ---- LEFT PANE: sale list ---- */}
           <div className="flex w-72 shrink-0 flex-col border-r border-border">
             {/* Tab bar */}

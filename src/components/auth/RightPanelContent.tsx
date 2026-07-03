@@ -56,7 +56,7 @@ export function RightPanelContent() {
   const testimonial = TESTIMONIALS[activeIndex];
 
   return (
-    <div className="relative flex h-full min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#1B4D3E]">
+    <div className="relative flex h-full min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-[#1B4D3E]">
       {/* CSS gradient background — no image file required */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1B4D3E] via-[#1a4538] to-[#0d2b22]" />
 

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function RentAffordabilityCalculatorPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <div className="mx-auto max-w-7xl px-6 pt-12">
         <CalculatorPageHeader
           title="Rent affordability calculator"

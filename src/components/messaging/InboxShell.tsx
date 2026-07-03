@@ -106,7 +106,7 @@ export default function InboxShell() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] overflow-hidden border-t border-border">
+    <div className="flex h-[calc(100dvh-4rem)] overflow-hidden border-t border-border">
       {/* Folder rail — fixed column on desktop */}
       <aside className="hidden w-56 shrink-0 border-r border-border bg-surface md:block">
         <FolderRail

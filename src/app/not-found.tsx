@@ -13,7 +13,7 @@ export default async function NotFound() {
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-dvh flex-col bg-neutral-50">
       {/* ── Header ─────────────────────────────────────────────── */}
       <header className="flex items-center justify-between border-b border-brand-primary/10 bg-white px-6 py-5 lg:px-20">
         <Logo />

@@ -74,7 +74,7 @@ export default async function AgentProfilePage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-surface dark:bg-slate-950">
+      <div className="min-h-dvh bg-surface dark:bg-slate-950">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <AgencyHero agency={agency} stats={stats} />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

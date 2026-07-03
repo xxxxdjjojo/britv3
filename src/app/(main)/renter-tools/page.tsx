@@ -80,7 +80,7 @@ const tools: ToolCard[] = [
 
 export default function RenterToolsPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Hero */}
       <header className="border-b bg-gradient-to-br from-primary/5 to-background">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

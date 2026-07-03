@@ -135,7 +135,7 @@ export default async function JobBoardPage({
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-dvh bg-white dark:bg-slate-950">
       {/* Hero */}
       <section className="bg-gradient-to-br from-brand-primary-dark to-brand-primary text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">

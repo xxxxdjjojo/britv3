@@ -13,7 +13,7 @@ function SkeletonConversationRow() {
 export default function InboxLoading() {
   return (
     <div
-      className="flex h-[calc(100vh-4rem)] overflow-hidden"
+      className="flex h-[calc(100dvh-4rem)] overflow-hidden"
       role="status"
       aria-label="Loading inbox"
     >

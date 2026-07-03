@@ -108,7 +108,7 @@ export default async function AgentsPage({ searchParams }: Props) {
   const hasFilters = q || area || minRating;
 
   return (
-    <div className="min-h-screen bg-surface pb-20">
+    <div className="min-h-dvh bg-surface pb-20">
       {/* Hero */}
       <section className="bg-gradient-to-br from-brand-primary-dark to-brand-primary text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">

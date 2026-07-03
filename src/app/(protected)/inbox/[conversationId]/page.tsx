@@ -45,7 +45,7 @@ export default async function ConversationPage({ params }: PageProps) {
   const participantName = otherProfile?.display_name ?? "Unknown User";
 
   return (
-    <div className="container max-w-3xl mx-auto py-6 flex flex-col h-[calc(100vh-8rem)]">
+    <div className="container max-w-3xl mx-auto py-6 flex flex-col h-[calc(100dvh-8rem)]">
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 border-b mb-0">
         <Link

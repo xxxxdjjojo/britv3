@@ -39,7 +39,7 @@ export default async function QueuePage({ searchParams }: QueuePageProps) {
   const { ref } = await searchParams;
 
   return (
-    <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-28 sm:px-10">
+    <main className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 py-28 sm:px-10">
       {!ref ? (
         <GracefulState
           heading="No referral code"

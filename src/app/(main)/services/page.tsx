@@ -77,7 +77,7 @@ export default async function ServicesPage() {
   const counts = categoryCounts && Object.keys(categoryCounts).length > 0 ? categoryCounts : FALLBACK_COUNTS;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-dvh bg-white">
       {/* ── Section 1: Hero + Search Bar ── */}
       <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-primary/5 via-white to-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 text-center">
