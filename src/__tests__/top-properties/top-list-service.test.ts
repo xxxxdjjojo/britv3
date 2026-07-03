@@ -175,15 +175,16 @@ describe("getTopList", () => {
       makeRow({
         property_media: [
           {
-            url: "/images/demo/plan.jpg",
+            url: "https://abc.supabase.co/storage/v1/object/public/media/plan.jpg",
             thumbnail_url: null,
             alt_text: "Floor plan",
             sort_order: 0,
             media_type: "floor_plan",
           },
           {
-            url: "/images/demo/exterior.jpg",
-            thumbnail_url: "/images/demo/thumbs/exterior.jpg",
+            url: "https://abc.supabase.co/storage/v1/object/public/media/exterior.jpg",
+            thumbnail_url:
+              "https://abc.supabase.co/storage/v1/object/public/media/thumbs/exterior.jpg",
             alt_text: "Front exterior",
             sort_order: 1,
             media_type: "image",
@@ -193,7 +194,9 @@ describe("getTopList", () => {
     ];
     const { getTopList } = await service();
     const result = await getTopList("newly-listed-homes");
-    expect(result!.items[0].imageUrl).toBe("/images/demo/thumbs/exterior.jpg");
+    expect(result!.items[0].imageUrl).toBe(
+      "https://abc.supabase.co/storage/v1/object/public/media/thumbs/exterior.jpg",
+    );
     expect(result!.items[0].imageAlt).toBe("Front exterior");
   });
 

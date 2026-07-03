@@ -9,6 +9,9 @@
  * this module is the single seam where snapshotting can slot in later.
  */
 
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getPostcodeCard } from "@/services/market-map/postcode-card-service";
 import {
@@ -109,7 +112,12 @@ const LISTING_SELECT = `
  */
 function renderableImageUrl(url: string | null | undefined): string | null {
   if (!url) return null;
-  if (url.startsWith("/")) return url;
+  if (url.startsWith("/")) {
+    // Some seed media rows reference files that were never shipped — a 404
+    // thumbnail looks broken, the no-photo fallback does not.
+    const pathname = url.split("?")[0];
+    return existsSync(join(process.cwd(), "public", pathname)) ? url : null;
+  }
   try {
     const { protocol, hostname } = new URL(url);
     if (protocol === "https:" && hostname.endsWith(".supabase.co")) return url;
