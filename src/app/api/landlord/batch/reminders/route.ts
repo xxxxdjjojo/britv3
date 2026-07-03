@@ -89,7 +89,7 @@ export async function POST(request: Request) {
         user_id: user.id,
         type: "rent_reminder",
         title: `Rent reminder sent to ${tenancy.tenant_name}`,
-        message: `Rent reminder sent to ${tenancy.tenant_name} at ${tenancy.tenant_email}`,
+        body: `Rent reminder sent to ${tenancy.tenant_name} at ${tenancy.tenant_email}`,
         link: "/dashboard/landlord/rent",
       });
 
