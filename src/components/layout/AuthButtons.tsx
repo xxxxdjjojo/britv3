@@ -18,7 +18,7 @@ export function AuthButtons({ user, transparent = false }: AuthButtonsProps) {
     const initial = user.email?.[0]?.toUpperCase();
 
     return (
-      <div className="hidden items-center gap-1 md:flex">
+      <div className="hidden items-center gap-1 lg:flex">
         <SavedBadge transparent={transparent} />
 
         <Link
@@ -48,7 +48,7 @@ export function AuthButtons({ user, transparent = false }: AuthButtonsProps) {
   }
 
   return (
-    <div className="hidden items-center gap-2 md:flex">
+    <div className="hidden items-center gap-2 lg:flex">
       <Button variant="ghost" size="sm" asChild>
         <Link href="/login">Sign In</Link>
       </Button>

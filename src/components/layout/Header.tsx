@@ -75,7 +75,7 @@ export function Header({ transparent = false }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden min-w-11 min-h-11"
+              className="lg:hidden min-w-11 min-h-11"
               onClick={() => setMobileOpen((prev) => !prev)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}

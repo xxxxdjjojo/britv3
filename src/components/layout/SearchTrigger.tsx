@@ -29,10 +29,10 @@ export function SearchTrigger({ className, transparent = false }: SearchTriggerP
       aria-label="Search"
     >
       <Search className="size-4" />
-      <span className="hidden text-sm font-normal md:inline">Search...</span>
+      <span className="hidden text-sm font-normal xl:inline">Search...</span>
       <kbd
         className={cn(
-          "pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border px-1.5 font-mono text-[10px] font-medium md:inline-flex",
+          "pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border px-1.5 font-mono text-[10px] font-medium xl:inline-flex",
           transparent
             ? "border-white/20 text-white/60"
             : "border-neutral-200 text-neutral-400",
