@@ -200,6 +200,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/fee-transparency`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
   ];
 
+  /* --- Top Properties — hub always; category pages only when indexable --- */
+  let topListPages: MetadataRoute.Sitemap = [];
+  try {
+    const { getIndexableTopListSlugs } = await import(
+      "@/services/top-properties/top-list-service"
+    );
+    const indexableSlugs = await getIndexableTopListSlugs();
+    topListPages = [
+      { url: `${baseUrl}/top-properties`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+      ...indexableSlugs.map((slug) => ({
+        url: `${baseUrl}/top-properties/${slug}`,
+        lastModified: now,
+        changeFrequency: "daily" as const,
+        priority: 0.7,
+      })),
+    ];
+  } catch (err) {
+    console.error("[sitemap] top-properties query failed, omitting:", err);
+  }
+
   return [
     ...staticPages,
     ...legalPages,
@@ -214,5 +234,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...programmaticPages,
     ...propertyPages,
     ...agentPages,
+    ...topListPages,
   ];
 }

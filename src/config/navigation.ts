@@ -347,6 +347,7 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "Buy", href: "/search?type=buy" },
       { label: "Rent", href: "/search?type=rent" },
       { label: "New Homes", href: "/new-homes" },
+      { label: "Top Properties", href: "/top-properties" },
       { label: "Commercial", href: "/search?type=commercial" },
       { label: "Sold Prices", href: "/sold-prices" },
     ],

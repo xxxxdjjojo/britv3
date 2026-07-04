@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { PropertyCardGrid } from "@/components/shared/PropertyCardGrid";
 import { HomeSearchBar } from "@/components/search/HomeSearchBar";
+import { TopPropertiesSection } from "@/components/top-properties/TopPropertiesSection";
 import { brandConfig } from "@/config/brand";
 
 export const metadata: Metadata = {
@@ -322,6 +323,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── 2b. Top Properties — ranked lists from real data ── */}
+      <TopPropertiesSection />
 
       {/* ── 3. How It Works ── */}
       <section className="bg-brand-primary-lighter py-16 lg:py-24">
