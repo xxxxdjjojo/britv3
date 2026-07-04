@@ -17,7 +17,7 @@ import { useState, useCallback, useEffect, useRef, useMemo, Suspense } from "rea
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Map as MapIcon, Maximize2, Minimize2, List, Mail } from "lucide-react";
+import { Map as MapIcon, Maximize2, Minimize2, List, Mail, SlidersHorizontal } from "lucide-react";
 import { EmptyState } from "@/components/search/EmptyState";
 import MapPropertyCard from "@/components/search/MapPropertyCard";
 import MapProviderPin from "@/components/search/MapProviderPin";
@@ -25,6 +25,13 @@ import { PropertySearchCard } from "@/components/search/PropertySearchCard";
 import { SponsoredSearchSlot } from "@/components/placements/SponsoredSearchSlot";
 import { RankingDisclosure } from "@/components/search/RankingDisclosure";
 import { RefineFilters } from "@/components/search/RefineFilters";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetClose,
+} from "@/components/ui/sheet";
 import type {
   MapProperty,
   MapProvider,
@@ -122,6 +129,13 @@ function SearchPageInner() {
   const [properties, setProperties] = useState<SearchProperty[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Mobile filter sheet
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [previewCount, setPreviewCount] = useState<number | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const previewSeq = useRef(0);
+  const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Map state
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<MapProperty | null>(null);
@@ -155,6 +169,36 @@ function SearchPageInner() {
       });
   }, [committedState]);
 
+  // Debounced preview count for the mobile sheet's Apply button.
+  // Only fires while the sheet is open to avoid unnecessary server-action calls.
+  useEffect(() => {
+    if (!sheetOpen) return;
+
+    if (previewTimer.current) clearTimeout(previewTimer.current);
+    // Reset immediately so the button never shows a stale count while debouncing.
+    setPreviewCount(null);
+    setPreviewLoading(true);
+
+    previewTimer.current = setTimeout(() => {
+      const seq = ++previewSeq.current;
+      searchProperties(toSearchFilters(draft))
+        .then((result) => {
+          if (seq !== previewSeq.current) return;
+          setPreviewCount(result.data.length);
+          setPreviewLoading(false);
+        })
+        .catch(() => {
+          if (seq !== previewSeq.current) return;
+          setPreviewCount(null);
+          setPreviewLoading(false);
+        });
+    }, 300);
+
+    return () => {
+      if (previewTimer.current) clearTimeout(previewTimer.current);
+    };
+  }, [draft, sheetOpen]);
+
   // Commit the draft to the URL (the effect above then re-fetches).
   const commit = useCallback(
     (next: SearchState) => {
@@ -171,6 +215,13 @@ function SearchPageInner() {
   const handleSubmit = useCallback(() => {
     commit({ ...draft, page: 1 });
   }, [commit, draft]);
+
+  // Sheet-specific submit: commits the draft AND closes the sheet.
+  // Used by both the sheet's RefineFilters onSubmit and its Apply button.
+  const handleSheetApply = useCallback(() => {
+    handleSubmit();
+    setSheetOpen(false);
+  }, [handleSubmit]);
 
   const handleClear = useCallback(() => {
     setDraft(DEFAULT_SEARCH_STATE);
@@ -375,21 +426,33 @@ function SearchPageInner() {
               </p>
               <RankingDisclosure className="mt-1" />
             </div>
-            <label className="flex items-center gap-2 text-sm font-semibold text-neutral-500">
-              <span className="hidden sm:inline">Sort by:</span>
-              <select
-                aria-label="Sort results"
-                value={committedState.sort}
-                onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                className="cursor-pointer rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-800 focus:border-brand-primary focus:outline-none"
+            <div className="flex items-center gap-3">
+              {/* Mobile filter trigger — visible below lg only */}
+              <button
+                type="button"
+                onClick={() => setSheetOpen(true)}
+                className="flex min-h-11 items-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-sm font-bold text-neutral-700 transition-colors hover:border-brand-primary hover:text-brand-primary lg:hidden"
+                aria-label="Open search filters"
               >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <SlidersHorizontal className="size-4" aria-hidden="true" />
+                Filters
+              </button>
+              <label className="flex items-center gap-2 text-sm font-semibold text-neutral-500">
+                <span className="hidden sm:inline">Sort by:</span>
+                <select
+                  aria-label="Sort results"
+                  value={committedState.sort}
+                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                  className="min-h-11 cursor-pointer rounded-lg border border-neutral-200 bg-white px-3 py-2 text-base md:text-sm text-neutral-800 focus:border-brand-primary focus:outline-none"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </div>
 
           {/* Results list */}
@@ -433,8 +496,8 @@ function SearchPageInner() {
           )}
         </div>
 
-        {/* RIGHT column — filters aside (rendered first on mobile) */}
-        <aside className="order-1 w-full shrink-0 lg:order-2 lg:w-[420px]">
+        {/* RIGHT column — filters aside (desktop ≥lg only) */}
+        <aside className="order-1 hidden w-full shrink-0 lg:order-2 lg:block lg:w-[420px]">
           {rightAside}
         </aside>
       </div>
@@ -452,6 +515,71 @@ function SearchPageInner() {
         )}
         {isMapView ? "Show List" : "Full Map View"}
       </Link>
+
+      {/* Mobile filter sheet — bottom sheet, lg+ uses the sticky aside instead */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        {/* SheetTrigger is not used here; we drive open state via the button above */}
+        <SheetContent
+          side="bottom"
+          showCloseButton={false}
+          className="flex max-h-[85dvh] flex-col gap-0 p-0 lg:hidden"
+        >
+          <SheetHeader className="shrink-0 border-b border-neutral-200 px-4 pb-3 pt-4">
+            <div className="flex items-center justify-between">
+              <SheetTitle className="font-heading text-base font-extrabold text-neutral-900">
+                Refine your search
+              </SheetTitle>
+              <SheetClose
+                render={
+                  <button
+                    type="button"
+                    className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-sm font-bold text-neutral-500 transition-colors hover:text-neutral-900"
+                    aria-label="Close filters"
+                  />
+                }
+              >
+                ✕
+              </SheetClose>
+            </div>
+          </SheetHeader>
+
+          {/* Scrollable filter body */}
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <RefineFilters
+              state={draft}
+              onChange={handleFilterChange}
+              onSubmit={handleSheetApply}
+              onClear={handleClear}
+              hideActions
+            />
+          </div>
+
+          {/* Sticky Apply footer */}
+          <div className="shrink-0 border-t border-neutral-200 bg-white px-4 pb-safe pt-4">
+            <button
+              type="button"
+              onClick={handleSheetApply}
+              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-primary text-base font-extrabold text-white shadow-lg transition-colors hover:bg-brand-primary/90"
+            >
+              {previewLoading
+                ? "Show results…"
+                : previewCount !== null
+                  ? `Show ${previewCount} ${previewCount === 1 ? "result" : "results"}`
+                  : "Apply filters"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                handleClear();
+                setSheetOpen(false);
+              }}
+              className="mt-3 w-full text-center text-[11px] font-bold uppercase tracking-widest text-neutral-500 transition-colors hover:text-brand-primary"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

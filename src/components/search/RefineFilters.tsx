@@ -69,6 +69,9 @@ type RefineFiltersProps = Readonly<{
   onChange: (patch: Partial<SearchState>) => void;
   onSubmit: () => void;
   onClear: () => void;
+  /** When true, hides the Search submit and Clear All buttons at the bottom.
+   *  Used when RefineFilters is rendered inside a sheet with its own Apply footer. */
+  hideActions?: boolean;
 }>;
 
 function toggle(list: string[], value: string): string[] {
@@ -145,6 +148,7 @@ export function RefineFilters({
   onChange,
   onSubmit,
   onClear,
+  hideActions = false,
 }: RefineFiltersProps) {
   const isRent = state.listingType === "rent";
   return (
@@ -183,7 +187,7 @@ export function RefineFilters({
             value={state.q}
             onChange={(e) => onChange({ q: e.target.value })}
             placeholder="Search area, city or street…"
-            className="h-12 w-full rounded-lg border-none bg-neutral-50 pl-10 pr-4 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="h-12 w-full rounded-lg border-none bg-neutral-50 pl-10 pr-4 text-base md:text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
         </div>
       </div>
@@ -202,7 +206,7 @@ export function RefineFilters({
           value={state.keywords}
           onChange={(e) => onChange({ keywords: e.target.value })}
           placeholder="e.g. balcony, furnished, garden…"
-          className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
         />
       </div>
 
@@ -223,7 +227,7 @@ export function RefineFilters({
                   onChange({ propertyType: toggle(state.propertyType, type) })
                 }
                 className={cn(
-                  "rounded-full border px-4 py-2 text-xs font-bold transition-all",
+                  "min-h-11 rounded-full border px-4 py-2 text-xs font-bold transition-all",
                   active
                     ? "border-brand-primary bg-brand-primary text-white"
                     : "border-neutral-200 bg-white text-neutral-600 hover:border-brand-primary hover:text-brand-primary",
@@ -292,7 +296,7 @@ export function RefineFilters({
               onChange={(e) =>
                 onChange({ furnishing: e.target.value as Furnishing })
               }
-              className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
             >
               {FURNISHING_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -339,7 +343,7 @@ export function RefineFilters({
               type="date"
               value={state.availableFrom}
               onChange={(e) => onChange({ availableFrom: e.target.value })}
-              className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
@@ -359,7 +363,7 @@ export function RefineFilters({
               value={state.minTenancyMonths}
               onChange={(e) => onChange({ minTenancyMonths: e.target.value })}
               placeholder="No max"
-              className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
             <p className="text-xs font-medium text-neutral-500">
               Show lets requiring no more than this many months.
@@ -405,7 +409,7 @@ export function RefineFilters({
             value={state.minPrice}
             onChange={(e) => onChange({ minPrice: e.target.value })}
             placeholder="No min"
-            className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
           <input
             type="number"
@@ -414,7 +418,7 @@ export function RefineFilters({
             value={state.maxPrice}
             onChange={(e) => onChange({ maxPrice: e.target.value })}
             placeholder="No max"
-            className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
         </div>
       </fieldset>
@@ -432,7 +436,7 @@ export function RefineFilters({
             value={state.minSqft}
             onChange={(e) => onChange({ minSqft: e.target.value })}
             placeholder="No min"
-            className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
           <input
             type="number"
@@ -441,7 +445,7 @@ export function RefineFilters({
             value={state.maxSqft}
             onChange={(e) => onChange({ maxSqft: e.target.value })}
             placeholder="No max"
-            className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="h-11 w-full rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
         </div>
       </fieldset>
@@ -459,7 +463,7 @@ export function RefineFilters({
             onChange={(e) =>
               onChange({ bedsMin: e.target.value as BedroomOption })
             }
-            className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
           >
             {BEDROOM_OPTIONS.map((opt) => (
               <option key={`min-${opt}`} value={opt}>
@@ -477,7 +481,7 @@ export function RefineFilters({
             onChange={(e) =>
               onChange({ bedsMax: e.target.value as BedroomOption })
             }
-            className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="h-11 w-full cursor-pointer rounded-lg border-none bg-neutral-50 px-3 text-base md:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary"
           >
             {BEDROOM_OPTIONS.map((opt) => (
               <option key={`max-${opt}`} value={opt}>
@@ -503,7 +507,7 @@ export function RefineFilters({
                 aria-pressed={active}
                 onClick={() => onChange({ mustHaves: toggle(state.mustHaves, value) })}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-xs font-bold transition-all",
+                  "min-h-11 rounded-full border px-4 py-2 text-xs font-bold transition-all",
                   active
                     ? "border-brand-primary bg-brand-primary text-white"
                     : "border-neutral-200 bg-white text-neutral-600 hover:border-brand-primary hover:text-brand-primary",
@@ -534,7 +538,7 @@ export function RefineFilters({
                   onChange({ councilTaxBands: toggle(state.councilTaxBands, band) })
                 }
                 className={cn(
-                  "size-10 rounded-lg border text-sm font-bold transition-all",
+                  "size-11 rounded-lg border text-sm font-bold transition-all",
                   active
                     ? "border-brand-primary bg-brand-primary text-white"
                     : "border-neutral-200 bg-white text-neutral-600 hover:border-brand-primary hover:text-brand-primary",
@@ -547,23 +551,25 @@ export function RefineFilters({
         </div>
       </fieldset>
 
-      {/* Actions */}
-      <div className="space-y-4 pt-2">
-        <button
-          type="submit"
-          className="flex h-14 w-full items-center justify-center gap-3 rounded-lg bg-brand-primary text-base font-extrabold text-white shadow-lg transition-colors hover:bg-brand-primary/90"
-        >
-          Search
-          <Search className="size-5" aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          onClick={onClear}
-          className="w-full text-center text-[11px] font-bold uppercase tracking-widest text-neutral-500 transition-colors hover:text-brand-primary"
-        >
-          Clear All Filters
-        </button>
-      </div>
+      {/* Actions — hidden when rendered inside a sheet with its own Apply footer */}
+      {!hideActions && (
+        <div className="space-y-4 pt-2">
+          <button
+            type="submit"
+            className="flex h-14 w-full items-center justify-center gap-3 rounded-lg bg-brand-primary text-base font-extrabold text-white shadow-lg transition-colors hover:bg-brand-primary/90"
+          >
+            Search
+            <Search className="size-5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={onClear}
+            className="w-full text-center text-[11px] font-bold uppercase tracking-widest text-neutral-500 transition-colors hover:text-brand-primary"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      )}
     </form>
   );
 }
