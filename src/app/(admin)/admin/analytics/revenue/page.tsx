@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AnalyticsDegraded } from "@/components/admin/AnalyticsDegraded";
 import { RevenueBarChart } from "@/components/admin/RevenueBarChart";
+import { getMonthlyRevenue } from "@/services/admin/analytics-service";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -113,9 +114,11 @@ function KpiCard({
 // ── Revenue content (async) ───────────────────────────────────────────────────
 
 async function RevenueContent() {
-  const [stripeData, supabaseRevenue] = await Promise.all([
+  const supabase = await createClient();
+  const [stripeData, supabaseRevenue, monthlyRevenue] = await Promise.all([
     getStripeData(),
     getSupabaseRevenue(),
+    getMonthlyRevenue(supabase),
   ]);
 
   const fmt = (n: number) =>
@@ -193,9 +196,9 @@ async function RevenueContent() {
           Monthly Revenue
         </h2>
         <p className="text-xs text-neutral-400 mb-4">
-          {stripeData ? "Live Stripe data" : "Placeholder data — connect Stripe to see live figures"}
+          {stripeData ? "Live Stripe data" : "Live data from payments and invoices"}
         </p>
-        <RevenueBarChart />
+        <RevenueBarChart data={monthlyRevenue} />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getPlatformMetrics } from "@/services/admin/analytics-service";
+import { getPlatformMetrics, getMonthlyRevenue } from "@/services/admin/analytics-service";
 import { getAuditLog } from "@/services/admin/audit-service";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -83,6 +83,12 @@ function ChartSkeleton() {
   return <Skeleton className="h-64 w-full rounded-xl" />;
 }
 
+async function RevenueChart() {
+  const supabase = await createClient();
+  const revenueData = await getMonthlyRevenue(supabase);
+  return <AdminDashboardCharts data={revenueData} />;
+}
+
 function ActivitySkeleton() {
   return (
     <div className="space-y-3">
@@ -110,10 +116,10 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-2">
           <div className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-heading text-base font-semibold text-neutral-900 mb-4">
-              Platform Revenue (Mock)
+              Platform Revenue (last 7 months)
             </h2>
             <Suspense fallback={<ChartSkeleton />}>
-              <AdminDashboardCharts />
+              <RevenueChart />
             </Suspense>
           </div>
         </div>

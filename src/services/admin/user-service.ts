@@ -107,11 +107,37 @@ export async function searchUsers(
     return { users: [], total: 0 };
   }
 
+  // Fetch emails from auth.users for exactly the displayed rows (≤ page limit).
+  // Looking up by id keeps this correct regardless of total user count — a
+  // global listUsers({ perPage: N }) would silently miss any profile whose
+  // auth row falls outside the first N.
+  const rows = (data ?? []) as Record<string, unknown>[];
+  const emailById = new Map<string, string>();
+  try {
+    const adminClient = createAdminClient();
+    const lookups = await Promise.all(
+      rows.map(async (row) => {
+        const id = String(row.id);
+        try {
+          const { data: authData } = await adminClient.auth.admin.getUserById(id);
+          return { id, email: authData?.user?.email ?? null };
+        } catch {
+          return { id, email: null };
+        }
+      }),
+    );
+    for (const { id, email } of lookups) {
+      if (email) emailById.set(id, email);
+    }
+  } catch {
+    // Admin client unavailable — email stays null rather than crashing
+  }
+
   // Map DB columns to expected shape
-  const users: UserSearchResult[] = ((data ?? []) as Record<string, unknown>[]).map((row) => ({
+  const users: UserSearchResult[] = rows.map((row) => ({
     id: String(row.id),
     display_name: row.display_name as string | null,
-    email: null, // email lives in auth.users, not profiles
+    email: emailById.get(String(row.id)) ?? null,
     active_role: row.active_role as string | null,
     is_admin: row.is_admin === true,
     is_suspended: row.suspended_until != null || row.banned_at != null,
@@ -215,11 +241,21 @@ export async function getUserDetail(
 
   if (error) return null;
 
+  // Fetch email from auth.users via admin client
+  let email: string | null = null;
+  try {
+    const adminClient = createAdminClient();
+    const { data: authData } = await adminClient.auth.admin.getUserById(userId);
+    email = authData?.user?.email ?? null;
+  } catch {
+    // Admin client unavailable — email stays null rather than crashing
+  }
+
   const row = data as Record<string, unknown>;
   return {
     id: String(row.id),
     display_name: row.display_name as string | null,
-    email: null,
+    email,
     active_role: row.active_role as string | null,
     is_admin: row.is_admin === true,
     is_suspended: row.suspended_until != null || row.banned_at != null,
