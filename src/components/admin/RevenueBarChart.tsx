@@ -10,16 +10,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const MOCK_DATA = [
-  { month: "Sep", revenue: 4200 },
-  { month: "Oct", revenue: 5800 },
-  { month: "Nov", revenue: 6100 },
-  { month: "Dec", revenue: 5400 },
-  { month: "Jan", revenue: 7200 },
-  { month: "Feb", revenue: 8900 },
-  { month: "Mar", revenue: 9400 },
-];
-
 type DataPoint = { month: string; revenue: number };
 
 type Props = Readonly<{
@@ -27,12 +17,20 @@ type Props = Readonly<{
 }>;
 
 export function RevenueBarChart({ data }: Props) {
-  const chartData = data && data.length > 0 ? data : MOCK_DATA;
+  const hasRevenue = data && data.some((d) => d.revenue > 0);
+
+  if (!hasRevenue) {
+    return (
+      <p className="text-sm text-neutral-500 py-8 text-center">
+        No revenue data yet — payments will appear here as they occur.
+      </p>
+    );
+  }
 
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart
-        data={chartData}
+        data={data}
         margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />

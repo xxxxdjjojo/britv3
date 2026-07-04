@@ -11,6 +11,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const mockAuthAdmin = {
   updateUserById: vi.fn(),
+  getUserById: vi.fn(async (id: string) => ({
+    data: { user: { id, email: `${id}@example.com` } },
+    error: null,
+  })),
 };
 
 vi.mock("@/lib/supabase/admin", () => ({
@@ -93,6 +97,40 @@ describe("searchUsers", () => {
 
     const result = await searchUsers(supabase as never, "test", 0, 10);
     expect(result).toEqual({ users: [], total: 0 });
+  });
+
+  it("populates email from auth.users by looking up each displayed id", async () => {
+    const { searchUsers } = await import("@/services/admin/user-service");
+
+    const rows = [
+      { id: "u1", display_name: "Alice", active_role: "homebuyer", is_admin: false, suspended_until: null, banned_at: null, created_at: "2026-01-01" },
+      { id: "u2", display_name: "Bob", active_role: "seller", is_admin: false, suspended_until: null, banned_at: null, created_at: "2026-01-02" },
+    ];
+    const chain = createChain({ data: rows, error: null, count: 2 });
+    const supabase = { from: vi.fn().mockReturnValue(chain) };
+
+    const result = await searchUsers(supabase as never, "", 0, 20);
+
+    // One lookup per displayed row (not a global listUsers cap)
+    expect(mockAuthAdmin.getUserById).toHaveBeenCalledTimes(2);
+    expect(mockAuthAdmin.getUserById).toHaveBeenCalledWith("u1");
+    expect(mockAuthAdmin.getUserById).toHaveBeenCalledWith("u2");
+    expect(result.users.find((u) => u.id === "u1")?.email).toBe("u1@example.com");
+    expect(result.users.find((u) => u.id === "u2")?.email).toBe("u2@example.com");
+  });
+
+  it("leaves email null when the admin client lookup throws (no crash)", async () => {
+    mockAuthAdmin.getUserById.mockRejectedValueOnce(new Error("service role unavailable"));
+    const { searchUsers } = await import("@/services/admin/user-service");
+
+    const rows = [
+      { id: "u9", display_name: "Zoe", active_role: "homebuyer", is_admin: false, suspended_until: null, banned_at: null, created_at: "2026-01-01" },
+    ];
+    const chain = createChain({ data: rows, error: null, count: 1 });
+    const supabase = { from: vi.fn().mockReturnValue(chain) };
+
+    const result = await searchUsers(supabase as never, "", 0, 20);
+    expect(result.users[0]?.email).toBeNull();
   });
 });
 

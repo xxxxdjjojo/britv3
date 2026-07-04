@@ -46,6 +46,7 @@ import {
 } from "@/lib/search/url-state";
 import { searchProperties } from "./actions";
 import type { SearchProperty, SearchFilters } from "./actions";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 // Lazy-load SearchMap — MapLibre cannot SSR.
 const SearchMap = dynamic(() => import("@/components/search/SearchMap"), {
@@ -198,6 +199,28 @@ function SearchPageInner() {
       if (previewTimer.current) clearTimeout(previewTimer.current);
     };
   }, [draft, sheetOpen]);
+
+  // Fire analytics events after each completed search.
+  useEffect(() => {
+    if (isLoading) return;
+    const filtersActive =
+      committedState.minPrice !== null ||
+      committedState.maxPrice !== null ||
+      committedState.bedsMin !== null ||
+      committedState.bedsMax !== null ||
+      committedState.propertyType.length > 0 ||
+      committedState.mustHaves.length > 0;
+    trackEvent("property_search", {
+      query: committedState.q ?? "",
+      result_count: properties.length,
+      filters_active: filtersActive,
+    });
+    if (properties.length === 0) {
+      trackEvent("search_no_results", {
+        query: committedState.q ?? "",
+      });
+    }
+  }, [isLoading, properties, committedState]);
 
   // Commit the draft to the URL (the effect above then re-fetches).
   const commit = useCallback(

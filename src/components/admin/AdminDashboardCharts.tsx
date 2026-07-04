@@ -10,20 +10,22 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const MOCK_REVENUE = [
-  { month: "Sep", revenue: 4200 },
-  { month: "Oct", revenue: 5800 },
-  { month: "Nov", revenue: 6100 },
-  { month: "Dec", revenue: 5400 },
-  { month: "Jan", revenue: 7200 },
-  { month: "Feb", revenue: 8900 },
-  { month: "Mar", revenue: 9400 },
-];
+type Props = Readonly<{ data?: Array<{ month: string; revenue: number }> }>;
 
-export function AdminDashboardCharts() {
+export function AdminDashboardCharts({ data }: Props) {
+  const hasRevenue = data && data.some((d) => d.revenue > 0);
+
+  if (!hasRevenue) {
+    return (
+      <p className="text-sm text-neutral-500 py-8 text-center">
+        No revenue data yet — payments will appear here as they occur.
+      </p>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <AreaChart data={MOCK_REVENUE} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+      <AreaChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#1B4D3E" stopOpacity={0.2} />

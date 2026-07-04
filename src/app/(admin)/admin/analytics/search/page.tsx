@@ -88,19 +88,6 @@ const getSearchData = unstable_cache(
   { revalidate: 300 },
 );
 
-// ── Mock volume for placeholder ───────────────────────────────────────────────
-
-const MOCK_VOLUME: Array<{ date: string; count: number }> = Array.from(
-  { length: 30 },
-  (_, i) => {
-    const d = new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000);
-    return {
-      date: `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
-      count: Math.floor(Math.random() * 80 + 20),
-    };
-  },
-);
-
 // ── Content ───────────────────────────────────────────────────────────────────
 
 async function SearchContent() {
@@ -108,24 +95,10 @@ async function SearchContent() {
 
   if (!data) {
     return (
-      <div className="space-y-6">
-        <AnalyticsDegraded
-          service="PostHog"
-          message="PostHog is not configured. Set POSTHOG_PERSONAL_API_KEY and POSTHOG_PROJECT_ID to enable search analytics."
-        />
-        {/* Placeholder chart so layout is useful even without data */}
-        <div className="rounded-xl border border-border bg-card p-6">
-          <h2
-            className="font-heading text-base font-semibold text-neutral-900 mb-1"
-          >
-            Search Volume (Placeholder)
-          </h2>
-          <p className="text-xs text-neutral-400 mb-4">
-            Connect PostHog to see live search volume data.
-          </p>
-          <SearchVolumeChart data={MOCK_VOLUME} />
-        </div>
-      </div>
+      <AnalyticsDegraded
+        service="PostHog"
+        message="PostHog is not configured. Set POSTHOG_PERSONAL_API_KEY and POSTHOG_PROJECT_ID to enable search analytics."
+      />
     );
   }
 
@@ -138,9 +111,13 @@ async function SearchContent() {
         >
           Search Volume (Last 30 days)
         </h2>
-        <SearchVolumeChart
-          data={data.volumeOverTime.length > 0 ? data.volumeOverTime : MOCK_VOLUME}
-        />
+        {data.volumeOverTime.length > 0 ? (
+          <SearchVolumeChart data={data.volumeOverTime} />
+        ) : (
+          <p className="text-sm text-neutral-400">
+            No search data yet — events will appear here as users search.
+          </p>
+        )}
       </div>
 
       {/* Tables */}
