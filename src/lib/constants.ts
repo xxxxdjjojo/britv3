@@ -228,6 +228,10 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/fee-transparency",
   // Influence-strategy truth surfaces (Phases 1-2)
   "/pledges",
+  // Influence-strategy Phase 3 — landlord beachhead + awards
+  "/landlords",
+  "/fair-landlord-register",
+  "/awards",
   "/compliance",
   "/agent-briefing",
   "/reports",

@@ -41,6 +41,8 @@ import { referencingInitiate } from "@/inngest/functions/referencing-initiate";
 import { lifecycleDrip } from "@/inngest/functions/lifecycle-drip";
 import { truedeedReportSnapshots } from "@/inngest/functions/truedeed-report-snapshots";
 import { platformMetricsDaily } from "@/inngest/functions/platform-metrics-daily";
+import { landlordDeadlineDiary } from "@/inngest/functions/landlord-deadline-diary";
+import { boxingDayAnnualPush } from "@/inngest/functions/boxing-day-annual-push";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -78,5 +80,7 @@ export const { GET, POST, PUT } = serve({
     lifecycleDrip,
     truedeedReportSnapshots,
     platformMetricsDaily,
+    landlordDeadlineDiary,
+    boxingDayAnnualPush,
   ],
 });

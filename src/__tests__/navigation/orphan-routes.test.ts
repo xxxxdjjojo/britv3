@@ -58,6 +58,13 @@ const ORPHAN_ALLOWLIST = new Set<string>([
   "/agent-briefing/archive", // linked from /agent-briefing landing
   "/tools/true-equity-checker", // redirect stub → /area-prices (branded tool entry point)
   "/tools/portal-cost-calculator", // feature-flag dark until Decision Gate 4 legal sign-off (off = 404)
+  // Phase-3 flag-dark surface — excluded from sitemap/nav until Gate 4
+  "/reports/portal-cost-passthrough", // flag-dark (portal_cost_passthrough OFF) until CAP-Code sign-off
+  "/reports/portal-cost-passthrough/methodology", // sub-page of flag-dark surface
+  // Phase-3 sub-pages reached from their parent hub, not the global nav
+  "/awards/methodology", // linked from /awards methodology section
+  "/landlords/clinics", // reached via /landlords/deadline-diary reminder link + landlord nav
+  "/press/portal-fees-briefing", // press sub-page, linked from /press hub
   "/blog/first-time-buyers", // first-time-buyer content hub, linked from /blog + articles
   "/market-trends/national", // redirect stub → /area-prices (route file retained so the 308 fires)
   "/services/architects", // linked from /services

@@ -10,7 +10,10 @@ import {
   DOUBLE_OPT_IN_AUDIENCES,
   type NewsletterAudience,
 } from "@/services/newsletter/newsletter-service";
-import { sendBriefingWelcome } from "@/services/email/email-service";
+import {
+  sendBriefingWelcome,
+  sendLandlordDiaryWelcome,
+} from "@/services/email/email-service";
 
 const ERROR_REDIRECT = "/agent-briefing?subscribe_error=expired";
 
@@ -55,12 +58,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   );
   if (!result.alreadyConfirmed && isBriefingAudience) {
     const unsubscribeToken = generateNewsletterToken(email, audience, "unsubscribe");
-    await sendBriefingWelcome({
-      to: email,
-      unsubscribeUrl: appUrl(
-        `/api/newsletter/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`,
-      ),
-    });
+    const unsubscribeUrl = appUrl(
+      `/api/newsletter/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`,
+    );
+    if (audience === "landlord_diary") {
+      await sendLandlordDiaryWelcome({ to: email, unsubscribeUrl });
+    } else {
+      await sendBriefingWelcome({ to: email, unsubscribeUrl });
+    }
   }
 
   return redirectTo(request, SUCCESS_REDIRECT[audience] ?? "/?subscribed=1");
