@@ -103,7 +103,7 @@ export default function ClinicsPage() {
               </p>
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-6">
+            <div className="rounded-xl border border-border bg-muted/40 p-6">
               <p className="text-base text-muted-foreground">
                 No upcoming sessions currently scheduled.{" "}
                 <Link
@@ -128,7 +128,7 @@ export default function ClinicsPage() {
               {PAST_SESSIONS.map((session) => (
                 <article
                   key={session.id}
-                  className="rounded-xl border border-slate-200 dark:border-slate-700 p-6 space-y-4"
+                  className="rounded-xl border border-border p-6 space-y-4"
                 >
                   {session.date && (
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -146,7 +146,7 @@ export default function ClinicsPage() {
 
                   {/* Recording embed stub */}
                   {session.recordingUrl && (
-                    <div className="rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 aspect-video flex items-center justify-center">
+                    <div className="rounded-lg overflow-hidden bg-muted aspect-video flex items-center justify-center">
                       <a
                         href={session.recordingUrl}
                         target="_blank"
@@ -175,9 +175,9 @@ export default function ClinicsPage() {
                         {session.faqs.map((faq, i) => (
                           <details
                             key={i}
-                            className="group border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden"
+                            className="group border border-border rounded-lg overflow-hidden"
                           >
-                            <summary className="flex items-center justify-between p-4 cursor-pointer font-medium text-sm list-none hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <summary className="flex items-center justify-between p-4 cursor-pointer font-medium text-sm list-none hover:bg-muted/50 transition-colors">
                               {faq.q}
                             </summary>
                             <div className="px-4 pb-4 text-sm text-muted-foreground leading-relaxed">

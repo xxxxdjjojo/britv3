@@ -181,10 +181,7 @@ describe("DELETE /api/landlords/fair-landlord-pledge", () => {
     const { DELETE } = await import(
       "../../api/landlords/fair-landlord-pledge/route"
     );
-    const req = new Request("http://localhost/api/landlords/fair-landlord-pledge", {
-      method: "DELETE",
-    });
-    const res = await DELETE(req as never);
+    const res = await DELETE();
     expect(res.status).toBe(200);
     const body = await res.json() as { ok: boolean };
     expect(body.ok).toBe(true);
