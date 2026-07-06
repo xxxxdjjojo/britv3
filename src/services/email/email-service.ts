@@ -1977,5 +1977,86 @@ export async function sendBriefingWelcome({
   }
 }
 
+// ---------------------------------------------------------------------------
+// 23. Landlord Deadline Diary (T-30/T-7/T-1 reminders before dated Renters'
+//     Rights Act deadlines — editorial, brand in footer only, per-audience
+//     unsubscribe link on every send)
+// ---------------------------------------------------------------------------
+
+export async function sendLandlordDiaryReminder({
+  to,
+  deadlineTitle,
+  deadlineDateLabel,
+  daysUntil,
+  summary,
+  citationUrl,
+  calendarUrl,
+  unsubscribeUrl,
+}: {
+  to: string;
+  deadlineTitle: string;
+  deadlineDateLabel: string;
+  daysUntil: number;
+  summary: string;
+  citationUrl?: string;
+  calendarUrl?: string;
+  unsubscribeUrl: string;
+}): Promise<void> {
+  try {
+    const client = getResend();
+    if (!client) return;
+
+    const { LandlordDiaryReminderEmail } = await import("@/emails/landlord-diary-reminder");
+    const { render } = await import("@react-email/components");
+    const html = await render(
+      LandlordDiaryReminderEmail({
+        deadlineTitle,
+        deadlineDateLabel,
+        daysUntil,
+        summary,
+        citationUrl,
+        calendarUrl,
+        unsubscribeUrl,
+      }),
+    );
+
+    const timeframe = daysUntil === 1 ? "Tomorrow" : `${daysUntil} days to go`;
+    await client.emails.send({
+      from: FROM,
+      to,
+      subject: `${timeframe}: ${deadlineTitle}`,
+      html,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[email-service] sendLandlordDiaryReminder failed", message);
+  }
+}
+
+export async function sendLandlordDiaryWelcome({
+  to,
+  calendarUrl,
+  unsubscribeUrl,
+}: {
+  to: string;
+  calendarUrl?: string;
+  unsubscribeUrl: string;
+}): Promise<void> {
+  try {
+    const { Resend } = await import("resend");
+    const { LandlordDiaryWelcomeEmail } = await import("@/emails/landlord-diary-welcome");
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    await resend.emails.send({
+      from: "TrueDeed <landlord-diary@truedeed.co.uk>",
+      to,
+      subject: "You're signed up to the Landlord Deadline Diary",
+      react: LandlordDiaryWelcomeEmail({ calendarUrl, unsubscribeUrl }),
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[email-service] sendLandlordDiaryWelcome failed", message);
+  }
+}
+
 // Re-export BASE_URL for use in other modules that build email links
 export { BASE_URL };

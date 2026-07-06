@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { confirmNewsletterSubscription } from "@/services/newsletter/newsletter-service";
-import { sendBriefingWelcome } from "@/services/email/email-service";
+import { sendBriefingWelcome, sendLandlordDiaryWelcome } from "@/services/email/email-service";
 import {
   generateNewsletterToken,
   verifyNewsletterToken,
@@ -18,6 +18,7 @@ vi.mock("@/services/newsletter/newsletter-service", () => ({
 
 vi.mock("@/services/email/email-service", () => ({
   sendBriefingWelcome: vi.fn(async () => {}),
+  sendLandlordDiaryWelcome: vi.fn(async () => {}),
 }));
 
 vi.mock("@/lib/newsletter-token", () => ({

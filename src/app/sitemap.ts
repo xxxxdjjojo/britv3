@@ -84,6 +84,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/reports/time-to-sell`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${baseUrl}/reports/time-to-sell/methodology`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/metrics`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
+    /* Phase 3 — landlord beachhead + awards + tribunal pack */
+    { url: `${baseUrl}/press/portal-fees-briefing`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/landlords/deadline-diary`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/landlords/clinics`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/fair-landlord-register`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${baseUrl}/awards`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/awards/methodology`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    // portal-cost-passthrough is flag-dark (Gate 4) — excluded from sitemap until legal sign-off
   ];
 
   /* --- Marketplace --- */
