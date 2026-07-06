@@ -9,12 +9,17 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { mockCreateClient } = vi.hoisted(() => ({
+const { mockCreateClient, mockSendViewingBookedEmails } = vi.hoisted(() => ({
   mockCreateClient: vi.fn(),
+  mockSendViewingBookedEmails: vi.fn(),
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: mockCreateClient,
+}));
+
+vi.mock("@/services/viewings/viewing-notifications", () => ({
+  sendViewingBookedEmails: mockSendViewingBookedEmails,
 }));
 
 import { POST } from "./route";
@@ -57,6 +62,7 @@ const params = Promise.resolve({ id: PROP_UUID });
 
 beforeEach(() => {
   mockCreateClient.mockReset();
+  mockSendViewingBookedEmails.mockReset();
 });
 
 // ---------------------------------------------------------------------------
@@ -88,6 +94,12 @@ describe("POST /api/properties/[id]/book-viewing", () => {
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toMatchObject({ success: true, slotId: "slot-1" });
+
+    // Host + booker notifications fire on success.
+    expect(mockSendViewingBookedEmails).toHaveBeenCalledTimes(1);
+    expect(mockSendViewingBookedEmails).toHaveBeenCalledWith(
+      expect.objectContaining({ slotId: "slot-1", listingId: PROP_UUID, bookerId: "user-1" }),
+    );
 
     // Regression: the slot must be scoped by listing_id, never property_id.
     expect(slot.eqCalls).toContainEqual(["listing_id", PROP_UUID]);

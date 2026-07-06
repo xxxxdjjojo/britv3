@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isUuid } from "@/lib/validation/uuid";
+import { sendViewingBookedEmails } from "@/services/viewings/viewing-notifications";
 
 // ---------------------------------------------------------------------------
 // POST /api/properties/[id]/book-viewing
@@ -128,6 +129,15 @@ export async function POST(
   if (!result.success) {
     return NextResponse.json({ error: "Booking failed" }, { status: 500 });
   }
+
+  // Fire-and-forget: confirm to the booker, notify the host. Never blocks the
+  // response and never throws.
+  void sendViewingBookedEmails({
+    viewingId: result.viewing_id ?? "",
+    slotId,
+    listingId: propertyId,
+    bookerId: user.id,
+  });
 
   return NextResponse.json({
     success: true,

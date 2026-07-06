@@ -15,6 +15,8 @@ export type EventType =
   | "milestone_updated"
   | "offer_received"
   | "viewing_scheduled"
+  | "viewing_requested"
+  | "viewing_request_responded"
   | "review_posted"
   | "maintenance_request_created";
 
@@ -25,7 +27,8 @@ export type EntityType =
   | "listing"
   | "rfq"
   | "transaction"
-  | "maintenance_request";
+  | "maintenance_request"
+  | "viewing";
 
 /** Email priority for notification routing */
 export type EmailPriority = "critical" | "digest";
@@ -85,6 +88,8 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
     milestone_updated: { in_app: true, email: true, push: false, sms: false },
     offer_received: { in_app: true, email: true, push: false, sms: false },
     viewing_scheduled: { in_app: true, email: true, push: false, sms: false },
+    viewing_requested: { in_app: true, email: true, push: false, sms: false },
+    viewing_request_responded: { in_app: true, email: true, push: false, sms: false },
     review_posted: { in_app: true, email: false, push: false, sms: false },
     maintenance_request_created: { in_app: true, email: true, push: false, sms: false },
   },
