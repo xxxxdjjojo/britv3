@@ -27,6 +27,8 @@ const EVENT_TYPE_LABELS: Record<EventType, string> = {
   milestone_updated: "Milestone Updated",
   offer_received: "Offer Received",
   viewing_scheduled: "Viewing Scheduled",
+  viewing_requested: "Viewing Requested",
+  viewing_request_responded: "Viewing Request Answered",
   review_posted: "Review Posted",
   maintenance_request_created: "Maintenance Request",
 };

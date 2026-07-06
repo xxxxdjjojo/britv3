@@ -34,10 +34,12 @@ function formatTime(isoString: string): string {
 }
 
 const STATUS_STYLES: Record<Viewing["status"], string> = {
+  pending: "bg-warning/10 text-warning",
   confirmed: "bg-success/10 text-success",
   rescheduled: "bg-warning/10 text-warning",
   completed: "bg-brand-primary/10 text-brand-primary",
   cancelled: "bg-error/10 text-error",
+  declined: "bg-error/10 text-error",
 };
 
 const LEGEND: ReadonlyArray<{ label: string; dot: string }> = [

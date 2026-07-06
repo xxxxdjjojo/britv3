@@ -18,6 +18,7 @@ import type {
   SellerDashboard,
 } from "@/types/dashboard";
 import { getCached, invalidateCache, setCache } from "@/lib/cache/redis";
+import { resolveListingAddresses } from "@/services/viewings/viewings-service";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -106,7 +107,7 @@ async function buildHomebuyerDashboard(
   const [savedCount, searchCount, viewings, activity] = await Promise.all([
     safeCount(supabase, "saved_properties", "user_id", userId),
     safeCount(supabase, "saved_searches", "user_id", userId),
-    safeViewingsQuery(supabase, { user_id: userId, status: "confirmed" }, 5),
+    safeViewingsQuery(supabase, { kind: "user", id: userId, status: "confirmed" }, 5),
     getRecentActivity(supabase, userId, 5),
   ]);
 
@@ -190,7 +191,7 @@ async function buildSellerDashboard(
       { seller_id: userId },
       20,
     ),
-    safeViewingsQuery(supabase, { seller_id: userId }, 10),
+    safeViewingsQuery(supabase, { kind: "host", id: userId }, 10),
     safeQuery<{
       id: string;
       property_address: string;
@@ -292,7 +293,7 @@ async function buildAgentDashboard(
       { agent_id: userId },
       500,
     ),
-    safeViewingsQuery(supabase, { agent_id: userId }, 10),
+    safeViewingsQuery(supabase, { kind: "host", id: userId }, 10),
     safeQuerySingle<{ current_month: number; previous_month: number; year_to_date: number }>(
       supabase,
       "agent_revenue_summary",
@@ -469,58 +470,73 @@ export async function logActivity(
 // ---------------------------------------------------------------------------
 
 /**
- * Specialised query for viewings that JOINs viewing_slots → listings to
- * resolve the property address. The `viewings` table does not have a
- * `property_address` column; it is derived from the associated listing.
+ * Query viewings for a dashboard.
  *
- * Supabase foreign-key expand syntax:
- *   viewing_slots!inner( listings!inner(address) )
+ *  - kind "user": viewings the user booked/requested (viewings.user_id).
+ *  - kind "host": viewings on listings the user owns — captures both booked
+ *    (slot-based) and pending (slot-less "requested") viewings.
+ *
+ * `viewings.scheduled_at` does NOT exist; the time is the slot's start_time or,
+ * for a slot-less request, the preferred_time. The viewing_slots embed is OUTER
+ * so pending requests are not dropped. Address is resolved on `properties`.
  */
 async function safeViewingsQuery(
   supabase: SupabaseClient,
-  filters: Record<string, string>,
+  filter: { kind: "user" | "host"; id: string; status?: string },
   limit: number,
 ): Promise<Array<{ id: string; property_address: string; scheduled_at: string; status: string }>> {
   try {
+    let listingIds: string[] = [];
+    if (filter.kind === "host") {
+      const { data: owned } = await supabase
+        .from("listings")
+        .select("id")
+        .eq("user_id", filter.id);
+      listingIds = ((owned as Array<{ id: string }> | null) ?? []).map((l) => l.id);
+      if (listingIds.length === 0) return [];
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let query: any = supabase
       .from("viewings")
-      .select(
-        "id, scheduled_at, status, viewing_slots!inner(listings!inner(address))",
-      );
+      .select("id, status, created_at, preferred_time, listing_id, viewing_slots(start_time)");
 
-    for (const [key, val] of Object.entries(filters)) {
-      query = query.eq(key, val);
+    if (filter.kind === "user") {
+      query = query.eq("user_id", filter.id);
+    } else {
+      query = query.in("listing_id", listingIds);
     }
+    if (filter.status) query = query.eq("status", filter.status);
 
     const { data, error } = await query.limit(limit);
 
     if (error || !data) {
-      console.error("[dashboard-service] safeViewingsQuery failed", {
-        error,
-        filters,
-      });
+      console.error("[dashboard-service] safeViewingsQuery failed", { error, filter });
       return [];
     }
 
-    return (
-      data as Array<{
-        id: string;
-        scheduled_at: string;
-        status: string;
-        viewing_slots: { listings: { address: string } };
-      }>
-    ).map((row) => ({
+    const rows = data as Array<{
+      id: string;
+      status: string;
+      created_at: string;
+      preferred_time: string | null;
+      listing_id: string;
+      viewing_slots: { start_time: string } | null;
+    }>;
+
+    const addressMap = await resolveListingAddresses(
+      supabase,
+      rows.map((r) => r.listing_id),
+    );
+
+    return rows.map((row) => ({
       id: row.id,
-      scheduled_at: row.scheduled_at,
       status: row.status,
-      property_address: row.viewing_slots.listings.address,
+      scheduled_at: row.viewing_slots?.start_time ?? row.preferred_time ?? row.created_at,
+      property_address: addressMap.get(row.listing_id) ?? "Unknown address",
     }));
   } catch (err) {
-    console.error("[dashboard-service] safeViewingsQuery threw", {
-      error: err,
-      filters,
-    });
+    console.error("[dashboard-service] safeViewingsQuery threw", { error: err, filter });
     return [];
   }
 }

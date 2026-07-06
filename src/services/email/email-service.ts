@@ -423,6 +423,149 @@ export async function sendViewingConfirmation(params: {
 }
 
 // ---------------------------------------------------------------------------
+// 5b. Viewing booked — host notification
+// ---------------------------------------------------------------------------
+
+/** Escape a user-controlled value before embedding it in email HTML. */
+function esc(value: string): string {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
+function simpleEmailHtml(heading: string, lines: string[], ctaLabel: string, ctaUrl: string): string {
+  const body = lines.map((l) => `<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.5">${l}</p>`).join("");
+  return `<!DOCTYPE html><html><body style="margin:0;background:#f8fafc;padding:24px;font-family:-apple-system,Segoe UI,Roboto,sans-serif">
+<div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;border:1px solid #e2e8f0">
+<h1 style="margin:0 0 16px;color:#1B4D3E;font-size:20px">${heading}</h1>
+${body}
+<a href="${ctaUrl}" style="display:inline-block;margin-top:8px;background:#1B4D3E;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600;font-size:14px">${ctaLabel}</a>
+</div></body></html>`;
+}
+
+export async function sendViewingBookedHostEmail(params: {
+  userId: string;
+  email: string;
+  hostName: string;
+  propertyAddress: string;
+  viewingDate: string;
+  viewingTime: string;
+  bookerName: string;
+  dashboardUrl: string;
+}): Promise<void> {
+  const enabled = await checkUserEmailPref(params.userId, "email_viewing_reminders");
+  if (!enabled) {
+    await logEmail({
+      userId: params.userId,
+      template: "viewing-booked-host",
+      recipient: params.email,
+      status: "suppressed",
+      suppressionReason: "pref_disabled",
+    });
+    return;
+  }
+
+  try {
+    const html = simpleEmailHtml(
+      "New viewing booked",
+      [
+        `Hi ${esc(params.hostName || "there")},`,
+        `<strong>${esc(params.bookerName || "A buyer")}</strong> booked a viewing for <strong>${esc(params.propertyAddress)}</strong>.`,
+        `${esc(params.viewingDate)} at ${esc(params.viewingTime)}.`,
+      ],
+      "View in dashboard",
+      params.dashboardUrl,
+    );
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: `New viewing booked – ${params.propertyAddress}`,
+      html,
+    });
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "viewing-booked-host",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "viewing-booked-host",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendViewingBookedHostEmail failed", message);
+  }
+}
+
+export async function sendViewingRequestHostEmail(params: {
+  userId: string;
+  email: string;
+  hostName: string;
+  propertyAddress: string;
+  preferredTime: string;
+  dashboardUrl: string;
+}): Promise<void> {
+  const enabled = await checkUserEmailPref(params.userId, "email_viewing_reminders");
+  if (!enabled) {
+    await logEmail({
+      userId: params.userId,
+      template: "viewing-request-host",
+      recipient: params.email,
+      status: "suppressed",
+      suppressionReason: "pref_disabled",
+    });
+    return;
+  }
+
+  try {
+    const html = simpleEmailHtml(
+      "New viewing request",
+      [
+        `Hi ${esc(params.hostName || "there")},`,
+        `Someone requested a viewing for <strong>${esc(params.propertyAddress)}</strong>.`,
+        `Preferred time: ${esc(params.preferredTime)}.`,
+        `Confirm or propose an alternative from your dashboard.`,
+      ],
+      "Respond to request",
+      params.dashboardUrl,
+    );
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: `New viewing request – ${params.propertyAddress}`,
+      html,
+    });
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "viewing-request-host",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "viewing-request-host",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendViewingRequestHostEmail failed", message);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 6. Viewing Reminder
 // ---------------------------------------------------------------------------
 

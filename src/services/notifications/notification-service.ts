@@ -30,6 +30,8 @@ export const DIGEST_EVENTS: ReadonlySet<EventType> = new Set([
   "booking_updated",
   "milestone_updated",
   "viewing_scheduled",
+  "viewing_requested",
+  "viewing_request_responded",
   "review_posted",
 ]);
 
@@ -273,6 +275,17 @@ export async function getUserEntityIds(
 
   if (rfqs) {
     entityIds.push(...rfqs.map((r) => r.id));
+  }
+
+  // Viewings the user booked/requested — so viewing_request_responded events
+  // (keyed to the viewing id) reach the requester's feed.
+  const { data: viewings } = await supabase
+    .from("viewings")
+    .select("id")
+    .eq("user_id", userId);
+
+  if (viewings) {
+    entityIds.push(...viewings.map((v) => v.id));
   }
 
   return entityIds;

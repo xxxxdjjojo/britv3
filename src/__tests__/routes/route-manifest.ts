@@ -367,7 +367,8 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/landlord/searches",
   "/dashboard/landlord/services",
   "/dashboard/landlord/tenancy",
-  "/dashboard/landlord/viewings",
+  // /dashboard/landlord/viewings is now wired into landlord nav (host viewing
+  // management) — no longer off-nav. The book sub-page stays off-nav.
   "/dashboard/landlord/viewings/book",
   // Provider — provider-specific sub-pages plus shared `[role]` tools, none in nav.
   "/dashboard/provider/ai-match",

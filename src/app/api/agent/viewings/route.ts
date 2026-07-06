@@ -98,7 +98,9 @@ export async function POST(request: NextRequest) {
     const message =
       error instanceof Error ? error.message : "Failed to create viewing slot";
     console.error("Failed to create viewing slot:", error);
-    return NextResponse.json({ error: message }, { status: 500 });
+    // Ownership denial (RLS) is a 403, not a server error.
+    const status = message.includes("your own listings") ? 403 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 

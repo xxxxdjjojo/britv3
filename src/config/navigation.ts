@@ -580,6 +580,7 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
   landlord: [
     { href: "/dashboard/landlord", label: "Overview", icon: LayoutDashboard },
     { href: "/dashboard/landlord/properties", label: "Properties", icon: Building2 },
+    { href: "/dashboard/landlord/viewings", label: "Viewings", icon: Eye },
     { href: "/dashboard/landlord/tenants", label: "Tenants", icon: Users },
     { href: "/dashboard/landlord/rent", label: "Rent", icon: Banknote },
     { href: "/dashboard/landlord/compliance", label: "Compliance", icon: ShieldCheck },

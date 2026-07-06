@@ -38,6 +38,8 @@ const EVENT_ICONS: Record<EventType, typeof Bell> = {
   milestone_updated: Flag,
   offer_received: Package,
   viewing_scheduled: Eye,
+  viewing_requested: Eye,
+  viewing_request_responded: Eye,
   review_posted: Star,
   maintenance_request_created: Wrench,
 };

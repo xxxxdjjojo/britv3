@@ -6,11 +6,11 @@ import { ViewingCalendar } from "@/components/dashboard/agent/viewings/ViewingCa
 import { ViewingRequestsPanel } from "@/components/dashboard/viewings/ViewingRequestsPanel";
 
 export const metadata = {
-  title: "Viewing Calendar - Agent Dashboard",
-  description: "Manage and schedule property viewings",
+  title: "Viewings - Landlord Dashboard",
+  description: "Manage viewing availability and requests for your rentals",
 };
 
-export default async function AgentViewingsPage() {
+export default async function LandlordViewingsPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -36,9 +36,9 @@ export default async function AgentViewingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Viewing Calendar</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Viewings</h1>
         <p className="text-muted-foreground">
-          Schedule and manage property viewing slots
+          Publish availability and respond to viewing requests for your rentals
         </p>
       </div>
       <ViewingRequestsPanel requests={requests} />

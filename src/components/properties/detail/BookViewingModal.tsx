@@ -28,6 +28,14 @@ type BookingResponse = {
 
 type SlotStatus = "idle" | "loading" | "success" | "slot_taken" | "session_expired" | "error";
 
+type RequestStatus =
+  | "idle"
+  | "loading"
+  | "success"
+  | "already_requested"
+  | "session_expired"
+  | "error";
+
 type Props = Readonly<{
   propertyId: string;
   propertyStatus: string;
@@ -96,6 +104,41 @@ function BookViewingModalInner({
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [bookingStatus, setBookingStatus] = useState<SlotStatus>("idle");
   const [bookedViewingId, setBookedViewingId] = useState<string | null>(null);
+
+  // Request-a-viewing fallback (shown when no slots are published).
+  const [requestTime, setRequestTime] = useState("");
+  const [requestNotes, setRequestNotes] = useState("");
+  const [requestStatus, setRequestStatus] = useState<RequestStatus>("idle");
+
+  const handleRequest = async () => {
+    if (!requestTime) return;
+    setRequestStatus("loading");
+    try {
+      const res = await fetch(`/api/properties/${propertyId}/request-viewing`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          preferredTime: new Date(requestTime).toISOString(),
+          notes: requestNotes.trim() || undefined,
+        }),
+      });
+      if (res.status === 401) {
+        setRequestStatus("session_expired");
+        return;
+      }
+      if (res.status === 409) {
+        setRequestStatus("already_requested");
+        return;
+      }
+      if (!res.ok) {
+        setRequestStatus("error");
+        return;
+      }
+      setRequestStatus("success");
+    } catch {
+      setRequestStatus("error");
+    }
+  };
 
   const isSoldStc = propertyStatus === "sold_stc";
   const isUnderOffer = propertyStatus === "under_offer";
@@ -303,9 +346,75 @@ function BookViewingModalInner({
           </button>
         </div>
       ) : slots.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">
-          No viewing slots currently available. Check back soon.
-        </p>
+        <div className="space-y-2.5">
+          {requestStatus === "success" ? (
+            <div className="rounded-lg border border-[#1B4D3E]/20 bg-[#1B4D3E]/5 px-3 py-3 flex items-start gap-2">
+              <CheckCircle2 className="size-4 text-[#1B4D3E] shrink-0 mt-0.5" />
+              <p className="text-sm text-[#1B4D3E]">
+                Request sent. The agent or landlord will confirm your viewing shortly.
+              </p>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">
+                No set times yet — request a viewing and the host will confirm.
+              </p>
+              <div className="space-y-1">
+                <label htmlFor="request-time" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Preferred date & time
+                </label>
+                <input
+                  id="request-time"
+                  type="datetime-local"
+                  value={requestTime}
+                  onChange={(e) => {
+                    setRequestTime(e.target.value);
+                    setRequestStatus("idle");
+                  }}
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                />
+              </div>
+              <textarea
+                value={requestNotes}
+                onChange={(e) => setRequestNotes(e.target.value)}
+                placeholder="Anything the host should know? (optional)"
+                rows={2}
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+              />
+              {requestStatus === "already_requested" && (
+                <p className="text-xs text-amber-600">
+                  You already have an open request for this property.
+                </p>
+              )}
+              {requestStatus === "session_expired" && (
+                <p className="text-xs text-red-700 flex items-center gap-1">
+                  <LogIn className="size-3.5" />
+                  <Link href="/login" className="underline">Sign in</Link> to request a viewing.
+                </p>
+              )}
+              {requestStatus === "error" && (
+                <p className="text-xs text-red-700">Something went wrong. Please try again.</p>
+              )}
+              <Button
+                className="w-full bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white gap-2"
+                disabled={!requestTime || requestStatus === "loading"}
+                onClick={() => void handleRequest()}
+              >
+                {requestStatus === "loading" ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Sending…
+                  </>
+                ) : (
+                  <>
+                    <CalendarDays className="size-4" />
+                    Request a Viewing
+                  </>
+                )}
+              </Button>
+            </>
+          )}
+        </div>
       ) : (
         <div className="space-y-2">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
@@ -339,29 +448,31 @@ function BookViewingModalInner({
         </div>
       )}
 
-      {/* Submit */}
-      <Button
-        className="w-full bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white gap-2"
-        disabled={
-          !selectedSlotId ||
-          bookingStatus === "loading" ||
-          bookingStatus === "session_expired" ||
-          slotsLoading
-        }
-        onClick={() => void handleBook()}
-      >
-        {bookingStatus === "loading" ? (
-          <>
-            <Loader2 className="size-4 animate-spin" />
-            Booking…
-          </>
-        ) : (
-          <>
-            <CalendarDays className="size-4" />
-            {isUnderOffer ? "Request a Viewing" : "Book Viewing"}
-          </>
-        )}
-      </Button>
+      {/* Submit (slot booking). The no-slots request form has its own submit. */}
+      {slots.length > 0 && (
+        <Button
+          className="w-full bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white gap-2"
+          disabled={
+            !selectedSlotId ||
+            bookingStatus === "loading" ||
+            bookingStatus === "session_expired" ||
+            slotsLoading
+          }
+          onClick={() => void handleBook()}
+        >
+          {bookingStatus === "loading" ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Booking…
+            </>
+          ) : (
+            <>
+              <CalendarDays className="size-4" />
+              {isUnderOffer ? "Request a Viewing" : "Book Viewing"}
+            </>
+          )}
+        </Button>
+      )}
 
       <p className="text-xs text-muted-foreground text-center">
         Free to book. No obligation.

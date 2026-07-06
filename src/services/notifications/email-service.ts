@@ -449,6 +449,16 @@ function getEventContent(event: PlatformEvent): {
         title: "Viewing scheduled",
         cta: { label: "View details", url: `${baseUrl}/listings/${event.entity_id}` },
       };
+    case "viewing_requested":
+      return {
+        title: "New viewing request",
+        cta: { label: "Respond to request", url: `${baseUrl}/dashboard` },
+      };
+    case "viewing_request_responded":
+      return {
+        title: "Your viewing request was answered",
+        cta: { label: "View viewing", url: `${baseUrl}/dashboard` },
+      };
     case "review_posted":
       return {
         title: "New review posted",

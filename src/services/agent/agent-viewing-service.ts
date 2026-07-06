@@ -1,10 +1,45 @@
 /**
  * Agent Viewing Service — manage viewing slots and feedback.
  * All operations scoped to authenticated agent via agentId.
+ *
+ * Host availability lives in the canonical `viewing_slots` table (the same table
+ * the buyer-facing Book-a-Viewing modal reads), NOT the legacy
+ * `agent_viewing_slots`. This service keeps the historical `AgentViewingSlot`
+ * shape so its callers (agent dashboard, ViewingCalendar) need no change:
+ *   property_id ⇐ listing_id, is_booked ⇐ (status === 'booked').
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AgentViewingSlot, AgentViewingFeedback } from "@/types/agent";
+
+type ViewingSlotRow = {
+  id: string;
+  listing_id: string;
+  agent_id: string;
+  start_time: string;
+  end_time: string;
+  status: string;
+  booked_by: string | null;
+  notes: string | null;
+  created_at: string;
+};
+
+const SLOT_COLUMNS =
+  "id, listing_id, agent_id, start_time, end_time, status, booked_by, notes, created_at";
+
+function toAgentSlot(row: ViewingSlotRow): AgentViewingSlot {
+  return {
+    id: row.id,
+    agent_id: row.agent_id,
+    property_id: row.listing_id,
+    start_time: row.start_time,
+    end_time: row.end_time,
+    is_booked: row.status === "booked",
+    booked_by: row.booked_by,
+    notes: row.notes,
+    created_at: row.created_at,
+  };
+}
 
 /**
  * Get all viewing slots for an agent, with optional property and date filters.
@@ -16,12 +51,12 @@ export async function getAgentViewingSlots(
   dateRange?: { start: string; end: string },
 ): Promise<AgentViewingSlot[]> {
   let query = supabase
-    .from("agent_viewing_slots")
-    .select("*")
+    .from("viewing_slots")
+    .select(SLOT_COLUMNS)
     .eq("agent_id", agentId);
 
   if (propertyId) {
-    query = query.eq("property_id", propertyId);
+    query = query.eq("listing_id", propertyId);
   }
 
   if (dateRange) {
@@ -36,7 +71,7 @@ export async function getAgentViewingSlots(
     throw new Error(`Failed to fetch viewing slots: ${error.message}`);
   }
 
-  return (data ?? []) as AgentViewingSlot[];
+  return ((data ?? []) as ViewingSlotRow[]).map(toAgentSlot);
 }
 
 /**
@@ -58,25 +93,30 @@ export async function createViewingSlot(
   }
 
   const { data, error } = await supabase
-    .from("agent_viewing_slots")
+    .from("viewing_slots")
     .insert({
       agent_id: agentId,
-      property_id: input.property_id,
+      listing_id: input.property_id,
       start_time: input.start_time,
       end_time: input.end_time,
+      type: "in_person",
+      status: "available",
       notes: input.notes ?? null,
-      is_booked: false,
     })
-    .select()
+    .select(SLOT_COLUMNS)
     .single();
 
   if (error || !data) {
+    // RLS denies inserts against a listing the caller does not own.
+    if (error?.code === "42501") {
+      throw new Error("You can only add viewing slots to your own listings");
+    }
     throw new Error(
       `Failed to create viewing slot: ${error?.message ?? "no data"}`,
     );
   }
 
-  return data as AgentViewingSlot;
+  return toAgentSlot(data as ViewingSlotRow);
 }
 
 /**
@@ -90,8 +130,8 @@ export async function updateViewingSlot(
 ): Promise<AgentViewingSlot> {
   // Check the slot isn't already booked
   const { data: existing, error: fetchError } = await supabase
-    .from("agent_viewing_slots")
-    .select("is_booked")
+    .from("viewing_slots")
+    .select("status")
     .eq("id", slotId)
     .eq("agent_id", agentId)
     .single();
@@ -102,16 +142,16 @@ export async function updateViewingSlot(
     );
   }
 
-  if (existing.is_booked) {
+  if (existing.status === "booked") {
     throw new Error("Cannot update a booked viewing slot");
   }
 
   const { data, error } = await supabase
-    .from("agent_viewing_slots")
+    .from("viewing_slots")
     .update(input)
     .eq("id", slotId)
     .eq("agent_id", agentId)
-    .select()
+    .select(SLOT_COLUMNS)
     .single();
 
   if (error || !data) {
@@ -120,7 +160,7 @@ export async function updateViewingSlot(
     );
   }
 
-  return data as AgentViewingSlot;
+  return toAgentSlot(data as ViewingSlotRow);
 }
 
 /**
@@ -133,8 +173,8 @@ export async function deleteViewingSlot(
 ): Promise<void> {
   // Check the slot isn't already booked
   const { data: existing, error: fetchError } = await supabase
-    .from("agent_viewing_slots")
-    .select("is_booked")
+    .from("viewing_slots")
+    .select("status")
     .eq("id", slotId)
     .eq("agent_id", agentId)
     .single();
@@ -145,12 +185,12 @@ export async function deleteViewingSlot(
     );
   }
 
-  if (existing.is_booked) {
+  if (existing.status === "booked") {
     throw new Error("Cannot delete a booked viewing slot");
   }
 
   const { error } = await supabase
-    .from("agent_viewing_slots")
+    .from("viewing_slots")
     .delete()
     .eq("id", slotId)
     .eq("agent_id", agentId);
@@ -169,12 +209,27 @@ export async function getViewingFeedback(
   propertyId?: string,
 ): Promise<AgentViewingFeedback[]> {
   if (propertyId) {
-    // Join through agent_viewing_slots to filter by property
+    // Availability moved to viewing_slots (there is no FK from feedback to embed),
+    // so resolve the agent's slot ids for this listing, then filter feedback by
+    // them in a second step.
+    const { data: slots, error: slotsError } = await supabase
+      .from("viewing_slots")
+      .select("id")
+      .eq("agent_id", agentId)
+      .eq("listing_id", propertyId);
+
+    if (slotsError) {
+      throw new Error(`Failed to fetch viewing feedback: ${slotsError.message}`);
+    }
+
+    const slotIds = ((slots as Array<{ id: string }> | null) ?? []).map((s) => s.id);
+    if (slotIds.length === 0) return [];
+
     const { data, error } = await supabase
       .from("agent_viewing_feedback")
-      .select("*, agent_viewing_slots!inner(property_id)")
+      .select("*")
       .eq("agent_id", agentId)
-      .eq("agent_viewing_slots.property_id", propertyId)
+      .in("viewing_slot_id", slotIds)
       .order("created_at", { ascending: false });
 
     if (error) {
