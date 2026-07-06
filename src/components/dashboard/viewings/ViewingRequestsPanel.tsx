@@ -68,9 +68,9 @@ export function ViewingRequestsPanel({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <CalendarClock className="size-4 text-[#1B4D3E]" />
+          <CalendarClock className="size-4 text-brand-primary" />
           Viewing requests
-          <span className="ml-1 rounded-full bg-[#1B4D3E]/10 px-2 py-0.5 text-xs font-semibold text-[#1B4D3E]">
+          <span className="ml-1 rounded-full bg-brand-primary/10 px-2 py-0.5 text-xs font-semibold text-brand-primary">
             {rows.length}
           </span>
         </CardTitle>
@@ -79,7 +79,7 @@ export function ViewingRequestsPanel({
         {rows.map((r) => (
           <div
             key={r.id}
-            className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-[#1B4D3E]/30 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-brand-primary/30 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="min-w-0 space-y-1">
               <p className="truncate font-medium text-foreground">{r.requester_name}</p>
@@ -87,7 +87,7 @@ export function ViewingRequestsPanel({
                 <MapPin className="size-3.5 shrink-0" />
                 <span className="truncate">{r.property_address}</span>
               </p>
-              <p className="text-sm text-[#1B4D3E]">{formatPreferred(r.preferred_time)}</p>
+              <p className="text-sm text-brand-primary">{formatPreferred(r.preferred_time)}</p>
               {r.notes ? (
                 <p className="text-xs text-muted-foreground">&ldquo;{r.notes}&rdquo;</p>
               ) : null}
@@ -97,7 +97,7 @@ export function ViewingRequestsPanel({
                 size="sm"
                 disabled={busyId === r.id}
                 onClick={() => void respond(r.id, "confirm")}
-                className="bg-[#1B4D3E] hover:bg-[#163f33]"
+                className="bg-brand-primary hover:bg-brand-primary/90"
               >
                 <Check className="mr-1 size-4" />
                 Confirm
