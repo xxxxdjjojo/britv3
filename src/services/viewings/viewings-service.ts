@@ -192,6 +192,77 @@ export async function getViewings(
   }
 }
 
+export type PendingViewingRequest = Readonly<{
+  id: string;
+  listing_id: string;
+  property_address: string;
+  requester_name: string;
+  preferred_time: string | null;
+  notes: string | null;
+  created_at: string;
+}>;
+
+/**
+ * Get pending (slot-less) viewing requests on the host's listings, newest first.
+ * RLS lets the listing owner read viewings on their own listings.
+ */
+export async function getPendingViewingRequests(
+  supabase: SupabaseClient,
+  hostId: string,
+): Promise<PendingViewingRequest[]> {
+  const { data: owned } = await supabase
+    .from("listings")
+    .select("id")
+    .eq("user_id", hostId);
+
+  const listingIds = ((owned as Array<{ id: string }> | null) ?? []).map((l) => l.id);
+  if (listingIds.length === 0) return [];
+
+  const { data: rows } = await supabase
+    .from("viewings")
+    .select("id, listing_id, preferred_time, notes, created_at, user_id")
+    .in("listing_id", listingIds)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  const requests = (rows as Array<{
+    id: string;
+    listing_id: string;
+    preferred_time: string | null;
+    notes: string | null;
+    created_at: string;
+    user_id: string;
+  }> | null) ?? [];
+  if (requests.length === 0) return [];
+
+  const addressMap = await resolveListingAddresses(
+    supabase,
+    requests.map((r) => r.listing_id),
+  );
+
+  const userIds = [...new Set(requests.map((r) => r.user_id))];
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, display_name")
+    .in("id", userIds);
+  const nameMap = new Map<string, string>(
+    ((profiles as Array<{ id: string; display_name: string | null }> | null) ?? []).map((p) => [
+      p.id,
+      p.display_name ?? "A buyer",
+    ]),
+  );
+
+  return requests.map((r) => ({
+    id: r.id,
+    listing_id: r.listing_id,
+    property_address: addressMap.get(r.listing_id) ?? "Unknown address",
+    requester_name: nameMap.get(r.user_id) ?? "A buyer",
+    preferred_time: r.preferred_time,
+    notes: r.notes,
+    created_at: r.created_at,
+  }));
+}
+
 /**
  * Get available viewing slots for a listing.
  */
