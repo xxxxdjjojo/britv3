@@ -42,8 +42,8 @@ function buildCsp(nonce: string): string {
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com https://us-assets.i.posthog.com https://js.stripe.com`,
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com${localSupabase}`,
-    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com${localSupabase}`,
+    `img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com https://tiles.openfreemap.org${localSupabase}`,
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com https://tiles.openfreemap.org${localSupabase}`,
     "frame-src https://accounts.google.com https://appleid.apple.com https://js.stripe.com",
     "worker-src 'self' blob:",
     "form-action 'self'",
@@ -542,6 +542,6 @@ export const config = {
      *   search engines index nothing.
      * - Static file extensions
      */
-    "/((?!_next/static|_next/image|favicon\\.ico|sitemap\\.xml|robots\\.txt|opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest)$).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|sitemap\\.xml|robots\\.txt|opengraph-image|map/.*\\.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest)$).*)",
   ],
 };
