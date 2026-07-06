@@ -75,7 +75,6 @@ export default function DetailLayeredMapInner({
           initialViewState={{ latitude, longitude, zoom: 16, pitch: 58, bearing: -18 }}
           mapStyle={MAP_STYLE_URL}
           style={{ width: "100%", height: "100%" }}
-          antialias={true}
           cooperativeGestures
           ref={(ref) => { mapRef.current = (ref && typeof ref === "object" && "getMap" in ref) ? (ref as { getMap: () => maplibregl.Map }).getMap() : null; }}
         >
