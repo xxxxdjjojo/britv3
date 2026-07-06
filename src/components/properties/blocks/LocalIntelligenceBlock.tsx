@@ -27,6 +27,7 @@ export function LocalIntelligenceBlock({ view }: { view: PropertyView }) {
           latitude={coordinates.lat}
           longitude={coordinates.lng}
           address={view.address}
+          priceFormatted={view.priceFormatted}
         />
         <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="size-3.5" />

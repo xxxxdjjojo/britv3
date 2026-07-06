@@ -1,17 +1,18 @@
 "use client";
 // Dynamically imported (no SSR) — MapLibre needs `window`.
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Map as MapGL, Source, Layer, Marker, NavigationControl } from "@vis.gl/react-maplibre";
+import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { colourForBucket, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
 import { colourForSoldBucket, SOLD_INSUFFICIENT_COLOUR } from "@/lib/market-map/sold-colour";
 import { useMarketMapVersion } from "@/hooks/useMarketMapVersion";
+import { circlePolygon } from "@/lib/map/circle-polygon";
 
-const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
-const MAPTILER_STYLE = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`;
+const MAP_STYLE_URL = "/map/truedeed-style.json";
 
 const AREA_SOURCE = "detail-areas";
 const AREA_LAYER = "areas";
@@ -41,6 +42,7 @@ type DetailLayeredMapInnerProps = Readonly<{
   longitude: number;
   address: string;
   className?: string;
+  priceFormatted?: string;
 }>;
 
 export default function DetailLayeredMapInner({
@@ -48,25 +50,57 @@ export default function DetailLayeredMapInner({
   longitude,
   address,
   className,
+  priceFormatted,
 }: DetailLayeredMapInnerProps) {
   const dataVersion = useMarketMapVersion();
   const [showArea, setShowArea] = useState(true);
   const [showSold, setShowSold] = useState(false);
+  const [is3D, setIs3D] = useState(true);
+  const mapRef = useRef<maplibregl.Map | null>(null);
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const areaTiles = `${origin}/api/market-map/tiles/{z}/{x}/{y}?v=${dataVersion}`;
   const soldTiles = `${origin}/api/market-map/sold/{z}/{x}/{y}?v=${dataVersion}`;
 
+  const toggle3D = () => {
+    const next = !is3D;
+    setIs3D(next);
+    mapRef.current?.easeTo({ pitch: next ? 58 : 0, duration: 500 });
+  };
+
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <div className="relative h-72 rounded-xl overflow-hidden border">
         <MapGL
-          initialViewState={{ latitude, longitude, zoom: 13 }}
-          mapStyle={MAPTILER_STYLE}
+          initialViewState={{ latitude, longitude, zoom: 16, pitch: 58, bearing: -18 }}
+          mapStyle={MAP_STYLE_URL}
           style={{ width: "100%", height: "100%" }}
+          antialias={true}
           cooperativeGestures
+          ref={(ref) => { mapRef.current = (ref && typeof ref === "object" && "getMap" in ref) ? (ref as { getMap: () => maplibregl.Map }).getMap() : null; }}
         >
-          <NavigationControl position="top-right" showCompass={false} />
+          <NavigationControl position="top-right" visualizePitch={true} showCompass={true} />
+
+          <Source
+            id="td-zone"
+            type="geojson"
+            data={circlePolygon(longitude, latitude, 250)}
+          >
+            <Layer
+              id="td-zone-fill"
+              type="fill"
+              source="td-zone"
+              beforeId="td-buildings-3d"
+              paint={{ "fill-color": "#2D7A5F", "fill-opacity": 0.24 }}
+            />
+            <Layer
+              id="td-zone-line"
+              type="line"
+              source="td-zone"
+              beforeId="td-buildings-3d"
+              paint={{ "line-color": "#2D7A5F", "line-opacity": 0.55, "line-width": 1.5 }}
+            />
+          </Source>
 
           {showArea && (
             <Source id={AREA_SOURCE} type="vector" tiles={[areaTiles]} minzoom={4} maxzoom={14}>
@@ -75,6 +109,7 @@ export default function DetailLayeredMapInner({
                 type="fill"
                 source={AREA_SOURCE}
                 source-layer={AREA_LAYER}
+                beforeId="td-buildings-3d"
                 paint={{
                   "fill-color": AREA_FILL_COLOUR as unknown as string,
                   "fill-opacity": 0.55,
@@ -85,6 +120,7 @@ export default function DetailLayeredMapInner({
                 type="line"
                 source={AREA_SOURCE}
                 source-layer={AREA_LAYER}
+                beforeId="td-buildings-3d"
                 paint={{ "line-color": "rgba(255,255,255,0.4)", "line-width": 0.5 }}
               />
             </Source>
@@ -98,6 +134,7 @@ export default function DetailLayeredMapInner({
                 source={SOLD_SOURCE}
                 source-layer={SOLD_LAYER}
                 minzoom={SOLD_MINZOOM}
+                beforeId="td-buildings-3d"
                 paint={{
                   "fill-color": SOLD_FILL_COLOUR as unknown as string,
                   "fill-opacity": 0.7,
@@ -106,13 +143,25 @@ export default function DetailLayeredMapInner({
             </Source>
           )}
 
-          <Marker latitude={latitude} longitude={longitude}>
-            <div
-              className="flex size-7 items-center justify-center rounded-full border-2 border-white bg-[#1B4D3E] shadow-md"
-              aria-label={address}
-              title={address}
-            >
-              <span className="text-xs leading-none text-white">&#9679;</span>
+          <Marker latitude={latitude} longitude={longitude} anchor="bottom">
+            <div className="relative flex flex-col items-center">
+              <div
+                className="rounded-[var(--radius-md)] bg-[#1B4D3E] px-2.5 py-1 shadow-md"
+                aria-label={address}
+              >
+                <span className="whitespace-nowrap text-xs font-semibold leading-none text-white">
+                  {priceFormatted ?? address}
+                </span>
+              </div>
+              {/* CSS pointer triangle */}
+              <div
+                className="size-0"
+                style={{
+                  borderLeft: "5px solid transparent",
+                  borderRight: "5px solid transparent",
+                  borderTop: "6px solid #1B4D3E",
+                }}
+              />
             </div>
           </Marker>
         </MapGL>
@@ -122,6 +171,7 @@ export default function DetailLayeredMapInner({
         <span className="text-xs text-muted-foreground">Map layers:</span>
         <LayerChip label="Area prices" active={showArea} onClick={() => setShowArea((v) => !v)} />
         <LayerChip label="Sold prices" active={showSold} onClick={() => setShowSold((v) => !v)} />
+        <LayerChip label="3D" active={is3D} onClick={toggle3D} />
         <span className="text-[11px] text-muted-foreground">
           Zoom in for individual sold prices.
         </span>
