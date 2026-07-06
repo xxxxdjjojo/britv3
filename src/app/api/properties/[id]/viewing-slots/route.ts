@@ -1,6 +1,7 @@
 /* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/validation/uuid";
 
 // ---------------------------------------------------------------------------
 // GET /api/properties/[id]/viewing-slots
@@ -19,6 +20,10 @@ export async function GET(
 
   if (!propertyId) {
     return NextResponse.json({ error: "Missing property id" }, { status: 400 });
+  }
+
+  if (!isUuid(propertyId)) {
+    return NextResponse.json({ slots: [] }, { status: 200 });
   }
 
   const supabase = await createClient();
