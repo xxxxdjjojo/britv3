@@ -14,6 +14,7 @@ import {
 } from "@/lib/properties/build-property-view";
 import { BuyPropertyPage } from "@/components/properties/buy/BuyPropertyPage";
 import { RentPropertyPage } from "@/components/properties/rent/RentPropertyPage";
+import { getExistingViewingId } from "@/services/viewings/viewings-service";
 
 // ---------------------------------------------------------------------------
 // Rendering mode
@@ -113,14 +114,7 @@ export default async function PropertyPage({
 
   let existingViewingId: string | null = null;
   if (currentUserId) {
-    const { data: viewingRow } = await supabase
-      .from("property_viewings")
-      .select("id")
-      .eq("listing_id", listing.id)
-      .eq("buyer_id", currentUserId)
-      .in("status", ["pending", "confirmed"])
-      .maybeSingle();
-    existingViewingId = (viewingRow as { id: string } | null)?.id ?? null;
+    existingViewingId = await getExistingViewingId(supabase, currentUserId, listing.id);
   }
 
   const saveCount =

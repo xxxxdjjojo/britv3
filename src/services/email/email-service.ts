@@ -426,6 +426,16 @@ export async function sendViewingConfirmation(params: {
 // 5b. Viewing booked — host notification
 // ---------------------------------------------------------------------------
 
+/** Escape a user-controlled value before embedding it in email HTML. */
+function esc(value: string): string {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
 function simpleEmailHtml(heading: string, lines: string[], ctaLabel: string, ctaUrl: string): string {
   const body = lines.map((l) => `<p style="margin:0 0 12px;color:#334155;font-size:15px;line-height:1.5">${l}</p>`).join("");
   return `<!DOCTYPE html><html><body style="margin:0;background:#f8fafc;padding:24px;font-family:-apple-system,Segoe UI,Roboto,sans-serif">
@@ -462,9 +472,9 @@ export async function sendViewingBookedHostEmail(params: {
     const html = simpleEmailHtml(
       "New viewing booked",
       [
-        `Hi ${params.hostName || "there"},`,
-        `<strong>${params.bookerName || "A buyer"}</strong> booked a viewing for <strong>${params.propertyAddress}</strong>.`,
-        `${params.viewingDate} at ${params.viewingTime}.`,
+        `Hi ${esc(params.hostName || "there")},`,
+        `<strong>${esc(params.bookerName || "A buyer")}</strong> booked a viewing for <strong>${esc(params.propertyAddress)}</strong>.`,
+        `${esc(params.viewingDate)} at ${esc(params.viewingTime)}.`,
       ],
       "View in dashboard",
       params.dashboardUrl,
@@ -520,9 +530,9 @@ export async function sendViewingRequestHostEmail(params: {
     const html = simpleEmailHtml(
       "New viewing request",
       [
-        `Hi ${params.hostName || "there"},`,
-        `Someone requested a viewing for <strong>${params.propertyAddress}</strong>.`,
-        `Preferred time: ${params.preferredTime}.`,
+        `Hi ${esc(params.hostName || "there")},`,
+        `Someone requested a viewing for <strong>${esc(params.propertyAddress)}</strong>.`,
+        `Preferred time: ${esc(params.preferredTime)}.`,
         `Confirm or propose an alternative from your dashboard.`,
       ],
       "Respond to request",

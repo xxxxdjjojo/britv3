@@ -6,6 +6,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ServiceError } from "@/types/service-error";
+import { isUuid } from "@/lib/validation/uuid";
 
 export type { ServiceError };
 
@@ -13,14 +14,20 @@ export type { ServiceError };
 // Types
 // ---------------------------------------------------------------------------
 
-export type ViewingStatus = "confirmed" | "cancelled" | "rescheduled" | "completed";
+export type ViewingStatus =
+  | "pending"
+  | "confirmed"
+  | "cancelled"
+  | "rescheduled"
+  | "completed"
+  | "declined";
 
 export type Viewing = Readonly<{
   id: string;
   property_address: string;
   scheduled_at: string;
   status: ViewingStatus;
-  viewing_slot_id: string;
+  viewing_slot_id: string | null;
   listing_id: string;
   type: "in_person" | "virtual";
   notes: string | null;
@@ -44,6 +51,75 @@ function isServiceError(val: unknown): val is ServiceError {
   return typeof val === "object" && val !== null && "error" in val;
 }
 
+/**
+ * Resolve human-readable addresses for a set of listing ids. The address lives
+ * on `properties` (via `listings.property_id`), not on `listings` itself.
+ * Returns a Map keyed by listing id.
+ */
+export async function resolveListingAddresses(
+  supabase: SupabaseClient,
+  listingIds: string[],
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  const ids = [...new Set(listingIds)].filter(Boolean);
+  if (ids.length === 0) return map;
+
+  const { data: listings } = await supabase
+    .from("listings")
+    .select("id, property_id")
+    .in("id", ids);
+
+  const rows = (listings as Array<{ id: string; property_id: string }> | null) ?? [];
+  const propertyToListing = new Map<string, string>();
+  for (const l of rows) {
+    if (l.property_id) propertyToListing.set(l.property_id, l.id);
+  }
+  if (propertyToListing.size === 0) return map;
+
+  const { data: properties } = await supabase
+    .from("properties")
+    .select("id, address_line1, city, postcode")
+    .in("id", [...propertyToListing.keys()]);
+
+  for (const p of (properties as Array<{
+    id: string;
+    address_line1: string | null;
+    city: string | null;
+    postcode: string | null;
+  }> | null) ?? []) {
+    const listingId = propertyToListing.get(p.id);
+    if (!listingId) continue;
+    const parts = [p.address_line1, p.city, p.postcode].filter(Boolean);
+    map.set(listingId, parts.length > 0 ? parts.join(", ") : "Unknown address");
+  }
+  return map;
+}
+
+/**
+ * Return the id of the caller's open (pending/confirmed/rescheduled) viewing for
+ * a listing, or null. Guards against non-UUID (mock/demo) listing ids so it
+ * never issues a doomed uuid-cast query.
+ */
+export async function getExistingViewingId(
+  supabase: SupabaseClient,
+  userId: string,
+  listingId: string,
+): Promise<string | null> {
+  if (!isUuid(listingId)) return null;
+
+  const { data } = await supabase
+    .from("viewings")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("listing_id", listingId)
+    .in("status", ["pending", "confirmed", "rescheduled"])
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return (data as { id: string } | null)?.id ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Read
 // ---------------------------------------------------------------------------
@@ -60,11 +136,12 @@ export async function getViewings(
   userId: string,
 ): Promise<Viewing[] | ServiceError> {
   try {
-    // Step 1: Fetch viewings with slot data
+    // Step 1: Fetch viewings with slot data. OUTER embed on viewing_slots so
+    // slot-less "requested" (pending) viewings are not silently dropped.
     const { data: viewingsData, error: viewingsError } = await supabase
       .from("viewings")
       .select(
-        "id, status, type, notes, created_at, slot_id, listing_id, viewing_slots!inner(start_time, end_time)",
+        "id, status, type, notes, created_at, preferred_time, slot_id, listing_id, viewing_slots(start_time, end_time)",
       )
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
@@ -84,28 +161,24 @@ export async function getViewings(
       type: string;
       notes: string | null;
       created_at: string;
-      slot_id: string;
+      preferred_time: string | null;
+      slot_id: string | null;
       listing_id: string;
-      viewing_slots: { start_time: string; end_time: string };
+      viewing_slots: { start_time: string; end_time: string } | null;
     };
 
     const rows = viewingsData as unknown as RawRow[];
 
-    // Step 2: Resolve listing addresses
-    const listingIds = [...new Set(rows.map((r) => r.listing_id))];
-    const { data: listingsData } = await supabase
-      .from("listings")
-      .select("id, address")
-      .in("id", listingIds);
-
-    const addressMap = new Map<string, string>(
-      (listingsData as Array<{ id: string; address: string }> ?? []).map((l) => [l.id, l.address]),
+    // Step 2: Resolve listing addresses (address lives on properties).
+    const addressMap = await resolveListingAddresses(
+      supabase,
+      rows.map((r) => r.listing_id),
     );
 
     return rows.map((row) => ({
       id: row.id,
       property_address: addressMap.get(row.listing_id) ?? "Unknown address",
-      scheduled_at: row.viewing_slots.start_time,
+      scheduled_at: row.viewing_slots?.start_time ?? row.preferred_time ?? row.created_at,
       status: row.status as ViewingStatus,
       viewing_slot_id: row.slot_id,
       listing_id: row.listing_id,
