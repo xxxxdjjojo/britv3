@@ -168,7 +168,7 @@ const td3dLayer = {
     "fill-extrusion-height": [
       "coalesce",
       ["get", "render_height"],
-      ["+", 4, ["%", ["coalesce", ["id"], 7], 5]],
+      ["+", 4, ["%", ["to-number", ["coalesce", ["id"], 7], 7], 5]],
     ],
     "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
     "fill-extrusion-opacity": 0.95,

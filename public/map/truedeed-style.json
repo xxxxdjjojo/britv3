@@ -4209,9 +4209,13 @@
             [
               "%",
               [
-                "coalesce",
+                "to-number",
                 [
-                  "id"
+                  "coalesce",
+                  [
+                    "id"
+                  ],
+                  7
                 ],
                 7
               ],
