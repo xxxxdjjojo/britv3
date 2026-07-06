@@ -209,12 +209,27 @@ export async function getViewingFeedback(
   propertyId?: string,
 ): Promise<AgentViewingFeedback[]> {
   if (propertyId) {
-    // Join through agent_viewing_slots to filter by property
+    // Availability moved to viewing_slots (there is no FK from feedback to embed),
+    // so resolve the agent's slot ids for this listing, then filter feedback by
+    // them in a second step.
+    const { data: slots, error: slotsError } = await supabase
+      .from("viewing_slots")
+      .select("id")
+      .eq("agent_id", agentId)
+      .eq("listing_id", propertyId);
+
+    if (slotsError) {
+      throw new Error(`Failed to fetch viewing feedback: ${slotsError.message}`);
+    }
+
+    const slotIds = ((slots as Array<{ id: string }> | null) ?? []).map((s) => s.id);
+    if (slotIds.length === 0) return [];
+
     const { data, error } = await supabase
       .from("agent_viewing_feedback")
-      .select("*, agent_viewing_slots!inner(property_id)")
+      .select("*")
       .eq("agent_id", agentId)
-      .eq("agent_viewing_slots.property_id", propertyId)
+      .in("viewing_slot_id", slotIds)
       .order("created_at", { ascending: false });
 
     if (error) {
