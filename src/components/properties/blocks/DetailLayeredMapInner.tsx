@@ -1,7 +1,7 @@
 "use client";
 // Dynamically imported (no SSR) — MapLibre needs `window`.
 
-import { useState, useRef } from "react";
+import { useState, useRef, Fragment } from "react";
 import { Map as MapGL, Source, Layer, Marker, NavigationControl } from "@vis.gl/react-maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -11,6 +11,14 @@ import { colourForBucket, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
 import { colourForSoldBucket, SOLD_INSUFFICIENT_COLOUR } from "@/lib/market-map/sold-colour";
 import { useMarketMapVersion } from "@/hooks/useMarketMapVersion";
 import { circlePolygon } from "@/lib/map/circle-polygon";
+import {
+  POI_CATEGORIES,
+  ALL_POI_KEYS,
+  poiCircleLayerSpec,
+  poiTextLayerSpec,
+  type PoiCategoryKey,
+} from "@/lib/map/poi-categories";
+import { MapPoiPanel } from "@/components/map/MapPoiPanel";
 
 const MAP_STYLE_URL = "/map/truedeed-style.json";
 
@@ -62,10 +70,22 @@ export default function DetailLayeredMapInner({
   const areaTiles = `${origin}/api/market-map/tiles/{z}/{x}/{y}?v=${dataVersion}`;
   const soldTiles = `${origin}/api/market-map/sold/{z}/{x}/{y}?v=${dataVersion}`;
 
+  const [enabledPoi, setEnabledPoi] = useState<Set<PoiCategoryKey>>(() => new Set(ALL_POI_KEYS));
+  const togglePoi = (key: PoiCategoryKey) =>
+    setEnabledPoi((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+
   const toggle3D = () => {
     const next = !is3D;
     setIs3D(next);
-    mapRef.current?.easeTo({ pitch: next ? 58 : 0, duration: 500 });
+    mapRef.current?.easeTo({ pitch: next ? 58 : 0, bearing: next ? -18 : 0, duration: 500 });
   };
 
   return (
@@ -163,7 +183,20 @@ export default function DetailLayeredMapInner({
               />
             </div>
           </Marker>
+
+          {POI_CATEGORIES.filter((c) => enabledPoi.has(c.key)).map((c) => (
+            <Fragment key={c.key}>
+              <Layer {...poiCircleLayerSpec(c)} />
+              <Layer {...poiTextLayerSpec(c)} />
+            </Fragment>
+          ))}
         </MapGL>
+
+        <MapPoiPanel
+          enabled={enabledPoi}
+          onToggle={togglePoi}
+          className="absolute left-3 top-3 z-10 w-52 max-w-[60%]"
+        />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
