@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { captureException } from "@/lib/observability/capture-exception";
 import { getAgentLeads } from "@/services/agent/agent-lead-service";
 import { LeadPipelineKanban } from "@/components/dashboard/agent/leads/LeadPipelineKanban";
 import type { AgentLead, LeadStage } from "@/types/agent";
@@ -22,7 +23,13 @@ export default async function AgentLeadsPage() {
 
   try {
     leads = await getAgentLeads(supabase, user.id);
-  } catch {
+  } catch (error) {
+    captureException(error, {
+      module: "dashboard",
+      feature: "agent",
+      route: "/dashboard/agent/leads",
+      operation: "getAgentLeads",
+    });
     // Service call failed — render an empty board
   }
 

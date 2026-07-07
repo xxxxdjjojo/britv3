@@ -397,13 +397,13 @@ export async function proxy(request: NextRequest) {
     }
 
     // ── Professional verification gate ────────────────────────────────────
-    // Providers and agents must be verified before accessing most dashboard
-    // pages. Exempt: overview, billing, verification, and referrals pages.
+    // Only providers carry a blanket verification gate before accessing most
+    // dashboard pages. Agents are trust-checked at action/API boundaries, not
+    // at the dashboard wall (a phantom /dashboard/agent/verification redirect
+    // previously 404'd every non-professional agent).
+    // Exempt: overview, billing, verification, and referrals pages.
     // JWT path: fail open — verification status isn't in JWT claims yet.
-    const VERIFICATION_GATED_PREFIXES = [
-      "/dashboard/agent",
-      "/dashboard/provider",
-    ] as const;
+    const VERIFICATION_GATED_PREFIXES = ["/dashboard/provider"] as const;
 
     const isVerificationGatedRoute = VERIFICATION_GATED_PREFIXES.some(
       (prefix) => pathname.startsWith(prefix),
@@ -418,21 +418,16 @@ export async function proxy(request: NextRequest) {
         isProviderOpenPage;
 
       if (!isVerificationExempt) {
-        const isProvider = pathname.startsWith("/dashboard/provider");
-        const isAgent = pathname.startsWith("/dashboard/agent");
-
+        // The gate is provider-only (see VERIFICATION_GATED_PREFIXES), so the
+        // redirect target is a literal — never build it from a role variable, or
+        // a future gate addition silently resurrects a phantom redirect (the
+        // exact bug this block used to have for agents).
         const providerVerified =
           profileData?.provider_verification_status === "verified";
-        const agentVerified =
-          profileData?.verification_level === "professional";
 
-        if (
-          (isProvider && !providerVerified) ||
-          (isAgent && !agentVerified)
-        ) {
-          const role = isProvider ? "provider" : "agent";
+        if (!providerVerified) {
           return redirectWithHeaders(
-            `/dashboard/${role}/verification`,
+            "/dashboard/provider/verification",
             nonce,
             request,
           );

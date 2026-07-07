@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { PoundSterling, TrendingUp, Home, BarChart3 } from "lucide-react";
 import { getAgentPerformanceReport } from "@/services/agent/agent-analytics-service";
+import { captureException } from "@/lib/observability/capture-exception";
 import type { AgentCommission } from "@/types/agent";
 
 function penceToGBP(pence: number): string {
@@ -52,7 +53,13 @@ export default async function RevenuePage() {
 
   try {
     report = await getAgentPerformanceReport(supabase, user.id);
-  } catch {
+  } catch (error) {
+    captureException(error, {
+      module: "dashboard",
+      feature: "agent",
+      route: "/dashboard/agent/revenue",
+      operation: "getAgentPerformanceReport",
+    });
     // empty state
   }
 
@@ -64,7 +71,13 @@ export default async function RevenuePage() {
       .order("created_at", { ascending: false })
       .limit(5);
     recentCommissions = (data ?? []) as AgentCommission[];
-  } catch {
+  } catch (error) {
+    captureException(error, {
+      module: "dashboard",
+      feature: "agent",
+      route: "/dashboard/agent/revenue",
+      operation: "getRecentCommissions",
+    });
     // empty state
   }
 

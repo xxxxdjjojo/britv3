@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { captureException } from "@/lib/observability/capture-exception";
 import { getAgentDashboardKpis, getAgentActivityFeed, getTodaysDiary } from "@/services/agent/agent-dashboard-service";
 import { AgentDashboardHome } from "@/components/dashboard/agent/AgentDashboardHome";
 import type { DiaryViewingSlot } from "@/types/agent";
@@ -30,19 +31,37 @@ export default async function AgentDashboardPage() {
 
   try {
     kpis = await getAgentDashboardKpis(supabase, user.id);
-  } catch {
+  } catch (error) {
+    captureException(error, {
+      module: "dashboard",
+      feature: "agent",
+      route: "/dashboard/agent",
+      operation: "getAgentDashboardKpis",
+    });
     // RPC may not exist yet in all envs — fall back to zeros
   }
 
   try {
     activityFeed = await getAgentActivityFeed(supabase, user.id, 20);
-  } catch {
+  } catch (error) {
+    captureException(error, {
+      module: "dashboard",
+      feature: "agent",
+      route: "/dashboard/agent",
+      operation: "getAgentActivityFeed",
+    });
     // Activity feed table may be empty — fail gracefully
   }
 
   try {
     todaysDiary = await getTodaysDiary(supabase, user.id);
-  } catch {
+  } catch (error) {
+    captureException(error, {
+      module: "dashboard",
+      feature: "agent",
+      route: "/dashboard/agent",
+      operation: "getTodaysDiary",
+    });
     // Viewing slots may be empty — fail gracefully
   }
 

@@ -179,14 +179,16 @@ visible heading — so **nav-link integrity for in-nav items is already covered*
 
 **Auth enforcement (`src/middleware.ts`):** JWT custom claims (role/plan/is_admin/admin_role) with
 DB fallback; AAL2/MFA enforcement; role-route authorization (a buyer cannot load `/dashboard/agent`);
-professional-verification gate (providers/agents must be verified for some routes); subscription
-gate for certain routes; admin permission gate for `/admin/*`.
+professional-verification gate (providers must be verified for most provider routes; agent
+sections are open and trust-checked at action/API boundaries, not walled by verification);
+subscription gate for certain routes; admin permission gate for `/admin/*`.
 
 **Role dashboard gating:** `(protected)/dashboard/[role]/layout.tsx` validates URL role ===
 `profiles.active_role`; mismatch → redirect to the user's actual dashboard.
 
-**Provider/agent verification gate:** provider dashboard layout requires
+**Provider verification gate:** provider dashboard layout requires
 `active_role === "service_provider"`; verification status drives banners and some route access.
+Agent dashboard sections are NOT verification-walled (subscription gate still applies).
 
 **Admin permission model (`src/lib/admin-permissions.ts`):**
 - **Roles:** `super_admin`, `moderation_admin`, `ops_admin`, `dev_admin`.
@@ -200,7 +202,7 @@ gate for certain routes; admin permission gate for `/admin/*`.
   and `/admin/truedeed/*` use **custom/ad-hoc admin checks**, not the permission map — a gap to test.
 
 **Permission test priorities:** (a) cross-role URL access blocked; (b) unauthenticated → `/login`;
-(c) unverified provider/agent gating; (d) admin sub-role can only reach permitted routes;
+(c) unverified provider gating (agent sections are not verification-walled); (d) admin sub-role can only reach permitted routes;
 (e) RLS denies cross-user data access (currently only DB-test covered, no negative E2E).
 
 ---

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { captureException } from "@/lib/observability/capture-exception";
 import { getTeamMembers, getBranches } from "@/services/agent/agent-team-service";
 import { TeamMemberList } from "@/components/dashboard/agent/team/TeamMemberList";
 import type { AgentTeamMember, AgentBranch } from "@/types/agent";
@@ -26,7 +27,13 @@ export default async function AgentTeamPage() {
       getTeamMembers(supabase, user.id),
       getBranches(supabase, user.id),
     ]);
-  } catch {
+  } catch (error) {
+    captureException(error, {
+      module: "dashboard",
+      feature: "agent",
+      route: "/dashboard/agent/team",
+      operation: "getTeamMembers+getBranches",
+    });
     // Service call failed — render empty state
   }
 
