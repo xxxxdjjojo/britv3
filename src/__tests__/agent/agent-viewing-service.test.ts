@@ -87,6 +87,64 @@ describe("agent-viewing-service — unified on viewing_slots", () => {
     expect(slots[0].booked_by).toBe("buyer-1");
   });
 
+  it("getAgentViewingSlots derives a human property_label from the embedded listing address", async () => {
+    const { supabase } = makeSupabase([
+      {
+        data: [
+          {
+            id: SLOT_ID,
+            listing_id: LISTING_ID,
+            agent_id: AGENT_ID,
+            start_time: "2027-03-29T10:00:00Z",
+            end_time: "2027-03-29T10:30:00Z",
+            status: "available",
+            booked_by: null,
+            notes: null,
+            created_at: "2027-03-01T00:00:00Z",
+            listings: {
+              properties: {
+                title: "Charming 3-Bed Semi in Primrose Hill",
+                address_line1: "8 Primrose Hill Road",
+                city: "London",
+                postcode: "NW1 8YD",
+              },
+            },
+          },
+        ],
+        error: null,
+      },
+    ]);
+
+    const slots = await getAgentViewingSlots(supabase, AGENT_ID);
+
+    expect(slots[0].property_label).toBe("8 Primrose Hill Road, NW1 8YD");
+  });
+
+  it("getAgentViewingSlots falls back to null property_label when no listing address is present", async () => {
+    const { supabase } = makeSupabase([
+      {
+        data: [
+          {
+            id: SLOT_ID,
+            listing_id: LISTING_ID,
+            agent_id: AGENT_ID,
+            start_time: "2027-03-29T10:00:00Z",
+            end_time: "2027-03-29T10:30:00Z",
+            status: "available",
+            booked_by: null,
+            notes: null,
+            created_at: "2027-03-01T00:00:00Z",
+          },
+        ],
+        error: null,
+      },
+    ]);
+
+    const slots = await getAgentViewingSlots(supabase, AGENT_ID);
+
+    expect(slots[0].property_label).toBeNull();
+  });
+
   it("createViewingSlot inserts an available viewing_slots row", async () => {
     const { supabase, ops } = makeSupabase([
       {

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, type DayButtonProps } from "react-day-picker";
 import "react-day-picker/style.css";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +49,45 @@ function getWeekDays(date: Date): Date[] {
   });
 }
 
+/**
+ * Calendar day cell with at-a-glance indicator dots: blue when the day has a
+ * booked viewing, green when it has an available slot (both can show together).
+ */
+function CalendarDayButton({
+  day,
+  modifiers,
+  children,
+  className,
+  ...buttonProps
+}: DayButtonProps) {
+  const hasBooked = Boolean(modifiers.booked);
+  const hasAvailable = Boolean(modifiers.available);
+  return (
+    <button {...buttonProps} className={cn("relative", className)}>
+      {children ?? day.date.getDate()}
+      {(hasBooked || hasAvailable) && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0.5 flex justify-center gap-0.5"
+        >
+          {hasBooked && (
+            <span
+              data-testid="viewing-dot-booked"
+              className="size-1.5 rounded-full bg-blue-500"
+            />
+          )}
+          {hasAvailable && (
+            <span
+              data-testid="viewing-dot-available"
+              className="size-1.5 rounded-full bg-green-500"
+            />
+          )}
+        </span>
+      )}
+    </button>
+  );
+}
+
 function SlotBadge({ slot }: Readonly<{ slot: AgentViewingSlot }>) {
   return (
     <div
@@ -59,9 +99,7 @@ function SlotBadge({ slot }: Readonly<{ slot: AgentViewingSlot }>) {
     >
       <span className="font-medium">{formatTime(slot.start_time)}</span>
       {" — "}
-      <span className="truncate">
-        {slot.is_booked ? (slot.booked_by ?? "Booked") : "Available"}
-      </span>
+      <span className="truncate">{slot.is_booked ? "Booked" : "Available"}</span>
     </div>
   );
 }
@@ -230,13 +268,10 @@ function DaySlotList({
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Home className="size-3" />
-              <span className="truncate">{slot.property_id}</span>
+              <span className="truncate">
+                {slot.property_label ?? slot.property_id}
+              </span>
             </div>
-            {slot.is_booked && slot.booked_by && (
-              <p className="text-xs text-muted-foreground">
-                Buyer: {slot.booked_by}
-              </p>
-            )}
           </div>
         </div>
       ))}
@@ -392,11 +427,7 @@ export function ViewingCalendar({
                 booked: bookedDays,
                 available: availableDays,
               }}
-              modifiersClassNames={{
-                booked: "rdp-day-booked",
-                available: "rdp-day-available",
-              }}
-              styles={{}}
+              components={{ DayButton: CalendarDayButton }}
             />
             {/* Legend */}
             <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">

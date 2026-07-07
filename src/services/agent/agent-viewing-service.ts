@@ -12,6 +12,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AgentViewingSlot, AgentViewingFeedback } from "@/types/agent";
 
+type ListingAddress = {
+  title: string | null;
+  address_line1: string | null;
+  city: string | null;
+  postcode: string | null;
+};
+
 type ViewingSlotRow = {
   id: string;
   listing_id: string;
@@ -22,16 +29,47 @@ type ViewingSlotRow = {
   booked_by: string | null;
   notes: string | null;
   created_at: string;
+  // Embedded via listing_id → listings → properties (absent on create/update
+  // returns where the embed is not requested). A to-one embed resolves to an
+  // object at runtime; the supabase-js select-string parser types it as an
+  // array, so accept either shape and normalise in `firstOrSelf`.
+  listings?: EmbeddedOne<{ properties: EmbeddedOne<ListingAddress> }>;
 };
 
+/** A PostgREST to-one embed: an object at runtime, array in the inferred type. */
+type EmbeddedOne<T> = T | T[] | null;
+
+/** Collapse a to-one embed (object, single-element array, or null) to T | null. */
+function firstOrSelf<T>(value: EmbeddedOne<T> | undefined): T | null {
+  if (value == null) return null;
+  return Array.isArray(value) ? (value[0] ?? null) : value;
+}
+
 const SLOT_COLUMNS =
-  "id, listing_id, agent_id, start_time, end_time, status, booked_by, notes, created_at";
+  "id, listing_id, agent_id, start_time, end_time, status, booked_by, notes, created_at, listings(properties(title, address_line1, city, postcode))";
+
+/**
+ * Build a human-readable property label (street + postcode, falling back to the
+ * listing title) from the embedded listing address, or null when unavailable.
+ */
+function toPropertyLabel(
+  address: ListingAddress | null | undefined,
+): string | null {
+  if (!address) return null;
+  const line = [address.address_line1, address.postcode]
+    .filter(Boolean)
+    .join(", ");
+  return line || address.title || null;
+}
 
 function toAgentSlot(row: ViewingSlotRow): AgentViewingSlot {
   return {
     id: row.id,
     agent_id: row.agent_id,
     property_id: row.listing_id,
+    property_label: toPropertyLabel(
+      firstOrSelf(firstOrSelf(row.listings)?.properties),
+    ),
     start_time: row.start_time,
     end_time: row.end_time,
     is_booked: row.status === "booked",
@@ -71,7 +109,7 @@ export async function getAgentViewingSlots(
     throw new Error(`Failed to fetch viewing slots: ${error.message}`);
   }
 
-  return ((data ?? []) as ViewingSlotRow[]).map(toAgentSlot);
+  return ((data ?? []) as unknown as ViewingSlotRow[]).map(toAgentSlot);
 }
 
 /**
@@ -116,7 +154,7 @@ export async function createViewingSlot(
     );
   }
 
-  return toAgentSlot(data as ViewingSlotRow);
+  return toAgentSlot(data as unknown as ViewingSlotRow);
 }
 
 /**
@@ -160,7 +198,7 @@ export async function updateViewingSlot(
     );
   }
 
-  return toAgentSlot(data as ViewingSlotRow);
+  return toAgentSlot(data as unknown as ViewingSlotRow);
 }
 
 /**

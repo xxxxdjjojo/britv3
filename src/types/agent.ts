@@ -348,6 +348,8 @@ export type AgentViewingSlot = Readonly<{
   id: string;
   agent_id: string;
   property_id: string;
+  /** Human-readable property address (street + postcode), null if unknown. */
+  property_label: string | null;
   start_time: string;
   end_time: string;
   is_booked: boolean;
