@@ -418,21 +418,16 @@ export async function proxy(request: NextRequest) {
         isProviderOpenPage;
 
       if (!isVerificationExempt) {
-        const isProvider = pathname.startsWith("/dashboard/provider");
-        const isAgent = pathname.startsWith("/dashboard/agent");
-
+        // The gate is provider-only (see VERIFICATION_GATED_PREFIXES), so the
+        // redirect target is a literal — never build it from a role variable, or
+        // a future gate addition silently resurrects a phantom redirect (the
+        // exact bug this block used to have for agents).
         const providerVerified =
           profileData?.provider_verification_status === "verified";
-        const agentVerified =
-          profileData?.verification_level === "professional";
 
-        if (
-          (isProvider && !providerVerified) ||
-          (isAgent && !agentVerified)
-        ) {
-          const role = isProvider ? "provider" : "agent";
+        if (!providerVerified) {
           return redirectWithHeaders(
-            `/dashboard/${role}/verification`,
+            "/dashboard/provider/verification",
             nonce,
             request,
           );

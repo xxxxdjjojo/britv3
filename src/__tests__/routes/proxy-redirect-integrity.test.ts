@@ -58,7 +58,9 @@ function gatePrefixes(src: string, name: string): string[] {
     throw new Error(`Could not locate array literal ${name} in proxy source`);
   }
   const out: string[] = [];
-  const entryRe = /[`"'](\/dashboard\/[^`"']+)[`"']/g;
+  // Match any absolute-path entry, not just `/dashboard/*`, so a gate prefix
+  // added outside `/dashboard` can never be silently skipped by this guard.
+  const entryRe = /[`"'](\/[^`"']+)[`"']/g;
   let m: RegExpExecArray | null;
   while ((m = entryRe.exec(body))) out.push(m[1]);
   return out;
@@ -67,7 +69,9 @@ function gatePrefixes(src: string, name: string): string[] {
 describe("proxy redirect-target integrity", () => {
   it("every literal redirect target resolves to a real route", () => {
     const targets = literalRedirectTargets(PROXY_SRC);
-    expect(targets.length).toBeGreaterThan(0);
+    // Canary: the auth redirect is always present. Guards against the extraction
+    // regex silently matching zero targets and this test passing vacuously.
+    expect(targets).toContain("/login");
 
     const broken = targets.filter((t) => resolveAppRoute(t) === null);
     expect(

@@ -431,4 +431,32 @@ describe("agent dashboard verification gate removed", () => {
       expect(response.headers.get("location")).toBeNull();
     },
   );
+
+  it("still redirects an agent with NO subscription to billing checkout (only the verification gate was removed)", async () => {
+    isFeatureEnabledMock.mockReturnValue(false); // force DB path
+    const { supabase } = buildSupabaseMock({
+      user: { id: "agent-1" }, // no app_metadata.role → DB profile lookup
+      profile: {
+        data: {
+          active_role: "agent",
+          is_admin: false,
+          admin_role: null,
+          provider_verification_status: null,
+          verification_level: "basic",
+        },
+        error: null,
+      },
+      // No active subscription → the subscription gate must still bite.
+      subscription: { kind: "ok", row: null },
+    });
+    createServerClientMock.mockReturnValue(supabase);
+
+    const { proxy } = await import("../proxy");
+    const response = await proxy(makeRequest("/dashboard/agent/leads"));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toContain(
+      "/dashboard/agent/billing/checkout/subscription",
+    );
+  });
 });
