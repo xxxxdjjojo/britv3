@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { captureException } from "@/lib/observability/capture-exception";
 import { getAgentViewingSlots } from "@/services/agent/agent-viewing-service";
 import { getPendingViewingRequests } from "@/services/viewings/viewings-service";
 import { ViewingCalendar } from "@/components/dashboard/agent/viewings/ViewingCalendar";
@@ -29,8 +30,24 @@ export default async function AgentViewingsPage() {
     getAgentViewingSlots(supabase, user.id, undefined, {
       start: start.toISOString(),
       end: end.toISOString(),
-    }).catch(() => []),
-    getPendingViewingRequests(supabase, user.id).catch(() => []),
+    }).catch((error) => {
+      captureException(error, {
+        module: "dashboard",
+        feature: "agent",
+        route: "/dashboard/agent/viewings",
+        operation: "getAgentViewingSlots",
+      });
+      return [];
+    }),
+    getPendingViewingRequests(supabase, user.id).catch((error) => {
+      captureException(error, {
+        module: "dashboard",
+        feature: "agent",
+        route: "/dashboard/agent/viewings",
+        operation: "getPendingViewingRequests",
+      });
+      return [];
+    }),
   ]);
 
   return (

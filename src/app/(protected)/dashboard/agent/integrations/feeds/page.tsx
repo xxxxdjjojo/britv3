@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { captureException } from "@/lib/observability/capture-exception";
 import { getFeedIntegrations } from "@/services/agent/agent-feed-service";
 import { FeedIntegrationConfig } from "@/components/dashboard/agent/integrations/FeedIntegrationConfig";
 
@@ -19,7 +20,13 @@ export default async function AgentFeedsPage() {
 
   try {
     initialIntegrations = await getFeedIntegrations(supabase, user.id);
-  } catch {
+  } catch (error) {
+    captureException(error, {
+      module: "dashboard",
+      feature: "agent",
+      route: "/dashboard/agent/integrations/feeds",
+      operation: "getFeedIntegrations",
+    });
     // Table may not exist in dev — render empty state gracefully
   }
 
