@@ -397,13 +397,13 @@ export async function proxy(request: NextRequest) {
     }
 
     // ── Professional verification gate ────────────────────────────────────
-    // Providers and agents must be verified before accessing most dashboard
-    // pages. Exempt: overview, billing, verification, and referrals pages.
+    // Only providers carry a blanket verification gate before accessing most
+    // dashboard pages. Agents are trust-checked at action/API boundaries, not
+    // at the dashboard wall (a phantom /dashboard/agent/verification redirect
+    // previously 404'd every non-professional agent).
+    // Exempt: overview, billing, verification, and referrals pages.
     // JWT path: fail open — verification status isn't in JWT claims yet.
-    const VERIFICATION_GATED_PREFIXES = [
-      "/dashboard/agent",
-      "/dashboard/provider",
-    ] as const;
+    const VERIFICATION_GATED_PREFIXES = ["/dashboard/provider"] as const;
 
     const isVerificationGatedRoute = VERIFICATION_GATED_PREFIXES.some(
       (prefix) => pathname.startsWith(prefix),
