@@ -57,6 +57,7 @@
     "@tiptap/starter-kit": "^3.20.4",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.3",
+    "@vercel/analytics": "^2.0.1",
     "@vis.gl/react-maplibre": "^8.1.0",
     "browser-image-compression": "^2.0.2",
     "canvas-confetti": "^1.9.4",
