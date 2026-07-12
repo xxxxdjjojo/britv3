@@ -17,7 +17,7 @@ const REVIEWABLE: ReadonlySet<ProviderReferenceStatus> = new Set([
 
 const STATUS_STYLES: Record<ProviderReferenceStatus, string> = {
   pending: "bg-neutral-100 text-neutral-600",
-  sent: "bg-blue-50 text-blue-700",
+  sent: "bg-teal-50 text-teal-700",
   submitted: "bg-amber-50 text-amber-700",
   verified: "bg-green-50 text-green-700",
   declined: "bg-neutral-100 text-neutral-600",
@@ -150,7 +150,7 @@ function ReferenceRow({ reference }: { reference: AdminReferenceView }) {
       )}
 
       {reference.reference_text && (
-        <blockquote className="mt-3 rounded border-l-2 border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700">
+        <blockquote className="mt-3 rounded border-l-2 border-border bg-muted px-3 py-2 text-sm text-neutral-700">
           {reference.reference_text}
         </blockquote>
       )}
@@ -207,7 +207,7 @@ function ReferenceRow({ reference }: { reference: AdminReferenceView }) {
       )}
 
       {isReviewable && dialog && (
-        <div className="mt-3 space-y-2 rounded border border-neutral-200 bg-neutral-50 p-3">
+        <div className="mt-3 space-y-2 rounded border border-border bg-muted p-3">
           <label className="block text-xs font-medium text-neutral-700">
             {dialog === "verify"
               ? "Reason (optional)"

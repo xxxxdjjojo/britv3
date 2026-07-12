@@ -20,7 +20,7 @@ function Stat({
   return (
     <div
       aria-label={`${label}: ${value} of ${target} — ${met ? "met" : "not met"}`}
-      className={`rounded-lg border p-3 ${met ? "border-green-200 bg-green-50" : "border-neutral-200 bg-neutral-50"}`}
+      className={`rounded-lg border p-3 ${met ? "border-green-200 bg-green-50" : "border-border bg-muted"}`}
     >
       <p className="text-xs text-neutral-500">{label}</p>
       <p
