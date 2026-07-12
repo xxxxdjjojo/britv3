@@ -86,6 +86,8 @@ export async function resolveInvitationByToken(
     .select(
       "id, provider_id, reference_type, referee_name, relationship, status, invite_expires_at",
     )
+    // Hash equality is compared in the DB (Postgres `=`), not a JS string
+    // compare, so no timing-safe comparison (timingSafeEqual) is needed here.
     .eq("invite_token_hash", tokenHash)
     .maybeSingle();
 
