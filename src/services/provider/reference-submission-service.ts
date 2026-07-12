@@ -14,9 +14,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import { CATEGORY_LABELS } from "@/lib/marketplace/category-labels";
 import { hashReferenceToken, isInviteExpired } from "@/lib/reference-tokens";
-import type { ServiceCategory } from "@/types/marketplace";
+import { getProviderDisplay } from "@/services/provider/provider-display";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -114,7 +113,8 @@ export async function resolveInvitationByToken(
     return { state: "expired" };
   }
 
-  const provider = await fetchProviderDisplay(supabase, row.provider_id);
+  const display = await getProviderDisplay(supabase, row.provider_id);
+  const provider = { displayName: display.providerName, trade: display.providerTrade };
 
   return {
     state: "valid",
@@ -127,40 +127,6 @@ export async function resolveInvitationByToken(
     },
     provider,
   };
-}
-
-async function fetchProviderDisplay(
-  supabase: SupabaseClient,
-  providerId: string,
-): Promise<{ displayName: string; trade?: string }> {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name")
-    .eq("id", providerId)
-    .maybeSingle();
-
-  const { data: spd } = await supabase
-    .from("service_provider_details")
-    .select("services, business_name")
-    .eq("user_id", providerId)
-    .maybeSingle();
-
-  const details = spd as
-    | { services?: ServiceCategory[]; business_name?: string }
-    | null;
-
-  const displayName = (profile as { display_name?: string } | null)?.display_name ?? "A trader";
-
-  // Derive the trade from the first service_category, humanised the same way
-  // the rest of the marketplace renders it (CATEGORY_LABELS). Fall back to the
-  // business name when the provider has no services listed.
-  const firstService = details?.services?.[0];
-  const trade =
-    (firstService ? CATEGORY_LABELS[firstService] : undefined) ??
-    details?.business_name ??
-    undefined;
-
-  return trade ? { displayName, trade } : { displayName };
 }
 
 // ---------------------------------------------------------------------------

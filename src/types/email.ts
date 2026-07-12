@@ -221,6 +221,17 @@ export type ReferralInvitationEmailProps = {
   rewardDescription?: string;
 };
 
+export type ReferenceRequestEmailProps = {
+  refereeName: string;
+  providerName: string;
+  providerTrade?: string;
+  referenceType: "client" | "peer";
+  relationship?: string;
+  submissionUrl: string;
+  expiresAt: string;
+  isReminder?: boolean;
+};
+
 export type ReEngagementEmailProps = {
   firstName: string;
   lastActiveDate: string;
@@ -273,6 +284,7 @@ export type AnyEmailProps =
   | WeeklyDigestEmailProps
   | AccountDeletionEmailProps
   | ReferralInvitationEmailProps
+  | ReferenceRequestEmailProps
   | ReEngagementEmailProps
   | RefundConfirmedEmailProps
   | RefundRejectedEmailProps;
