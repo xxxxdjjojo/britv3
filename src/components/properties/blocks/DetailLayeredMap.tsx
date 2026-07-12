@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { NearbyMapListing } from "@/services/properties/nearby-map-listings";
 
 const MapInner = dynamic(() => import("./DetailLayeredMapInner"), { ssr: false });
 
@@ -10,6 +11,7 @@ type DetailLayeredMapProps = Readonly<{
   address: string;
   className?: string;
   priceFormatted?: string;
+  nearbyListings?: readonly NearbyMapListing[];
 }>;
 
 /**
