@@ -32,7 +32,7 @@ function getContext2d(
   if (ctx === null) {
     throw new Error("pin-images: failed to obtain 2D canvas context");
   }
-  return ctx as CanvasRenderingContext2D;
+  return ctx;
 }
 
 /**
