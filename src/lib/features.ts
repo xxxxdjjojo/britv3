@@ -1,4 +1,4 @@
-const KNOWN_FEATURES = ["ai_descriptions", "push_notifications", "offline_mode", "jwt_claims_middleware", "search_live_data", "local_area_intelligence", "search_rental_filters", "search_mock_data"] as const;
+const KNOWN_FEATURES = ["ai_descriptions", "push_notifications", "offline_mode", "jwt_claims_middleware", "search_live_data", "search_rental_filters", "search_mock_data"] as const;
 
 type KnownFeature = (typeof KNOWN_FEATURES)[number];
 
@@ -24,7 +24,6 @@ function flagEnv(): Record<KnownFeature, string | undefined> {
     offline_mode: process.env.NEXT_PUBLIC_ENABLE_OFFLINE_MODE,
     jwt_claims_middleware: process.env.NEXT_PUBLIC_ENABLE_JWT_CLAIMS_MIDDLEWARE,
     search_live_data: process.env.NEXT_PUBLIC_ENABLE_SEARCH_LIVE_DATA,
-    local_area_intelligence: process.env.NEXT_PUBLIC_ENABLE_LOCAL_AREA_INTELLIGENCE,
     search_rental_filters: process.env.NEXT_PUBLIC_ENABLE_SEARCH_RENTAL_FILTERS,
     search_mock_data: process.env.NEXT_PUBLIC_ENABLE_SEARCH_MOCK_DATA,
   };
