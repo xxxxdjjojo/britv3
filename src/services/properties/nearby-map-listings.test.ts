@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { getNearbyMapListings } from "./nearby-map-listings";
 
 // Real EWKB fixture from parse-coordinates.test.ts: lng -0.0776, lat 51.5232

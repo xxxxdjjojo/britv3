@@ -36,7 +36,7 @@ export async function getNearbyMapListings(
 
   const { data, error } = await supabase
     .from("search_listings")
-    .select("listing_id, slug, price, coordinates, listing_type")
+    .select("listing_id, slug, price, coordinates")
     .eq("listing_type", listingType)
     .like("postcode", `${postcodeDistrict}%`)
     .gte("price", price * 0.8)
@@ -61,7 +61,6 @@ export async function getNearbyMapListings(
     slug: string | null;
     price: number;
     coordinates: unknown;
-    listing_type: string;
   }>) {
     const coords = parseCoordinates(row.coordinates);
     if (coords === null) continue;
