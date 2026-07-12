@@ -1,119 +1,121 @@
-# Vouching Remediation Plan
+# Vouching Remediation Plan — Post-Fix
 
-**Branch:** `feat/vouching-system` · **Date:** 2026-07-12
+**Branch:** `feat/vouching-system` · **Date:** 2026-07-12 (post-fix update)
 
-Derived from the findings in `VOUCHING_SYSTEM_AUDIT.md` (findings V-01…V-11). Complexity: **S** (< ½ day) · **M** (~1 day) · **L** (2–3 days) · **XL** (> 3 days). Owner type: **DB**, **Backend**, **Frontend**, **Admin**, **Email/Jobs**, **Product**, **QA**.
+Derived from the pre-fix findings (V-01…V-11). Complexity: **S** (< ½ day) · **M** (~1 day) · **L** (2–3 days) · **XL** (> 3 days). Owner type: **DB · Backend · Frontend · Admin · Email/Jobs · Product · QA**.
 
-The planned build-out (tokens, email, referee submission surface, decline/expire/cancel/resend, per-reference admin review, configurable rules gate default-OFF) is sequenced below. **This document does not implement anything — it plans the fix.**
+The vouching system was **built end-to-end** since the pre-fix pass. §1 (Done) records what shipped; §2 lists the genuinely-remaining work. Priorities/complexity are retained from the original plan.
 
 ---
 
-## 1. Immediate Critical Fixes
+## 1. DONE (built + unit/db-tested + reviewed)
 
-### R1 — Fix the INSECURE `provider_references` RLS (self-forged verified vouches) 🔴 #1
-- **Priority:** P0 (blocks trust; ship before any launch)
-- **Owner:** DB + Backend
-- **Complexity:** M
-- **Dependencies:** none (can land standalone; must precede any UI that surfaces `verified`)
-- **Files/systems:** new migration replacing `provider_references_update_own` (`supabase/migrations/20260316100001_provider_dashboard_tables.sql:164-175`); a service-role server route for any status/text mutation; `src/components/dashboard/provider/ReferenceTracker.tsx` (stop relying on client UPDATE); `db-tests/` forge-guard.
-- **Acceptance criteria:**
-  - A trader's browser client **cannot** UPDATE `status`, `reference_text`, or `verified_at` on their own rows (RLS denies it). Trader may still INSERT `pending` and DELETE `pending` own rows.
-  - `submitted`/`verified` are writable **only** via service-role (referee token submission / admin review).
-  - New db-test **I1/S1 passes** (forge attempt denied).
+> These are CONFIRMED in code and tests. They become LIVE only once the migrations are applied to the target DB (see R-A below) — until then they are UNTESTED-LIVE.
 
-## 2. Pre-Launch Fixes
+### R1 — INSECURE `provider_references` RLS forge → FIXED ✅ (P0)
+- **Owner:** DB + Backend · **Complexity:** M
+- **What shipped:** `20260712100002` DROPs trader insert/update/delete-own; keeps select-own; adds admin select+update (`is_admin`); BEFORE UPDATE trigger freezes `provider_id`/`referee_email`/`reference_type`. Trader writes now route through the service-role `/api/provider/references*` endpoints; referee writes through service-role token endpoints.
+- **Proof:** `db-tests/provider-references-vouching.test.ts` — **37/37 pass** on real Postgres. Forge denied; select-own + admin access + unique constraints hold.
 
-### R2 — Invitation tokens (single-use, expiring)
-- **Priority:** P1 · **Owner:** DB + Backend · **Complexity:** M
-- **Dependencies:** R1
-- **Files/systems:** migration adding `invite_token`, `token_expires_at`, `consumed_at` to `provider_references` (or a sibling `provider_reference_invites` table); token signing lib.
-- **Acceptance:** each invite has a signed, single-use, expiring token; reuse rejected; expiry enforced (db-test I4).
+### R2 — Invitation tokens (single-use, expiring) → DONE ✅ (P1)
+- **Owner:** DB + Backend · **Complexity:** M
+- **What shipped:** `invite_token_hash` (sha256 hex, raw never stored), `invite_expires_at`, `invite_sent_at`, `invite_last_sent_at`, `invite_send_count` (`20260712100002:18-31`); `src/lib/reference-tokens.ts` (generate/hash/timing-safe-match/expiry, 19 unit tests). Single-use enforced by NULLing the hash on submit/decline + `.not(...is null)` serialization; uniqueness via `uq_provider_references_token_hash`.
 
-### R3 — Referee submission surface + server route
-- **Priority:** P1 · **Owner:** Frontend + Backend · **Complexity:** L
-- **Dependencies:** R1, R2
-- **Files/systems:** new `src/app/reference/[token]/page.tsx` (public); new server route/service that validates token + zod input and sets `status='submitted'` under service-role; add route to `PUBLIC_ROUTES`.
-- **Acceptance:** a referee with a valid token can submit a vouch; status moves `sent → submitted`; invalid/expired token blocked; self-vouch & duplicate rejected (U5, U6, E4, E5).
+### R3 — Referee submission surface + server route → DONE ✅ (P1)
+- **Owner:** Frontend + Backend · **Complexity:** L
+- **What shipped:** `/reference` in `PUBLIC_ROUTES`; `src/app/reference/[token]/page.tsx` (service-role resolve, robots noindex, no ids); `ReferenceSubmissionForm.tsx` + `ReferenceTokenState.tsx` (a11y); `POST /api/references/[token]/submit` (200/409/410/404/400, 5/hr/IP fail-open, constant-time hash compare, generic invalid) + `/decline`; `reference-submission-service.ts` (resolve/submit/decline). Self-vouch + duplicate guarded (in invitation service). Client work_date required + non-future.
 
-### R4 — Reference-request email + Inngest function
-- **Priority:** P1 · **Owner:** Email/Jobs · **Complexity:** M
-- **Dependencies:** R2 (needs token to embed link)
-- **Files/systems:** new `src/emails/reference-request.tsx`; new `src/inngest/functions/reference-request.ts` handling `provider/reference.requested`; register in `src/app/api/inngest/route.ts`; replace the TODO at `provider-verification-service.ts:341` with an event emit.
-- **Acceptance:** creating a reference emits the event and sends an email containing the tokenised link; requires `RESEND_API_KEY` + `INNGEST_SIGNING_KEY`.
+### R4 — Reference-request email + Inngest function → DONE ✅ (P1)
+- **Owner:** Email/Jobs · **Complexity:** M
+- **What shipped:** `src/emails/reference-request.tsx` (expiry + reminder variants) + `sendReferenceInvitation` (Resend + `email_logs`); `src/inngest/functions/reference-request-email.ts` handling `provider/reference.requested` + `.resend-requested` (generates token, hashes to DB via `markSentReference`, raw only in URL, retries:3); registered in `src/app/api/inngest/route.ts`.
 
-### R5 — Decline / cancel / resend / expire lifecycle
-- **Priority:** P1 · **Owner:** Backend + Frontend + Email/Jobs · **Complexity:** L
-- **Dependencies:** R2, R3, R4
-- **Files/systems:** extend `provider_reference_status` enum (or a status table) with the recommended states (`sent/declined/withdrawn/expired/…` — see `VOUCHING_STATE_MACHINE.md §3.2`); wire the dead "Send Request"/"Remind" buttons (`ReferenceTracker.tsx:174-191`); Inngest expiry sweep.
-- **Acceptance:** trader can resend (new token) and cancel; referee can decline; expired invites auto-transition; dead buttons now do real work (fixes V-09).
+### R5 — Decline / cancel / resend / expire lifecycle → DONE ✅ (P1)
+- **Owner:** Backend + Frontend + Email/Jobs · **Complexity:** L
+- **What shipped:** enum extended to 9 statuses (`20260712100001`); resend (`/[id]/resend`, cooldown + max-sends) and cancel (`/[id]/cancel` → `revoked`) wired into `ReferenceTracker.tsx` (fixes V-09); referee decline; lazy expiry on resolve + expiry-sweep index. **Remaining:** a background Inngest expiry sweep (see R-D).
 
-### R6 — Per-reference admin review (approve/reject/flag) + reviewer/audit fields
-- **Priority:** P1 · **Owner:** Admin + Backend + DB · **Complexity:** L
-- **Dependencies:** R1, R3
-- **Files/systems:** migration adding `reviewed_by`, `reviewed_at`, `review_notes`, review status; new admin service action + route (perm `manage_verifications`); admin UI beyond `VerificationQueueClient.tsx`; ensure `logAdminAction` receives `metadata` (fix `src/lib/audited-admin-action.ts:98-107` to pass decision/notes) — closes V-07.
-- **Acceptance:** an admin can approve/reject/flag an individual reference; the action writes `admin_audit_log.metadata` with the reference id + decision; `submitted → approved/rejected/flagged` enforced server-side (U8, E6).
+### R6 — Per-reference admin review + reviewer/audit fields → DONE ✅ (P1)
+- **Owner:** Admin + Backend + DB · **Complexity:** L
+- **What shipped:** review columns (`reviewed_by/at`, `review_reason`); `reviewReference` (verify/reject/flag; reason req; DB-serialized; submitted|flagged only); `POST /api/admin/references/[id]/review` (`manage_verifications`, UUID-guard, error mapping, logs `metadata:{decision,reason}` — closes V-07); admin trader-detail page with `AdminReferencesPanel` (full referee email for fraud detection).
 
-### R7 — Configurable vouch-rules gate (default OFF)
-- **Priority:** P1 · **Owner:** Product + Backend · **Complexity:** L
-- **Dependencies:** R6 (needs `approved`/valid vouches to count)
-- **Files/systems:** rules storage (config table or config lib, **configurable** counts — not hard-coded); evaluation lib; wire into the verification progression; keep existing direct admin-approval path intact when gate is OFF.
-- **Acceptance:** with gate OFF, current behaviour unchanged; with gate ON, `verified` requires ≥ N peer + ≥ M recent-customer (within a configurable recency window) **valid** vouches, plus business checks + admin final decision (U7).
+### R7 — Configurable vouch-rules gate (default OFF) → DONE ✅ (P1)
+- **Owner:** Product + Backend · **Complexity:** L
+- **What shipped:** `verification_vouch_rules` singleton (required_peer/client=3, client_recency_days=90, invite_expiry_days=30, resend_cooldown_hours=24, `gate_enabled=FALSE`); `vouch-rules-service.ts` (`getVouchRules`/`countValidVouches`/`evaluateVouchGate`); `VouchCountsBanner` + gate-aware admin approve (confirm only when ON && unmet); `VouchRulesEditor` + audited `PUT /api/admin/vouch-rules`. Gate OFF preserves the existing direct-approve flow.
 
-### R8 — DB uniqueness on (provider, referee_email, reference_type)
-- **Priority:** P2 · **Owner:** DB · **Complexity:** S
-- **Dependencies:** none (independent of R1)
-- **Files/systems:** migration adding a unique index; keep the friendly app-level message (`provider-verification-service.ts:315-324`).
-- **Acceptance:** concurrent duplicate inserts are rejected by the DB (db-test I5); UI still shows the existing "duplicate" error.
+### R8 — DB uniqueness on (provider, email, type) → DONE ✅ (P2)
+- **Owner:** DB · **Complexity:** S
+- **What shipped:** `uq_provider_references_active_invite` partial unique index on `(provider_id, lower(referee_email), reference_type)` for active statuses; service maps the unique violation to a friendly 409.
 
-### R9 — Fix latent provider-id derivation
-- **Priority:** P2 · **Owner:** Frontend · **Complexity:** S
-- **Dependencies:** none
-- **Files/systems:** `.../verification/peer-references/page.tsx`, `.../client-references/page.tsx` — select `user_id` (the real PK/FK key) instead of `id`; drop the `?? user.id` accidental fallback.
-- **Acceptance:** provider id is derived explicitly from `user_id`; no reliance on a non-existent `id` column (closes V-10).
+### R9 — Fix latent provider-id derivation → DONE ✅ (P2)
+- **Owner:** Frontend · **Complexity:** S
+- **What shipped:** peer/client reference pages now use `const providerId = user.id;` explicitly (documented as `service_provider_details.user_id === auth uid`); the `.select("id") ?? user.id` fallback removed.
 
-## 3. Post-Launch Improvements
+### R13 — Audit metadata for admin review → DONE ✅ (P2)
+- **Owner:** Backend · **Complexity:** S
+- **What shipped:** the review route writes `admin_audit_log` with `metadata:{decision,reason}` (`review/route.ts:60-74`). **Note:** this intentionally double-logs (the wrapper's base entry + the explicit metadata entry) — a metadata-bearing record is more valuable than the bare one, and the metadata log is best-effort so a log failure never 500s an already-succeeded review. **Remaining:** per-transition audit events for non-admin lifecycle changes (referee submit/decline, trader cancel) — see R-E.
 
-### R10 — Self-vouch / abuse heuristics
-- **Priority:** P3 · **Owner:** Backend · **Complexity:** M · **Dependencies:** R3, R6
-- **Acceptance:** submissions from the provider's own contact details, or clustered/suspicious patterns, auto-`flagged` for admin.
+---
 
-### R11 — Recent-customer recency window enforcement
-- **Priority:** P3 · **Owner:** Backend + Product · **Complexity:** M · **Dependencies:** R7
-- **Acceptance:** "recent customer" vouches only count when the referenced work falls within the configurable window (e.g. 3 months).
+## 2. REMAINING
 
-### R12 — Referee identity binding / account linking (Flows C & D)
-- **Priority:** P3 · **Owner:** Backend + Frontend · **Complexity:** L · **Dependencies:** R3
-- **Acceptance:** existing users invited can link the vouch to their account; new users get a light guest path.
+### R-A — Apply migrations to the target DB + ledger reconcile 🔴 (P0 for launch)
+- **Owner:** DB/Ops · **Complexity:** S · **Dependencies:** none (code already merged-ready)
+- **Files/systems:** `20260712100001..3` applied manually per `supabase/migrations/README.md` (auto-apply retired); reconcile the migration ledger.
+- **Acceptance:** the three migrations are present on the target DB; `pnpm check:migrations` still ✓; RLS/trigger/indexes verified live. **This unblocks everything below.**
 
-## 4. Monitoring Improvements
+### R-B — Seed a provider + admin test user on the target DB (P0 for verify)
+- **Owner:** Ops/QA · **Complexity:** S · **Dependencies:** R-A
+- **Acceptance:** a provider test user with `service_provider_details` and an admin with `manage_verifications` exist so the app/e2e/browser flow can be exercised.
 
-### R13 — Audit-log completeness for all vouch transitions
-- **Priority:** P2 · **Owner:** Backend · **Complexity:** S · **Dependencies:** R6
-- **Acceptance:** every reference state change emits an `admin_audit_log`/event with `metadata` (actor, reference id, decision); verification review metadata gap closed.
+### R-C — Run the live e2e specs + browser verification (P0 for verify)
+- **Owner:** QA · **Complexity:** M · **Dependencies:** R-A, R-B
+- **Files/systems:** `e2e/reference-vouching.spec.ts`, `e2e/admin-reference-review.spec.ts`, `e2e/fixtures/reference-seed.ts`, `e2e/README-vouching.md` (specs exist + reviewed).
+- **Acceptance:** trader→email→referee→admin journey runs green end-to-end; the UNTESTED-LIVE flows move to WORKING (live-verified).
 
-### R14 — Fraud/anomaly signals + alerting
-- **Priority:** P3 · **Owner:** Ops/Backend · **Complexity:** M · **Dependencies:** R10, R13
-- **Acceptance:** spikes in self-forged/flagged vouches raise a Sentry/ops alert.
+### R-D — VerificationQueueClient silent-failure follow-up (P2)
+- **Owner:** Frontend · **Complexity:** S · **Dependencies:** none
+- **What:** `src/components/admin/VerificationQueueClient.tsx` swallows `!res.ok` silently on the provider quick-approve/reject (calls `router.refresh()` regardless), so a failed approve looks like a success. Pre-existing, out of the vouching build's scope — surface the error to the admin.
+- **Acceptance:** a failed quick-approve/reject shows an error instead of silently refreshing.
 
-## 5. Product-Policy Decisions Requiring Confirmation
+### R-E — Background expiry sweep + per-transition audit events (P2/P3)
+- **Owner:** Backend/Jobs · **Complexity:** M · **Dependencies:** R-A
+- **What:** expiry is currently lazy-on-resolve only; add an Inngest sweep that transitions outstanding `pending`/`sent` past `invite_expires_at` to `expired` (index `idx_provider_references_expiry` already supports it). Emit per-transition audit events for referee/trader lifecycle changes (R13 covered admin review only).
+- **Acceptance:** stale invites auto-expire without a referee visit; every state change is auditable.
+
+### R10 — Self-vouch / abuse heuristics (P3)
+- **Owner:** Backend · **Complexity:** M · **Dependencies:** R-A, R6
+- **Acceptance:** submissions from the provider's own contact details or clustered/suspicious patterns auto-`flagged` for admin. (Basic self-vouch-by-email is already blocked at invite time; this is deeper heuristics.) Optional: disposable-email domain filtering on invite.
+
+### R11 — Recent-customer recency: separate `peer_recency` field (P3)
+- **Owner:** Backend + Product · **Complexity:** M · **Dependencies:** R7
+- **What:** `client_recency_days` is enforced via `work_date`; if peer vouches ever need their own recency window, add a separate `peer_recency` config field (optional).
+- **Acceptance:** peer recency configurable independently if the product wants it.
+
+### R12 — Referee identity binding / account linking (P3)
+- **Owner:** Backend + Frontend · **Complexity:** L · **Dependencies:** R3
+- **Acceptance:** invited existing users can link the vouch to their account; the current guest path stays for new users.
+
+### R14 — Fraud/anomaly signals + alerting (P3)
+- **Owner:** Ops/Backend · **Complexity:** M · **Dependencies:** R10, R-E
+- **Acceptance:** spikes in flagged/anomalous vouches raise a Sentry/ops alert.
+
+---
+
+## 3. Product-Policy Decisions (still open)
 
 | # | Decision | Why it matters |
 |---|----------|----------------|
-| P-1 | Exact required counts (default proposed: 3 peer + 3 recent-customer) and whether the gate ships OFF or ON | Drives R7 config defaults |
-| P-2 | "Recent" window definition (e.g. 3 months) for customer vouches | Drives R11 |
-| P-3 | Token TTL and resend limits | Drives R2/R5 |
-| P-4 | Whether existing seed/legacy `verified` references are grandfathered or must be re-validated after R1 | Data-migration impact |
-| P-5 | Whether a referee must have an account or can vouch as a guest | Drives R12 scope |
-| P-6 | Whether references remain *optional* enrichment or become a *hard* verification prerequisite when the gate is ON | Affects existing verified providers |
+| P-1 | Turn the gate ON, and at what counts (defaults: 3 peer + 3 client) | `verification_vouch_rules.gate_enabled` is FALSE; enabling changes the approve flow |
+| P-2 | Whether existing seed/legacy `verified` references are grandfathered or re-validated | Data-migration impact once the gate is ON |
+| P-3 | Whether a referee must have an account or can vouch as a guest | Drives R12 scope (guest path currently shipped) |
+| P-4 | Whether references become a hard prerequisite when the gate is ON | Affects existing verified providers |
 
-## 6. Sequencing
+## 4. Sequencing (remaining)
 
 ```
-R1 (P0) ─► R2 ─► R3 ─► R4
-                 │     └► R5
-                 └► R6 ─► R7 ─► R11
-R8, R9  (independent, any time)
-R13 after R6 · R10/R12/R14 post-launch
+R-A (P0) ─► R-B (P0) ─► R-C (P0, live verify)
+R-D (P2, independent)
+R-E (P2) ─► R14
+R10, R11, R12 (P3, post-launch)
 ```
 
-**Ship gate:** R1 must land before any surface that presents `verified` references as trustworthy. R2–R7 constitute a functional, secure vouching MVP. R8/R9 are cheap hardening. Everything in §3–§4 is incremental.
+**Ship gate:** the code is complete and the DB security contract is proven (37/37). The launch-blocking work is **R-A → R-B → R-C** (apply migrations, seed users, run live e2e). Everything else is incremental hardening.

@@ -1,8 +1,10 @@
-# Vouching State Machine — Current vs Recommended
+# Vouching State Machine — Post-Fix (Current = Implemented)
 
-**Branch:** `feat/vouching-system` · **Date:** 2026-07-12
+**Branch:** `feat/vouching-system` · **Date:** 2026-07-12 (post-fix update)
 
-This document separates **CURRENT** (what the code and DB enforce today) from **RECOMMENDED / TARGET** (the richer model from the product brief). Nothing in the RECOMMENDED sections is implemented on this branch.
+The pre-fix "RECOMMENDED / TARGET" model is now **largely the implemented CURRENT model**. This document describes what the code + DB now enforce. Items still not built (account-linking, background expiry sweep) are called out as REMAINING.
+
+> **CONFIRMED vs UNTESTED-LIVE.** The DB-layer rules below (enum, RLS, immutability, uniqueness, single-use) are **CONFIRMED** by `db-tests/provider-references-vouching.test.ts` (37/37, real Postgres) and unit tests. The end-to-end transitions across the browser are **UNTESTED-LIVE** until the migrations are applied to the target DB (see `VOUCHING_SYSTEM_AUDIT.md §17`).
 
 ---
 
@@ -11,155 +13,126 @@ This document separates **CURRENT** (what the code and DB enforce today) from **
 ### 1.1 CURRENT (enforced)
 
 Enum `provider_verification_status` = `unverified | pending_review | verified | suspended | rejected`
-(`supabase/migrations/002_marketplace.sql:54-60`; column added `:92-94`, default `unverified`).
+(`supabase/migrations/002_marketplace.sql:54-60`).
 
 ```mermaid
 stateDiagram-v2
     [*] --> unverified: provider row created (default)
-    unverified --> pending_review: provider submits docs (admin queue populates)
-    pending_review --> verified: admin approves (decision 'approved')
-    pending_review --> rejected: admin rejects (decision 'rejected')
-    verified --> suspended: (enum allows; no code path found)
-    rejected --> pending_review: (enum allows; no code path found)
-```
-
-| State | Entry cause | Who changes it | Permitted next (by code) | Audit event | Trader sees | Admin sees | Public sees |
-|-------|-------------|----------------|--------------------------|-------------|-------------|------------|-------------|
-| `unverified` | default on provider creation (`002:92-94`) | system | → `pending_review` | — | dashboard verification gate (`proxy.ts:425-430`) | not in queue | no badge |
-| `pending_review` | provider submits (populates queue via `getVerificationQueue` `verification-service.ts:24`) | provider/system | → `verified` / `rejected` | none for entry | "under review" | queue row | no badge |
-| `verified` | admin `approved` → `verified` (`verification-service.ts:57-59`) | verification admin | (no guarded transition) | `verification.review` action logged, **decision omitted from metadata** (`audited-admin-action.ts:98-107`) | full dashboard access + badge | — | ShieldCheck (`ProviderSearchCard.tsx:44`), anon RLS (`017_public_profiles.sql:48-54`) |
-| `rejected` | admin `rejected` (`:57-59`) | verification admin | (none) | as above | rejection (outcome email `:77-84`) | — | no badge |
-| `suspended` | **no code path writes it** | — | — | — | — | — | — |
-
-**Prohibited / ungoverned transitions:** the code applies *no* transition guard — `reviewVerification` unconditionally sets `verified` or `rejected` regardless of current state (`verification-service.ts:57-64`). `suspended` is defined but unreachable.
-
-### 1.2 RECOMMENDED / TARGET
-
-Richer lifecycle adding an explicit vouching phase and a configurable, default-OFF gate:
-
-```mermaid
-stateDiagram-v2
-    [*] --> unverified
-    unverified --> collecting_vouches: provider starts references
-    collecting_vouches --> requirements_met: >= N peer + >= M recent-customer valid vouches (configurable)
-    requirements_met --> pending_review: business checks complete, queued
-    pending_review --> verified: admin final approval
+    unverified --> pending_review: provider submits (admin queue populates)
+    pending_review --> verified: admin approves (gate-aware: confirm if gate ON && counts unmet)
     pending_review --> rejected: admin rejects
-    verified --> suspended: admin/ops suspends (fraud/complaint)
-    suspended --> pending_review: re-review
-    rejected --> collecting_vouches: provider retries
+    verified --> suspended: (enum allows; no code path yet)
+    rejected --> pending_review: (enum allows; no code path yet)
 ```
 
-Gate defaults **OFF** (existing direct admin-approval flow preserved) until turned on per config.
+**New (post-fix): a configurable, default-OFF vouch gate feeds the approve decision.** When `verification_vouch_rules.gate_enabled = TRUE`, the admin approve UI requires confirmation if the provider has not met ≥ N peer + ≥ M recent-customer **valid (verified)** vouches. With the gate OFF (the default), the existing direct-approve flow is unchanged. Counting is `countValidVouches` (verified-only, client recency window); the decision is the pure `evaluateVouchGate`.
+
+| State | Entry cause | Who changes it | Public sees |
+|-------|-------------|----------------|-------------|
+| `unverified` | default | system | no badge |
+| `pending_review` | provider submits (`getVerificationQueue`) | provider/system | no badge |
+| `verified` | admin approve (gate-aware) | verification admin | ShieldCheck (`ProviderSearchCard.tsx`) |
+| `rejected` | admin reject | verification admin | no badge |
+| `suspended` | no code path yet | — | — |
 
 ---
 
-## 2. Invitation Status
+## 2. Invitation Lifecycle (now a first-class entity)
 
 ### 2.1 CURRENT (enforced)
 
-**There is no invitation entity.** An invitation is implicitly the same row as the reference (`provider_references`), and there is no token, no expiry, no single-use, and no `cancelled` state (table def `20260316100001:126-139`). The only lifecycle action is a hard `DELETE` via `provider_references_delete_own` (`:177-183`). So "invitation status" collapses entirely into the reference status below.
-
-### 2.2 RECOMMENDED / TARGET
-
-A first-class invitation with a signed, single-use, expiring token:
+The invitation is the `provider_references` row plus its **token columns** (`invite_token_hash` [sha256 hex, raw never stored], `invite_expires_at`, `invite_sent_at`, `invite_last_sent_at`, `invite_send_count`) added by `20260712100002_vouching_provider_references_columns_rls.sql:18-31`. The raw token is single-use and expiring; only its hash lives in the DB.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> created
-    created --> sent: email dispatched (Inngest)
-    sent --> opened: referee clicks link
-    opened --> submitted: referee submits vouch
-    sent --> expired: token_expires_at passed
-    sent --> resent: trader resends (new token)
-    sent --> cancelled: trader cancels
-    resent --> sent
+    [*] --> pending: createReferenceInvitation (service-role; self-vouch/dup/cap guarded)
+    pending --> sent: Inngest generates+hashes token, markSentReference, email dispatched
+    sent --> submitted: referee submits (service-role, single-use token)
+    sent --> declined: referee declines
+    pending --> expired: invite_expires_at passed (lazy on resolve)
+    sent --> expired: invite_expires_at passed (lazy on resolve)
+    pending --> revoked: trader cancels
+    sent --> revoked: trader cancels
+    sent --> sent: trader resends (cooldown + max-sends; new token)
 ```
 
-New columns needed: `invite_token`, `token_expires_at`, `consumed_at`, plus states in a status enum. Audit each transition.
+Enforcement:
+- **Single-use:** submit/decline set `invite_token_hash = NULL` and filter `.not("invite_token_hash","is",null)`, so a replay matches 0 rows (`reference-submission-service.ts:183,196,245,248`).
+- **Uniqueness:** one live token per hash (`uq_provider_references_token_hash`); one ACTIVE invite per (provider, lower(email), type) for statuses in `pending|sent|submitted|flagged` (`20260712100002:62-69`).
+- **Expiry:** lazy on resolve (`reference-submission-service.ts:107-116`); expiry-sweep index exists (`:72-73`).
+- **Cooldown / caps:** resend cooldown from `verification_vouch_rules.resend_cooldown_hours`; per-provider active cap `MAX_ACTIVE_INVITES=25`; max-sends on resend.
+
+### 2.2 REMAINING (not yet built)
+
+- A **background Inngest expiry sweep** (expiry is currently lazy-on-resolve only).
+- An explicit `opened`/`resent` sub-state (resend re-uses `sent`).
 
 ---
 
 ## 3. Individual Vouch / Reference Status
 
-### 3.1 CURRENT (enforced)
+### 3.1 CURRENT (enforced) — 9 statuses
 
-Enum `provider_reference_status` = `pending | submitted | verified`
-(`supabase/migrations/20260316100001_provider_dashboard_tables.sql:25`; default `pending` `:134`).
+Enum `provider_reference_status` = `pending | sent | submitted | verified | declined | expired | revoked | rejected | flagged`
+(base 3 in `20260316100001:25`; +6 in `20260712100001_vouching_reference_status_values.sql:14-19`).
 
 ```mermaid
 stateDiagram-v2
-    [*] --> pending: sendReferenceRequest inserts (only legit writer)
-    pending --> submitted: ⚠ NO legitimate writer (no referee route)
-    submitted --> verified: ⚠ NO legitimate writer (no per-reference admin action)
-    pending --> verified: ⚠ INSECURE — trader self-UPDATE via RLS
+    [*] --> pending: createReferenceInvitation (service-role)
+    pending --> sent: Inngest token-gen + markSentReference
+    sent --> submitted: referee submits (service-role, valid single-use token)
+    pending --> submitted: referee submits (if resolved before markSent)
+    sent --> declined: referee declines
+    pending --> expired: lazy expiry
+    sent --> expired: lazy expiry
+    pending --> revoked: trader cancel
+    sent --> revoked: trader cancel
+    submitted --> verified: admin verify (reviewReference)
+    submitted --> rejected: admin reject (reason required)
+    submitted --> flagged: admin flag (reason required)
+    flagged --> verified: admin verify
+    flagged --> rejected: admin reject
     note right of verified
-      submitted / verified are reachable in prod ONLY via:
-      (a) the INSECURE trader UPDATE policy, or
-      (b) seed data (03_provider_data.sql)
+      Only ADMIN (service reviewReference, manage_verifications)
+      can reach verified/rejected/flagged. The subject trader has
+      NO status-write path — RLS trader-write policies DROPped +
+      identity-immutability trigger. Proven by db-test 37/37.
     end note
 ```
 
-| State | Entry cause (legit) | Who *can* change it today | Permitted next (code) | Audit event | Trader sees | Referee sees | Admin sees |
-|-------|--------------------|---------------------------|-----------------------|-------------|-------------|-------------|------------|
-| `pending` | `sendReferenceRequest` INSERT (`provider-verification-service.ts:334`) | trader (insert) | none via app; trader UPDATE (INSECURE) | none | "Pending" badge + dead "Send Request" btn (`ReferenceTracker.tsx:58-63,174-182`) | nothing (no email) | not surfaced per-reference |
-| `submitted` | **none** — no referee submission route exists | only trader UPDATE (INSECURE `:164-175`) / seed | none via app | none | "Submitted" badge + "Remind"/"View" (`:50-56,183-201`) | — | not surfaced per-reference |
-| `verified` | **none** — no per-reference admin action | only trader UPDATE (INSECURE) / seed | terminal | none | "Verified" badge + `verified_at` (`:42-49,159-168`) | — | not surfaced per-reference |
+| State | Entry cause (legit) | Who sets it | Permitted next | Audit |
+|-------|--------------------|-------------|----------------|-------|
+| `pending` | `createReferenceInvitation` (service-role) | service (trader-initiated) | sent / expired / revoked | — |
+| `sent` | Inngest `markSentReference` | service (Inngest) | submitted / declined / expired / revoked / (resend→sent) | — |
+| `submitted` | referee `submitReference` (single-use token) | referee via service-role | verified / rejected / flagged | — |
+| `declined` | referee `declineReference` | referee via service-role | terminal | — |
+| `expired` | lazy expiry on resolve | service | terminal | — |
+| `revoked` | trader `cancelReferenceInvitation` | service (trader) | terminal | — |
+| `verified` | admin `reviewReference` verify | verification admin | (flagged→verify possible) | `admin_audit_log.metadata {decision,reason}` |
+| `rejected` | admin reject (reason req) | verification admin | terminal | audit metadata |
+| `flagged` | admin flag (reason req) | verification admin | verified / rejected | audit metadata |
 
-**Prohibited-but-actually-possible transition (the bug):** `pending → verified` by the *trader themselves* via `provider_references_update_own` (`:164-175`). This should be impossible for the subject of the vouch; it is the CRITICAL finding V-01.
+**The pre-fix bug is closed:** the subject trader can no longer move a vouch to `verified` (or any status). RLS DROPs trader insert/update/delete-own; a BEFORE UPDATE trigger freezes `provider_id`/`referee_email`/`reference_type` for **all** paths (admin and service-role). Proven by `db-tests/provider-references-vouching.test.ts` (37/37).
 
-**No audit-log events** are emitted for any reference status change (grep: no `logAdminAction`/audit call in `provider-verification-service.ts`).
+**Audit:** admin review writes an `admin_audit_log` entry with `metadata:{decision,reason}` (`review/route.ts:60-74`). Referee/trader lifecycle transitions do not currently emit per-transition audit rows (REMAINING — see remediation R13).
 
-### 3.2 RECOMMENDED / TARGET
+### 3.2 REMAINING (not yet built)
 
-A full referee-driven lifecycle with validity and moderation states:
-
-`started → sent → submitted → under_review → approved (valid) | rejected (invalid) | flagged`
-plus `duplicate`, `withdrawn`, `revoked`, `expired`.
-
-```mermaid
-stateDiagram-v2
-    [*] --> started
-    started --> sent: invite emailed
-    sent --> submitted: referee submits (server route, service-role)
-    sent --> expired: token expired
-    sent --> withdrawn: trader cancels
-    submitted --> under_review: auto/admin
-    under_review --> approved: admin validates → counts toward gate (valid)
-    under_review --> rejected: admin marks invalid
-    under_review --> flagged: suspicious (fraud signals)
-    submitted --> duplicate: same referee/email detected
-    approved --> revoked: fraud found post-approval
-    flagged --> rejected
-    flagged --> approved
-```
-
-| Recommended state | Actor who sets it | Counts toward gate? | Audit event |
-|-------------------|-------------------|---------------------|-------------|
-| `started` / `sent` | trader / system | no | `reference.invited` |
-| `submitted` | referee (via tokenised server route) | pending | `reference.submitted` |
-| `under_review` | system/admin | no | `reference.review_started` |
-| `approved` (valid) | verification admin | **yes** | `reference.approved` |
-| `rejected` (invalid) | verification admin | no | `reference.rejected` |
-| `flagged` | admin/fraud signal | no | `reference.flagged` |
-| `duplicate` | system | no | `reference.duplicate` |
-| `withdrawn` | trader | no | `reference.withdrawn` |
-| `revoked` | admin/ops | removes credit | `reference.revoked` |
-| `expired` | system (Inngest sweep) | no | `reference.expired` |
-
-Key rules for the target model:
-1. The **subject trader can never move a vouch to a valid/approved state** — that write must be service-role + admin-only.
-2. Only `approved` (valid), from a `submitted` referee via a verified token, counts toward the configurable requirement.
-3. Every transition writes an audit-log event with `metadata` (reference id, actor, decision).
+- `duplicate` / `withdrawn` as distinct terminal states (duplicates are blocked pre-insert by the unique index; trader cancel uses `revoked`).
+- `under_review` intermediate (admin acts directly on `submitted`/`flagged`).
+- `revoked` post-approval fraud path (revoke currently applies to outstanding invites).
+- Per-transition audit events for non-admin lifecycle changes (R13).
+- Automated fraud/self-vouch heuristics auto-flagging on submit (R10).
 
 ---
 
-## 4. Summary of the Gap
+## 4. Summary of the Gap (post-fix)
 
-| Dimension | Current | Target |
-|-----------|---------|--------|
-| Reference states | 3 (`pending/submitted/verified`) | ~11 (started…revoked) |
-| Legit writers of non-`pending` | **none** (only INSECURE trader UPDATE / seed) | referee (submit) + admin (approve/reject/flag), service-role mediated |
-| Invitation entity | none (collapsed into reference) | tokenised, expiring, single-use, cancellable |
-| Provider gate | admin sets `verified` directly; references optional | configurable count-gate (default OFF) feeds `pending_review` |
-| Audit | none per-reference; decision omitted from admin metadata | event per transition with metadata |
+| Dimension | Pre-fix Current | Post-fix Current | Remaining |
+|-----------|-----------------|------------------|-----------|
+| Reference states | 3 (`pending/submitted/verified`) | **9** (pending…flagged) | duplicate/withdrawn/under_review niceties |
+| Legit writers of non-`pending` | none (only INSECURE trader UPDATE / seed) | **referee (submit) + admin (verify/reject/flag), service-role mediated; trader writes REMOVED** | — |
+| Invitation entity | none (collapsed into reference) | **tokenised (sha256), expiring, single-use, cancellable, resend-cooldown** | background expiry sweep |
+| Provider gate | admin sets `verified` directly; references optional | **configurable count-gate (default OFF) via `verification_vouch_rules`; gate-aware approve** | live enablement (product decision) |
+| Audit | none per-reference; decision omitted from admin metadata | **admin review writes `metadata:{decision,reason}`** | per-transition events for lifecycle (R13) |
+| Forge protection | INSECURE (trader could self-verify) | **RLS trader-write DROPped + identity trigger; proven db-test 37/37** | — |

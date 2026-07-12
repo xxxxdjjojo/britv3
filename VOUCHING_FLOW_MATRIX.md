@@ -1,39 +1,43 @@
-# Vouching Flow Matrix — Current State (Pre-Fix)
+# Vouching Flow Matrix — Post-Fix
 
-**Branch:** `feat/vouching-system` · **Date:** 2026-07-12
-**Status vocabulary:** WORKING · PARTIALLY_WORKING · BROKEN · NOT_IMPLEMENTED · INSECURE · UNTESTED · BLOCKED_BY_CONFIGURATION
+**Branch:** `feat/vouching-system` · **Date:** 2026-07-12 (post-fix update)
+**Status vocabulary:** WORKING · PARTIALLY_WORKING · BROKEN · NOT_IMPLEMENTED · INSECURE · UNTESTED · BLOCKED_BY_CONFIGURATION · UNTESTED-LIVE
 
-Each cell = a status value + a short evidence pointer. "Final status" is the weakest link across the row (a flow is only as functional as its most-broken stage).
+Each cell = a status value + a short evidence pointer. "Final status" is the weakest link across the row.
+
+> **CONFIRMED vs UNTESTED-LIVE.** CONFIRMED = proven by passing unit test and/or db-test on real Postgres + code review. **UNTESTED-LIVE** = code complete + unit/db-tested + reviewed, but the browser/e2e path has not run against a live deployment because the target DB lacks the new migrations (see `VOUCHING_SYSTEM_AUDIT.md §17`). The e2e specs exist and are reviewed-correct; they will pass once schema + test users are seeded.
 
 ## Primary Journeys (Flows A–J)
 
 | Flow | Frontend | Backend | Database | Email | Admin | Automated test | Final status |
 |------|----------|---------|----------|-------|-------|----------------|--------------|
-| **A. Trader invites a peer (trader)** | PARTIALLY_WORKING — dialog inserts row (`ReferenceTracker.tsx:80-119`) | PARTIALLY_WORKING — `sendReferenceRequest` inserts `pending` (`provider-verification-service.ts:327-337`) | WORKING — row lands in `provider_references` (`20260316100001:126-139`) | NOT_IMPLEMENTED — TODO only (`:341`) | N/A | WORKING (insert path) `provider-verification-service.test.ts` | PARTIALLY_WORKING (invite recorded, referee never contacted) |
-| **B. Trader invites a past customer** | PARTIALLY_WORKING — same dialog, `reference_type='client'` (`ReferenceTracker.tsx:85-92`) | PARTIALLY_WORKING — same service, `client` type | WORKING — same table | NOT_IMPLEMENTED | N/A | WORKING (unit) | PARTIALLY_WORKING |
-| **C. Existing user is invited** | NOT_IMPLEMENTED — no referee surface (no `src/app/reference/**`) | NOT_IMPLEMENTED — no submission route | NOT_IMPLEMENTED — no account-linking columns | NOT_IMPLEMENTED | N/A | NOT_IMPLEMENTED | NOT_IMPLEMENTED |
-| **D. New (non-registered) user is invited** | NOT_IMPLEMENTED — no public vouch page | NOT_IMPLEMENTED | NOT_IMPLEMENTED — no token binding | NOT_IMPLEMENTED | N/A | NOT_IMPLEMENTED | NOT_IMPLEMENTED |
-| **E. Resend invitation** | BROKEN — "Send Request" button has no handler (`ReferenceTracker.tsx:174-182`) | NOT_IMPLEMENTED | NOT_IMPLEMENTED | NOT_IMPLEMENTED | N/A | NOT_IMPLEMENTED | BROKEN |
-| **F. Expire invitation** | NOT_IMPLEMENTED | NOT_IMPLEMENTED | NOT_IMPLEMENTED — no `expires_at` col (`:126-139`) | NOT_IMPLEMENTED | NOT_IMPLEMENTED | NOT_IMPLEMENTED | NOT_IMPLEMENTED |
-| **G. Cancel / revoke invitation** | PARTIALLY_WORKING — trader can DELETE row via RLS but no UI button | PARTIALLY_WORKING — `provider_references_delete_own` (`:177-183`) | PARTIALLY_WORKING — hard delete only, no `cancelled`/`revoked` state | NOT_IMPLEMENTED | NOT_IMPLEMENTED | UNTESTED | PARTIALLY_WORKING |
-| **H. Decline vouch (referee says no)** | NOT_IMPLEMENTED | NOT_IMPLEMENTED | NOT_IMPLEMENTED — enum has no `declined` (`:25`) | NOT_IMPLEMENTED | NOT_IMPLEMENTED | NOT_IMPLEMENTED | NOT_IMPLEMENTED |
-| **I. Requirements completed (3+3 vouches → gate)** | PARTIALLY_WORKING — "X/3 submitted" UI (`ReferenceTracker.tsx:74-138`) but references are OPTIONAL | NOT_IMPLEMENTED — no count-gate; `required:false` (`provider-verification-service.ts:57,65`) | N/A — no rules storage | N/A | PARTIALLY_WORKING — admin sets `verified` directly, unrelated to counts (`verification-service.ts:57-59`) | UNTESTED | NOT_IMPLEMENTED (no enforced requirement) |
-| **J. Admin review** | WORKING — queue + approve/reject (`VerificationQueueClient.tsx`) | WORKING — `reviewVerification` (`verification-service.ts:47-91`) | WORKING — updates `profiles.provider_verification_status` | WORKING — `sendVerificationOutcome` (`:77-84`) | WORKING — permission `manage_verifications` (`route.ts:29`) | WORKING (component) `VerificationQueueClient.test.tsx`; e2e page-load only (`admin-scenario-06...:15-38`) | WORKING (but operates on whole provider, **not** per-reference — see note) |
+| **A. Trader invites a peer** | WORKING/UNTESTED-LIVE — dialog → `POST /api/provider/references` (`ReferenceTracker.tsx`) | WORKING — `createReferenceInvitation` service-role (`reference-invitation-service.ts`); 201/409/422/403/429 | WORKING — row lands `pending`; unique active-invite index (`20260712100002:67-69`) | WORKING/UNTESTED-LIVE — Inngest `provider/reference.requested` → `sendReferenceInvitation` | N/A | unit (service+route); e2e `reference-vouching.spec.ts` (BLOCKED) | UNTESTED-LIVE (code complete, live send unverified) |
+| **B. Trader invites a past customer** | WORKING/UNTESTED-LIVE — same dialog, `reference_type='client'` | WORKING — same service; client requires work_date at submit | WORKING — same table + work_date-not-future CHECK | WORKING/UNTESTED-LIVE | N/A | unit; e2e (BLOCKED) | UNTESTED-LIVE |
+| **C. Existing user is invited** | WORKING/UNTESTED-LIVE — public `/reference/[token]` page works for anyone with the link | WORKING — `submitReference` service-role, token-authed | WORKING — token-bound row | WORKING/UNTESTED-LIVE — email carries tokenised link | N/A | unit; e2e (BLOCKED) | UNTESTED-LIVE (no account-linking yet — guest path; see remediation R12) |
+| **D. New (non-registered) user is invited** | WORKING/UNTESTED-LIVE — same public page; referee is unauthenticated (token IS the auth) | WORKING — service-role submit, no account needed | WORKING — no account FK required | WORKING/UNTESTED-LIVE | N/A | unit; e2e (BLOCKED) | UNTESTED-LIVE |
+| **E. Resend invitation** | WORKING/UNTESTED-LIVE — Resend button → `POST /[id]/resend` | WORKING — `resendReferenceInvitation` (cooldown + max-sends); 429 on cooldown | WORKING — increments send_count/last_sent_at | WORKING/UNTESTED-LIVE — `.resend-requested` event re-sends | N/A | unit | UNTESTED-LIVE |
+| **F. Expire invitation** | WORKING — expiry surfaces as "expired" state on the public page | WORKING — lazy expiry on resolve (`reference-submission-service.ts:107-116`) | WORKING — `invite_expires_at` + expiry-sweep index (`20260712100002:72-73`) | N/A | N/A | unit (resolve→expired) | WORKING (lazy) / UNTESTED-LIVE for a background sweep |
+| **G. Cancel / revoke invitation** | WORKING/UNTESTED-LIVE — Cancel button → `POST /[id]/cancel` | WORKING — `cancelReferenceInvitation` → status `revoked` (preserves history) | WORKING — `revoked` status + `revoked_at`; no hard delete | N/A | N/A | unit | UNTESTED-LIVE |
+| **H. Decline vouch (referee says no)** | WORKING/UNTESTED-LIVE — decline action on public page | WORKING — `declineReference` → `declined` (+reason); single-use NULLs hash | WORKING — `declined` status + `declined_reason/at` | N/A | N/A | unit | UNTESTED-LIVE |
+| **I. Requirements completed (N+M valid vouches → gate)** | WORKING/UNTESTED-LIVE — VouchCountsBanner shows peer X/N, client (Md) Y/M met/unmet | WORKING — `countValidVouches` (verified-only; client recency) + `evaluateVouchGate` (pure) | WORKING — `verification_vouch_rules` singleton (gate_enabled=FALSE default) | N/A | WORKING/UNTESTED-LIVE — gate-aware approve (confirm only when ON && unmet) | unit (rules service) | UNTESTED-LIVE (gate OFF by default; live enable = product decision) |
+| **J. Admin per-reference review** | WORKING/UNTESTED-LIVE — AdminReferencesPanel Verify/Reject/Flag w/ required-reason dialog | WORKING — `reviewReference` (submitted|flagged only; reason req; DB-serialized) | WORKING — status→verified/rejected/flagged + reviewed_at/by/reason | N/A | WORKING — `manage_verifications`; logs `metadata:{decision,reason}` | unit (service+route); e2e `admin-reference-review.spec.ts` (BLOCKED) | UNTESTED-LIVE (now per-reference, not just whole-provider) |
 
-> **Flow J note:** admin review acts on the provider's *overall* `provider_verification_status`, never on an individual `provider_references` row. There is no per-reference admin approve/reject/flag. Review notes are not persisted (`verification-service.ts:53-59`), and the decision is not written to `admin_audit_log.metadata` (`audited-admin-action.ts:98-107`).
+> **Flow J note (post-fix):** admin review now acts on **individual `provider_references` rows** (verify/reject/flag), not only the provider's overall `provider_verification_status`. Decisions ARE written to `admin_audit_log.metadata` (`review/route.ts:60-74`) — the pre-fix metadata gap (V-07) is closed. The whole-provider approve path still exists and is now gate-aware.
 
 ## Edge Cases
 
 | Edge case | Frontend | Backend | Database | Email | Admin | Automated test | Final status |
 |-----------|----------|---------|----------|-------|-------|----------------|--------------|
-| **Expired-token reuse** | NOT_IMPLEMENTED — no tokens exist | NOT_IMPLEMENTED | NOT_IMPLEMENTED — no token/expiry cols (`:126-139`) | N/A | N/A | NOT_IMPLEMENTED | NOT_IMPLEMENTED |
-| **Forged vouch (trader self-verifies)** | INSECURE — trader UI + browser client | INSECURE — no server mediation; client UPDATE allowed | INSECURE — `provider_references_update_own` permits status→`verified` + fake `reference_text` (`:164-175`) | N/A | NOT_IMPLEMENTED — no per-reference check to catch it | UNTESTED — no RLS guard (`grep db-tests`: none) | INSECURE |
-| **Self-vouch (trader vouches for self)** | PARTIALLY_WORKING — no check on referee_email vs own email (`ReferenceTracker.tsx`) | PARTIALLY_WORKING — `sendReferenceRequest` has no self-email guard (`provider-verification-service.ts:276-344`) | PARTIALLY_WORKING — no constraint | NOT_IMPLEMENTED | NOT_IMPLEMENTED | UNTESTED | PARTIALLY_WORKING (nothing prevents it) |
-| **Duplicate request (same email)** | PARTIALLY_WORKING — surfaces service error string (`ReferenceTracker.tsx:94-96`) | PARTIALLY_WORKING — app-level `maybeSingle` dedup (`provider-verification-service.ts:315-324`) | PARTIALLY_WORKING — no unique index (`:141-144`), race-prone | N/A | N/A | WORKING (unit covers dup) `provider-verification-service.test.ts` | PARTIALLY_WORKING |
+| **Expired-token reuse** | WORKING — public page shows expiry message | WORKING — lazy expiry + resolve returns `expired` | WORKING — `invite_expires_at` enforced | N/A | N/A | unit | WORKING / UNTESTED-LIVE |
+| **Forged vouch (trader self-verifies)** | N/A — no browser write path exists | **FIXED** — no server mediation grants trader a status write | **FIXED (proven)** — trader write policies DROPped + identity trigger (`20260712100002:83-128`) | N/A | N/A — admin-only status writes | **db-test 37/37 (CONFIRMED)** | **WORKING (forge denied, proven)** |
+| **Self-vouch (trader vouches for self)** | WORKING/UNTESTED-LIVE | WORKING — `createReferenceInvitation` self-vouch guard → 422 (`reference-invitation-service.ts:117`) | WORKING — rejected before insert | N/A | N/A | unit | UNTESTED-LIVE (guarded in code) |
+| **Duplicate request (same email/type)** | WORKING/UNTESTED-LIVE — surfaces 409 message | WORKING — service maps unique-violation → 409 | **FIXED** — DB unique active-invite index (`20260712100002:67-69`) | N/A | N/A | db-test + unit | WORKING (db-enforced) |
+| **Token replay after response** | WORKING — "already submitted" message | WORKING — hash NULLed on submit/decline; `.not(...is null)` serialization | WORKING — single-use enforced at DB | N/A | N/A | unit | WORKING / UNTESTED-LIVE |
+| **Concurrent double-submit / double-review** | N/A | WORKING — filtered UPDATE matches 0 rows on the loser → 409 | WORKING — status/hash filter serializes | N/A | WORKING — review filters on validated status | unit | WORKING (unit) |
 
 ## Reading the matrix
 
-- **PARTIALLY_WORKING** dominates the invite rows because the request is recorded but nothing reaches the referee and nothing can be submitted back.
-- **NOT_IMPLEMENTED** dominates every referee-side and lifecycle (expire/decline/resend) row.
-- The **INSECURE** forged-vouch edge case is the highest-priority fix (finding V-01 in `VOUCHING_SYSTEM_AUDIT.md`).
-- Only **Flow J (admin review of overall status)** is genuinely end-to-end WORKING, and even it does not touch individual vouches.
+- The pre-fix **INSECURE forged-vouch** cell is now **WORKING and proven** by the db-test — the single most important change.
+- Every invite/referee/lifecycle row that was NOT_IMPLEMENTED is now **WORKING in code**, gated only by **UNTESTED-LIVE** (migrations not yet applied to the target DB; e2e not yet run — see `VOUCHING_SYSTEM_AUDIT.md §17`).
+- DB-layer guarantees (forge-block, uniqueness, single-use) are **CONFIRMED** via the 37/37 db-test on real Postgres.
+- The only work truly remaining is applying migrations to the target DB, seeding test users, and running the reviewed e2e specs live.

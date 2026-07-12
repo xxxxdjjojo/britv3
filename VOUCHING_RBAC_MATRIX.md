@@ -1,68 +1,82 @@
-# Vouching RBAC Matrix — Current State (Pre-Fix)
+# Vouching RBAC Matrix — Post-Fix
 
-**Branch:** `feat/vouching-system` · **Date:** 2026-07-12
+**Branch:** `feat/vouching-system` · **Date:** 2026-07-12 (post-fix update)
 
-Roles audited: **Anonymous · Invited non-registered user · Registered customer · Registered trader · Trader being vouched-for · Voucher · Support admin · Verification admin · Super admin.**
+Roles audited: **Anonymous · Invited referee (unregistered) · Registered customer · Registered trader (subject) · Support/Verification admin · Super admin · dev_admin.**
 
-Admin capabilities are grounded in `src/lib/admin-permissions.ts`. The admin roles that exist are `super_admin | moderation_admin | ops_admin | dev_admin` (`admin-permissions.ts:1`). "Support/Verification admin" below map onto the real permission `manage_verifications`, which is held by `super_admin`, `moderation_admin`, and `ops_admin` (`admin-permissions.ts:37,46,53`).
+Admin capabilities grounded in `src/lib/admin-permissions.ts`. Real admin roles: `super_admin | moderation_admin | ops_admin | dev_admin`. "Support/Verification admin" map onto the real permission `manage_verifications`, held by `super_admin`, `moderation_admin`, `ops_admin`.
 
-Legend for "Where enforced": **FE** = frontend gate only · **BE** = server route/service · **DB** = RLS/constraint · **ALL** = all three · **—** = not applicable/absent.
+Legend for "Where enforced": **FE** = frontend gate · **BE** = server route/service · **DB** = RLS/constraint · **SR** = service-role (bypasses RLS, gated by route auth/token) · **ALL** = FE+BE+DB.
+
+> **CONFIRMED vs UNTESTED-LIVE.** DB-layer authz (RLS, immutability, uniqueness) is **CONFIRMED** by `db-tests/provider-references-vouching.test.ts` (37/37, real Postgres). Route-level server authz is unit-tested. The full live path is **UNTESTED-LIVE** pending migration apply (see `VOUCHING_SYSTEM_AUDIT.md §17`).
 
 ---
 
-## 1. `provider_references` table (the vouch rows)
+## 1. `provider_references` table (the vouch rows) — RLS
 
-| Role | View | Create | Update (status/text) | Delete/Revoke | Where enforced | Notes |
-|------|------|--------|----------------------|---------------|----------------|-------|
-| Anonymous | ❌ | ❌ | ❌ | ❌ | DB | no anon policy on `provider_references` (only owner policies exist, `20260316100001:148-183`) |
-| Invited non-registered user | ❌ | ❌ | ❌ | ❌ | DB | **no token/anon path** — cannot submit a vouch (NOT_IMPLEMENTED) |
-| Registered customer | ❌ | ❌ | ❌ | ❌ | DB | owner-only policies key on `service_provider_details.user_id`; a plain customer has no provider row |
-| Registered trader (own rows) | ✅ | ✅ | ⚠️ **YES** | ✅ | DB | `_select/_insert/_update/_delete_own` (`:148-183`) |
-| **Trader being vouched-for (subject)** | ✅ own | ✅ own | 🔴 **INSECURE — can self-set `verified` + fabricate `reference_text`** | ✅ own | DB | `provider_references_update_own` (`:164-175`) — **finding V-01** |
-| Voucher (the referee) | ❌ | ❌ | ❌ | ❌ | DB | no referee identity/policy exists (NOT_IMPLEMENTED) |
-| Support admin (`manage_verifications`) | ❌ direct | ❌ | ❌ | ❌ | DB | no admin policy on `provider_references`; admin only touches `profiles` status (§3) |
-| Verification admin | ❌ direct | ❌ | ❌ | ❌ | DB | same — **no per-reference admin write** |
-| Super admin | ❌ direct (via RLS) | ❌ | ❌ | ❌ | DB | would need service-role/bypass; no app path today |
+| Role | View | Create | Update (status/text) | Delete | Where enforced | Notes |
+|------|------|--------|----------------------|--------|----------------|-------|
+| Anonymous | ❌ | ❌ | ❌ | ❌ | DB | no anon policy; referee path is service-role + token, not anon RLS |
+| Invited referee (unregistered) | ❌ (direct) | ❌ | ✅ **via service-role token only** | ❌ | SR | submit/decline run through the service-role client, gated by a valid single-use token — never direct table access |
+| Registered customer | ❌ | ❌ | ❌ | ❌ | DB | no matching policy |
+| **Registered trader (subject)** | ✅ own | ❌ **(REMOVED)** | ❌ **(REMOVED)** | ❌ **(REMOVED)** | DB | `provider_references_select_own` USING `provider_id = auth.uid()` (`20260712100002:90-92`); insert/update/delete-own **DROPped** (`:83-85`) — **the fix** |
+| Trader writes (create/resend/cancel) | — | ✅ | ✅ | — | SR+BE | go through `/api/provider/references*` (service-role), never RLS; gated by cookie-auth + provider check (403 for non-providers) |
+| Support/Verification admin | ✅ | ❌ | ✅ (review) | ❌ | DB | `provider_references_admin_select` + `_admin_update` USING `is_admin` (`:96-106`); admin review runs in user-context so needs real RLS write |
+| Super admin | ✅ | (via SR) | ✅ | (via SR) | DB/SR | holds `manage_verifications`; is_admin covers RLS |
 
-🔴 = the flagged INSECURE row (self-forgeable verified vouch).
+**Identity-immutability (all UPDATE paths):** a BEFORE UPDATE trigger `prevent_provider_reference_identity_change` freezes `provider_id`, `referee_email`, `reference_type` — so even admin/service-role UPDATEs cannot reassign a row to another provider or rewrite the referee identity (`20260712100002:113-128`). **CONFIRMED** by db-test.
 
 ## 2. Sensitive fields on a reference
 
-| Field | Who can write today | Who *should* write (target) | Where enforced |
-|-------|---------------------|-----------------------------|----------------|
-| `status` | subject trader (INSECURE), seed | referee(`submitted`) + admin(`approved/rejected`), service-role | DB (`:164-175`) |
-| `reference_text` | subject trader (INSECURE), seed | referee only, via tokenised submission | DB |
-| `verified_at` | subject trader (INSECURE), seed | admin approval, service-role | DB |
-| `referee_email` | subject trader (create) | subject trader (create) — OK | DB |
+| Field | Who can write (post-fix) | Where enforced |
+|-------|--------------------------|----------------|
+| `status` | referee (`submitted`/`declined`, via token+SR) · admin (`verified`/`rejected`/`flagged`, RLS admin-update) · service (`sent`/`expired`/`revoked`) | SR / DB(admin) |
+| `reference_text` | referee only, via tokenised submission (SR) | SR |
+| `verified_at` | admin verify only (`reviewReference`) | SR/DB(admin) |
+| `reviewed_by` / `reviewed_at` / `review_reason` | admin review only | SR/DB(admin) |
+| `invite_token_hash` | service (Inngest set; NULLed on response) — never client-writable | SR |
+| `provider_id` / `referee_email` / `reference_type` | **immutable after insert** (trigger) | DB (trigger) |
+
+The subject trader has **no write path to any of these** — the pre-fix forge (V-01) is closed and proven.
 
 ## 3. Provider verification status (`profiles.provider_verification_status`)
 
 | Role | View own | View others | Change (approve/reject) | Where enforced | Evidence |
 |------|----------|-------------|--------------------------|----------------|----------|
-| Anonymous | ❌ | ✅ only if `verified` | ❌ | DB | anon RLS `017_public_profiles.sql:48-54`; badge `ProviderSearchCard.tsx:44` |
-| Registered customer | ✅ self (n/a) | ✅ verified providers | ❌ | DB | — |
-| Registered trader (subject) | ✅ | — | ❌ | ALL | proxy gate `proxy.ts:425-430`; cannot self-approve (only admin route writes it) |
-| Support admin (`manage_verifications`) | ✅ | ✅ | ✅ | ALL | route perm `api/admin/verifications/review/route.ts:29`; service `verification-service.ts:57-64` |
-| Verification admin (`manage_verifications`) | ✅ | ✅ | ✅ | ALL | same |
-| Super admin | ✅ | ✅ | ✅ | ALL | holds all perms (`admin-permissions.ts:35-43`) |
-| `dev_admin` | ✅ | ✅ | ❌ | BE | lacks `manage_verifications` (`admin-permissions.ts:55-58`) — cannot review |
+| Anonymous | ❌ | ✅ only if `verified` | ❌ | DB | anon RLS `017_public_profiles.sql`; badge `ProviderSearchCard.tsx` |
+| Registered customer | ✅ self | ✅ verified providers | ❌ | DB | — |
+| Registered trader (subject) | ✅ | — | ❌ | ALL | proxy gate; cannot self-approve |
+| Support/Verification admin (`manage_verifications`) | ✅ | ✅ | ✅ (gate-aware) | ALL | route perm + `reviewVerification`; approve is gate-aware when `gate_enabled` |
+| Super admin | ✅ | ✅ | ✅ | ALL | holds all perms |
+| `dev_admin` | ✅ | ✅ | ❌ | BE | lacks `manage_verifications` |
 
-## 4. Routes & actions
+## 4. `verification_vouch_rules` (gate config) — RLS
 
-| Route / action | Anonymous | Customer | Trader (subject) | Voucher | Support/Verif admin | Super admin | Where enforced |
-|----------------|-----------|----------|------------------|---------|---------------------|-------------|----------------|
-| `/dashboard/provider/verification/*references` | ❌ redirect login | ❌ role mismatch | ✅ (verification is gate-exempt) | ❌ | ❌ (not their dashboard) | ❌ | ALL — `proxy.ts:406-418` exempts `/verification`, role checks `:446-490` |
-| Add reference (dialog → `sendReferenceRequest`) | ❌ | ❌ | ✅ (browser client + `_insert_own`) | ❌ | ❌ | ❌ | FE+DB — `ReferenceTracker.tsx:84`, RLS `:156-162` |
-| Referee submit vouch | — | — | — | ❌ **no route** | — | — | — (NOT_IMPLEMENTED) |
-| `/admin/verifications` (queue) | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ALL — route perm map `admin-permissions.ts:90` (`manage_verifications`) |
-| `POST /api/admin/verifications/review` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | BE — `route.ts:23-40` via `auditedAdminActionWithPermission(..., "manage_verifications", ...)` |
-| Per-reference approve/reject/flag | — | — | — | — | ❌ **no action** | ❌ | — (NOT_IMPLEMENTED) |
-| Delete/cancel own reference | ❌ | ❌ | ✅ (RLS, no UI button) | ❌ | ❌ | ❌ | DB — `_delete_own` (`:177-183`) |
+| Role | Read | Write | Where enforced | Evidence |
+|------|------|-------|----------------|----------|
+| Anonymous | ❌ | ❌ | DB | policy requires `auth.uid() IS NOT NULL` |
+| Any authenticated (incl. trader) | ✅ | ❌ | DB | `verification_vouch_rules_read` (`20260712100003:36-39`) — services need thresholds |
+| Admin (`is_admin`) | ✅ | ✅ | DB+BE | `verification_vouch_rules_admin_write` (`:42-46`); edits via audited `PUT /api/admin/vouch-rules` |
 
-## 5. Key RBAC findings
+## 5. Routes & server-side authz
 
-1. 🔴 **CRITICAL (V-01):** the subject trader has UPDATE on their own vouch rows including `status`/`reference_text`/`verified_at` — the one actor who must never be able to validate their own vouch can (`provider_references_update_own`, `20260316100001:164-175`). Restriction lives **only in DB** and it is the *wrong* restriction (grants, not denies).
-2. **Voucher/referee is a phantom role** — it has zero permissions anywhere because no submission path exists (NOT_IMPLEMENTED).
-3. **No admin reach into individual references** — admins act only on `profiles.provider_verification_status`; there is no policy or route giving any admin per-reference view/write.
-4. **Admin review gating is correct** where it exists — `manage_verifications` is enforced at the API boundary (`route.ts:29`) and mapped for the page (`admin-permissions.ts:90`); `dev_admin` correctly cannot review.
-5. **Recommended target:** move all non-`pending` reference writes off RLS-owner and onto a **service-role server route** that (a) accepts referee submissions only against a valid single-use token, and (b) accepts approve/reject/flag only from an admin holding `manage_verifications`. The subject trader retains create + cancel, nothing else.
+| Route / action | Auth model | Guards / status codes | Where enforced |
+|----------------|-----------|-----------------------|----------------|
+| `POST /api/provider/references` | cookie-auth (provider) | 401 unauth · 403 non-provider · 422 self-vouch · 409 duplicate-active · 429 >5/hr · 201 ok | BE — `route.ts` (service-role write) |
+| `POST /api/provider/references/[id]/resend` | cookie-auth | 429 cooldown; max-sends | BE |
+| `POST /api/provider/references/[id]/cancel` | cookie-auth | → status `revoked` | BE |
+| `GET /reference/[token]` (public) | token (in URL) | robots noindex; NO internal ids exposed; service-role resolve | BE+SR (`/reference` in PUBLIC_ROUTES) |
+| `POST /api/references/[token]/submit` | token IS the auth | 5/hr/IP fail-open; 200/409/410/404/400; constant-time hash compare; no ids in body; generic invalid (no enumeration) | BE+SR |
+| `POST /api/references/[token]/decline` | token | single-use | BE+SR |
+| `POST /api/admin/references/[id]/review` | admin `manage_verifications` | UUID-guards id; `reason_required→400`, `invalid_state→409`, `not_found→404`; logs `metadata:{decision,reason}` | BE — `auditedAdminActionWithPermission` |
+| `PUT /api/admin/vouch-rules` | admin | audited | BE |
+| `/admin/verifications` + `/[userId]` | admin `manage_verifications` | queue + per-trader detail | ALL |
+
+## 6. Key RBAC findings (post-fix)
+
+1. ✅ **CRITICAL V-01 CLOSED (proven).** The subject trader has **no write** on their own vouch rows — insert/update/delete-own policies DROPped, all trader writes routed through service-role API, identity columns immutable via trigger. `db-tests/provider-references-vouching.test.ts` (37/37) proves the forge is denied while select-own and admin access hold.
+2. ✅ **Referee is now a real, least-privilege actor** — no table access; acts only through a service-role endpoint gated by a single-use, expiring, sha256-hashed token. No account required (guest path); account-linking is REMAINING (R12).
+3. ✅ **Admins now reach individual references** — `is_admin` RLS select+update + a permissioned review route (`manage_verifications`), replacing the pre-fix "admin only touches profiles status".
+4. ✅ **Gate config is correctly scoped** — authenticated-read (services need thresholds), admin-write only.
+5. ✅ **Admin review gating correct** — `manage_verifications` enforced at the route boundary; `dev_admin` correctly cannot review. Decisions are audit-logged with metadata.
+6. **Live caveat:** all of the above is CONFIRMED at the DB (db-test) and unit-tested at the routes, but **UNTESTED-LIVE** until migrations are applied to the target DB.

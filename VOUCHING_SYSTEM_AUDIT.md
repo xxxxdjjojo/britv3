@@ -1,115 +1,136 @@
-# Vouching System — Current-State Audit (Pre-Fix)
+# Vouching System — Post-Fix Audit
 
 **Branch:** `feat/vouching-system` (off `origin/main`)
-**Date:** 2026-07-12
-**Scope:** The "vouching" system = the **provider references** feature — traders/professionals invite peers and past customers to vouch for them; admins review provider verification; references feed into the Verified badge.
-**Status vocabulary:** WORKING · PARTIALLY_WORKING · BROKEN · NOT_IMPLEMENTED · INSECURE · UNTESTED · BLOCKED_BY_CONFIGURATION
+**Date:** 2026-07-12 (post-fix update)
+**Scope:** The "vouching" system = the **provider references** feature — traders/professionals invite peers and past customers to vouch for them; a referee submits a vouch via a tokenised link; admins review individual references; references feed a configurable verification gate and the Verified badge.
+**Status vocabulary:** WORKING · PARTIALLY_WORKING · BROKEN · NOT_IMPLEMENTED · INSECURE · UNTESTED · BLOCKED_BY_CONFIGURATION · UNTESTED-LIVE
 
-> This is a **reality audit of the code on this branch**. Every conclusion is anchored to a real file:line, table, policy, function, or test path that was opened during the audit. Sections marked **RECOMMENDED / TARGET** describe the intended product model (per brief) and are clearly separated from what the code enforces today.
+> This is a **post-fix reality audit**. The pre-fix pass (readiness 18/100) found the feature half-built and INSECURE (a trader could forge their own `verified` vouches from the browser). Since then the full system was **built end-to-end**: DB security rewrite, token lib, invitation/submission/rules/admin-review services, email + Inngest job, trader API, referee public surface, admin review UI. Every conclusion below is anchored to a real file:line/table/policy/test path.
+>
+> **CONFIRMED vs UNTESTED-LIVE.** Throughout, **CONFIRMED** = proven by a passing unit test and/or a passing db-test against real Postgres, plus code review. **UNTESTED-LIVE** = code is complete + unit/db-tested + reviewed, but the end-to-end browser/e2e path has **not** been exercised against a running app because the target DB does not yet have the new migrations applied (see §17). Nothing here has been dogfooded in a live browser.
 
 ---
 
 ## 1. Executive Summary
 
-The platform advertises a rich "vouching" workflow (traders invite 3 peers + 3 recent customers who submit vouches that feed verification). **Only the request half of one reference-request feature exists, and it is insecure.**
+The vouching system is now **built end-to-end and secure in the data layer**. A trader invites a peer or past customer; an Inngest job generates a single-use, expiring token and emails the referee a tokenised link; the referee submits (or declines) a vouch on a public `/reference/[token]` page via a service-role endpoint; an admin reviews each individual reference (verify/reject/flag) from a per-trader detail page; a configurable, **default-OFF** rules gate can require N peer + M recent-customer *valid* vouches before a provider is approved.
 
-What exists: a `provider_references` table, a client-side service (`sendReferenceRequest`) that inserts a `pending` row, a trader-facing UI (`ReferenceTracker`) to add referees, and an admin queue that approves/rejects a provider's **overall** verification status (not individual references).
+The single most serious pre-fix finding — **a trader could UPDATE their own `provider_references` rows to `status='verified'` with fabricated `reference_text` from the browser** — is **FIXED and proven**. Migration `20260712100002` DROPs the trader insert/update/delete-own policies, keeps select-own, adds admin select+update, and installs a BEFORE UPDATE trigger freezing the identity columns (`provider_id`, `referee_email`, `reference_type`). A db-test suite (`db-tests/provider-references-vouching.test.ts`, **37/37 passing against Docker Postgres**) proves the forge is denied while admin access and the unique constraints hold.
 
-What does not exist: any way for a referee to actually submit a vouch. There is **no invitation token, no expiry, no referee-facing route, no email delivery, no per-reference admin review, and no vouch-count gating.** The statuses `submitted` and `verified` on a reference are therefore **unreachable through the product** — the only way to set them is the trader forging their own row.
+What is **not** yet done: the new migrations have **not been applied to the target (remote) DB**, and no provider/admin test user has been seeded there, so the live browser/e2e journey is **UNTESTED-LIVE / BLOCKED_BY_CONFIGURATION**. The reviewed e2e specs will pass once schema + users exist. See §17 and `VOUCHING_REMEDIATION_PLAN.md`.
 
-The single most serious finding: **RLS lets a trader UPDATE their own `provider_references` rows, including `status` and `reference_text`.** A trader can set `status = 'verified'` and write fabricated praise directly from the browser Supabase client. This makes every "verified reference" untrustworthy.
+## 2. Overall Readiness Score: **78 / 100** (was 18)
 
-## 2. Overall Readiness Score: **18 / 100**
+**Rationale.** The pre-fix trust-breaking hole is closed and *proven at the DB* (37/37 db-tests on real Postgres) — the CRITICAL finding is not merely coded-around but contract-tested. The full journey now exists in code: tokens, single-use/expiry, referee submit/decline surface, per-reference admin review, and a configurable default-OFF gate — all covered by passing unit tests with real-behaviour assertions. All non-live gates are green: `tsc` 0 errors, `lint` 0 errors, `check:migrations` ✓, full `vitest` 6004 passed / 0 failed, db-tests 37/37.
 
-Rationale: The data model and one request path exist and are unit-tested (10/10 green), which earns some credit. But the feature is non-functional end-to-end (referees literally cannot vouch), the trust guarantee is actively broken by an INSECURE RLS policy that permits self-forged verified vouches, and the entire submission/email/tokenisation/per-reference-review/gating half is NOT_IMPLEMENTED. A system whose core trust claim can be forged from the browser and whose primary user journey has no endpoint cannot be considered launch-ready.
+The **22 points withheld** are for the one genuine gap: **no live end-to-end verification**. The migrations are not applied to the target DB and no test user is seeded there, so the app/e2e/browser flow has never actually run against a real deployment. That is a real, unremoved risk (a schema-application slip, an env-var gap, or a proxy-gate surprise could surface only live), so the score stays in the high-70s rather than the 90s. It is code-complete and defensively tested, not launch-verified.
 
-## 3. System Architecture Map
+## 3. System Architecture Map (post-fix)
 
 ```
-Trader (browser, authed)
-  └─ ReferenceTracker.tsx ──(createClient browser client)──► sendReferenceRequest()
-        └─ INSERT provider_references (status='pending')      [relies on _insert_own RLS]
-        └─ TODO: Inngest 'provider/reference.requested'  ← NOT wired (no email sent)
+Trader (browser, authed provider)
+  └─ ReferenceTracker.tsx ──(fetch)──► POST /api/provider/references            [cookie-auth]
+        └─ non-provider → 403 · self-vouch → 422 · duplicate-active → 409 · >5/hr → 429
+        └─ createReferenceInvitation() [service-role write — RLS blocks trader writes]
+        └─ emits Inngest 'provider/reference.requested' (non-fatal)
+  └─ Resend  ──► POST /api/provider/references/[id]/resend  (cooldown → 429)
+  └─ Cancel  ──► POST /api/provider/references/[id]/cancel   (→ status 'revoked')
 
-Referee (invited person)
-  └─ (NO ROUTE)  ──►  cannot submit a vouch anywhere        [NOT_IMPLEMENTED]
+Inngest 'provider/reference.requested' | '.resend-requested'
+  └─ reference-request-email.ts  (retries:3)
+        └─ GENERATES raw token → hash to DB via markSentReference (raw never persisted to state)
+        └─ sendReferenceInvitation() → Resend email w/ tokenised /reference/<raw> link + email_logs record
 
-Verification progress
-  └─ VerificationStepper.tsx / getVerificationSteps()
-        └─ reads provider_documents + provider_references
-        └─ references are OPTIONAL steps; do not gate 'verified'
+Referee (UNAUTHENTICATED — the raw token IS the auth)
+  └─ GET /reference/[token]  (server component, service-role resolve, robots noindex, NO internal ids)
+        └─ resolveInvitationByToken() → valid | expired(lazy) | used | declined | invalid
+  └─ ReferenceSubmissionForm ──► POST /api/references/[token]/submit  (5/hr/IP fail-open)
+        └─ submitReference(): single-use (NULLs token hash), client work_date required+non-future,
+           DB-serialized against double-submit → status 'submitted'   200/409/410/404/400
+  └─ POST /api/references/[token]/decline → status 'declined'
 
 Admin (authed, permission manage_verifications)
-  └─ /admin/verifications  ──► VerificationQueueClient.tsx
-        └─ POST /api/admin/verifications/review
-             └─ auditedAdminActionWithPermission → reviewVerification()
-                  └─ UPDATE profiles.provider_verification_status  ('verified'|'rejected')
-        └─ operates on the WHOLE provider, never on individual references
+  └─ /admin/verifications (queue + VouchRulesEditor)
+       └─ rows link to /admin/verifications/[userId] (trader detail)
+             └─ VouchCountsBanner (peer X/N, client (Md) Y/M, met/unmet)
+             └─ AdminReferencesPanel (full referee email for fraud detection)
+                  └─ Verify/Reject/Flag ──► POST /api/admin/references/[id]/review
+                        └─ auditedAdminActionWithPermission('manage_verifications')
+                        └─ reviewReference(): submitted|flagged only; reason req for reject/flag;
+                           DB-serialized; logs metadata {decision,reason} to admin_audit_log
+             └─ gate-aware provider approve (confirm only when gate_enabled && !allMet; default OFF)
+  └─ PUT /api/admin/vouch-rules  (audited) — edits verification_vouch_rules singleton
 
 Public
-  └─ ProviderSearchCard.tsx  isVerified = provider_verification_status === 'verified' → ShieldCheck
-  └─ anon RLS "Anon can view verified provider details" gates visibility
+  └─ ProviderSearchCard.tsx isVerified = provider_verification_status === 'verified' → ShieldCheck
 
 proxy.ts
-  └─ gates /dashboard/provider on provider_verification_status === 'verified' (exempts verification/billing/referrals/open pages)
+  └─ gates /dashboard/provider on provider_verification_status === "verified"
+     (verification/references pages are gate-exempt; "/reference" is in PUBLIC_ROUTES)
 ```
 
-## 4. Current State-Machine Map (what code enforces)
+## 4. Current State-Machine Map (what code now enforces)
 
-- **Reference status** enum `provider_reference_status` = `pending | submitted | verified` (`supabase/migrations/20260316100001_provider_dashboard_tables.sql:25`). Default `pending` (`:134`).
-  - `pending` is the ONLY status set by any application code path (`sendReferenceRequest` inserts `status:'pending'`, `provider-verification-service.ts:334`).
-  - `submitted` / `verified` have **no legitimate writer** — no referee route, no admin per-reference action. Reachable only via the INSECURE trader UPDATE (RLS `provider_references_update_own`) or via seed data.
-- **Provider verification status** enum `provider_verification_status` = `unverified | pending_review | verified | suspended | rejected` (`supabase/migrations/002_marketplace.sql:54-60`). Admin flips `pending_review → verified|rejected` (`verification-service.ts:57-59`). No transition guards.
+- **Reference status** enum `provider_reference_status` now has **9 values**: `pending | sent | submitted | verified | declined | expired | revoked | rejected | flagged`. Base 3 in `20260316100001_provider_dashboard_tables.sql:25`; 6 added by `20260712100001_vouching_reference_status_values.sql:14-19`.
+  - `pending` → `sent`: Inngest job generates+hashes token and calls `markSentReference` (`reference-request-email.ts`).
+  - `sent`/`pending` → `submitted`: referee via service-role `submitReference` (single-use token).
+  - `sent`/`pending` → `expired`: lazy on resolve (`reference-submission-service.ts:107-116`) or expiry sweep index.
+  - `* ` → `declined`: referee `declineReference`.
+  - active → `revoked`: trader cancel (`cancelReferenceInvitation`).
+  - `submitted`/`flagged` → `verified | rejected | flagged`: **admin only**, service `reviewReference` (`verification-service.ts:179-257`).
+  - The trader (subject) **can no longer write any status** — RLS DROPs their write policies (§8).
+- **Provider verification status** enum `provider_verification_status` = `unverified | pending_review | verified | suspended | rejected` (`002_marketplace.sql:54-60`). Admin flips `pending_review → verified|rejected`. A default-OFF configurable gate can require valid vouch counts first.
 
-Full diagrams and the recommended richer model live in `VOUCHING_STATE_MACHINE.md`.
+Full diagrams in `VOUCHING_STATE_MACHINE.md` (the pre-fix "recommended" model is now largely the "current" model).
 
 ## 5. Frontend Audit
 
 | Item | Status | Evidence |
 |---|---|---|
-| `ReferenceTracker` add-reference dialog inserts a row | PARTIALLY_WORKING | `src/components/dashboard/provider/ReferenceTracker.tsx:80-119` calls `sendReferenceRequest` with the **browser** client |
-| "Send Request" button (on a pending row) | BROKEN | `ReferenceTracker.tsx:174-182` — `<button>` with no `onClick`; purely decorative |
-| "Remind" button (on a submitted row) | BROKEN | `ReferenceTracker.tsx:185-191` — no `onClick`; decorative |
-| "View" reference text dialog | WORKING | `ReferenceTracker.tsx:192-201, 288-306` shows `reference_text` (which is currently only ever seed data) |
-| Progress "X / 3 submitted" | WORKING | `ReferenceTracker.tsx:74-138` counts `submitted`+`verified` |
-| Peer/client reference pages | PARTIALLY_WORKING | `src/app/(protected)/dashboard/provider/verification/peer-references/page.tsx`, `.../client-references/page.tsx` |
-| Provider-id derivation latent bug | PARTIALLY_WORKING | both pages `.select("id")` from `service_provider_details` (PK is `user_id`, no `id` col — see `002_marketplace.sql:99-100`) → `providerProfile?.id` is `undefined` → falls back to `user.id`, which happens to be the correct FK key. Works by accident; brittle. |
-| VerificationStepper progress | WORKING | `src/components/dashboard/provider/VerificationStepper.tsx` |
+| `ReferenceTracker` add-reference → API (not browser insert) | WORKING / UNTESTED-LIVE | `src/components/dashboard/provider/ReferenceTracker.tsx` rewired to `POST /api/provider/references`; all 9 status badges; Resend/Cancel wired; progress counts VERIFIED-only; rules-driven required count; a11y radios/labels |
+| Resend / Cancel buttons (formerly decorative) | WORKING / UNTESTED-LIVE | now call `/[id]/resend` and `/[id]/cancel` (fixes pre-fix V-09) |
+| Progress "X / N verified" | WORKING | counts VERIFIED-only; required N read from `verification_vouch_rules` |
+| Peer/client reference pages provider-id | WORKING (FIXED) | both pages now use `const providerId = user.id;` explicitly (comment documents `service_provider_details.user_id === auth uid`); the `.select("id") ?? user.id` fallback removed (fixes pre-fix V-10) |
+| Referee submission form | WORKING / UNTESTED-LIVE | `src/components/reference/ReferenceSubmissionForm.tsx` + `ReferenceTokenState.tsx` — real radios, focus-to-confirmation, aria |
+| Admin trader-detail UI | WORKING / UNTESTED-LIVE | `src/app/(admin)/admin/verifications/[userId]/page.tsx` — VouchCountsBanner + AdminReferencesPanel; VouchRulesEditor on queue page |
 
 ## 6. Backend Audit
 
 | Item | Status | Evidence |
 |---|---|---|
-| `sendReferenceRequest` inserts `pending`, validates email, dedups by email | WORKING (as far as it goes) | `provider-verification-service.ts:276-344` (zod email `:304`, dup check `:315-324`, insert `:327-337`) |
-| Email/Inngest trigger on request | NOT_IMPLEMENTED | `provider-verification-service.ts:341` `// TODO: trigger Inngest event 'provider/reference.requested' once Inngest is wired up`; no `provider/reference` in `src/app/api/inngest/route.ts` (grep: none) |
-| Referee submission endpoint | NOT_IMPLEMENTED | no `src/app/reference/**` (ls: does not exist); grep of `src/app` for a submission route: none |
-| Reference invocation via **server** action (privileged) | NOT_IMPLEMENTED | the only caller is client-side (`ReferenceTracker.tsx:84`); insert relies on `_insert_own` RLS, not a service-role server route |
-| `getProviderReferences` / `getVerificationSteps` | WORKING | `provider-verification-service.ts:132-260`; references marked **optional** (`VERIFICATION_STEPS[3-4].required = false`, `:57,:65`) |
-| Decline / cancel / resend / expire flows | NOT_IMPLEMENTED | no code paths; enum has no such states |
+| Trader invitation create (self-vouch + dup-active + per-provider cap=25) | WORKING (unit) / UNTESTED-LIVE | `src/services/provider/reference-invitation-service.ts` (`MAX_ACTIVE_INVITES=25:39`, self-vouch `:117`, duplicate via unique index `:152-157`) |
+| Resend (cooldown + max-sends), cancel (→revoked), markSent | WORKING (unit) | same file (`cooldown :222-227`) |
+| Referee submission (single-use, client work_date, DB-serialized) | WORKING (unit) / UNTESTED-LIVE | `reference-submission-service.ts:138-216` — NULLs token hash, `.not(invite_token_hash, is, null)` serialization `:196` |
+| Referee decline | WORKING (unit) | `reference-submission-service.ts:222-268` |
+| Token lib generate/hash(sha256)/timing-safe-match/expiry | WORKING (19 unit) | `src/lib/reference-tokens.ts` |
+| Vouch-rules: getVouchRules (defaults fallback), countValidVouches (verified-only; client recency), evaluateVouchGate (pure) | WORKING (unit) | `src/services/provider/vouch-rules-service.ts` |
+| Admin per-reference review (verify/reject/flag; reason req; DB-serialized) | WORKING (unit) / UNTESTED-LIVE | `src/services/admin/verification-service.ts:179-257` |
+| Old insecure client `sendReferenceRequest` | REMOVED | replaced by service-role API path; no browser-mediated write remains |
 
 ## 7. Database Audit
 
 | Item | Status | Evidence |
 |---|---|---|
-| `provider_references` table | WORKING (schema) | `20260316100001_provider_dashboard_tables.sql:126-139` |
-| Columns present | — | id, provider_id (FK → `service_provider_details(user_id)` ON DELETE CASCADE), reference_type, referee_name, referee_email, referee_phone, relationship, status, reference_text, requested_at, submitted_at, verified_at (`:126-139`) |
-| Invitation token / single-use / expiry columns | NOT_IMPLEMENTED | no token/expiry/nonce columns in the table def (`:126-139`) |
-| Uniqueness on (provider, email, type) | NOT_IMPLEMENTED | only two indexes exist: `idx_provider_references_provider_id`, `idx_provider_references_status` (`:141-144`); dedup is app-level only (`provider-verification-service.ts:315-324`) — race-prone |
-| Reviewer / audit / notes columns on the reference | NOT_IMPLEMENTED | none in table def |
-| Reference status enum | WORKING | `provider_reference_status = pending|submitted|verified` (`:25`) — no decline/revoke/flag |
-| Seed rows exist | INFORMATIONAL | `supabase/seed/03_provider_data.sql:419-` inserts 3 references (2 `verified`, 1 `submitted`, 0 `pending`) — the seed contains no `pending` rows at all, so it is the only source of non-`pending` statuses in a fresh DB (the other being the insecure trader UPDATE); `submitted`/`verified` are never reachable through a real referee flow |
+| `provider_references` invitation columns | WORKING (migration + db-test) | `20260712100002:18-31` — invite_token_hash (sha256 hex, raw never stored), invite_expires_at/sent_at/last_sent_at/send_count, work_date, rating (1-5 CHECK), declined_reason/at, revoked_at, reviewed_at/by, review_reason |
+| Reference status enum (9 values) | WORKING (migration + db-test) | `20260712100001:14-19` |
+| Unique: one live token per hash | WORKING (db-test) | `uq_provider_references_token_hash` (`20260712100002:62-63`) |
+| Unique: one active invite per (provider, lower(email), type) | WORKING (db-test) | `uq_provider_references_active_invite` (`:67-69`) |
+| work_date-not-future CHECK | WORKING | `provider_references_work_date_not_future` (`:47-56`) |
+| `verification_vouch_rules` singleton (required peer/client=3, recency 90d, expiry 30d, cooldown 24h, gate_enabled=FALSE) | WORKING (db-test) | `20260712100003:10-23`; auth-read + admin-write RLS `:36-46`; updated_at trigger |
+| RLS forgery hole | FIXED (proven) | trader insert/update/delete-own DROPPed; select-own kept; admin select+update added; identity-immutability trigger (`20260712100002:83-128`) — db-test **37/37** |
 
 ## 8. Auth & Permissions Audit
 
 | Item | Status | Evidence |
 |---|---|---|
-| SELECT own references | WORKING | policy `provider_references_select_own` USING `provider_id = (SELECT user_id FROM service_provider_details WHERE user_id = auth.uid())` (`20260316100001_...:148-154`) |
-| INSERT own references | WORKING (by design) | `provider_references_insert_own` (`:156-162`) |
-| **UPDATE own references (incl. status/reference_text/verified_at)** | **INSECURE** | `provider_references_update_own` (`:164-175`) — trader can self-set `status='verified'` and fabricate `reference_text` from the browser client. No column-level restriction; no reviewer gate. |
-| DELETE own references | WORKING (by design) | `provider_references_delete_own` (`:177-183`) |
-| Referee (invited) access | NOT_IMPLEMENTED | no anon/token policy for a referee to write a vouch |
-| proxy provider gate | WORKING | `src/proxy.ts:425-426` compares `provider_verification_status === "verified"` (correct enum value — **not** the "approved" bug seen on other branches) |
-| Admin permission for review | WORKING | `manage_verifications` held by super_admin, moderation_admin, ops_admin (`src/lib/admin-permissions.ts:37,46,53`); route enforces it (`api/admin/verifications/review/route.ts:29`) |
+| Trader SELECT own references | WORKING | `provider_references_select_own` USING `provider_id = auth.uid()` (`20260712100002:90-92`) |
+| **Trader INSERT/UPDATE/DELETE own** | **REMOVED (the fix)** | policies DROPped (`:83-85`); trader writes now go via service-role API only — db-test proves forge denied |
+| Identity columns immutable on any UPDATE | WORKING (proven) | BEFORE UPDATE trigger `prevent_provider_reference_identity_change` (`:113-128`) |
+| Admin SELECT / UPDATE references | WORKING | `provider_references_admin_select` / `_admin_update` USING `is_admin` (`:96-106`) |
+| Referee (invited) access | via service-role token (by design) | no anon/referee RLS policy; referee endpoints use the service-role client + single-use token (`20260712100002:130-131`) |
+| `verification_vouch_rules` perms | WORKING | authenticated read, admin write (`20260712100003:36-46`) |
+| proxy provider gate | WORKING | `proxy.ts` compares `provider_verification_status === "verified"` (correct enum — the "approved" mismatch is NOT present on this branch) |
+| Admin review route permission | WORKING | `manage_verifications` enforced via `auditedAdminActionWithPermission` (`api/admin/references/[id]/review/route.ts:40-45`) |
 
 Full role grid in `VOUCHING_RBAC_MATRIX.md`.
 
@@ -117,86 +138,113 @@ Full role grid in `VOUCHING_RBAC_MATRIX.md`.
 
 | Item | Status | Evidence |
 |---|---|---|
-| Verification queue lists `pending_review` providers | WORKING | `src/services/admin/verification-service.ts:13-45` (`getVerificationQueue`) |
-| Approve/reject flips provider status | WORKING | `reviewVerification` (`verification-service.ts:47-91`); `approved→verified`, `rejected→rejected` (`:57-59`) |
-| Review **notes** persisted | NOT_IMPLEMENTED | `verification-service.ts:53-59` — profiles has no notes column; `notes` is only forwarded to the outcome email, never stored |
-| Per-reference approve/reject/flag | NOT_IMPLEMENTED | `VerificationQueueClient.tsx` only POSTs `{userId, decision, notes}` (`:18,:27`); no reference id anywhere |
-| Audit log records the decision/notes | PARTIALLY_WORKING | route wraps in `auditedAdminActionWithPermission` (`route.ts:23-40`) which logs action/target/success but **omits `metadata`** (`src/lib/audited-admin-action.ts:98-107` — no `metadata` passed), so decision & notes are not captured in `admin_audit_log.metadata` |
-| Admin email on outcome | WORKING | `verification-service.ts:69-88` best-effort `sendVerificationOutcome` |
+| Verification queue lists `pending_review` providers | WORKING | `verification-service.ts:15-47` |
+| Per-trader detail page (counts banner + references panel) | WORKING / UNTESTED-LIVE | `src/app/(admin)/admin/verifications/[userId]/page.tsx` |
+| Per-reference verify/reject/flag | WORKING (unit) / UNTESTED-LIVE | `reviewReference` (`verification-service.ts:179-257`); route maps `reason_required→400`, `invalid_state→409`, `not_found→404` (`review/route.ts:16-18`) |
+| Reason required for reject/flag | WORKING | `reviewReference:207-214` + route |
+| Audit log records decision+reason | WORKING (FIXED) | route logs explicit `metadata:{decision,reason}` to `admin_audit_log` (`review/route.ts:60-74`); UUID-guards id (`:29`) — closes pre-fix V-07. **Note:** double-logs (wrapper base entry + explicit metadata entry) — intentional, see §16 |
+| Vouch-rules editor | WORKING / UNTESTED-LIVE | `PUT /api/admin/vouch-rules` (audited) + VouchRulesEditor |
+| Gate-aware provider approve | WORKING / UNTESTED-LIVE | confirm-dialog only when `gate_enabled && !allMet`; default OFF preserves existing direct-approve flow |
 
-## 10. Security Audit
+## 10. Security Audit (post-fix)
 
-- **CRITICAL — Self-forged verified vouches.** `provider_references_update_own` (`20260316100001_...:164-175`) allows a trader to UPDATE `status` to `verified` and write arbitrary `reference_text` on their own rows. Combined with `ProviderSearchCard`'s trust badge and the "3 submitted" progress UI, this lets a trader manufacture social proof. Status: **INSECURE**.
-- **HIGH — No provenance on a reference.** Because there is no token or referee identity binding and no server-mediated submission, even a legitimately `submitted` reference cannot be distinguished from a forged one. Status: **INSECURE / NOT_IMPLEMENTED**.
-- **MEDIUM — App-level dedup is race-prone.** No DB uniqueness on (provider, email, type) (`:141-144`); two concurrent inserts can both pass the `maybeSingle` check (`provider-verification-service.ts:315-324`).
-- **LOW — Latent provider-id bug.** `.select("id")` on a table keyed by `user_id` (pages §5) silently degrades to `user.id`; a future schema change adding an `id` column would break the queries.
-- **INFORMATIONAL — Audit metadata gap.** Verification review decisions are not fully attributable in `admin_audit_log` (see §9).
+- **CRITICAL — Self-forged verified vouches → FIXED (proven).** `provider_references` trader write policies DROPped; identity-immutability trigger; admin/service-role-only status writes. Proven by `db-tests/provider-references-vouching.test.ts` (37/37, real Postgres). Status: **WORKING**.
+- **HIGH — Provenance on a reference → ADDRESSED.** Referee submissions are bound to a single-use, expiring, sha256-hashed token (raw never stored); admin reviews individually. Status: **WORKING (unit/db-tested) / UNTESTED-LIVE** for the full path.
+- **MEDIUM — Race-prone dedup → FIXED.** DB unique partial index `uq_provider_references_active_invite` on (provider, lower(email), type) for active statuses; app surfaces a friendly 409. Status: **WORKING (db-test)**.
+- **MEDIUM — Token single-use under concurrency → ADDRESSED.** submit/decline NULL the hash and filter `.not(invite_token_hash, is, null)`; a racing second request matches 0 rows → 409/410. Status: **WORKING (unit)**.
+- **LOW — Referee enumeration → ADDRESSED.** Generic "invalid" state for revoked/unknown tokens; no internal ids exposed on the public page (robots noindex). Status: **WORKING (reviewed)**.
+- **LOW — Latent provider-id bug → FIXED.** Pages now use `user.id` explicitly. Status: **WORKING**.
+- **INFORMATIONAL — Audit metadata gap → FIXED.** Review route writes `metadata:{decision,reason}`.
 
 ## 11. Email & Notification Audit
 
 | Item | Status | Evidence |
 |---|---|---|
-| Reference-request email to referee | NOT_IMPLEMENTED | no template in `src/emails/` matching referen*/vouch* (ls: none); TODO left in service (`provider-verification-service.ts:341`) |
-| Reminder ("Remind" button) email | NOT_IMPLEMENTED | button is decorative (`ReferenceTracker.tsx:185-191`) |
-| Inngest function for reference lifecycle | NOT_IMPLEMENTED | none in `src/inngest/functions/` (ls list has no reference file); not registered in `src/app/api/inngest/route.ts` (grep: none) |
-| Verification-outcome email (provider) | WORKING | `sendVerificationOutcome` invoked in `reviewVerification` (`verification-service.ts:77-84`) |
+| Reference-request email to referee (+ expiry/reminder variants) | WORKING (unit) / UNTESTED-LIVE | `src/emails/reference-request.tsx` (react-email) + `sendReferenceInvitation` in `email-service.ts` (Resend + `email_logs` record) |
+| Inngest function for reference lifecycle | WORKING (unit) / UNTESTED-LIVE | `src/inngest/functions/reference-request-email.ts` handles `provider/reference.requested` + `.resend-requested`; generates token, hashes to DB, raw token only in email URL; retries:3; registered in `src/app/api/inngest/route.ts:46,86` |
+| Reminder (resend) email | WORKING (unit) / UNTESTED-LIVE | same function via `.resend-requested` |
+| Verification-outcome email (provider) | WORKING | `sendVerificationOutcome` in `reviewVerification` (`verification-service.ts:79-86`) |
 
 ## 12. Test Coverage Audit
 
 | Test | Status | Evidence |
 |---|---|---|
-| `sendReferenceRequest` / `getVerificationSteps` / `updateBadgeStatus` unit | WORKING (10/10 green) | `src/services/provider/__tests__/provider-verification-service.test.ts` — ran: 1 file, 10 tests passed |
-| Admin verification queue component | WORKING | `src/__tests__/m3/admin/VerificationQueueClient.test.tsx` (exists) |
-| RLS contract test for `provider_references` (forge-guard) | NOT_IMPLEMENTED / UNTESTED | grep of `db-tests/` for `provider_references`: none — the INSECURE UPDATE policy is unguarded by any test |
-| e2e for referee submission / vouch flow | NOT_IMPLEMENTED | no such spec; `e2e/admin-scenario-06-verification-reviews.spec.ts` only checks the admin queue page loads (`:15-38`), not per-reference vouching |
-| db-tests harness | BLOCKED_BY_CONFIGURATION (locally) | `db-tests/harness.ts` spins a Docker Postgres (`:71-96`); requires Docker + `RUN_DB_TESTS=1` + `vitest.db.config.ts`; not run in this audit (Docker not exercised) |
+| Token lib unit | WORKING (19) | `src/lib/reference-tokens.ts` tests |
+| Invitation / submission / rules / provider-display services unit | WORKING | `src/services/provider/*.test.ts` (mocked Supabase, real-behaviour assertions) |
+| Admin review service unit | WORKING | `src/services/admin/verification-service.ts` tests |
+| Trader/referee/admin API route unit | WORKING | colocated `*.route.test.ts` under each route dir |
+| Email template + Inngest fn unit | WORKING | `reference-request.test.tsx`, `reference-request-email.test.ts` |
+| **RLS forge-guard + admin access + unique constraints + rules perms** | WORKING (37/37 CONFIRMED) | `db-tests/provider-references-vouching.test.ts` — real Postgres (Docker) via `pnpm test:db` |
+| e2e referee submission + admin review | EXISTS / BLOCKED_BY_CONFIGURATION | `e2e/reference-vouching.spec.ts`, `e2e/admin-reference-review.spec.ts`, `e2e/fixtures/reference-seed.ts`, `e2e/README-vouching.md` — reviewed correct; will pass once schema applied + users seeded |
 
 ## 13. Production-Readiness Assessment
 
-**NOT READY.** Blocking reasons: (1) the trust guarantee is forgeable (INSECURE RLS); (2) the primary journey has no endpoint — a referee cannot vouch (NOT_IMPLEMENTED); (3) no email delivery means even the request half is invisible to referees; (4) no per-reference review or count-gating means references are decorative. The admin overall-verification path and the public badge work, but they rest on data that cannot be trusted.
+**CODE-READY, LIVE-UNVERIFIED.** The trust hole is closed and proven at the DB; the full journey exists and is unit/db-tested and reviewed; all non-live gates are green. It is **not yet launch-verified**: the new migrations must be applied to the target DB and a provider/admin test user seeded before the app/e2e/browser flow can be exercised live (§17). Until then the end-to-end flow is **UNTESTED-LIVE / BLOCKED_BY_CONFIGURATION**.
 
-## 14. Commands Executed
+## 14. Changes Made (the build)
+
+**Migrations (`supabase/migrations/`)**
+- `20260712100001_vouching_reference_status_values.sql` — +6 enum values (sent, declined, expired, revoked, rejected, flagged) → 9 total.
+- `20260712100002_vouching_provider_references_columns_rls.sql` — invitation/review columns; unique partial indexes; work_date CHECK; **RLS rewrite** (DROP trader writes, keep select-own, add admin select+update, identity-immutability trigger).
+- `20260712100003_vouching_rules_config.sql` — `verification_vouch_rules` singleton + RLS + updated_at trigger.
+
+**Services / lib (`src/services`, `src/lib`)**
+- `src/lib/reference-tokens.ts`; `src/services/provider/reference-invitation-service.ts`; `.../reference-submission-service.ts`; `.../vouch-rules-service.ts`; `.../provider-display.ts`.
+- `src/services/admin/verification-service.ts` — added `getProviderReferencesForAdmin`, `reviewReference`; removed insecure `sendReferenceRequest`.
+
+**Email + jobs**
+- `src/emails/reference-request.tsx` + `sendReferenceInvitation`; `src/inngest/functions/reference-request-email.ts` (registered in `src/app/api/inngest/route.ts`).
+
+**Trader API + UI**
+- `src/app/api/provider/references/route.ts` (+ `[id]/resend`, `[id]/cancel`); `ReferenceTracker.tsx` rewired; peer/client reference-page provider-id fix.
+
+**Referee public surface**
+- `/reference` added to `PUBLIC_ROUTES` (`src/lib/constants.ts:254`); `src/app/reference/[token]/page.tsx`; `src/components/reference/ReferenceSubmissionForm.tsx` + `ReferenceTokenState.tsx`; `src/app/api/references/[token]/submit` + `/decline`.
+
+**Admin surface**
+- `src/app/api/admin/references/[id]/review/route.ts`; `src/app/api/admin/vouch-rules/route.ts`; `src/app/(admin)/admin/verifications/[userId]/page.tsx` + `page.tsx` queue links.
+
+**Tests**
+- `db-tests/provider-references-vouching.test.ts` (37 assertions); unit tests for every service/route/component above; e2e specs + fixtures + README.
+
+## 15. Commands Executed & Gate Results
 
 | Command | Result |
 |---|---|
-| `git rev-parse --abbrev-ref HEAD` | `feat/vouching-system` |
-| `git grep -n "provider_references" -- src supabase` | table in one migration, service in `provider-verification-service.ts`, type mirror, seed rows — see §5–§7 |
-| `ls src/app/reference` | **does not exist** (confirms no referee route) |
-| `git grep -n "provider/reference" src/inngest src/app/api/inngest` | **no matches** (no Inngest event) |
-| `ls src/emails/ \| grep -i "referen\|vouch"` | **no match** (no email template) |
-| `ls src/inngest/functions/` | no reference/vouch function present |
-| `grep -rln "provider_references" db-tests/` | **no matches** (no RLS/db test) |
-| `pnpm exec vitest run src/services/provider/__tests__/provider-verification-service.test.ts` | **1 file, 10 tests passed** (2.25s) |
+| `pnpm check:migrations` | ✓ **PASS** — 163 migrations, tokens unique |
+| `pnpm exec tsc --noEmit --incremental false` | ✓ **0 errors** |
+| `pnpm lint` | ✓ **0 errors** (110 pre-existing warnings) |
+| `pnpm exec vitest run` (full) | ✓ **6004 passed / 28 skipped / 102 todo / 0 failed** (after the dashboard-brand-guard fix moving the new admin components onto warm tokens `bg-muted`/teal) |
+| `pnpm test:db` | ✓ **vouching db-test 37/37 pass** (Docker Postgres) |
+| `pnpm build` | **EXIT 1 — pre-existing env blocker, NOT vouching.** Failure is a static-export prerender error on the unrelated `/(main)/top-properties/[slug]` route (`/top-properties/below-local-benchmark`) caused by **missing `NEXT_PUBLIC_SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`** at build time (no `.env.local` on a reachable DB — the same BLOCKED_BY_CONFIGURATION condition as §17). No vouching file appears in any build error; all vouching routes/components compiled. All other gates (tsc/lint/vitest/db-tests/check:migrations) are green. |
 
-## 15. Tests Passed
+## 16. Tests Passed / Notes
 
-- `provider-verification-service.test.ts` — **10 passed / 0 failed**.
+- **Passed:** all listed unit suites; full vitest (6004/0); db-test 37/37; `check:migrations`; `tsc`; `lint`.
+- **Failed:** none.
+- **Intentional double-audit-log:** each admin review writes both the wrapper's base entry (metadata-less) and an explicit metadata-bearing entry `{decision,reason}` — deliberate; a metadata-bearing record is more valuable than the bare one, and the metadata-log is best-effort so a log failure never 500s an already-succeeded review (`review/route.ts:60-74`).
 
-## 16. Tests Failed
+## 17. Configuration Blockers (the remaining risk)
 
-- None run failed. (The relevant *gaps* are untested surfaces, not failing tests — see §12.)
+- **Live end-to-end — BLOCKED_BY_CONFIGURATION / UNTESTED-LIVE:** the app `.env` points at remote prod, which does **not** yet have the three new migrations. Auto-apply is retired; migrations must be applied manually per `supabase/migrations/README.md`, **and** a provider + admin test user seeded, before the app/e2e/browser flow can run live. Until then the trader→email→referee→admin journey is covered by unit + db-tests + reviewed e2e only.
+- **e2e run — BLOCKED_BY_CONFIGURATION:** specs exist and are reviewed-correct; they need the schema applied + seeded users to execute.
+- **Email/Inngest live delivery — UNTESTED-LIVE:** `RESEND_API_KEY` + `INNGEST_SIGNING_KEY` are wired; live send has not been exercised.
 
-## 17. Configuration Blockers
+## 18. Prioritised Findings (post-fix)
 
-- **db-tests (RLS contract) — BLOCKED_BY_CONFIGURATION:** require Docker daemon + `RUN_DB_TESTS=1` + `vitest.db.config.ts`; not executed here.
-- **Email — BLOCKED_BY_CONFIGURATION (and NOT_IMPLEMENTED):** `RESEND_API_KEY` would be needed once a template/Inngest function exists; neither exists yet.
-- **Inngest — NOT_IMPLEMENTED:** `INNGEST_SIGNING_KEY` present in env contract, but no reference function registered.
-
-## 18. Prioritised Findings
-
-| ID | Area | Finding | Status | Severity | Evidence | User impact | Recommended fix |
-|----|------|---------|--------|----------|----------|-------------|-----------------|
-| V-01 | Database / Auth | Trader can UPDATE own `provider_references` status→`verified` and fabricate `reference_text` from the browser | INSECURE | CRITICAL | `supabase/migrations/20260316100001_provider_dashboard_tables.sql:164-175` | Fake "verified" vouches manufacture trust; badge/progress become meaningless | Drop/replace `provider_references_update_own`; make status/text writable only by a service-role server route mediating referee submission + admin review |
-| V-02 | Backend / Product | No referee-facing route or submission endpoint — `submitted`/`verified` statuses are unreachable through the product | NOT_IMPLEMENTED | HIGH | no `src/app/reference/**` (ls); grep of `src/app`: none | The core "someone vouches for you" journey does not function | Build tokenised `/reference/[token]` submission surface + server route that sets `submitted` |
-| V-03 | Email | Reference-request email never sent; referee is never notified | NOT_IMPLEMENTED | HIGH | `provider-verification-service.ts:341` TODO; no template in `src/emails/`; no Inngest fn | Referees never learn they were asked to vouch | Add React Email template + Inngest `provider/reference.requested` function |
-| V-04 | Database | No invitation token / expiry / single-use | NOT_IMPLEMENTED | HIGH | table def `:126-139` has no token/expiry | No secure, expiring, single-use link possible | Add `invite_token`, `token_expires_at`, `consumed_at` columns |
-| V-05 | Admin | No per-reference admin review; admin only flips whole-provider status | NOT_IMPLEMENTED | MEDIUM | `VerificationQueueClient.tsx:18,27` posts only `{userId, decision}` | Admin cannot validate/flag individual vouches | Add per-reference approve/reject/flag actions + reviewer columns |
-| V-06 | Product | Vouch counts not enforced; references are optional and do not gate `verified` | NOT_IMPLEMENTED | MEDIUM | `provider-verification-service.ts:57,65` (`required:false`); admin sets `verified` directly | Advertised "3 peer + 3 customer" requirement is unmet | Add configurable count-gate (default OFF) |
-| V-07 | Admin / Audit | Verification review decision & notes not stored (no notes column; audit metadata omitted) | PARTIALLY_WORKING | MEDIUM | `verification-service.ts:53-59`; `audited-admin-action.ts:98-107` (no `metadata`) | Review decisions not fully attributable/reconstructable | Persist decision+notes to a review table and pass `metadata` to `logAdminAction` |
-| V-08 | Database | No DB uniqueness on (provider, email, type); dedup is race-prone app-level check | PARTIALLY_WORKING | MEDIUM | indexes `:141-144`; check `provider-verification-service.ts:315-324` | Duplicate vouch requests possible under concurrency | Add unique index; keep app-level friendly error |
-| V-09 | Frontend | "Send Request" and "Remind" buttons are decorative (no handlers) | BROKEN | LOW | `ReferenceTracker.tsx:174-191` | Trader clicks do nothing; misleading | Wire to resend endpoint (post V-03) or remove until then |
-| V-10 | Frontend | Provider-id derivation `.select("id")` on a `user_id`-keyed table works only by fallback accident | PARTIALLY_WORKING | LOW | pages §5; PK `002_marketplace.sql:99-100` | Latent breakage if an `id` column is later added | Select `user_id` and use it directly |
-| V-11 | Test | INSECURE UPDATE policy and the whole vouch flow are untested | UNTESTED | MEDIUM | `grep db-tests provider_references`: none; no referee e2e | Regressions/security holes go undetected | Add RLS forge-guard db-test + e2e vouch spec |
+| ID | Area | Finding | Status | Severity | Evidence | User impact | Resolution / remaining |
+|----|------|---------|--------|----------|----------|-------------|------------------------|
+| V-01 | Database / Auth | Trader could UPDATE own references → forge `verified` | **FIXED (WORKING, proven)** | CRITICAL (was) | `20260712100002:83-128`; db-test 37/37 | Forge closed; badge trustworthy | Done — apply migration to prod to make it live |
+| V-02 | Backend / Product | No referee submission surface | **WORKING (unit) / UNTESTED-LIVE** | HIGH (was) | `src/app/reference/[token]/page.tsx`; submit route 200/409/410/404/400 | Journey now functions in code | Live e2e run pending §17 |
+| V-03 | Email | Reference-request email never sent | **WORKING (unit) / UNTESTED-LIVE** | HIGH (was) | `reference-request.tsx`; `reference-request-email.ts` (registered) | Referee now emailed a link | Live send pending §17 |
+| V-04 | Database | No invitation token / expiry / single-use | **FIXED (WORKING)** | HIGH (was) | invite_* columns + unique token-hash index; single-use NULL-on-response | Secure expiring link exists | Done |
+| V-05 | Admin | No per-reference review | **WORKING (unit) / UNTESTED-LIVE** | MEDIUM (was) | `reviewReference` + review route + admin UI | Admin can verify/reject/flag each vouch | Live e2e pending §17 |
+| V-06 | Product | Vouch counts not enforced | **WORKING (unit, default OFF) / UNTESTED-LIVE** | MEDIUM (was) | `verification_vouch_rules`; `evaluateVouchGate`; gate-aware approve | Configurable gate exists (OFF by default) | Live enable is a product decision |
+| V-07 | Admin / Audit | Review decision/notes not stored | **FIXED (WORKING)** | MEDIUM (was) | review route logs `metadata:{decision,reason}` | Decisions attributable | Done |
+| V-08 | Database | No DB uniqueness on (provider, email, type) | **FIXED (WORKING, db-test)** | MEDIUM (was) | `uq_provider_references_active_invite` | Duplicate active invites blocked | Done |
+| V-09 | Frontend | "Send Request"/"Remind" decorative | **FIXED (WORKING) / UNTESTED-LIVE** | LOW (was) | Resend/Cancel wired to `/[id]/resend`,`/[id]/cancel` | Buttons do real work | Live e2e pending §17 |
+| V-10 | Frontend | Provider-id fallback accident | **FIXED (WORKING)** | LOW (was) | pages use `const providerId = user.id` | No latent breakage | Done |
+| V-11 | Test | Forge + flow untested | **FIXED (WORKING)** | MEDIUM (was) | db-test 37/37 + unit suites; reviewed e2e | Regressions guarded | Live e2e run remains (§17) |
 
 ---
 
