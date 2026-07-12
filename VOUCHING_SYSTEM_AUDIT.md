@@ -216,7 +216,7 @@ Full role grid in `VOUCHING_RBAC_MATRIX.md`.
 | `pnpm lint` | ✓ **0 errors** (110 pre-existing warnings) |
 | `pnpm exec vitest run` (full) | ✓ **6004 passed / 28 skipped / 102 todo / 0 failed** (after the dashboard-brand-guard fix moving the new admin components onto warm tokens `bg-muted`/teal) |
 | `pnpm test:db` | ✓ **vouching db-test 37/37 pass** (Docker Postgres) |
-| `pnpm build` | **EXIT 1 — pre-existing env blocker, NOT vouching.** Failure is a static-export prerender error on the unrelated `/(main)/top-properties/[slug]` route (`/top-properties/below-local-benchmark`) caused by **missing `NEXT_PUBLIC_SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`** at build time (no `.env.local` on a reachable DB — the same BLOCKED_BY_CONFIGURATION condition as §17). No vouching file appears in any build error; all vouching routes/components compiled. All other gates (tsc/lint/vitest/db-tests/check:migrations) are green. |
+| `pnpm build` | **EXIT 0 — GREEN.** With `.env.local` present the full production build passes; all vouching routes compile and appear in the manifest as dynamic (`ƒ`): `/reference/[token]`, `/api/references/[token]/submit`+`/decline`, `/api/provider/references`(+`/[id]/resend`,`/cancel`), `/api/admin/references/[id]/review`, `/api/admin/vouch-rules`, `/dashboard/provider/verification/{peer,client}-references` — none touch the SSG prerender path. (A first run without env failed only at prerendering the unrelated pre-existing `/(main)/top-properties/[slug]` SSG route on missing `NEXT_PUBLIC_SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` — an env condition, not a vouching defect.) |
 
 ## 16. Tests Passed / Notes
 
