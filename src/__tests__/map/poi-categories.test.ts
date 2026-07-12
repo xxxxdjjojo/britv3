@@ -8,8 +8,10 @@ import { validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
 import {
   POI_CATEGORIES,
   ALL_POI_KEYS,
+  POI_MINZOOM,
   poiCircleLayerSpec,
   poiTextLayerSpec,
+  poiSymbolLayerSpec,
   type PoiCategoryKey,
 } from "../../lib/map/poi-categories";
 
@@ -190,5 +192,121 @@ describe("validateStyleMin", () => {
     // validateStyleMin returns an array of error objects; expect no errors
     const errors = validateStyleMin(style as Parameters<typeof validateStyleMin>[0]);
     expect(errors).toEqual([]);
+  });
+});
+
+// ── 8. POI_MINZOOM ────────────────────────────────────────────────────────────
+
+describe("POI_MINZOOM", () => {
+  it("equals 15", () => {
+    expect(POI_MINZOOM).toBe(15);
+  });
+});
+
+// ── 9. poiSymbolLayerSpec ─────────────────────────────────────────────────────
+
+describe("poiSymbolLayerSpec", () => {
+  it("returns id `poi-{key}-pin` for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      const spec = poiSymbolLayerSpec(cat);
+      expect(spec.id).toBe(`poi-${cat.key}-pin`);
+    }
+  });
+
+  it("type is symbol for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiSymbolLayerSpec(cat).type).toBe("symbol");
+    }
+  });
+
+  it("source is openmaptiles for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiSymbolLayerSpec(cat).source).toBe("openmaptiles");
+    }
+  });
+
+  it("source-layer is poi for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiSymbolLayerSpec(cat)["source-layer"]).toBe("poi");
+    }
+  });
+
+  it("minzoom equals POI_MINZOOM for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiSymbolLayerSpec(cat).minzoom).toBe(POI_MINZOOM);
+    }
+  });
+
+  it("filter is the same reference/value as cat.filter for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiSymbolLayerSpec(cat).filter).toEqual(cat.filter);
+    }
+  });
+
+  it("layout icon-image is `poi-pin-{key}` for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      const layout = poiSymbolLayerSpec(cat).layout as Record<string, unknown>;
+      expect(layout["icon-image"]).toBe(`poi-pin-${cat.key}`);
+    }
+  });
+
+  it("layout icon-anchor is bottom for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      const layout = poiSymbolLayerSpec(cat).layout as Record<string, unknown>;
+      expect(layout["icon-anchor"]).toBe("bottom");
+    }
+  });
+
+  it("layout icon-allow-overlap is true for every category", () => {
+    for (const cat of POI_CATEGORIES) {
+      const layout = poiSymbolLayerSpec(cat).layout as Record<string, unknown>;
+      expect(layout["icon-allow-overlap"]).toBe(true);
+    }
+  });
+
+  it("layout text-font deep-equals ['Noto Sans Regular'] (glyph name regression guard)", () => {
+    for (const cat of POI_CATEGORIES) {
+      const layout = poiSymbolLayerSpec(cat).layout as Record<string, unknown>;
+      expect(layout["text-font"]).toEqual(["Noto Sans Regular"]);
+    }
+  });
+
+  it("layout text-field deep-equals coalesce expression", () => {
+    for (const cat of POI_CATEGORIES) {
+      const layout = poiSymbolLayerSpec(cat).layout as Record<string, unknown>;
+      expect(layout["text-field"]).toEqual([
+        "coalesce",
+        ["get", "name:latin"],
+        ["get", "name"],
+      ]);
+    }
+  });
+});
+
+// ── 10. Regression guard: existing circle/text factories unchanged ─────────────
+
+describe("existing factory regression guards (SearchMap compatibility)", () => {
+  it("poiCircleLayerSpec id ends with -circle", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiCircleLayerSpec(cat).id).toBe(`poi-${cat.key}-circle`);
+    }
+  });
+
+  it("poiCircleLayerSpec type is circle", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiCircleLayerSpec(cat).type).toBe("circle");
+    }
+  });
+
+  it("poiTextLayerSpec id ends with -label", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiTextLayerSpec(cat).id).toBe(`poi-${cat.key}-label`);
+    }
+  });
+
+  it("poiTextLayerSpec type is symbol", () => {
+    for (const cat of POI_CATEGORIES) {
+      expect(poiTextLayerSpec(cat).type).toBe("symbol");
+    }
   });
 });

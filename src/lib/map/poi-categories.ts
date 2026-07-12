@@ -110,6 +110,13 @@ export const ALL_POI_KEYS: readonly PoiCategoryKey[] = POI_CATEGORIES.map(
   (c) => c.key,
 );
 
+// ── Layer spec constants ──────────────────────────────────────────────────────
+
+/**
+ * bien'ici tunable, sensible range 14.8–15.5; higher = calmer far-field when the map is pitched.
+ */
+export const POI_MINZOOM = 15;
+
 // ── Layer spec factories ──────────────────────────────────────────────────────
 
 /** MapLibre circle layer spec for a category's pins. */
@@ -164,6 +171,44 @@ export function poiTextLayerSpec(
     },
     paint: {
       "text-color": category.color,
+      "text-halo-color": "#ffffff",
+      "text-halo-width": 1.2,
+    },
+  };
+}
+
+/**
+ * MapLibre symbol layer spec that renders BOTH the lollipop icon AND the name
+ * label for a category. Replaces the circle+text pair on the detail map.
+ * Task 4 registers the icon images via map.addImage using the name
+ * `poi-pin-{key}` — that name MUST match the icon-image value here.
+ */
+export function poiSymbolLayerSpec(
+  category: PoiCategory,
+): SymbolLayerSpecification {
+  return {
+    id: `poi-${category.key}-pin`,
+    type: "symbol",
+    source: "openmaptiles",
+    "source-layer": "poi",
+    minzoom: POI_MINZOOM,
+    filter: category.filter as SymbolLayerSpecification["filter"],
+    layout: {
+      "icon-image": `poi-pin-${category.key}`,
+      "icon-anchor": "bottom",
+      "icon-allow-overlap": true,
+      "text-field": ["coalesce", ["get", "name:latin"], ["get", "name"]],
+      // Must match a glyph name on the OpenFreeMap glyph server.
+      // NOTE: pin labels use Regular (not Italic used by the circle text layer).
+      "text-font": ["Noto Sans Regular"],
+      "text-size": 10.5,
+      "text-anchor": "bottom",
+      "text-offset": [0, -4.6],
+      "text-optional": true,
+      "text-max-width": 8,
+    },
+    paint: {
+      "text-color": "#3c4a4d",
       "text-halo-color": "#ffffff",
       "text-halo-width": 1.2,
     },
