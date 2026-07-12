@@ -3,6 +3,9 @@ import { MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DetailLayeredMap } from "@/components/properties/blocks/DetailLayeredMap";
 import { LocalAreaSection } from "@/components/properties/detail/LocalAreaSection";
+import { createClient } from "@/lib/supabase/server";
+import { getNearbyMapListings } from "@/services/properties/nearby-map-listings";
+import type { ListingType } from "@/types/property";
 import type { PropertyView } from "@/lib/properties/build-property-view";
 
 /**
@@ -11,11 +14,21 @@ import type { PropertyView } from "@/lib/properties/build-property-view";
  * swaps the static map for a layered, toggleable map; the data cards are
  * unchanged.
  */
-export function LocalIntelligenceBlock({ view }: { view: PropertyView }) {
-  const { property } = view.detail;
+export async function LocalIntelligenceBlock({ view }: { view: PropertyView }) {
+  const { detail, district } = view;
+  const { listing, property } = detail;
   const { coordinates } = property;
 
   if (!coordinates) return null;
+
+  const supabase = await createClient();
+  const nearbyListings = await getNearbyMapListings({
+    supabase,
+    propertyId: property.id,
+    postcodeDistrict: district,
+    listingType: listing.listingType as ListingType,
+    price: listing.price,
+  });
 
   return (
     <section>
@@ -28,13 +41,14 @@ export function LocalIntelligenceBlock({ view }: { view: PropertyView }) {
           longitude={coordinates.lng}
           address={view.address}
           priceFormatted={view.priceFormatted}
+          nearbyListings={nearbyListings}
         />
         <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="size-3.5" />
           {view.address}
         </p>
         <p className="mt-0.5 text-[11px] text-muted-foreground">
-          Location is approximate. Prices © HM Land Registry. Map data © MapTiler
+          Location is approximate. Prices © HM Land Registry. Map data © OpenFreeMap
           &amp; OpenStreetMap contributors.
         </p>
       </div>
