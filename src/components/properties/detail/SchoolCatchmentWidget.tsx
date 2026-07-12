@@ -15,7 +15,7 @@ type SchoolCatchmentWidgetProps = Readonly<{
 // Helpers
 // ---------------------------------------------------------------------------
 
-function ratingBadgeClass(rating: OfstedSchool["rating"]): string {
+function ratingBadgeClass(rating: NonNullable<OfstedSchool["rating"]>): string {
   switch (rating) {
     case "Outstanding":
       return "bg-green-100 text-green-800";
@@ -25,8 +25,6 @@ function ratingBadgeClass(rating: OfstedSchool["rating"]): string {
       return "bg-amber-100 text-amber-800";
     case "Inadequate":
       return "bg-red-100 text-red-800";
-    case "Not yet inspected":
-      return "bg-gray-100 text-gray-800";
   }
 }
 
@@ -112,12 +110,14 @@ export function SchoolCatchmentWidget({
                 >
                   {school.type}
                 </span>
-                {/* Ofsted rating badge */}
-                <span
-                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ratingBadgeClass(school.rating)}`}
-                >
-                  {school.rating}
-                </span>
+                {/* Ofsted rating badge — only rendered when a real grade exists */}
+                {school.rating !== null && (
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ratingBadgeClass(school.rating)}`}
+                  >
+                    {school.rating}
+                  </span>
+                )}
               </div>
             </div>
           </li>
