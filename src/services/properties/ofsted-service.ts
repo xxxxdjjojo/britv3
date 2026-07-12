@@ -4,7 +4,7 @@
  *
  * Data is served from our own `schools` table (GIAS/Ofsted open data,
  * OGL v3.0), queried via the get_nearby_schools PostGIS RPC. The table is
- * populated out-of-band by scripts/ingest-schools.mjs.
+ * populated out-of-band by scripts/ingest-gias-schools.mjs.
  *
  * Returns null on any error or when there is no nearby data, so callers degrade
  * by absence (never render an empty widget). Coordinates are never echoed in
