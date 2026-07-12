@@ -66,6 +66,12 @@ export const VERIFICATION_STEPS = [
   },
 ] as const;
 
+/**
+ * Reference statuses that count as still in flight for a verification step —
+ * requested/awaiting-response, not yet a terminal (verified/failed) state.
+ */
+const IN_FLIGHT = ["submitted", "sent", "pending"] as const;
+
 // ---------------------------------------------------------------------------
 // Return types
 // ---------------------------------------------------------------------------
@@ -192,12 +198,19 @@ export async function getVerificationSteps(
         const matchingRefs = refs.filter((r) => r.reference_type === step.reference_type);
 
         if (matchingRefs.length > 0) {
+          // Only 'verified' counts as done. 'submitted'/'sent'/'pending' are
+          // still in flight. Terminal-fail statuses ('rejected'/'declined'/
+          // 'expired'/'revoked'/'flagged') do not count toward either — a step
+          // with only failed refs reads as not_started (nothing usable), unless
+          // there is also an in-flight ref.
           const hasVerified = matchingRefs.some((r) => r.status === "verified");
-          const hasSubmitted = matchingRefs.some((r) => r.status === "submitted");
+          const hasInFlight = matchingRefs.some((r) =>
+            (IN_FLIGHT as readonly string[]).includes(r.status),
+          );
 
           if (hasVerified) status = "approved";
-          else if (hasSubmitted) status = "submitted";
-          else status = "in_progress";
+          else if (hasInFlight) status = "in_progress";
+          else status = "not_started";
 
           const sorted = matchingRefs
             .map((r) => r.requested_at)

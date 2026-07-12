@@ -99,6 +99,53 @@ describe("getVerificationSteps", () => {
     const result = await getVerificationSteps("provider-uuid-1", emptyClient);
     expect(result.length).toBeGreaterThan(0);
   });
+
+  // -- corrected verified-only reference counting ---------------------------
+
+  /**
+   * Builds a client where provider_documents resolves to [] and
+   * provider_references resolves to the supplied rows.
+   */
+  function makeRefsClient(refs: Array<{ reference_type: string; status: string; requested_at: string | null }>) {
+    const refChain = makeQueryMock({ data: refs, error: null }) as unknown as Record<string, unknown>;
+    const docChain = makeQueryMock({ data: [], error: null }) as unknown as Record<string, unknown>;
+    return {
+      from: vi.fn((table: string) =>
+        table === "provider_references" ? refChain : docChain,
+      ),
+    } as unknown as typeof emptyClient;
+  }
+
+  it("marks a reference step 'approved' only when a ref is verified", async () => {
+    const client = makeRefsClient([
+      { reference_type: "client", status: "verified", requested_at: "2026-07-01T00:00:00Z" },
+    ]);
+    const result = await getVerificationSteps("provider-uuid-1", client);
+    const step = result.find((s) => s.stepId === "client_references");
+    expect(step?.status).toBe("approved");
+  });
+
+  it("marks a reference step 'in_progress' for submitted/sent/pending refs", async () => {
+    const client = makeRefsClient([
+      { reference_type: "peer", status: "submitted", requested_at: "2026-07-01T00:00:00Z" },
+    ]);
+    const result = await getVerificationSteps("provider-uuid-1", client);
+    const step = result.find((s) => s.stepId === "peer_references");
+    // Corrected behavior: 'submitted' is in-flight, NOT done — only 'verified'
+    // counts as approved.
+    expect(step?.status).toBe("in_progress");
+  });
+
+  it("does NOT count terminal-fail refs (rejected/declined/expired/revoked/flagged) as done", async () => {
+    const client = makeRefsClient([
+      { reference_type: "client", status: "rejected", requested_at: "2026-07-01T00:00:00Z" },
+      { reference_type: "client", status: "flagged", requested_at: "2026-07-02T00:00:00Z" },
+    ]);
+    const result = await getVerificationSteps("provider-uuid-1", client);
+    const step = result.find((s) => s.stepId === "client_references");
+    // No verified and no in-flight refs -> nothing usable -> not_started.
+    expect(step?.status).toBe("not_started");
+  });
 });
 
 // ---------------------------------------------------------------------------
