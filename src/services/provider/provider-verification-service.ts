@@ -7,7 +7,6 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { z } from "zod";
 
 import type { ProviderBadge, ProviderReference } from "@/types/provider-dashboard";
 import type { VerificationDocumentType } from "@/types/marketplace";
@@ -98,28 +97,12 @@ export type VerificationStep = Readonly<{
   rejectionReason: string | null;
 }>;
 
-export type SendReferenceResult =
-  | { success: true; referenceRequestId: string }
-  | { success: false; error: string };
-
 export type UpdateBadgeResult = Readonly<{
   providerId: string;
   badgeType: string;
   status: string;
   updatedAt: string;
 }>;
-
-// ---------------------------------------------------------------------------
-// Validation schemas
-// ---------------------------------------------------------------------------
-
-const emailSchema = z.string().email("Invalid email address");
-
-const referenceRequestSchema = z.object({
-  referee_name: z.string().min(1, "Name is required"),
-  referee_email: z.string().email("Invalid email address"),
-  reference_type: z.enum(["client", "peer"]),
-});
 
 // ---------------------------------------------------------------------------
 // getVerificationSteps
@@ -272,89 +255,9 @@ export async function getProviderReferences(
   return (data ?? []) as ProviderReference[];
 }
 
-// ---------------------------------------------------------------------------
-// sendReferenceRequest
-// ---------------------------------------------------------------------------
-
-/**
- * Sends a reference request by inserting a provider_references row with
- * status='pending'. Validates email with zod.
- *
- * The test contract uses the legacy positional signature:
- *   sendReferenceRequest(providerId, email, name, client)
- *
- * For new callers, use the named-input overload:
- *   sendReferenceRequest(providerId, input, client)
- */
-export async function sendReferenceRequest(
-  providerId: string,
-  emailOrInput:
-    | string
-    | { referee_name: string; referee_email: string; reference_type: "client" | "peer" },
-  nameOrClient: string | SupabaseClient,
-  maybeClient?: SupabaseClient,
-): Promise<SendReferenceResult> {
-  // --- normalise arguments ---
-  let referee_email: string;
-  let referee_name: string;
-  let reference_type: "client" | "peer" = "client";
-  let supabase: SupabaseClient;
-
-  if (typeof emailOrInput === "string") {
-    // Legacy positional: sendReferenceRequest(providerId, email, name, client)
-    referee_email = emailOrInput;
-    referee_name = nameOrClient as string;
-    supabase = maybeClient!;
-  } else {
-    // Named-input: sendReferenceRequest(providerId, input, client)
-    referee_email = emailOrInput.referee_email;
-    referee_name = emailOrInput.referee_name;
-    reference_type = emailOrInput.reference_type;
-    supabase = nameOrClient as SupabaseClient;
-  }
-
-  // --- validate email ---
-  const emailValidation = emailSchema.safeParse(referee_email);
-  if (!emailValidation.success) {
-    // Zod v4 uses .issues; v3 used .errors — support both
-    const issues =
-      (emailValidation.error as { issues?: Array<{ message: string }> }).issues ??
-      (emailValidation.error as { errors?: Array<{ message: string }> }).errors ??
-      [];
-    return { success: false, error: issues[0]?.message ?? "Invalid email" };
-  }
-
-  // --- check for duplicates ---
-  const { data: existing } = await supabase
-    .from("provider_references")
-    .select("id")
-    .eq("provider_id", providerId)
-    .eq("referee_email", referee_email)
-    .maybeSingle();
-
-  if (existing) {
-    return { success: false, error: "A duplicate reference request already exists for this email" };
-  }
-
-  // --- insert ---
-  const { data, error } = await supabase
-    .from("provider_references")
-    .insert({
-      provider_id: providerId,
-      referee_name,
-      referee_email,
-      reference_type,
-      status: "pending",
-    })
-    .select("id")
-    .single();
-
-  if (error) return { success: false, error: error.message };
-
-  // TODO: trigger Inngest event 'provider/reference.requested' once Inngest is wired up
-
-  return { success: true, referenceRequestId: (data as { id: string }).id };
-}
+// NOTE: The former client-side `sendReferenceRequest` insert was removed —
+// provider_references RLS now blocks trader writes. Requesting a reference goes
+// through POST /api/provider/references (service-role write + Inngest event).
 
 // ---------------------------------------------------------------------------
 // getProviderBadges

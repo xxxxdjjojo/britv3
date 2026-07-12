@@ -83,20 +83,22 @@ export type ProviderReference = Readonly<{
   requested_at: string;
   submitted_at: string | null;
   verified_at: string | null;
-  // Invitation lifecycle (referee-driven vouching flow)
-  invite_expires_at: string | null;
-  invite_sent_at: string | null;
-  invite_last_sent_at: string | null;
-  invite_send_count: number;
-  work_date: string | null; // client refs: date work occurred (recency source)
-  rating: number | null; // 1–5
-  declined_reason: string | null;
-  declined_at: string | null;
-  revoked_at: string | null;
+  // Invitation lifecycle (referee-driven vouching flow).
+  // Optional from the UI's perspective: a freshly-created pending reference has
+  // none of these populated, and client-facing code may select a narrower set.
+  invite_expires_at?: string | null;
+  invite_sent_at?: string | null;
+  invite_last_sent_at?: string | null;
+  invite_send_count?: number;
+  work_date?: string | null; // client refs: date work occurred (recency source)
+  rating?: number | null; // 1–5
+  declined_reason?: string | null;
+  declined_at?: string | null;
+  revoked_at?: string | null;
   // Admin review
-  reviewed_at: string | null;
-  reviewed_by: string | null;
-  review_reason: string | null;
+  reviewed_at?: string | null;
+  reviewed_by?: string | null;
+  review_reason?: string | null;
 }>;
 
 /**

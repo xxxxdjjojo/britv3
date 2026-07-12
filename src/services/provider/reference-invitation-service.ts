@@ -28,6 +28,19 @@ import type { VouchRules } from "@/types/provider-dashboard";
 /** Hard ceiling on total sends (initial + resends) per invitation. */
 const MAX_RESENDS = 5;
 
+/**
+ * Per-provider cap on outstanding (not-yet-completed) invitations. Blunts a
+ * compromised/abusive trader account fanning out mass referee emails.
+ *
+ * NOTE: we deliberately do NOT filter disposable/role-address referee emails
+ * here — the rate limit + this cap + auth + provider-gating are proportionate;
+ * email-reputation filtering is a possible future control (YAGNI for now).
+ */
+const MAX_ACTIVE_INVITES = 25;
+
+/** Statuses that count as an outstanding invitation against the cap. */
+const ACTIVE_INVITE_STATUSES = ["pending", "sent", "submitted", "flagged"] as const;
+
 const MS_PER_HOUR = 60 * 60 * 1000;
 
 /** User-safe message returned in place of a raw Supabase error string. */
@@ -103,6 +116,22 @@ export async function createReferenceInvitation(
       success: false,
       code: "self_vouch",
       error: "You can't request a reference from your own email address.",
+    };
+  }
+
+  // Abuse cap: reject once the provider has too many outstanding invitations.
+  const { count, error: countError } = await supabase
+    .from("provider_references")
+    .select("id", { count: "exact", head: true })
+    .eq("provider_id", params.providerId)
+    .in("status", ACTIVE_INVITE_STATUSES as unknown as string[]);
+
+  if (!countError && (count ?? 0) >= MAX_ACTIVE_INVITES) {
+    return {
+      success: false,
+      code: "invalid",
+      error:
+        "You have too many outstanding reference requests. Please wait for some to be completed.",
     };
   }
 

@@ -85,10 +85,35 @@ describe("createReferenceInvitation", () => {
     reference_type: "client" as const,
   };
 
+  /**
+   * createReferenceInvitation now issues two queries: (1) a count of active
+   * invitations against the abuse cap, then (2) the insert. This builds a
+   * client whose first from() resolves the count and second resolves the insert.
+   */
+  function makeCreateClient(
+    countValue: unknown,
+    insertValue: unknown,
+    captured: Captured,
+  ) {
+    const countChain = makeChain(countValue);
+    const insertChain = makeChain(insertValue, captured);
+    let call = 0;
+    return {
+      from: vi.fn(() => {
+        call += 1;
+        return call === 1 ? countChain : insertChain;
+      }),
+    } as unknown as Parameters<typeof createReferenceInvitation>[0];
+  }
+
   it("happy path returns success + id and inserts a pending row with no token", async () => {
     const captured: Captured = {};
-    const chain = makeChain({ data: { id: "ref-1" }, error: null }, captured);
-    const result = await createReferenceInvitation(clientFrom(chain), baseParams);
+    const client = makeCreateClient(
+      { count: 0, error: null },
+      { data: { id: "ref-1" }, error: null },
+      captured,
+    );
+    const result = await createReferenceInvitation(client, baseParams);
 
     expect(result).toEqual({ success: true, id: "ref-1" });
     const payload = captured.insert as Record<string, unknown>;
@@ -96,6 +121,33 @@ describe("createReferenceInvitation", () => {
     expect(payload.provider_id).toBe("prov-1");
     expect(payload.referee_email).toBe("jane@example.com");
     expect("invite_token_hash" in payload).toBe(false);
+  });
+
+  it("proceeds when the active-invite count is under the cap", async () => {
+    const captured: Captured = {};
+    const client = makeCreateClient(
+      { count: 24, error: null },
+      { data: { id: "ref-2" }, error: null },
+      captured,
+    );
+    const result = await createReferenceInvitation(client, baseParams);
+    expect(result).toEqual({ success: true, id: "ref-2" });
+    expect(captured.insert).toBeDefined();
+  });
+
+  it("rejects with code invalid when the active-invite cap is reached", async () => {
+    const captured: Captured = {};
+    const client = makeCreateClient(
+      { count: 25, error: null },
+      { data: { id: "should-not-insert" }, error: null },
+      captured,
+    );
+    const result = await createReferenceInvitation(client, baseParams);
+    expect(result).toEqual(
+      expect.objectContaining({ success: false, code: "invalid" }),
+    );
+    // The insert must NOT run once the cap is hit.
+    expect(captured.insert).toBeUndefined();
   });
 
   it("rejects self-vouch (case-insensitive) with code self_vouch", async () => {
