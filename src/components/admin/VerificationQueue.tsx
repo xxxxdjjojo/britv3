@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { VerificationQueueItem } from "@/services/admin/verification-service";
 
 type Props = Readonly<{
@@ -36,7 +37,12 @@ function VerificationCard({
       <div className="mb-3 flex items-start justify-between gap-4">
         <div>
           <h3 className="font-medium text-neutral-900">
-            {item.full_name ?? "Unknown provider"}
+            <Link
+              href={`/admin/verifications/${item.id}`}
+              className="hover:text-brand-accent hover:underline"
+            >
+              {item.full_name ?? "Unknown provider"}
+            </Link>
           </h3>
           {businessName !== null && businessName !== undefined && (
             <p className="mt-0.5 text-sm text-neutral-600">
@@ -65,6 +71,7 @@ function VerificationCard({
 
       <div className="mt-3 space-y-2">
         <button
+          type="button"
           onClick={() => setShowNotes(!showNotes)}
           className="text-xs text-neutral-500 underline"
         >
@@ -94,6 +101,12 @@ function VerificationCard({
           >
             Reject
           </button>
+          <Link
+            href={`/admin/verifications/${item.id}`}
+            className="rounded border border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
+          >
+            Review references
+          </Link>
         </div>
       </div>
     </div>
