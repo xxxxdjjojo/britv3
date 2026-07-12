@@ -3,17 +3,19 @@
  *
  * Functions under contract:
  *  - getVerificationSteps(providerId: string, client: SupabaseClient)
- *  - sendReferenceRequest(providerId: string, refereeEmail: string, refereeName: string, client: SupabaseClient)
  *  - updateBadgeStatus(providerId: string, badgeType: string, status: string, client: SupabaseClient)
+ *
+ * NOTE: `sendReferenceRequest` was removed — its client-side insert is now
+ * blocked by RLS. Requesting a reference goes through POST /api/provider/
+ * references (see src/app/api/provider/references/route.test.ts).
  */
 
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
 
 import {
   getVerificationSteps,
-  sendReferenceRequest,
   updateBadgeStatus,
 } from "../provider-verification-service";
 
@@ -99,128 +101,52 @@ describe("getVerificationSteps", () => {
     const result = await getVerificationSteps("provider-uuid-1", emptyClient);
     expect(result.length).toBeGreaterThan(0);
   });
-});
 
-// ---------------------------------------------------------------------------
-// sendReferenceRequest
-// ---------------------------------------------------------------------------
-
-describe("sendReferenceRequest", () => {
-  // In-memory set to track which emails have been "inserted" during this test suite
-  const insertedEmails = new Set<string>();
-
-  beforeEach(() => {
-    insertedEmails.clear();
-  });
+  // -- corrected verified-only reference counting ---------------------------
 
   /**
-   * Builds a Supabase mock that:
-   * - maybeSingle() for the duplicate-check returns { data: null } (not a duplicate)
-   *   or { data: { id: "existing" } } (duplicate) depending on the email.
-   * - single() for the insert returns the created row.
+   * Builds a client where provider_documents resolves to [] and
+   * provider_references resolves to the supplied rows.
    */
-  function makeReferenceClient(email: string) {
-    const isDuplicate = insertedEmails.has(`provider-uuid-1:${email}`);
-
-    const insertChain: Record<string, unknown> = {};
-    const insertMethods = ["select", "single"];
-    for (const m of insertMethods) {
-      insertChain[m] = vi.fn(() => insertChain);
-    }
-    (insertChain["single"] as ReturnType<typeof vi.fn>).mockResolvedValue({
-      data: { id: "ref-uuid-" + Date.now() },
-      error: null,
-    });
-
-    const checkChain: Record<string, unknown> = {};
-    const checkMethods = ["select", "eq", "maybeSingle"];
-    for (const m of checkMethods) {
-      checkChain[m] = vi.fn(() => checkChain);
-    }
-    (checkChain["maybeSingle"] as ReturnType<typeof vi.fn>).mockResolvedValue({
-      data: isDuplicate ? { id: "existing-ref" } : null,
-      error: null,
-    });
-
-    // Track the insert call
-    const fromMock = vi.fn((table: string) => {
-      if (table === "provider_references") {
-        return {
-          select: vi.fn(() => checkChain),
-          insert: vi.fn(() => {
-            if (!isDuplicate) insertedEmails.add(`provider-uuid-1:${email}`);
-            return insertChain;
-          }),
-        };
-      }
-      return checkChain;
-    });
-
-    return { from: fromMock } as unknown as ReturnType<
-      typeof import("@supabase/supabase-js").createClient
-    >;
+  function makeRefsClient(refs: Array<{ reference_type: string; status: string; requested_at: string | null }>) {
+    const refChain = makeQueryMock({ data: refs, error: null }) as unknown as Record<string, unknown>;
+    const docChain = makeQueryMock({ data: [], error: null }) as unknown as Record<string, unknown>;
+    return {
+      from: vi.fn((table: string) =>
+        table === "provider_references" ? refChain : docChain,
+      ),
+    } as unknown as typeof emptyClient;
   }
 
-  it("returns a success result with the reference request id", async () => {
-    const client = makeReferenceClient("client@example.com");
-    const result = await sendReferenceRequest(
-      "provider-uuid-1",
-      "client@example.com",
-      "Jane Smith",
-      client,
-    );
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        /** Whether the email was queued successfully */
-        success: true,
-        /** The created reference_request record id */
-        referenceRequestId: expect.any(String),
-      }),
-    );
+  it("marks a reference step 'approved' only when a ref is verified", async () => {
+    const client = makeRefsClient([
+      { reference_type: "client", status: "verified", requested_at: "2026-07-01T00:00:00Z" },
+    ]);
+    const result = await getVerificationSteps("provider-uuid-1", client);
+    const step = result.find((s) => s.stepId === "client_references");
+    expect(step?.status).toBe("approved");
   });
 
-  it("returns success: false with an error message when the email is invalid", async () => {
-    const result = await sendReferenceRequest(
-      "provider-uuid-1",
-      "not-an-email",
-      "Jane Smith",
-      emptyClient,
-    );
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        success: false,
-        error: expect.any(String),
-      }),
-    );
+  it("marks a reference step 'in_progress' for submitted/sent/pending refs", async () => {
+    const client = makeRefsClient([
+      { reference_type: "peer", status: "submitted", requested_at: "2026-07-01T00:00:00Z" },
+    ]);
+    const result = await getVerificationSteps("provider-uuid-1", client);
+    const step = result.find((s) => s.stepId === "peer_references");
+    // Corrected behavior: 'submitted' is in-flight, NOT done — only 'verified'
+    // counts as approved.
+    expect(step?.status).toBe("in_progress");
   });
 
-  it("returns success: false when a duplicate request already exists for the same email", async () => {
-    // First request — marks email as inserted
-    const client1 = makeReferenceClient("duplicate@example.com");
-    await sendReferenceRequest(
-      "provider-uuid-1",
-      "duplicate@example.com",
-      "Jane Smith",
-      client1,
-    );
-
-    // Second identical request — sees the email in insertedEmails
-    const client2 = makeReferenceClient("duplicate@example.com");
-    const result = await sendReferenceRequest(
-      "provider-uuid-1",
-      "duplicate@example.com",
-      "Jane Smith",
-      client2,
-    );
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        success: false,
-        error: expect.stringContaining("duplicate"),
-      }),
-    );
+  it("does NOT count terminal-fail refs (rejected/declined/expired/revoked/flagged) as done", async () => {
+    const client = makeRefsClient([
+      { reference_type: "client", status: "rejected", requested_at: "2026-07-01T00:00:00Z" },
+      { reference_type: "client", status: "flagged", requested_at: "2026-07-02T00:00:00Z" },
+    ]);
+    const result = await getVerificationSteps("provider-uuid-1", client);
+    const step = result.find((s) => s.stepId === "client_references");
+    // No verified and no in-flight refs -> nothing usable -> not_started.
+    expect(step?.status).toBe("not_started");
   });
 });
 

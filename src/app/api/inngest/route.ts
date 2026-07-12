@@ -43,6 +43,7 @@ import { truedeedReportSnapshots } from "@/inngest/functions/truedeed-report-sna
 import { platformMetricsDaily } from "@/inngest/functions/platform-metrics-daily";
 import { landlordDeadlineDiary } from "@/inngest/functions/landlord-deadline-diary";
 import { boxingDayAnnualPush } from "@/inngest/functions/boxing-day-annual-push";
+import { referenceRequestEmail } from "@/inngest/functions/reference-request-email";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -82,5 +83,6 @@ export const { GET, POST, PUT } = serve({
     platformMetricsDaily,
     landlordDeadlineDiary,
     boxingDayAnnualPush,
+    referenceRequestEmail,
   ],
 });

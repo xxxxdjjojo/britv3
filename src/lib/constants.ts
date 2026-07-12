@@ -250,6 +250,8 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/queue",
   // Account-free invoice payment via signed pay-token
   "/pay",
+  // Unauthenticated referee vouch surface — the single-use token IS the auth
+  "/reference",
   // System/error state pages — always publicly accessible
   "/forbidden",
   "/maintenance",

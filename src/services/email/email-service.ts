@@ -1835,6 +1835,78 @@ export async function sendReferralInvitation(params: {
 }
 
 // ---------------------------------------------------------------------------
+// 17b. Reference Invitation (referee vouch request — transactional, no pref
+//      check; the referee is not a TrueDeed user and never opted out).
+//
+//      Unlike the best-effort senders above, this one RE-THROWS on send
+//      failure: it is driven by a T7 Inngest step that relies on a thrown
+//      error to trigger a retry. The email_logs row is the delivery-state
+//      record (userId = the requesting provider).
+// ---------------------------------------------------------------------------
+
+export async function sendReferenceInvitation(params: {
+  to: string;
+  refereeName: string;
+  providerName: string;
+  providerTrade?: string;
+  referenceType: "client" | "peer";
+  relationship?: string;
+  submissionUrl: string;
+  expiresAt: string;
+  isReminder?: boolean;
+  providerId: string;
+}): Promise<{ success: boolean }> {
+  try {
+    const { ReferenceRequestEmail } = await import("@/emails/reference-request");
+    const { render } = await import("@react-email/components");
+    const html = await render(
+      ReferenceRequestEmail({
+        refereeName: params.refereeName,
+        providerName: params.providerName,
+        providerTrade: params.providerTrade,
+        referenceType: params.referenceType,
+        relationship: params.relationship,
+        submissionUrl: params.submissionUrl,
+        expiresAt: params.expiresAt,
+        isReminder: params.isReminder,
+      }),
+    );
+
+    const subject = params.isReminder
+      ? `Reminder: ${params.providerName} needs your reference`
+      : `${params.providerName} has asked you for a reference`;
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.to,
+      subject: singleLine(subject),
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.providerId,
+      template: "reference-request",
+      recipient: params.to,
+      resendId: data?.id,
+      status: "sent",
+    });
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.providerId,
+      template: "reference-request",
+      recipient: params.to,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendReferenceInvitation failed", message);
+    throw err instanceof Error ? err : new Error(message);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 18. Re-engagement (with 7-day deduplication)
 // ---------------------------------------------------------------------------
 

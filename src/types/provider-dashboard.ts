@@ -10,7 +10,16 @@ export type PricingType = "hourly" | "fixed" | "quote_on_request";
 
 export type ProviderReferenceType = "client" | "peer";
 
-export type ProviderReferenceStatus = "pending" | "submitted" | "verified";
+export type ProviderReferenceStatus =
+  | "pending"
+  | "sent"
+  | "submitted"
+  | "verified"
+  | "declined"
+  | "expired"
+  | "revoked"
+  | "rejected"
+  | "flagged";
 
 export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled";
 
@@ -56,7 +65,11 @@ export type ProviderService = Readonly<{
   updated_at: string;
 }>;
 
-/** Mirrors provider_references table */
+/**
+ * Mirrors provider_references table.
+ * NOTE: `invite_token_hash` (sha256 of the raw invite token) is intentionally
+ * omitted — it is server-only and must never reach client-facing code.
+ */
 export type ProviderReference = Readonly<{
   id: string;
   provider_id: string;
@@ -70,6 +83,38 @@ export type ProviderReference = Readonly<{
   requested_at: string;
   submitted_at: string | null;
   verified_at: string | null;
+  // Invitation lifecycle (referee-driven vouching flow).
+  // Optional from the UI's perspective: a freshly-created pending reference has
+  // none of these populated, and client-facing code may select a narrower set.
+  invite_expires_at?: string | null;
+  invite_sent_at?: string | null;
+  invite_last_sent_at?: string | null;
+  invite_send_count?: number;
+  work_date?: string | null; // client refs: date work occurred (recency source)
+  rating?: number | null; // 1–5
+  declined_reason?: string | null;
+  declined_at?: string | null;
+  revoked_at?: string | null;
+  // Admin review
+  reviewed_at?: string | null;
+  reviewed_by?: string | null;
+  review_reason?: string | null;
+}>;
+
+/**
+ * Mirrors verification_vouch_rules (single-row config governing the vouching
+ * gate). `id` is always TRUE (enforces the singleton).
+ */
+export type VouchRules = Readonly<{
+  id: true;
+  required_peer_vouches: number;
+  required_client_vouches: number;
+  client_recency_days: number;
+  invite_expiry_days: number;
+  resend_cooldown_hours: number;
+  gate_enabled: boolean;
+  updated_at: string | null;
+  updated_by: string | null;
 }>;
 
 /** Mirrors provider_badges table */
