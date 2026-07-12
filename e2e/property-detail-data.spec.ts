@@ -48,9 +48,10 @@ test.describe("Property detail — data completeness", () => {
     // Price (asking) is real
     await expect(page.getByText("£485,000").first()).toBeVisible();
 
-    // Location map section renders (coordinates + MapTiler key present)
+    // Location map section renders (coordinates + MapTiler key present).
+    // The section heading was renamed to "Local intelligence".
     await expect(
-      page.getByRole("heading", { name: /^Location$/ }),
+      page.getByRole("heading", { name: /^Local intelligence$/ }),
     ).toBeVisible();
 
     // Facts & features renders with real, non-placeholder values
@@ -58,7 +59,9 @@ test.describe("Property detail — data completeness", () => {
       page.getByRole("heading", { name: /Facts & features/i }),
     ).toBeVisible();
     await expect(page.getByText("Freehold").first()).toBeVisible();
-    await expect(page.getByText(/Band [A-H]/).first()).toBeVisible();
+    // Exact match: a bare "Band X" value (avoids matching hidden
+    // "Tax Band Breakdown" copy elsewhere on the page).
+    await expect(page.getByText(/^Band [A-H]$/).first()).toBeVisible();
 
     // Enriched mock has room-captioned photos → grouped gallery appears.
     // Scope to the section so we don't collide with the ROI "Kitchen" heading.
@@ -88,9 +91,9 @@ test.describe("Property detail — data completeness", () => {
     // Rental price with frequency suffix
     await expect(page.getByText(/£1,850\s*pcm/).first()).toBeVisible();
 
-    // Map present
+    // Map present (section heading renamed to "Local intelligence").
     await expect(
-      page.getByRole("heading", { name: /^Location$/ }),
+      page.getByRole("heading", { name: /^Local intelligence$/ }),
     ).toBeVisible();
 
     // Facts include rental-specific availability + leasehold running costs
@@ -116,4 +119,78 @@ test.describe("Property detail — data completeness", () => {
       fullPage: true,
     });
   });
+});
+
+/**
+ * Task 4 — proves the "Nearest schools" widget now renders with REAL data.
+ *
+ * The area services (schools/crime/transport/…) always query the live prod
+ * Supabase DB regardless of the mock flag, so a mock London listing (which
+ * carries real coordinates near real schools) renders REAL nearby schools via
+ * the get_nearby_schools RPC (20,748 GIAS/Ofsted rows). We assert:
+ *  - the "Local area" section heading is visible
+ *  - the "Nearest schools" widget heading is visible with ≥1 school <li>
+ *  - the "Source: GIAS / Ofsted" attribution is visible
+ *  - the MapLibre canvas (dynamically-imported Location map) is visible
+ *  - graceful absence preserved (no blank/placeholder widgets)
+ * and captures full-page screenshots at 1440 and 375 for both listings.
+ */
+
+const SCHOOLS_SHOTS_DIR = "schools-e2e-shots";
+
+async function assertSchoolsAndMap(page: Page) {
+  // "Local area" section is present (it renders only when a layer has data).
+  await expect(
+    page.getByRole("heading", { name: /^Local area$/ }),
+  ).toBeVisible();
+
+  // Nearest schools widget renders with at least one school row.
+  const schoolsCard = page.locator("div", {
+    has: page.getByRole("heading", { name: /Nearest schools/i }),
+  });
+  await expect(
+    page.getByRole("heading", { name: /Nearest schools/i }),
+  ).toBeVisible();
+  const schoolItems = schoolsCard.first().locator("li");
+  await expect(schoolItems.first()).toBeVisible();
+  expect(await schoolItems.count()).toBeGreaterThan(0);
+
+  // Source attribution proves the data came from the real GIAS/Ofsted layer.
+  await expect(page.getByText(/Source: GIAS \/ Ofsted/i).first()).toBeVisible();
+
+  // MapLibre canvas is a dynamically-imported client component; give it room.
+  await expect(page.locator("canvas.maplibregl-canvas").first()).toBeVisible({
+    timeout: 30_000,
+  });
+}
+
+test.describe("Property detail — nearest schools render with real data", () => {
+  const CASES = [
+    { label: "sale", slug: SALE_SLUG },
+    { label: "rent", slug: RENT_SLUG },
+  ] as const;
+
+  for (const { label, slug } of CASES) {
+    test(`${label} listing: Local area + Nearest schools + map render, no empty widgets`, async ({
+      page,
+    }) => {
+      await page.goto(`/properties/${slug}`);
+
+      await assertSchoolsAndMap(page);
+      await assertNoEmptyWidgets(page);
+
+      // Full-page screenshots at desktop and mobile widths.
+      await page.setViewportSize({ width: 1440, height: 1024 });
+      await page.screenshot({
+        path: `${SCHOOLS_SHOTS_DIR}/${label}-1440.png`,
+        fullPage: true,
+      });
+
+      await page.setViewportSize({ width: 375, height: 812 });
+      await page.screenshot({
+        path: `${SCHOOLS_SHOTS_DIR}/${label}-375.png`,
+        fullPage: true,
+      });
+    });
+  }
 });

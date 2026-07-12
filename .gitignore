@@ -73,3 +73,6 @@ supabase/.temp/
 
 # MCP config contains API keys — never commit
 .mcp.json
+
+# Local E2E screenshot artifacts (Task 4 nearest-schools evidence) — not committed
+/schools-e2e-shots/
