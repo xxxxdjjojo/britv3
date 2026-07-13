@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Eye, Heart, MessageSquare, Edit2, Archive, MoreVertical } from "lucide-react";
 import type { ListingWithStats } from "@/types/seller";
 import { cn } from "@/lib/utils";
+import { CARD_RADIUS, CARD_BADGE_PLACEMENT } from "@/components/cards/card-tokens";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,21 +50,23 @@ export function ListingCard({ listing, onArchive }: Props) {
   };
 
   return (
-    <div className="group flex bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className={cn("group flex bg-card border shadow-sm overflow-hidden transition-shadow hover:shadow-md", CARD_RADIUS)}>
       <div className="relative w-72 h-48 flex-shrink-0 overflow-hidden bg-muted">
         {thumb ? (
-          <img
+          <Image
             src={thumb}
             alt={address}
-            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+            fill
+            sizes="288px"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-slate-300">
+          <div className="absolute inset-0 flex items-center justify-center text-slate-300">
             <Eye size={32} />
           </div>
         )}
         <span className={cn(
-          "absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full capitalize",
+          `${CARD_BADGE_PLACEMENT} text-xs font-semibold px-2.5 py-1 rounded-full capitalize`,
           STATUS_COLORS[listing.status] ?? "bg-muted text-slate-500",
         )}>
           {listing.status.replace("_", " ")}

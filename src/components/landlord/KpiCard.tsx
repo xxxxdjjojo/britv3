@@ -12,10 +12,10 @@ type KpiCardProps = Readonly<{
 
 export function KpiCard({ title, value, icon: Icon, trend, variant = "default" }: KpiCardProps) {
   const cardClass = cn(
-    "rounded-2xl border p-6 shadow-sm",
+    "rounded-xl border p-6 shadow-sm transition-shadow hover:shadow-md",
     variant === "warning" && "border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/10",
     variant === "danger" && "border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/10",
-    variant === "default" && "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900",
+    variant === "default" && "bg-card",
   );
 
   const iconContainerClass = cn(

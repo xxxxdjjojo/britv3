@@ -385,7 +385,7 @@ function ApplicationRow({ application }: Readonly<{ application: TenantApplicati
 
       {/* Actions */}
       <td className="py-3.5 pl-3 pr-4 text-right">
-        <Button asChild variant="outline" size="sm" className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button asChild variant="outline" size="sm" className="text-xs opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 group-focus-visible:opacity-100 transition-opacity">
           <Link href={`/dashboard/landlord/tenants/${application.id}`}>
             Review
             <ArrowRight className="ml-1 size-3" />
