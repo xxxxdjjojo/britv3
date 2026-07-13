@@ -53,26 +53,28 @@ function findExtremes(quotes: QuoteWithProvider[]) {
 
 function LineItemsTable({ items }: Readonly<{ items: QuoteLineItem[] }>) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Item</TableHead>
-          <TableHead className="text-right">Qty</TableHead>
-          <TableHead className="text-right">Price</TableHead>
-          <TableHead className="text-right">Total</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {items.map((item, i) => (
-          <TableRow key={i}>
-            <TableCell className="whitespace-normal">{item.description}</TableCell>
-            <TableCell className="text-right">{item.quantity}</TableCell>
-            <TableCell className="text-right">{gbp.format(item.unit_price)}</TableCell>
-            <TableCell className="text-right">{gbp.format(item.total)}</TableCell>
+    <div className="w-full overflow-x-auto">
+      <Table className="min-w-[640px]">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Item</TableHead>
+            <TableHead className="text-right">Qty</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+            <TableHead className="text-right">Total</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {items.map((item, i) => (
+            <TableRow key={i}>
+              <TableCell className="whitespace-normal">{item.description}</TableCell>
+              <TableCell className="text-right">{item.quantity}</TableCell>
+              <TableCell className="text-right">{gbp.format(item.unit_price)}</TableCell>
+              <TableCell className="text-right">{gbp.format(item.total)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

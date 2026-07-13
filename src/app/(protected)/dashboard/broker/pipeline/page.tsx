@@ -267,12 +267,12 @@ export default function PipelinePage() {
       </div>
 
       {/* Kanban board */}
-      <div className="overflow-x-auto pb-4 -mx-6 px-6">
-        <div className="flex gap-3 min-w-[900px]">
+      <div className="overflow-x-auto snap-x snap-mandatory lg:snap-none pb-4 -mx-6 px-6">
+        <div className="flex gap-3">
           {STAGES.map((stage) => {
             const stageClients = clients.filter((c) => c.stage === stage.key);
             return (
-              <div key={stage.key} className="flex-1 min-w-[190px] flex flex-col">
+              <div key={stage.key} className="snap-start shrink-0 w-[80%] sm:w-[45%] lg:w-auto lg:flex-1 flex flex-col">
                 {/* Column header */}
                 <div
                   className={`flex items-center justify-between rounded-t-xl border px-3 py-2.5 ${stage.headerBg} ${stage.headerBorder}`}
