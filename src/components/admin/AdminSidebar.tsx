@@ -84,6 +84,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Feature Flags", href: "/admin/feature-flags", icon: ToggleLeft },
       { label: "System Health", href: "/admin/system-health", icon: Activity },
+      { label: "Status Incidents", href: "/admin/status-incidents", icon: Activity },
       { label: "API Usage", href: "/admin/api-usage", icon: Cpu },
       { label: "GDPR Requests", href: "/admin/gdpr", icon: Lock },
       { label: "Audit Log", href: "/admin/audit-log", icon: ClipboardList },

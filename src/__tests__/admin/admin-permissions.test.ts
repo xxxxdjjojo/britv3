@@ -49,6 +49,13 @@ describe("admin-permissions", () => {
       expect(hasPermission("dev_admin", "moderate_listings")).toBe(false);
     });
 
+    it("only super_admin and dev_admin can manage the status page", () => {
+      expect(hasPermission("super_admin", "manage_status_page")).toBe(true);
+      expect(hasPermission("dev_admin", "manage_status_page")).toBe(true);
+      expect(hasPermission("moderation_admin", "manage_status_page")).toBe(false);
+      expect(hasPermission("ops_admin", "manage_status_page")).toBe(false);
+    });
+
     it("returns false for unknown role", () => {
       expect(hasPermission("unknown" as AdminRole, "manage_users")).toBe(false);
     });

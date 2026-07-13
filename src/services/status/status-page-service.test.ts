@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { ServiceStatus } from "@/services/admin/health-service";
 
-import { mapComponent, overallState } from "./status-page-service";
+import { mapComponent, overallState, overallWithIncidents } from "./status-page-service";
 
 /**
  * Status-page mapping logic (TDD, written first).
@@ -70,5 +70,25 @@ describe("overallState", () => {
 
   it("treats an unknown probe (null) as non-fatal", () => {
     expect(overallState([c("operational")], null)).toBe("operational");
+  });
+});
+
+describe("overallWithIncidents", () => {
+  it("leaves the verdict unchanged when there are no active incidents", () => {
+    expect(overallWithIncidents("operational", [])).toBe("operational");
+    expect(overallWithIncidents("degraded", [])).toBe("degraded");
+  });
+
+  it("escalates to outage for a live critical incident, even if pings are green", () => {
+    expect(overallWithIncidents("operational", [{ severity: "critical" }])).toBe("outage");
+  });
+
+  it("escalates operational to degraded for a live major/minor incident", () => {
+    expect(overallWithIncidents("operational", [{ severity: "major" }])).toBe("degraded");
+    expect(overallWithIncidents("operational", [{ severity: "minor" }])).toBe("degraded");
+  });
+
+  it("never de-escalates below the component-derived verdict", () => {
+    expect(overallWithIncidents("outage", [{ severity: "minor" }])).toBe("outage");
   });
 });

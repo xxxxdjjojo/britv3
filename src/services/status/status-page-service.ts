@@ -9,6 +9,10 @@ import {
   buildUptime,
   type UptimeSummary,
 } from "@/services/metrics/platform-metrics-service";
+import {
+  getPublicIncidents,
+  type PublicIncidents,
+} from "@/services/admin/status-incident-service";
 
 /**
  * Public status page data (src/app/(main)/status).
@@ -43,6 +47,7 @@ export type StatusPageData = Readonly<{
   windowDays: number;
   minProbes: number;
   latestProbe: LatestProbe | null;
+  incidents: PublicIncidents;
   generatedAt: string;
 }>;
 
@@ -75,6 +80,26 @@ export function overallState(
   if (anyDown) return "outage";
   if (components.some((c) => c.state === "degraded")) return "degraded";
   return "operational";
+}
+
+const SEVERITY_RANK: Record<OverallState, number> = { operational: 0, degraded: 1, outage: 2 };
+
+/**
+ * Escalate the component-derived verdict for any live (active) incident: a
+ * published critical incident means outage even if the health pings look fine
+ * (e.g. a data-integrity incident); a major/minor active incident is at least
+ * degraded.
+ */
+export function overallWithIncidents(
+  base: OverallState,
+  active: readonly { severity: string }[],
+): OverallState {
+  let level = SEVERITY_RANK[base];
+  for (const incident of active) {
+    if (incident.severity === "critical") level = Math.max(level, SEVERITY_RANK.outage);
+    else level = Math.max(level, SEVERITY_RANK.degraded);
+  }
+  return (["operational", "degraded", "outage"] as const)[level];
 }
 
 type UptimeRead = { uptime: UptimeSummary; latestProbe: LatestProbe | null };
@@ -124,15 +149,21 @@ async function readUptime(): Promise<UptimeRead> {
 }
 
 export async function getStatusPageData(): Promise<StatusPageData> {
-  const [health, uptimeRead] = await Promise.all([getHealthStatus(), readUptime()]);
+  const [health, uptimeRead, incidents] = await Promise.all([
+    getHealthStatus(),
+    readUptime(),
+    getPublicIncidents(),
+  ]);
   const components = health.map(mapComponent);
+  const base = overallState(components, uptimeRead.latestProbe?.ok ?? null);
   return {
-    overall: overallState(components, uptimeRead.latestProbe?.ok ?? null),
+    overall: overallWithIncidents(base, incidents.active),
     components,
     uptime: uptimeRead.uptime,
     windowDays: SERIES_WINDOW_DAYS,
     minProbes: MIN_UPTIME_PROBES,
     latestProbe: uptimeRead.latestProbe,
+    incidents,
     generatedAt: new Date().toISOString(),
   };
 }

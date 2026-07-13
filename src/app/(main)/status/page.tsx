@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import type { StatusIncident } from "@/services/admin/status-incident-service";
 import {
   type ComponentState,
   type OverallState,
@@ -101,6 +102,71 @@ function ComponentRow({ component }: Readonly<{ component: PublicComponent }>) {
   );
 }
 
+const SEVERITY_TONE: Record<StatusIncident["severity"], ToneKey> = {
+  critical: "outage",
+  major: "outage",
+  minor: "degraded",
+  maintenance: "operational",
+};
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC",
+  });
+}
+
+function IncidentCard({
+  incident,
+  kind,
+}: Readonly<{ incident: StatusIncident; kind: "active" | "scheduled" | "resolved" }>) {
+  const tone = TONE[kind === "resolved" ? "operational" : SEVERITY_TONE[incident.severity]];
+  const when =
+    kind === "scheduled" && incident.scheduledFor
+      ? `Scheduled for ${formatDate(incident.scheduledFor)}`
+      : kind === "resolved" && incident.resolvedAt
+        ? `Resolved ${formatDate(incident.resolvedAt)}`
+        : `Since ${formatDate(incident.startedAt)}`;
+
+  return (
+    <li className={`rounded-xl border p-4 ${tone.bg} ${tone.border}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className={`font-semibold ${tone.text}`}>{incident.title}</span>
+        <StatusPill tone={tone === TONE.operational ? "operational" : SEVERITY_TONE[incident.severity]} label={incident.status} />
+      </div>
+      <p className="mt-1 text-xs text-neutral-500">{when}</p>
+    </li>
+  );
+}
+
+function IncidentsSection({ data }: Readonly<{ data: StatusPageData }>) {
+  const { active, scheduled, recentResolved } = data.incidents;
+  if (active.length === 0 && scheduled.length === 0 && recentResolved.length === 0) {
+    return null;
+  }
+  return (
+    <section aria-labelledby="incidents-heading" className="mb-10">
+      <h2 id="incidents-heading" className="mb-4 font-heading text-lg font-bold text-neutral-900">
+        Incidents &amp; maintenance
+      </h2>
+      <ul className="space-y-3">
+        {active.map((i) => (
+          <IncidentCard key={i.id} incident={i} kind="active" />
+        ))}
+        {scheduled.map((i) => (
+          <IncidentCard key={i.id} incident={i} kind="scheduled" />
+        ))}
+        {recentResolved.map((i) => (
+          <IncidentCard key={i.id} incident={i} kind="resolved" />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function UptimeCard({ data }: Readonly<{ data: StatusPageData }>) {
   const { uptime, windowDays, minProbes, latestProbe } = data;
   return (
@@ -183,6 +249,8 @@ export default async function StatusPage() {
           </p>
         </div>
       </section>
+
+      <IncidentsSection data={data} />
 
       <section aria-labelledby="components-heading" className="mb-10">
         <h2 id="components-heading" className="sr-only">

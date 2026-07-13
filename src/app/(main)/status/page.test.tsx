@@ -6,6 +6,7 @@ vi.mock("@/services/status/status-page-service", async (importOriginal) => ({
   getStatusPageData: vi.fn(),
 }));
 
+import type { StatusIncident } from "@/services/admin/status-incident-service";
 import {
   type StatusPageData,
   getStatusPageData,
@@ -28,7 +29,26 @@ function data(overrides: Partial<StatusPageData> = {}): StatusPageData {
     windowDays: 30,
     minProbes: 100,
     latestProbe: { ok: true, checkedAt: "2026-07-13T09:00:00Z", latencyMs: 120 },
+    incidents: { active: [], scheduled: [], recentResolved: [] },
     generatedAt: "2026-07-13T09:01:00Z",
+    ...overrides,
+  };
+}
+
+function incident(overrides: Partial<StatusIncident> = {}): StatusIncident {
+  return {
+    id: "inc-1",
+    title: "Sign-in slowness",
+    severity: "major",
+    status: "investigating",
+    affectedComponents: ["core"],
+    startedAt: "2026-07-13T08:00:00Z",
+    resolvedAt: null,
+    scheduledFor: null,
+    scheduledUntil: null,
+    isPublished: true,
+    createdAt: "2026-07-13T08:00:00Z",
+    updatedAt: "2026-07-13T08:00:00Z",
     ...overrides,
   };
 }
@@ -76,6 +96,21 @@ describe("Status page", () => {
     render(await StatusPage());
     expect(screen.getByRole("heading", { name: /experiencing an outage/i })).toBeInTheDocument();
     expect(screen.getByText("Down")).toBeInTheDocument();
+  });
+
+  it("renders published incidents when present", async () => {
+    mockGet.mockResolvedValue(
+      data({ incidents: { active: [incident()], scheduled: [], recentResolved: [] } }),
+    );
+    render(await StatusPage());
+    expect(screen.getByRole("heading", { name: /incidents & maintenance/i })).toBeInTheDocument();
+    expect(screen.getByText("Sign-in slowness")).toBeInTheDocument();
+  });
+
+  it("omits the incidents section entirely when there are none", async () => {
+    mockGet.mockResolvedValue(data());
+    render(await StatusPage());
+    expect(screen.queryByRole("heading", { name: /incidents & maintenance/i })).toBeNull();
   });
 
   it("NEVER leaks an internal error string, hostname, or env var name into the DOM", async () => {
