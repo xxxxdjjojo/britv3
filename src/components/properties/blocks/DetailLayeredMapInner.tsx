@@ -1,7 +1,7 @@
 "use client";
 // Dynamically imported (no SSR) — MapLibre needs `window`.
 
-import { useState, useRef, Fragment } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Map as MapGL, Source, Layer, Marker, NavigationControl } from "@vis.gl/react-maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -14,10 +14,11 @@ import { circlePolygon } from "@/lib/map/circle-polygon";
 import {
   POI_CATEGORIES,
   ALL_POI_KEYS,
-  poiCircleLayerSpec,
-  poiTextLayerSpec,
+  poiSymbolLayerSpec,
   type PoiCategoryKey,
 } from "@/lib/map/poi-categories";
+import { registerPinImages } from "@/lib/map/register-pin-images";
+import type { NearbyMapListing } from "@/services/properties/nearby-map-listings";
 import { MapPoiPanel } from "@/components/map/MapPoiPanel";
 
 const MAP_STYLE_URL = "/map/truedeed-style.json";
@@ -45,12 +46,17 @@ const SOLD_FILL_COLOUR = [
   SOLD_INSUFFICIENT_COLOUR,
 ];
 
+// Right for a listing page's handful of nearby results. A dense search page
+// should instead thin flags via symbol-sort-key — not built here.
+const FLAG_ALLOW_OVERLAP = true;
+
 type DetailLayeredMapInnerProps = Readonly<{
   latitude: number;
   longitude: number;
   address: string;
   className?: string;
   priceFormatted?: string;
+  nearbyListings?: readonly NearbyMapListing[];
 }>;
 
 export default function DetailLayeredMapInner({
@@ -59,12 +65,26 @@ export default function DetailLayeredMapInner({
   address,
   className,
   priceFormatted,
+  nearbyListings = [],
 }: DetailLayeredMapInnerProps) {
   const dataVersion = useMarketMapVersion();
   const [showArea, setShowArea] = useState(true);
   const [showSold, setShowSold] = useState(false);
   const [is3D, setIs3D] = useState(true);
+  const [pinsReady, setPinsReady] = useState(false);
   const mapRef = useRef<maplibregl.Map | null>(null);
+
+  const resultsFC = useMemo(
+    () => ({
+      type: "FeatureCollection" as const,
+      features: nearbyListings.map((l) => ({
+        type: "Feature" as const,
+        geometry: { type: "Point" as const, coordinates: [l.lng, l.lat] },
+        properties: { price: l.priceLabel },
+      })),
+    }),
+    [nearbyListings],
+  );
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const areaTiles = `${origin}/api/market-map/tiles/{z}/{x}/{y}?v=${dataVersion}`;
@@ -96,6 +116,7 @@ export default function DetailLayeredMapInner({
           mapStyle={MAP_STYLE_URL}
           style={{ width: "100%", height: "100%" }}
           cooperativeGestures
+          onLoad={(e) => { registerPinImages(e.target); setPinsReady(true); }}
           ref={(ref) => { mapRef.current = (ref && typeof ref === "object" && "getMap" in ref) ? (ref as { getMap: () => maplibregl.Map }).getMap() : null; }}
         >
           <NavigationControl position="top-right" visualizePitch={true} showCompass={true} />
@@ -120,6 +141,28 @@ export default function DetailLayeredMapInner({
               paint={{ "line-color": "#2D7A5F", "line-opacity": 0.55, "line-width": 1.5 }}
             />
           </Source>
+
+          {pinsReady && (
+            <Source id="td-results" type="geojson" data={resultsFC}>
+              <Layer
+                id="td-result-flags"
+                type="symbol"
+                source="td-results"
+                layout={{
+                  "icon-image": "td-flag",
+                  "icon-anchor": "bottom",
+                  "icon-allow-overlap": FLAG_ALLOW_OVERLAP,
+                  "text-field": ["get", "price"],
+                  "text-font": ["Noto Sans Bold"],
+                  "text-size": 12,
+                  "text-anchor": "bottom",
+                  "text-offset": [0, -5.6],
+                  "text-allow-overlap": FLAG_ALLOW_OVERLAP,
+                }}
+                paint={{ "text-color": "#1B4D3E", "text-halo-color": "#ffffff", "text-halo-width": 1.6 }}
+              />
+            </Source>
+          )}
 
           {showArea && (
             <Source id={AREA_SOURCE} type="vector" tiles={[areaTiles]} minzoom={4} maxzoom={14}>
@@ -184,11 +227,8 @@ export default function DetailLayeredMapInner({
             </div>
           </Marker>
 
-          {POI_CATEGORIES.filter((c) => enabledPoi.has(c.key)).map((c) => (
-            <Fragment key={c.key}>
-              <Layer {...poiCircleLayerSpec(c)} />
-              <Layer {...poiTextLayerSpec(c)} />
-            </Fragment>
+          {pinsReady && POI_CATEGORIES.filter((c) => enabledPoi.has(c.key)).map((c) => (
+            <Layer key={c.key} {...poiSymbolLayerSpec(c)} />
           ))}
         </MapGL>
 

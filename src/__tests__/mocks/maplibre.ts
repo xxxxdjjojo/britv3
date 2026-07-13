@@ -83,9 +83,16 @@ function MockMapComponent({ children, ...props }: Record<string, unknown>) {
 }
 
 function MockSource({ children, ...props }: Record<string, unknown>) {
+  // A geojson `data` prop is an object — spreading it onto a DOM div serializes
+  // to "[object Object]". Also expose it as a JSON string so tests can assert on
+  // the FeatureCollection contents. Additive; leaves the original spread intact.
+  const geojson =
+    props.data && typeof props.data === "object"
+      ? JSON.stringify(props.data)
+      : undefined;
   return React.createElement(
     "div",
-    { "data-testid": "mock-source", ...props },
+    { "data-testid": "mock-source", ...props, "data-geojson": geojson },
     children as React.ReactNode,
   );
 }
@@ -97,8 +104,25 @@ function MockLayer(props: Record<string, unknown>) {
   });
 }
 
+// The detail map gates pin layers behind onLoad → pinsReady. The react-wrapper
+// Map must fire onLoad once on mount with a stub map so those layers render in
+// tests. Only the Map alias uses this — Marker/Popup/NavigationControl keep the
+// plain MockMapComponent.
+function MockMapWithLoad({ children, onLoad, ...props }: Record<string, unknown>) {
+  React.useEffect(() => {
+    if (typeof onLoad === "function") {
+      // hasImage → true so registerPinImages short-circuits: jsdom has no real
+      // canvas 2D context, so createFlagImage/createLollipopImage would throw.
+      const stub = { addImage: vi.fn(), hasImage: () => true, on: vi.fn(), off: vi.fn(), easeTo: vi.fn() };
+      (onLoad as (e: { target: unknown }) => void)({ target: stub });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return React.createElement("div", { "data-testid": "mock-map", ...props }, children as React.ReactNode);
+}
+
 export const reactMaplibreMock = {
-  Map: MockMapComponent,
+  Map: MockMapWithLoad,
   Source: MockSource,
   Layer: MockLayer,
   useMap: vi.fn().mockReturnValue({ current: new MockMap() }),

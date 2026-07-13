@@ -192,7 +192,22 @@ function toCandidate(row: ListingRow): TopListCandidate | null {
 }
 
 async function fetchCandidates(): Promise<TopListCandidate[]> {
-  const supabase = createAdminClient();
+  let supabase: ReturnType<typeof createAdminClient>;
+  try {
+    supabase = createAdminClient();
+  } catch (err) {
+    // No service-role credentials at build time (e.g. a static export without
+    // server env) — degrade to an empty list so the export succeeds rather
+    // than crashing the whole build; ISR refills it at runtime once the env is
+    // present. Mirrors the sitemap's graceful omission of the same failure.
+    console.error(
+      `[top-list-service] Admin client unavailable, returning no candidates: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
+    return [];
+  }
+
   const { data, error } = await supabase
     .from("listings")
     .select(LISTING_SELECT)
