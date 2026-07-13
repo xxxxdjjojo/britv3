@@ -30,6 +30,30 @@ const BASE_URL = appUrl();
  * OPS_ALERT_EMAIL or Resend is unconfigured; the alert_events row is still
  * recorded regardless.
  */
+/**
+ * Notify a customer that support has replied to their ticket. Points them at
+ * the portal rather than quoting the reply body (keeps PII out of email logs).
+ */
+export async function sendTicketReplyNotification(params: {
+  to: string;
+  reference: string;
+}): Promise<boolean> {
+  const resend = getResend();
+  if (!resend) return false;
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: params.to,
+      subject: `Re: your TrueDeed support request ${params.reference}`,
+      html: `<p>Our support team has replied to your request <strong>${params.reference}</strong>.</p><p>View the reply and respond at <a href="${BASE_URL}/settings/support">${BASE_URL}/settings/support</a>.</p>`,
+    });
+    return true;
+  } catch (e) {
+    console.error("[email-service] ticket reply notification failed", e);
+    return false;
+  }
+}
+
 export async function sendOpsAlertEmail(params: {
   subject: string;
   html: string;

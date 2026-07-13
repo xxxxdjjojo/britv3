@@ -56,6 +56,13 @@ describe("admin-permissions", () => {
       expect(hasPermission("ops_admin", "manage_status_page")).toBe(false);
     });
 
+    it("support staff (super/ops/moderation) can manage support tickets; dev_admin cannot", () => {
+      expect(hasPermission("super_admin", "manage_support_tickets")).toBe(true);
+      expect(hasPermission("ops_admin", "manage_support_tickets")).toBe(true);
+      expect(hasPermission("moderation_admin", "manage_support_tickets")).toBe(true);
+      expect(hasPermission("dev_admin", "manage_support_tickets")).toBe(false);
+    });
+
     it("returns false for unknown role", () => {
       expect(hasPermission("unknown" as AdminRole, "manage_users")).toBe(false);
     });
