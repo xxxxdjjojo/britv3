@@ -54,7 +54,7 @@ export default async function HelpArticlePage({ params }: Props) {
           </p>
           <Link
             href="/help"
-            className="mt-4 inline-block text-sm text-brand-primary underline-offset-4 hover:underline"
+            className="mt-4 inline-block text-sm text-brand-primary underline underline-offset-4"
           >
             Back to Help Centre
           </Link>
@@ -67,7 +67,7 @@ export default async function HelpArticlePage({ params }: Props) {
     <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <Link
         href="/help"
-        className="text-sm text-brand-primary underline-offset-4 hover:underline"
+        className="text-sm text-brand-primary underline underline-offset-4"
       >
         &larr; Back to Help Centre
       </Link>

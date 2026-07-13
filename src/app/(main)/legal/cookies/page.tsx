@@ -243,7 +243,7 @@ export default function CookiesPage() {
               href="https://www.allaboutcookies.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="text-primary underline"
             >
               allaboutcookies.org
             </a>
@@ -261,7 +261,7 @@ export default function CookiesPage() {
             We update this Cookie Policy when we add or remove cookies. Material changes will be
             communicated via our cookie consent banner. For more information about how we process
             your personal data, see our{" "}
-            <Link href="/legal/privacy" className="text-primary hover:underline">
+            <Link href="/legal/privacy" className="text-primary underline">
               Privacy Policy
             </Link>
             .

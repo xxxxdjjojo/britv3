@@ -208,7 +208,7 @@ export function MortgageCalculator({ initialPrice }: MortgageCalculatorProps = {
             {/* Interest Only Toggle */}
             <div className="flex items-center justify-between">
               <Label className="text-sm font-semibold">Interest Only</Label>
-              <Switch checked={interestOnly} onCheckedChange={setInterestOnly} />
+              <Switch checked={interestOnly} onCheckedChange={setInterestOnly} aria-label="Interest only" />
             </div>
 
             {/* Interest Rate */}

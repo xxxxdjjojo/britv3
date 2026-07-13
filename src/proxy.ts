@@ -121,6 +121,11 @@ export async function proxy(request: NextRequest) {
   const correlationId = getCorrelationId(request.headers);
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(CORRELATION_ID_HEADER, correlationId);
+  // Forward the nonce + CSP on the request so Next.js auto-applies the nonce to
+  // its inline framework scripts (and Server Components can read `x-nonce`),
+  // preventing "inline script violates CSP" console errors.
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", buildCsp(nonce));
   const { pathname } = request.nextUrl;
 
   // ── Maintenance mode ────────────────────────────────────────────────────

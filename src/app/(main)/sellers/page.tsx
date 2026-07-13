@@ -56,7 +56,7 @@ export default function SellersLanding() {
         Don&apos;t want any upfront cost?{" "}
         <Link
           href="/pricing?tab=sellers"
-          className="text-brand-primary underline-offset-4 hover:underline"
+          className="text-brand-primary underline underline-offset-4"
         >
           Try No-Sale-No-Fee
         </Link>{" "}

@@ -871,7 +871,7 @@ export function navLinkClasses(options?: {
       );
     case "footer":
       return cn(
-        "text-base text-neutral-400 hover:text-white transition-colors",
+        "text-base text-neutral-300 hover:text-white transition-colors",
       );
     default:
       return cn(

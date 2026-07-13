@@ -72,7 +72,7 @@ export default async function ServiceAreaPage({ params }: Props) {
         </h1>
         <p className="mt-4 text-muted-foreground">
           The service <strong>{service}</strong> isn&apos;t on TrueDeed yet.{" "}
-          <Link href="/marketplace" className="text-brand-primary underline-offset-4 hover:underline">
+          <Link href="/marketplace" className="text-brand-primary underline underline-offset-4">
             Browse all services
           </Link>
           .

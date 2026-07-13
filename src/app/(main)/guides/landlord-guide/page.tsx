@@ -282,7 +282,7 @@ export default function LandlordGuidePage() {
               href={PDF_PATH}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-brand-primary underline-offset-4 hover:underline"
+              className="font-medium text-brand-primary underline underline-offset-4"
             >
               The guide
             </a>{" "}

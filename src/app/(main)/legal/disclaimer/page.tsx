@@ -122,7 +122,7 @@ export default function DisclaimerPage() {
             descriptions, recommendations, and insights. AI-generated content may contain
             inaccuracies or omissions. It is labelled as AI-generated and should be treated as a
             starting point, not a definitive source. See our{" "}
-            <Link href="/legal/ai-transparency" className="text-primary hover:underline">
+            <Link href="/legal/ai-transparency" className="text-primary underline">
               AI Transparency Notice
             </Link>{" "}
             for further detail.
@@ -182,7 +182,7 @@ export default function DisclaimerPage() {
             10.1. This disclaimer is governed by the laws of England and Wales. The courts of
             England and Wales have exclusive jurisdiction, subject to the consumer jurisdiction
             rights described in our{" "}
-            <Link href="/legal/terms" className="text-primary hover:underline">
+            <Link href="/legal/terms" className="text-primary underline">
               Terms of Service
             </Link>
             .

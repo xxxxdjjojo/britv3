@@ -102,6 +102,7 @@ export function HomeSearchBar({
         <div className="flex items-center justify-center rounded-r-xl pr-2">
           <button
             type="submit"
+            aria-label={submitLabel}
             className="flex h-10 items-center gap-2 rounded-lg bg-brand-primary px-5 text-sm font-bold text-white shadow-md transition-transform hover:bg-brand-primary-light active:scale-95 sm:h-12 sm:px-6 sm:text-base"
           >
             <Sparkles className="size-[18px]" aria-hidden="true" />
