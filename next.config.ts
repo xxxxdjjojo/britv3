@@ -26,6 +26,11 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
+    // Reduces peak Webpack heap during `next build` (string interning + no dual
+    // string-buffer cache). The Vercel build machine (8 GB) was OOM-killing the
+    // build worker (SIGKILL) when a large incremental recompile coincided with a
+    // restored build cache; this keeps the compile under the ceiling.
+    webpackMemoryOptimizations: true,
     optimizePackageImports: [
       "lucide-react",
       "date-fns",
