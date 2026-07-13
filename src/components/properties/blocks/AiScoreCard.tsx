@@ -28,7 +28,7 @@ export function AiScoreCard({ score }: { score: PropertyScore }) {
               className="flex items-center justify-between gap-3 text-sm"
               title={d.basis}
             >
-              <span className="text-muted-foreground">{d.label}</span>
+              <span className="min-w-0 text-muted-foreground">{d.label}</span>
               <span
                 className="flex shrink-0 items-center gap-0.5"
                 aria-label={`${d.label}: ${d.stars} out of 5`}

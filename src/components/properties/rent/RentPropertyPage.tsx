@@ -53,7 +53,7 @@ export function RentPropertyPage({
         canBookViewing={viewer.canBookViewing}
       />
 
-      <div className="mx-auto max-w-7xl px-4 pb-24 lg:pb-8">
+      <div className="mx-auto max-w-6xl px-4 pb-24 lg:pb-8">
         <HeroGalleryBlock view={view} />
         <SummaryHeader view={view} viewer={viewer} />
         <Suspense fallback={null}>
