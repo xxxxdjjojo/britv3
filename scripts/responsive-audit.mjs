@@ -26,15 +26,18 @@ fs.mkdirSync(SHOT_DIR, { recursive: true });
 const VIEWPORTS = [
   { w: 320, h: 568 },
   { w: 360, h: 640 },
+  { w: 375, h: 812 },
   { w: 390, h: 844 },
-  { w: 414, h: 896 },
-  { w: 640, h: 960 },
+  { w: 430, h: 932 },
+  { w: 744, h: 1133 },
   { w: 768, h: 1024 },
   { w: 1024, h: 768 },
+  { w: 1128, h: 900 },
   { w: 1280, h: 800 },
   { w: 1440, h: 900 },
+  { w: 1728, h: 1117 },
 ];
-const SHOT_WIDTHS = new Set([360, 768, 1440]);
+const SHOT_WIDTHS = new Set([375, 390, 768, 1280, 1440]);
 const TOUCH_CHECK_WIDTHS = new Set([390, 768]);
 
 /** role: null = anonymous. Auth states from e2e/.auth/<role>.json (playwright setup project). */
