@@ -47,8 +47,8 @@ export function MobileEnquiryBar({
   development,
 }: Readonly<{ development: DevelopmentDetail }>) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white/95 p-3 backdrop-blur lg:hidden">
-      <div className="mx-auto flex max-w-6xl items-center gap-3">
+    <div className="fixed inset-x-0 bottom-0 z-30 pb-safe border-t border-neutral-200 bg-white/95 backdrop-blur lg:hidden">
+      <div className="mx-auto flex max-w-6xl items-center gap-3 p-3">
         <div className="min-w-0 flex-1">
           <p className="truncate font-heading text-base font-bold text-brand-primary">
             {formatPriceRange(development.priceMin, development.priceMax)}

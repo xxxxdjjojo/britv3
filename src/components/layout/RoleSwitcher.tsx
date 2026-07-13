@@ -62,7 +62,7 @@ export function RoleSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex w-full items-center justify-start gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus-visible:outline-none">
+      <DropdownMenuTrigger className="flex w-full min-h-11 items-center justify-start gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus-visible:outline-none">
         {switching ? (
           <Loader2 className="size-4 animate-spin" />
         ) : ActiveIcon ? (
