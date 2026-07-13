@@ -24,6 +24,31 @@ function getResend(): Resend | null {
 const FROM = emailFromHeader();
 const BASE_URL = appUrl();
 
+/**
+ * Internal ops alert email (alert-engine-tick). Sent to OPS_ALERT_EMAIL — never
+ * to a customer, so it bypasses preference gating. No-ops (returns false) when
+ * OPS_ALERT_EMAIL or Resend is unconfigured; the alert_events row is still
+ * recorded regardless.
+ */
+export async function sendOpsAlertEmail(params: {
+  subject: string;
+  html: string;
+}): Promise<boolean> {
+  const to = process.env.OPS_ALERT_EMAIL;
+  const resend = getResend();
+  if (!to || !resend) {
+    console.warn("[email-service] OPS_ALERT_EMAIL or Resend not configured — alert email skipped");
+    return false;
+  }
+  try {
+    await resend.emails.send({ from: FROM, to, subject: params.subject, html: params.html });
+    return true;
+  } catch (e) {
+    console.error("[email-service] ops alert email failed", e);
+    return false;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
