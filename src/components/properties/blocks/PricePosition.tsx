@@ -101,7 +101,7 @@ function Bar({
   return (
     <div>
       <div className="mb-1 flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">{label}</span>
+        <span className="min-w-0 truncate text-muted-foreground">{label}</span>
         <span className={strong ? "font-semibold text-primary" : "font-medium"}>
           {value}
         </span>
