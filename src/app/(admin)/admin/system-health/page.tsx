@@ -15,6 +15,31 @@ import {
   pingResend,
   pingPostHog,
 } from "@/services/admin/health-service";
+import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  type Diagnostic,
+  type DiagnosticLevel,
+  getDiagnostics,
+} from "@/services/admin/diagnostics-service";
+
+const DIAGNOSTIC_TONE: Record<DiagnosticLevel, string> = {
+  ok: "bg-green-50 border-green-200 text-green-700",
+  warn: "bg-yellow-50 border-yellow-200 text-yellow-700",
+  critical: "bg-red-50 border-red-200 text-red-700",
+  unknown: "bg-neutral-50 border-neutral-200 text-neutral-500",
+};
+
+function DiagnosticCard({ diagnostic }: { diagnostic: Diagnostic }) {
+  return (
+    <div className={`flex items-center justify-between rounded-lg border p-4 ${DIAGNOSTIC_TONE[diagnostic.level]}`}>
+      <div>
+        <p className="text-sm font-medium text-neutral-900">{diagnostic.label}</p>
+        <p className="text-xs text-neutral-500">{diagnostic.detail}</p>
+      </div>
+      <span className="text-sm font-semibold capitalize">{diagnostic.level}</span>
+    </div>
+  );
+}
 
 function StatusIcon({ status }: { status: ServiceStatus["status"] }) {
   if (status === "up") return <CheckCircle className="h-5 w-5 text-green-500" />;
@@ -71,11 +96,12 @@ function ServiceCard({ service }: { service: ServiceStatus }) {
 }
 
 export default async function SystemHealthPage() {
-  const [supabase, stripe, resend, posthog] = await Promise.all([
+  const [supabase, stripe, resend, posthog, diagnostics] = await Promise.all([
     pingSupabase(),
     pingStripe(),
     pingResend(),
     pingPostHog(),
+    getDiagnostics(createAdminClient()),
   ]);
 
   const services = [supabase, stripe, resend, posthog];
@@ -105,8 +131,15 @@ export default async function SystemHealthPage() {
         ))}
       </div>
 
+      <h2 className="mt-8 mb-3 text-sm font-semibold text-neutral-900">Deep diagnostics</h2>
+      <div className="space-y-3">
+        {diagnostics.map((diagnostic) => (
+          <DiagnosticCard key={diagnostic.key} diagnostic={diagnostic} />
+        ))}
+      </div>
+
       <p className="mt-6 text-xs text-neutral-400 text-center">
-        This page performs live pings on every load. Refresh to re-check.
+        Live pings + DB-derived diagnostics on every load. Refresh to re-check.
       </p>
     </div>
   );

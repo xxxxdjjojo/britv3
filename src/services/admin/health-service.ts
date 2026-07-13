@@ -89,3 +89,57 @@ export const getHealthStatus = unstable_cache(
   ["health-status"],
   { revalidate: 30 },
 );
+
+export async function pingAnthropic(): Promise<ServiceStatus> {
+  const start = Date.now();
+  try {
+    const res = await fetch("https://status.anthropic.com/api/v2/status.json", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(5000),
+    });
+    const latencyMs = Date.now() - start;
+    if (!res.ok) return { name: "Anthropic", status: "down", latencyMs };
+    const body = (await res.json()) as { status?: { indicator?: string } };
+    const indicator = body?.status?.indicator;
+    const status = indicator === "none" ? "up" : indicator === "minor" ? "degraded" : "down";
+    return { name: "Anthropic", status, latencyMs };
+  } catch (e) {
+    return { name: "Anthropic", status: "down", latencyMs: Date.now() - start, error: e instanceof Error ? e.message : "Unreachable" };
+  }
+}
+
+export async function pingRedis(): Promise<ServiceStatus> {
+  const start = Date.now();
+  try {
+    const url = process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+    if (!url || !token) {
+      return { name: "Redis", status: "degraded", latencyMs: null, error: "Not configured" };
+    }
+    const res = await fetch(`${url}/ping`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(5000),
+    });
+    const latencyMs = Date.now() - start;
+    return { name: "Redis", status: res.ok ? "up" : "down", latencyMs };
+  } catch (e) {
+    return { name: "Redis", status: "down", latencyMs: Date.now() - start, error: e instanceof Error ? e.message : "Unreachable" };
+  }
+}
+
+/**
+ * Full dependency sweep for the privileged /admin/system-health panel — the
+ * public getHealthStatus stays a lean four-service check. Not cached: this is
+ * an on-demand admin diagnostic.
+ */
+export async function getDeepHealthStatus(): Promise<ServiceStatus[]> {
+  return Promise.all([
+    pingSupabase(),
+    pingStripe(),
+    pingResend(),
+    pingPostHog(),
+    pingAnthropic(),
+    pingRedis(),
+  ]);
+}
