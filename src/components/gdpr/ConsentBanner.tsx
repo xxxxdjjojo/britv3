@@ -80,7 +80,7 @@ export function ConsentBanner() {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-50 transform transition-transform duration-500 ease-out"
+      className="fixed inset-x-0 bottom-0 z-50 pb-safe transform transition-transform duration-500 ease-out"
       style={{ transform: visible ? "translateY(0)" : "translateY(100%)" }}
     >
       <div className="border-t border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-900 sm:p-6">

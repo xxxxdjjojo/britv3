@@ -42,9 +42,10 @@ type SearchFiltersProps = Readonly<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isMobile: boolean;
+  resultCount?: number;
 }>;
 
-export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersProps) {
+export function SearchFilters({ open, onOpenChange, isMobile, resultCount }: SearchFiltersProps) {
   const [params, setParams] = useSearchParams();
 
   const selectedTypes = useMemo(() => {
@@ -144,7 +145,7 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
                   min_bedrooms: params.min_bedrooms === n ? null : n,
                 })
               }
-              className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm transition-colors ${
+              className={`flex size-11 items-center justify-center rounded-md border text-sm transition-colors ${
                 params.min_bedrooms === n
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-input hover:bg-muted"
@@ -169,7 +170,7 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
                   min_bathrooms: params.min_bathrooms === n ? null : n,
                 })
               }
-              className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm transition-colors ${
+              className={`flex size-11 items-center justify-center rounded-md border text-sm transition-colors ${
                 params.min_bathrooms === n
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-input hover:bg-muted"
@@ -196,7 +197,7 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
                   epc_rating: params.epc_rating === rating ? null : rating,
                 })
               }
-              className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm transition-colors ${
+              className={`flex size-11 items-center justify-center rounded-md border text-sm transition-colors ${
                 params.epc_rating === rating
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-input hover:bg-muted"
@@ -227,15 +228,30 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
     </div>
   );
 
-  // Mobile: render in a Sheet
+  // Mobile: bottom sheet — thumb-reachable, capped at 85dvh
   if (isMobile) {
+    const applyLabel =
+      resultCount !== undefined
+        ? `Apply (${resultCount} result${resultCount === 1 ? "" : "s"})`
+        : "Apply filters";
+
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="left">
+        <SheetContent side="bottom" className="flex max-h-[85dvh] flex-col gap-0 p-0">
           <SheetHeader>
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
-          <div className="overflow-y-auto">{filterContent}</div>
+          <div className="min-h-0 flex-1 overflow-y-auto">{filterContent}</div>
+          {/* Sticky Apply footer */}
+          <div className="shrink-0 border-t bg-background px-4 pb-safe pt-4">
+            <Button
+              size="xl"
+              className="w-full"
+              onClick={() => onOpenChange(false)}
+            >
+              {applyLabel}
+            </Button>
+          </div>
         </SheetContent>
       </Sheet>
     );

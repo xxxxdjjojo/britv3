@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { CARD_IMAGE_ASPECT, CARD_RADIUS, CARD_SAVE_BTN_PLACEMENT } from "@/components/cards/card-tokens";
 import type { MapProperty } from "./SearchMap";
 
 type MapPropertyCardProps = Readonly<{
@@ -20,7 +22,7 @@ export default function MapPropertyCard({
   onClose,
 }: MapPropertyCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg max-w-[280px] overflow-hidden relative">
+    <div className={`bg-card ${CARD_RADIUS} shadow-lg max-w-[280px] overflow-hidden relative border`}>
       {/* Close button */}
       <button
         type="button"
@@ -32,15 +34,17 @@ export default function MapPropertyCard({
       </button>
 
       {/* Photo area — 16:10 aspect ratio */}
-      <div className="relative aspect-[16/10] bg-gray-200">
+      <div className={`relative ${CARD_IMAGE_ASPECT} bg-muted`}>
         {property.thumbnailUrl ? (
-          <img
+          <Image
             src={property.thumbnailUrl}
             alt={property.address}
-            className="w-full h-full object-cover"
+            fill
+            sizes="280px"
+            className="object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
             No image
           </div>
         )}
@@ -48,7 +52,7 @@ export default function MapPropertyCard({
         {/* Heart / save button */}
         <button
           type="button"
-          className="absolute top-2 left-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/80 text-gray-500 hover:text-red-500 hover:bg-white transition-colors"
+          className={`${CARD_SAVE_BTN_PLACEMENT} w-7 h-7 flex items-center justify-center rounded-full bg-white/80 text-gray-500 hover:text-red-500 hover:bg-white transition-colors`}
           aria-label="Save property"
         >
           <svg

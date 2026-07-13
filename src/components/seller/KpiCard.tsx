@@ -14,7 +14,7 @@ type Props = Readonly<{
 export function KpiCard({ label, value, changePct, icon: Icon, iconBgClass, iconColorClass }: Props) {
   const isPositive = (changePct ?? 0) >= 0;
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-card rounded-xl shadow-sm border p-6 transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">{label}</p>

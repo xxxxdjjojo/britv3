@@ -51,7 +51,7 @@ export function PropertyRentClient({ entries }: PropertyRentClientProps) {
 
   return (
     <div className="overflow-x-auto">
-      <Table>
+      <Table className="min-w-[640px]">
         <TableHeader>
           <TableRow>
             <TableHead>Property</TableHead>

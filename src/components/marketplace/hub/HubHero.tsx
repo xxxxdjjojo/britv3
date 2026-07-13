@@ -71,7 +71,7 @@ export function HubHero() {
               name="q"
               aria-label="Service"
               placeholder="What service do you need?"
-              className="w-full bg-transparent py-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none"
+              className="w-full bg-transparent py-4 text-base md:text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
           </div>
 
@@ -94,7 +94,9 @@ export function HubHero() {
               name="postcode"
               aria-label="Postcode"
               placeholder="Enter postcode"
-              className="w-full bg-transparent py-4 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none"
+              autoComplete="postal-code"
+              inputMode="text"
+              className="w-full bg-transparent py-4 text-base md:text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
           </div>
 

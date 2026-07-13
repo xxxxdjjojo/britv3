@@ -1,4 +1,5 @@
 
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
 type Props = Readonly<{
@@ -63,10 +64,12 @@ export function SoldLetListings({ listings }: Props) {
             <Card key={id} className="overflow-hidden">
               <div className="relative h-48 bg-muted">
                 {imageUrl ? (
-                  <img
+                  <Image
                     src={imageUrl}
                     alt={title}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 400px"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">

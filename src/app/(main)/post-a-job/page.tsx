@@ -97,7 +97,7 @@ export default async function PostAJobPage({
   return (
     <div className="min-h-dvh bg-[#f6f8f7]">
       <main className="mx-auto max-w-7xl px-4 py-8 lg:py-12">
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-8">
           {/* Left — wizard */}
           <div className="col-span-12 lg:col-span-8">
             {/* Progress stepper */}

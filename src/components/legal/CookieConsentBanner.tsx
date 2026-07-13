@@ -54,7 +54,7 @@ export function CookieConsentBanner() {
         <div
           role="dialog"
           aria-label="Cookie consent"
-          className="fixed bottom-0 inset-x-0 z-50 border-t border-neutral-200 bg-white shadow-lg"
+          className="fixed bottom-0 inset-x-0 z-50 pb-safe border-t border-neutral-200 bg-white shadow-lg"
         >
           <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-4">
             <p className="text-sm text-neutral-600 max-w-2xl">
@@ -73,21 +73,21 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={handleRejectNonEssential}
-                className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                className="rounded-lg border border-neutral-300 px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors min-h-11"
               >
                 Reject Non-Essential
               </button>
               <button
                 type="button"
                 onClick={handleOpenPreferences}
-                className="rounded-lg border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
+                className="rounded-lg border border-primary px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/5 transition-colors min-h-11"
               >
                 Manage Preferences
               </button>
               <button
                 type="button"
                 onClick={handleAcceptAll}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors min-h-11"
               >
                 Accept All
               </button>

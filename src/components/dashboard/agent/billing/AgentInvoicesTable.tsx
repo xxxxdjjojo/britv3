@@ -138,7 +138,8 @@ export function AgentInvoicesTable({ invoices }: Props) {
 
   return (
     <>
-      <Table>
+      <div className="w-full overflow-x-auto">
+      <Table className="min-w-[640px]">
         <TableHeader>
           <TableRow>
             <TableHead>Invoice</TableHead>
@@ -194,6 +195,7 @@ export function AgentInvoicesTable({ invoices }: Props) {
           })}
         </TableBody>
       </Table>
+      </div>
 
       {open && (
         <DisputeInvoiceModal

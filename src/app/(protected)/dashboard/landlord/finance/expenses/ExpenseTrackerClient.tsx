@@ -298,7 +298,8 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <Table>
+          <div className="overflow-x-auto">
+          <Table className="min-w-[640px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
@@ -426,6 +427,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
               </TableFooter>
             )}
           </Table>
+          </div>
         </CardContent>
       </Card>
 

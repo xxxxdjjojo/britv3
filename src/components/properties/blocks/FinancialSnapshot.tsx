@@ -63,8 +63,8 @@ export function FinancialSnapshot({ view }: { view: PropertyView }) {
 
       <details className="group mt-4 rounded-xl border">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 text-sm font-medium">
-          Adjust the figures — mortgage &amp; stamp duty calculators
-          <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+          <span className="min-w-0">Adjust the figures — mortgage &amp; stamp duty calculators</span>
+          <ChevronDown className="size-4 shrink-0 transition-transform group-open:rotate-180" />
         </summary>
         <div className="space-y-4 border-t p-4">
           <MortgageCalculator initialPrice={listing.price} />

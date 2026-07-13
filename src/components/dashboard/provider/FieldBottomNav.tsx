@@ -25,8 +25,7 @@ export function FieldBottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-200 bg-white"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-200 bg-white pb-safe"
       aria-label="Field navigation"
     >
       <div className="grid grid-cols-4">
