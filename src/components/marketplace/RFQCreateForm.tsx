@@ -109,7 +109,7 @@ export function RFQCreateForm({
 
   const labelClass = "mb-2 block text-sm font-semibold text-slate-700";
   const fieldClass =
-    "h-auto w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary";
+    "h-auto w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-base md:text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary";
 
   return (
     <form
@@ -179,6 +179,8 @@ export function RFQCreateForm({
           <Input
             id="rfq-postcode"
             placeholder="Enter postcode or city"
+            autoComplete="postal-code"
+            inputMode="text"
             className={fieldClass}
             {...register("property_postcode")}
           />

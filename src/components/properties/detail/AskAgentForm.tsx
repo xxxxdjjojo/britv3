@@ -156,7 +156,7 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
                 required
                 disabled={formState === "loading"}
                 placeholder="Jane Smith"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base md:text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
               />
             </div>
             <div>
@@ -175,7 +175,7 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
                 required
                 disabled={formState === "loading"}
                 placeholder="jane@example.com"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base md:text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
               />
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
             onChange={(e) => setMessage(e.target.value)}
             disabled={formState === "loading"}
             placeholder={`Hi ${agentName}, I'm interested in this property and would like to arrange a viewing...`}
-            className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
+            className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-base md:text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
           />
           <p
             className={`mt-1 text-right text-xs ${charsRemaining <= 50 ? "text-amber-600" : "text-gray-400"}`}

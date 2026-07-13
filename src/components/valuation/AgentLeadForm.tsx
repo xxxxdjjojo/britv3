@@ -14,7 +14,7 @@ const SHARED = [
 ];
 const TIMELINES = ["Not sure yet", "0–3 months", "3–6 months", "6–12 months", "12+ months"] as const;
 const selectClass =
-  "h-10 w-full rounded-md border border-neutral-300 bg-white px-3 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary";
+  "h-10 w-full rounded-md border border-neutral-300 bg-white px-3 text-base md:text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary";
 
 export function AgentLeadForm({ valuationId }: { valuationId: string }) {
   const [preference, setPreference] = useState<"email" | "phone">("email");
