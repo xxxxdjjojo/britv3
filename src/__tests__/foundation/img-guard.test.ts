@@ -20,6 +20,8 @@ const MIGRATED = [
   "search/MapPropertyCard.tsx",
   "seller/ListingCard.tsx",
   "dashboard/provider/PortfolioItemCard.tsx",
+  "dashboard/agent/listings/ActiveListings.tsx",
+  "dashboard/agent/listings/SoldLetListings.tsx",
 ];
 
 describe("img migration ratchet", () => {
