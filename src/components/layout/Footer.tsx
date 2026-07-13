@@ -73,7 +73,7 @@ function BrandColumn({ column }: Readonly<{ column: FooterColumn }>) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="flex size-9 items-center justify-center rounded-full bg-neutral-800 text-neutral-400 transition-colors hover:bg-brand-primary hover:text-white"
+                className="flex size-11 items-center justify-center rounded-full bg-neutral-800 text-neutral-400 transition-colors hover:bg-brand-primary hover:text-white"
               >
                 {Icon && <Icon className="size-4" />}
               </a>

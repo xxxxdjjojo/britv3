@@ -168,8 +168,8 @@ export function Breadcrumbs(
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Breadcrumb className="overflow-x-auto px-4 py-2 sm:px-6 lg:px-8">
-        <BreadcrumbList className="flex-nowrap">
+      <Breadcrumb className="overflow-x-auto px-4 sm:px-6 lg:px-8">
+        <BreadcrumbList className="flex-nowrap items-center py-2">
           {trail.map((entry, index) => {
             const isLast = index === trail.length - 1;
             return (
@@ -179,6 +179,7 @@ export function Breadcrumbs(
                     <BreadcrumbPage>{entry.label}</BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink
+                      className="inline-flex min-h-11 items-center"
                       render={
                         <Link href={entry.href ?? "#"} />
                       }
