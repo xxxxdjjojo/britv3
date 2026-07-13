@@ -63,6 +63,13 @@ describe("admin-permissions", () => {
       expect(hasPermission("dev_admin", "manage_support_tickets")).toBe(false);
     });
 
+    it("only super_admin can manage credentials (reset-link regeneration)", () => {
+      expect(hasPermission("super_admin", "manage_credentials")).toBe(true);
+      expect(hasPermission("ops_admin", "manage_credentials")).toBe(false);
+      expect(hasPermission("moderation_admin", "manage_credentials")).toBe(false);
+      expect(hasPermission("dev_admin", "manage_credentials")).toBe(false);
+    });
+
     it("returns false for unknown role", () => {
       expect(hasPermission("unknown" as AdminRole, "manage_users")).toBe(false);
     });

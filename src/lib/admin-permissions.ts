@@ -24,7 +24,8 @@ export type AdminPermission =
   | "manage_team"
   | "manage_roles"
   | "manage_status_page"
-  | "manage_support_tickets";
+  | "manage_support_tickets"
+  | "manage_credentials";
 
 export const ADMIN_ROLES: readonly AdminRole[] = [
   "super_admin",
@@ -42,6 +43,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     "send_campaigns", "manage_promo_codes", "view_revenue",
     "manage_feature_flags", "view_system_health", "view_api_usage", "view_analytics",
     "manage_team", "manage_roles", "manage_status_page", "manage_support_tickets",
+    "manage_credentials",
   ],
   moderation_admin: [
     "manage_users", "suspend_users",

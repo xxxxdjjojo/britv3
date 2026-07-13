@@ -37,7 +37,12 @@ export type AdminTicketMessage = Readonly<{
 }>;
 
 export type AdminTicketDetail = AdminTicketSummary &
-  Readonly<{ name: string | null; messages: readonly AdminTicketMessage[] }>;
+  Readonly<{
+    name: string | null;
+    /** Account owner, if the ticket was raised by a signed-in user (null for guests). */
+    userId: string | null;
+    messages: readonly AdminTicketMessage[];
+  }>;
 
 const SUMMARY_COLS =
   "id, reference, email, subject, status, priority, category, assigned_admin_id, first_response_at, created_at";
@@ -78,7 +83,7 @@ export async function getTicketDetail(
 ): Promise<AdminTicketDetail | null> {
   const { data: ticket, error } = await supabase
     .from("support_tickets")
-    .select(`${SUMMARY_COLS}, name`)
+    .select(`${SUMMARY_COLS}, name, user_id`)
     .eq("id", id)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -94,6 +99,7 @@ export async function getTicketDetail(
   return {
     ...mapSummary(ticket as Record<string, unknown>),
     name: ((ticket as Record<string, unknown>).name as string) ?? null,
+    userId: ((ticket as Record<string, unknown>).user_id as string) ?? null,
     messages: (messages ?? []).map((m) => {
       const row = m as Record<string, unknown>;
       return {
