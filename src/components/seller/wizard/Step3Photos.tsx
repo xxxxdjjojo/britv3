@@ -55,7 +55,7 @@ function SortablePhoto({ photo, onRemove }: SortablePhotoProps) {
       <button
         type="button"
         onClick={() => onRemove(photo.localId)}
-        className="absolute top-2 right-2 p-1 rounded-lg bg-white/80 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-2 right-2 p-1 rounded-lg bg-white/80 text-red-500 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 group-focus-visible:opacity-100 transition-opacity"
         aria-label="Remove photo"
       >
         <X size={14} />

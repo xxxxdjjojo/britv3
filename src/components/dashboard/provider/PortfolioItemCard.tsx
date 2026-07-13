@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Pencil, Trash2, MapPin, ImageIcon } from "lucide-react";
@@ -69,11 +70,12 @@ export function PortfolioItemCard({ item, onEdit, onDelete, onToggleFeatured }: 
       {/* Hero image */}
       <div className="relative bg-surface dark:bg-neutral-800 h-52 overflow-hidden">
         {heroSrc ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
+          <Image
             src={heroSrc}
             alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            sizes="(max-width: 640px) 100vw, 320px"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-300 dark:text-neutral-600">
@@ -86,7 +88,7 @@ export function PortfolioItemCard({ item, onEdit, onDelete, onToggleFeatured }: 
           {...attributes}
           {...listeners}
           aria-label="Drag to reorder"
-          className="absolute top-2 left-2 z-10 flex items-center justify-center w-7 h-7 rounded-lg bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+          className="absolute top-2 left-2 z-10 flex items-center justify-center w-7 h-7 rounded-lg bg-black/40 text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 group-focus-visible:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
         >
           <GripVertical className="w-4 h-4" />
         </button>
