@@ -233,34 +233,36 @@ export default function ListingAnalyticsPage() {
       <div className="space-y-4">
         <SectionHeader title="Recent Viewing Activity" />
         <div className="rounded-xl border border-border bg-surface">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Event</TableHead>
-                <TableHead>Source</TableHead>
-                <TableHead>Location</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentActivity.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {row.date}
-                  </TableCell>
-                  <TableCell className="font-medium text-neutral-900">
-                    {row.event}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {row.source}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {row.location}
-                  </TableCell>
+          <div className="w-full overflow-x-auto">
+            <Table className="min-w-[640px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Event</TableHead>
+                  <TableHead>Source</TableHead>
+                  <TableHead>Location</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {recentActivity.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {row.date}
+                    </TableCell>
+                    <TableCell className="font-medium text-neutral-900">
+                      {row.event}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {row.source}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {row.location}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
     </div>

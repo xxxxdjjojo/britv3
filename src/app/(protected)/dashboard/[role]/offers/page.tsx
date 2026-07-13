@@ -231,7 +231,8 @@ export default function OffersPage() {
           <SectionHeader title="Active Proposals" />
 
           <div className="rounded-xl border border-border bg-surface">
-            <Table>
+            <div className="w-full overflow-x-auto">
+            <Table className="min-w-[640px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Property</TableHead>
@@ -280,6 +281,7 @@ export default function OffersPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
 
             {/* Negotiation Timeline + attached documents */}
             <div className="grid gap-6 border-t border-border p-6 md:grid-cols-2">
