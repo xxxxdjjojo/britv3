@@ -87,7 +87,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
       {/* Body */}
       <div className="mx-auto mt-6 grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-3 lg:px-8">
-        <div className="space-y-6 lg:col-span-2">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           {/* Header */}
           <header>
             <div className="flex flex-wrap items-center gap-2">

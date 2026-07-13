@@ -273,7 +273,7 @@ export default function NotificationCentreClient() {
       </div>
 
       {/* Tabs + Mark-all-read row */}
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-4 min-w-0">
         <div className="flex gap-1 border-b border-border">
           {(["all", "unread", "system"] as const).map((tab) => (
             <button

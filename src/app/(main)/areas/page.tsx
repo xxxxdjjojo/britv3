@@ -144,7 +144,7 @@ export default function AreasPage() {
           <p className="text-lg text-neutral-300 mb-10 max-w-2xl mx-auto">
             In-depth area guides with average prices, market trends, transport links, schools, and local services — for every UK city and neighbourhood.
           </p>
-          <div className="flex items-center bg-white dark:bg-neutral-900 rounded-xl shadow-2xl max-w-xl mx-auto p-1.5">
+          <div className="flex flex-wrap items-center bg-white dark:bg-neutral-900 rounded-xl shadow-2xl max-w-xl mx-auto p-1.5">
             <MapPin className="size-5 text-neutral-400 mx-3 flex-shrink-0" />
             <input
               type="text"
@@ -152,7 +152,7 @@ export default function AreasPage() {
               className="flex-grow text-neutral-700 dark:text-neutral-200 bg-transparent py-3 pr-2 focus:outline-none text-base"
               readOnly
             />
-            <button className="bg-brand-primary text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-brand-primary/90 transition-colors">
+            <button className="bg-brand-primary text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-brand-primary/90 transition-colors w-full sm:w-auto">
               <Search className="size-4" />
               Search
             </button>
