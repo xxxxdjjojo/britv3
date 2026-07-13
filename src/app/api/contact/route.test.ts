@@ -27,6 +27,11 @@ vi.mock("@/lib/cache/redis", () => ({
   })),
 }));
 
+const mockCreateTicket = vi.fn();
+vi.mock("@/services/support/ticket-service", () => ({
+  createTicket: (...args: unknown[]) => mockCreateTicket(...args),
+}));
+
 // ---------------------------------------------------------------------------
 // Import after mocks are in place
 // ---------------------------------------------------------------------------
@@ -66,6 +71,8 @@ describe("POST /api/contact", () => {
     mockRateLimitFn.mockResolvedValue({ success: true });
     // Default: email sends successfully
     mockEmailSend.mockResolvedValue({ id: "email-id-123" });
+    // Default: ticket persists successfully
+    mockCreateTicket.mockResolvedValue({ id: "ticket-1", reference: "TD-TEST01" });
     // Set required env var
     process.env.RESEND_API_KEY = "re_test_key";
     process.env.SUPPORT_EMAIL = "support@truedeed.co.uk";
@@ -78,7 +85,17 @@ describe("POST /api/contact", () => {
       const json = await res.json();
 
       expect(res.status).toBe(200);
+      expect(json).toEqual({ success: true, reference: "TD-TEST01" });
+      expect(mockCreateTicket).toHaveBeenCalledOnce();
+    });
+
+    it("still succeeds (email-only) when ticket persistence fails", async () => {
+      mockCreateTicket.mockRejectedValueOnce(new Error("db down"));
+      const res = await POST(makeRequest(validBody));
+      const json = await res.json();
+      expect(res.status).toBe(200);
       expect(json).toEqual({ success: true });
+      expect(mockEmailSend).toHaveBeenCalledOnce();
     });
 
     it("calls email send with correct parameters", async () => {

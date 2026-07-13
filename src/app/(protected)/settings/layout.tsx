@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, Shield, Bell, Lock, User, Settings2 } from "lucide-react";
+import { ArrowLeft, Shield, Bell, Lock, User, Settings2, LifeBuoy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { SecurityScoreBadge } from "@/components/settings/SecurityScoreBadge";
@@ -41,6 +41,11 @@ const SETTINGS_TABS: readonly SettingsTab[] = [
     label: "Preferences",
     href: "/settings/preferences",
     icon: Settings2,
+  },
+  {
+    label: "Support",
+    href: "/settings/support",
+    icon: LifeBuoy,
   },
 ];
 
