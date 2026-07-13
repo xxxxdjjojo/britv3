@@ -236,6 +236,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/agent-briefing",
   "/reports",
   "/metrics",
+  "/status",
   "/sellers",
   "/developers",
   "/traders",
