@@ -106,7 +106,7 @@ export function ProtectedHeader() {
         <div className="flex items-center gap-2">
           <Link
             href="/inbox"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
             aria-label="Inbox"
           >
             <Mail className="h-5 w-5" />
@@ -126,7 +126,7 @@ export function ProtectedHeader() {
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger
               aria-label="Open profile menu"
-              className="ml-1 flex items-center rounded-full outline-none transition hover:ring-2 hover:ring-brand-primary/30 focus-visible:ring-2 focus-visible:ring-brand-primary/40"
+              className="ml-1 flex min-h-11 min-w-11 items-center justify-center rounded-full outline-none transition hover:ring-2 hover:ring-brand-primary/30 focus-visible:ring-2 focus-visible:ring-brand-primary/40"
             >
               <Avatar size="sm">
                 <AvatarFallback>{initials}</AvatarFallback>

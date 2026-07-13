@@ -10,7 +10,7 @@ export function CompareBar() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out"
+      className="fixed bottom-0 left-0 right-0 z-50 pb-safe transition-transform duration-300 ease-in-out"
       role="status"
       aria-live="polite"
       aria-label={`${count} of 3 providers selected for comparison`}
