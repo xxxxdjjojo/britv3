@@ -181,12 +181,12 @@ export default async function AreaPage({ params }: AreaPageProps) {
 
         {/* ── Tabs ── */}
         <Tabs defaultValue="overview">
-          <TabsList variant="line" className="w-full border-b border-neutral-200 mb-10 rounded-none h-auto pb-0">
+          <TabsList variant="line" className="w-full overflow-x-auto border-b border-neutral-200 mb-10 rounded-none h-auto pb-0">
             {["overview", "market", "transport", "schools", "lifestyle"].map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
-                className="capitalize text-sm font-semibold pb-4 px-6 rounded-none"
+                className="capitalize text-sm font-semibold pb-4 px-6 rounded-none shrink-0"
               >
                 {tab === "market" ? "Market Data" : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </TabsTrigger>
