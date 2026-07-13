@@ -110,6 +110,7 @@ export function SearchPage() {
             open={filtersOpen}
             onOpenChange={setFiltersOpen}
             isMobile={true}
+            resultCount={totalCount || undefined}
           />
         </div>
 
