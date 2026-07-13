@@ -192,7 +192,7 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="min-w-[640px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Property</TableHead>
