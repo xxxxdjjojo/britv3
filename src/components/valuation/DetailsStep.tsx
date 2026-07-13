@@ -33,7 +33,7 @@ const CONDITIONS: ReadonlyArray<{ value: Condition; label: string }> = [
 ];
 
 const selectClass =
-  "h-10 w-full rounded-md border border-neutral-300 bg-white px-3 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary";
+  "h-10 w-full rounded-md border border-neutral-300 bg-white px-3 text-base md:text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary";
 
 export function DetailsStep({ initial }: { initial: UserPropertyDetails | null }) {
   const router = useRouter();
