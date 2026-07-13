@@ -1,27 +1,12 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const POSTER = "/images/coming-soon/hero-poster.jpg";
 const VIDEO = "/videos/coming-soon-hero.mp4";
-const QUERY = "(prefers-reduced-motion: reduce)";
-
-function subscribe(onChange: () => void): () => void {
-  const mql = window.matchMedia(QUERY);
-  mql.addEventListener("change", onChange);
-  return () => mql.removeEventListener("change", onChange);
-}
-
-function usePrefersReducedMotion(): boolean {
-  return useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(QUERY).matches,
-    () => false,
-  );
-}
 
 export function HeroVideo() {
-  const reducedMotion = usePrefersReducedMotion();
+  const reducedMotion = useReducedMotion();
 
   return (
     <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden bg-[#04130C]">

@@ -9,9 +9,13 @@ import { join } from "node:path";
  * auto-zoom on focus) and the 44px coarse-pointer touch target minimum
  * (WCAG 2.5.8 / audit F10–F12). Also locks the five fluid type tokens
  * introduced in the Phase-1 responsive system (audit F11).
+ *
+ * Also guards the xl and icon-xl button sizes (≥44px, WCAG touch floor).
  */
 
 const ROOT = join(process.cwd(), "src");
+
+const buttonTsx = readFileSync(join(ROOT, "components/ui/button.tsx"), "utf8");
 
 const selectTsx = readFileSync(join(ROOT, "components/ui/select.tsx"), "utf8");
 const inputTsx = readFileSync(join(ROOT, "components/ui/input.tsx"), "utf8");
@@ -116,4 +120,17 @@ describe("fluid type tokens defined in @theme block", () => {
       expect(tokenLine).toContain("clamp(");
     });
   }
+});
+
+describe("button xl sizes (WCAG touch floor ≥44px)", () => {
+  it("button.tsx defines an xl size with h-11 (44px)", () => {
+    expect(buttonTsx).toContain("h-11");
+    // Confirm the xl key is present in the size map
+    expect(buttonTsx).toMatch(/xl\s*:\s*["'].*h-11/);
+  });
+
+  it("button.tsx defines an icon-xl size with size-11 (44px)", () => {
+    expect(buttonTsx).toContain("size-11");
+    expect(buttonTsx).toMatch(/"icon-xl"\s*:\s*["']size-11/);
+  });
 });

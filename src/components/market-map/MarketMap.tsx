@@ -27,6 +27,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 
 import { useMarketMap } from "@/hooks/useMarketMap";
 import { useMarketMapVersion } from "@/hooks/useMarketMapVersion";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { colourForBucket, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
 import {
   colourForSoldBucket,
@@ -205,6 +206,7 @@ export function MarketMap({
   className,
 }: MarketMapProps) {
   const mapRef = useRef<MapRef>(null);
+  const reducedMotion = useReducedMotion();
 
   // Internal viewport state — drives the data hook
   const [viewport, setViewport] = useState<{
@@ -263,16 +265,21 @@ export function MarketMap({
     fitToRef.current = fitTo ?? null;
   }, [fitTo]);
 
+  // Read the live reduced-motion preference via a ref so `applyFit` stays a
+  // stable callback — otherwise flipping the OS motion setting mid-session would
+  // recreate `applyFit`, re-run the effect below, and re-fly the map with no
+  // user intent.
+  const reducedMotionRef = useRef(reducedMotion);
+  useEffect(() => {
+    reducedMotionRef.current = reducedMotion;
+  }, [reducedMotion]);
+
   const applyFit = useCallback((params: FitBoundsParams) => {
     const map = mapRef.current;
     if (!map) return;
-    const reducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     map.fitBounds(params.bounds, {
       padding: 40,
-      duration: reducedMotion ? 0 : 800,
+      duration: reducedMotionRef.current ? 0 : 800,
       maxZoom: params.zoom,
     });
   }, []);
