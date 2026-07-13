@@ -499,7 +499,7 @@ export function DepositManagementClient({
       {/* Deposit table */}
       <Card className="rounded-xl border-border">
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="min-w-[640px]">
             <TableHeader>
               <TableRow className="border-border">
                 <TableHead className="text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400 pl-5">

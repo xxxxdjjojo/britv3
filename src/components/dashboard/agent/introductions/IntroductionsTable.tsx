@@ -81,7 +81,8 @@ export function IntroductionsTable({
   }
 
   return (
-    <Table>
+    <div className="w-full overflow-x-auto">
+    <Table className="min-w-[640px]">
       <TableHeader>
         <TableRow>
           <TableHead>Applicant</TableHead>
@@ -137,6 +138,7 @@ export function IntroductionsTable({
         })}
       </TableBody>
     </Table>
+    </div>
   );
 }
 

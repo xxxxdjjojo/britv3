@@ -234,7 +234,7 @@ export default async function CompliancePage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="min-w-[640px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Property</TableHead>
