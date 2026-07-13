@@ -120,6 +120,10 @@
   --text-h3--line-height: 1.3;
   --text-body-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
   --text-body-lg--line-height: 1.55;
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-3xs: 0.625rem;
+  --text-3xs--line-height: 0.875rem;
 }
 
 /* === Root — Light Mode (TrueDeed branded) === */
@@ -229,13 +233,25 @@
 
 /* === Focus ring utility === */
 .focus-ring {
-  outline: 2px solid #2563EB;
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  /* Global keyboard-focus indicator: `--ring` is theme-aware (brand green). */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  /* Shadcn/Base UI primitives draw their own focus ring via `focus-visible:ring-*`,
+     so opt them out of the global outline to avoid a double ring. Caveat: any
+     [data-slot] element that does NOT set its own focus-visible ring will have no
+     visible focus — components are responsible for their own focus styles. */
+  [data-slot]:focus-visible {
+    outline: none;
   }
   body {
     @apply bg-background text-foreground;
