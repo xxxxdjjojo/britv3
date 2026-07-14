@@ -1,24 +1,46 @@
 # Implementation Backlog
 
-One row per PR in the production-support initiative. Status: `in-progress` / `pending` /
-`done`. This table is the self-description of the rollout; update Status as PRs merge.
+One row per PR in the production-support initiative. This table is the self-description of
+the rollout. All fourteen are **implemented and committed on `feat/prod-support`** (TDD,
+tsc-clean, guard-suite green). They are **not yet merged to `main` or deployed**, and the
+migrations are **not yet applied to production** — see "Rollout state" below.
 
-| ID | Work item | Customer risk | Severity | Code location | Proposed implementation | Owner | Acceptance test | Status |
-|---|---|---|---|---|---|---|---|---|
-| PR-1 | Production-support pack skeleton + incident-response plan | Ops can't run incidents consistently | P2 | `docs/production-support/*`, `docs/incidents/*` | 15 numbered docs (00–14) + incident plan/template/comms | [REQUIRED] | `src/__tests__/docs/production-support-pack.test.ts` | in-progress |
-| PR-2 | Public `/status` page + fix broken error-boundary link | R-03 | P2 | `src/app/(main)/status/page.tsx`, `src/app/error.tsx`, `PUBLIC_ROUTES` | Read-only status from `uptime_checks` + health pings; drop internal error strings | [REQUIRED] | status page render + no-internals leak test | pending |
-| PR-3 | `status_incidents` table + admin incident management | R-03 | P2 | migration, `src/app/(admin)/admin/status-incidents/*`, `status-incident-service.ts` | Draft→publish incidents; RLS public-read published only; audited writes | [REQUIRED] | service transitions + RLS db-test + audit | pending |
-| PR-4 | Privileged deep-diagnostics endpoint + system-health upgrade | R-11 | P2 | `src/services/admin/diagnostics-service.ts`, `/api/admin/diagnostics` | DLQ/backlog/staleness/bounce diagnostics gated on `view_system_health` | [REQUIRED] | 401/403/200 matrix + no-secrets | pending |
-| PR-5 | Alert engine (`alert_events`) + Inngest tick + email + dead-man switch | R-01,R-02,R-08,R-09,R-10,R-15 | P1 | `src/services/alerts/*`, `src/inngest/functions/alert-engine-tick.ts`, `uptime-ping.yml` | Pure rules → dedupe → email via Resend; GH-Actions dead-man for site-down | [REQUIRED] | per-rule + engine idempotency + no-PII | pending |
-| PR-6 | `support_tickets` schema + customer submission & "my requests" | R-04 | P2 | migration, `ticket-service.ts`, `src/app/api/contact/route.ts`, `/settings/support` | Persist tickets (guest+authed), email-fallback on insert failure | [REQUIRED] | RLS isolation + contact degradation | pending |
-| PR-7 | `/admin/support` triage queue | R-04 | P2 | `src/app/(admin)/admin/support/*`, `support-admin-service.ts` | Queue, assign, reply (records `email_log_id`), resolve; audited | [REQUIRED] | permission matrix + audit + SLA stamps | pending |
-| PR-8 | Tier-1 action registry (audited, permission-gated) | R-05,R-08 | P2 | `src/services/admin/tier1-actions/*`, `/api/admin/tier1-actions` | Resend verify, reset link, DLQ replay, retry job, restore entitlement | [REQUIRED] | registry contract + per-action + audit-on-failure | pending |
-| PR-9 | Triage-packet generator + AI-agent spec (Recommend mode) | R-06 | P0 | `src/lib/observability/redact.ts`, `triage-packet-service.ts` | Redaction choke-point; redacted markdown packet; no autonomous execution | [REQUIRED] | redaction property tests (PII never in output) | pending |
-| PR-10 | Playbooks batch 1 (auth+payments) + critical runbooks + CI doc guard | R-01,R-05 | P2 | `docs/support/features/*`, `docs/support/runbooks/*`, grounding test | 23-field playbooks + front-matter; guard test asserts paths/tables/actions exist | [REQUIRED] | `playbook-grounding.test.ts` | pending |
-| PR-11 | Playbooks batch 2 (email/files/AI/infra) + remaining runbooks | R-10,R-13,R-15 | P2 | `docs/support/features/*`, `docs/support/runbooks/*` | Same structure; guard test enforces grounding | [REQUIRED] | grounding test | pending |
-| PR-12 | Failure-mode test backfill | R-13 | P2 | `src/__tests__/*`, `db-tests/*` | Webhook sig-reject, DLQ idempotency, bounce→suppression, rate-limiter-on-outage | [REQUIRED] | new tests green | pending |
-| PR-13 | DR backup-restore evidence + first tabletop | R-07 | P1 | `scripts/dr/*`, `docs/production-support/12`, `docs/incidents/tabletop/*` | Execute local-stack restore; record evidence; run tabletop | [REQUIRED] | evidence record committed | pending |
-| PR-14 | Finalize pack (fill 09/10/11, refresh 02/13/14) | — | P3 | `docs/production-support/*` | As-built content; pack test flips to no-stubs | [REQUIRED] | pack completeness test | pending |
+| ID | Work item | Severity | Code location | Status |
+|---|---|---|---|---|
+| PR-1 | Production-support pack skeleton + incident-response plan | P2 | `docs/production-support/*`, `docs/incidents/*` | done |
+| PR-2 | Public `/status` page + fix broken error-boundary link | P2 | `src/app/(main)/status/page.tsx`, `src/app/error.tsx` | done |
+| PR-3 | `status_incidents` table + admin incident management | P2 | migration, `src/app/(admin)/admin/status-incidents/*`, `status-incident-service.ts` | done |
+| PR-4 | Privileged deep-diagnostics endpoint + system-health upgrade | P2 | `diagnostics-service.ts`, `/api/admin/diagnostics`, `health-service.ts` | done |
+| PR-5 | Alert engine (`alert_events`) + Inngest tick + email + dead-man switch | P1 | `src/services/alerts/*`, `alert-engine-tick.ts`, `uptime-ping.yml` | done |
+| PR-6 | `support_tickets` schema + customer submission & "my requests" | P2 | migration, `ticket-service.ts`, `api/contact/route.ts`, `/settings/support` | done |
+| PR-7 | `/admin/support` triage queue | P2 | `src/app/(admin)/admin/support/*`, `support-admin-service.ts` | done |
+| PR-8 | Tier-1 action registry (audited, permission-gated) | P2 | `src/services/admin/tier1-actions/*`, `/api/admin/tier1-actions` | done — **4 actions** (resend-verification-email, regenerate-reset-link, replay-dlq-webhook, restore-entitlement-from-stripe); `retry-inngest-job` **deferred** (see 11-tier1 / open risks) |
+| PR-9 | Triage-packet generator + AI-agent spec (Recommend mode) | P0 | `src/lib/observability/redact.ts`, `triage-packet-service.ts` | done |
+| PR-10 | Playbooks batch 1 (auth+payments) + critical runbooks + CI doc guard | P2 | `docs/support/features/*`, `docs/support/runbooks/*`, `playbook-grounding.test.ts` | done |
+| PR-11 | Playbooks batch 2 (email/files/AI/infra) + remaining runbooks | P2 | `docs/support/features/*`, `docs/support/runbooks/*` | done |
+| PR-12 | Failure-mode test backfill + testing doc | P2 | `src/__tests__/*`, webhook/billing/health tests, `08-testing-and-guard-layer.md` | done — sig-reject ×4, claim double-claim, rate-limiter fail-closed, health degradation; **bounce→suppression deferred** (path not implemented, OR-14) |
+| PR-13 | DR backup-restore evidence + first tabletop | P1 | `scripts/dr/*`, `12-dr-and-backups.md`, `docs/incidents/tabletop/*` | done — restore drill **executed** 2026-07-14 (192,142 rows verified) |
+| PR-14 | Finalize pack (fill 09/10/11, refresh 02/13/14) | P3 | `docs/production-support/*` | done — pack test flips to no-stubs |
 
-**Owner:** every row needs a named owner before the initiative is "operable" — `[REQUIRED]`
-placeholders must be filled by the business owner.
+## Rollout state (what remains, and who owns it)
+
+The build is complete on the branch; production rollout is a set of **explicit human
+actions** deliberately not automated:
+
+- **Merge & deploy** — squash-merge `feat/prod-support` → `main`; Vercel deploys.
+- **Apply migrations to production** (via Supabase MCP + ledger reconciliation): `status_incidents`
+  (+updates), `alert_events`, `support_tickets` (+messages). Verify RLS live with an anon probe.
+- **Add env/secrets before PR-5 deploys:** `OPS_ALERT_EMAIL`, `ALERT_FROM` (Resend-verified
+  sender) in Vercel + GitHub Actions; optional `SENTRY_ORG_SLUG`/`SENTRY_PROJECT_SLUG`.
+- **Post-deploy verification:** `/status` renders with real uptime; publish→unpublish a test
+  incident and confirm public visibility flips; submit a contact-form ticket (guest + authed)
+  and see it in `/admin/support`; run one Tier-1 action against a demo account and confirm the
+  `admin_audit_log` row; trigger a manual alert-engine tick and confirm the email arrives.
+
+## Deferred (moved to open risks, not silently dropped)
+
+- `retry-inngest-job` Tier-1 action → needs per-job idempotency review (11-tier1).
+- Bounce → suppression list → OR-14. AI cost/usage alert (`ai_usage` table) → OR-15.
+- Everything else deferred is enumerated in `14-open-risks.md` (OR-01…OR-15).
+
+**Owner:** every rollout action needs a named owner before the initiative is "operable".

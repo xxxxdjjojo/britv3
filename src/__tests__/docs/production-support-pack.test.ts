@@ -54,4 +54,16 @@ describe("production-support pack", () => {
       expect(nonEmpty(path.join(INCIDENTS, doc)), `missing/empty: docs/incidents/${doc}`).toBe(true);
     }
   });
+
+  it("has no remaining STUB markers — every pack doc is filled as-built", () => {
+    // The pack is complete: earlier PRs shipped stubs that pointed forward
+    // ("STATUS: STUB — delivered in PR N"); PR 14 flips this guard from
+    // "files exist" to "no placeholder remains".
+    for (const doc of PACK_DOCS) {
+      const body = readFileSync(path.join(PACK, doc), "utf8");
+      expect(body, `stub marker still present: docs/production-support/${doc}`).not.toMatch(
+        /STATUS:\s*STUB/i,
+      );
+    }
+  });
 });

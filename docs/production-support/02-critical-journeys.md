@@ -8,7 +8,19 @@ Journeys that directly affect revenue, access, safety, or trust. Criticality:
 - **P3** — minor issue, workaround available
 - **P4** — cosmetic/informational
 
-Alert/Runbook columns reference artifacts delivered later in this initiative (PR number noted).
+The Alert and Runbook artifacts are **all now delivered** (the "(PRn)" tags are historical
+build markers). Playbooks live in `docs/support/features/**` and runbooks in
+`docs/support/runbooks/**`; each carries grounded front-matter enforced by
+`playbook-grounding.test.ts`.
+
+**Alert-column caveat (read with `09-alert-catalogue.md`):** some names below are
+*intent-level* (e.g. `billing.processing_failures`, `email.delivery_failures`,
+`email.bounce_rate`, `ai.cost_spike`, `uptime.probe_stale`). The **5 rules that actually
+fire today** are `uptime_probe_staleness`, `uptime.consecutive_failures`,
+`stripe_dlq_backlog`, `email_failures_24h`, `gdpr_deadline_risk`. Where a journey's named
+alert isn't yet a live rule, detection is via **Sentry (`module:*` tags) + diagnostics**;
+the gap is tracked in `09`'s "not yet implemented" table and `14-open-risks.md`
+(bounce-rate → OR-14, AI cost → OR-15).
 
 | # | Journey | Entry point | Services involved | Success condition | Failure conditions | Customer-facing message | Alert | Runbook | Crit |
 |---|---|---|---|---|---|---|---|---|---|
