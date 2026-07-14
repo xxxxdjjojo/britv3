@@ -4,6 +4,7 @@ import {
   removeAgent,
   getRepresentedListings,
   getListingAgents,
+  resolveAgentListingIds,
 } from "@/services/listings/listing-agents-service";
 
 const LISTING_ID = "aaaa0001-0001-0001-0001-aaaaaaaaaaaa";
@@ -244,5 +245,135 @@ describe("getListingAgents", () => {
     const agents = await getListingAgents(supabase, LISTING_ID);
 
     expect(agents).toEqual([]);
+  });
+
+  it("throws when the listing_agents query errors", async () => {
+    const { supabase } = makeSupabase([
+      { data: null, error: { message: "db unavailable" } },
+    ]);
+
+    await expect(getListingAgents(supabase, LISTING_ID)).rejects.toThrow(
+      "Failed to fetch listing agents: db unavailable",
+    );
+  });
+
+  it("throws when the profiles query errors", async () => {
+    const { supabase } = makeSupabase([
+      { data: [{ agent_id: AGENT_ID, created_at: "2025-01-01T00:00:00Z" }], error: null },
+      { data: null, error: { message: "profiles table down" } },
+    ]);
+
+    await expect(getListingAgents(supabase, LISTING_ID)).rejects.toThrow(
+      "Failed to fetch agent profiles: profiles table down",
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getRepresentedListings — error propagation
+// ---------------------------------------------------------------------------
+
+describe("getRepresentedListings — error propagation", () => {
+  it("throws when the listing_agents query errors", async () => {
+    const { supabase } = makeSupabase([
+      { data: null, error: { message: "connection refused" } },
+    ]);
+
+    await expect(getRepresentedListings(supabase, AGENT_ID)).rejects.toThrow(
+      "Failed to fetch represented listings: connection refused",
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resolveAgentListingIds — new shared helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Table-keyed mock for resolveAgentListingIds which queries two tables in
+ * parallel (listings + listing_agents).
+ */
+function makeTableSupabase(
+  tableResults: Record<string, Array<{ data: unknown; error: unknown }>>,
+) {
+  const ops: Array<{ table: string; eq: Array<[string, unknown]>; inValues?: unknown[] }> = [];
+
+  const next = (table: string) => {
+    const queue = tableResults[table];
+    return queue?.shift() ?? { data: [], error: null };
+  };
+
+  const from = vi.fn((table: string) => {
+    const op = { table, eq: [] as Array<[string, unknown]>, inValues: undefined as unknown[] | undefined };
+    ops.push(op);
+    const builder: Record<string, unknown> = {
+      select: vi.fn(() => builder),
+      eq: vi.fn((c: string, v: unknown) => {
+        op.eq.push([c, v]);
+        return builder;
+      }),
+      in: vi.fn((_col: string, vals: unknown[]) => {
+        op.inValues = vals;
+        return builder;
+      }),
+      order: vi.fn(async () => next(table)),
+      single: vi.fn(async () => next(table)),
+      then: vi.fn((resolve: (v: unknown) => void) => resolve(next(table))),
+    };
+    return builder;
+  });
+
+  return { supabase: { from } as never, ops };
+}
+
+describe("resolveAgentListingIds", () => {
+  it("returns deduped union of owned and represented listing ids", async () => {
+    const { supabase } = makeTableSupabase({
+      listings: [{ data: [{ id: "list-A" }, { id: "list-B" }], error: null }],
+      listing_agents: [{ data: [{ listing_id: "list-B" }, { listing_id: "list-C" }], error: null }],
+    });
+
+    const ids = await resolveAgentListingIds(supabase, AGENT_ID);
+
+    // list-B appears in both — dedup means it appears once
+    expect(ids).toHaveLength(3);
+    expect(ids).toContain("list-A");
+    expect(ids).toContain("list-B");
+    expect(ids).toContain("list-C");
+    // Verify no duplicates
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("throws when the owned-listings query errors", async () => {
+    const { supabase } = makeTableSupabase({
+      listings: [{ data: null, error: { message: "listings table error" } }],
+      listing_agents: [{ data: [], error: null }],
+    });
+
+    await expect(resolveAgentListingIds(supabase, AGENT_ID)).rejects.toThrow(
+      "Failed to fetch owned listings: listings table error",
+    );
+  });
+
+  it("throws when the listing_agents query errors", async () => {
+    const { supabase } = makeTableSupabase({
+      listings: [{ data: [], error: null }],
+      listing_agents: [{ data: null, error: { message: "rls denied" } }],
+    });
+
+    await expect(resolveAgentListingIds(supabase, AGENT_ID)).rejects.toThrow(
+      "Failed to fetch represented listings: rls denied",
+    );
+  });
+
+  it("returns empty array when agent owns and represents nothing", async () => {
+    const { supabase } = makeTableSupabase({
+      listings: [{ data: [], error: null }],
+      listing_agents: [{ data: [], error: null }],
+    });
+
+    const ids = await resolveAgentListingIds(supabase, AGENT_ID);
+
+    expect(ids).toEqual([]);
   });
 });

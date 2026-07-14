@@ -276,7 +276,7 @@ describe("getAgentViewingSlots — scope to owned + represented listings", () =>
   });
 
   it("deduplicates when the same listing appears in both owned and represented sets", async () => {
-    const { supabase } = makeSupabase({
+    const { supabase, ops } = makeSupabase({
       listings: [{ data: [{ id: LISTING_ID }], error: null }],
       listing_agents: [{ data: [{ listing_id: LISTING_ID }], error: null }],
       viewing_slots: [
@@ -300,13 +300,38 @@ describe("getAgentViewingSlots — scope to owned + represented listings", () =>
       profiles: [{ data: [], error: null }],
     });
 
-    const { ops } = makeSupabase({});
-
-    // Just verify the listing appears once in the IN filter; the dedup means
-    // we query viewing_slots once with a de-duped id set.
     const slots = await getAgentViewingSlots(supabase, AGENT_ID);
+
     expect(slots).toHaveLength(1);
-    void ops;
+    // The viewing_slots `.in("listing_id", [...])` call must receive exactly
+    // one id even though LISTING_ID appeared in both owned and represented sets.
+    const slotsOp = ops.find((o) => o.table === "viewing_slots");
+    expect(slotsOp?.inValues).toHaveLength(1);
+    expect(slotsOp?.inValues).toContain(LISTING_ID);
+  });
+
+  it("throws when the listing_agents query errors (no silent empty set)", async () => {
+    const { supabase } = makeSupabase({
+      listings: [{ data: [{ id: LISTING_ID }], error: null }],
+      listing_agents: [
+        { data: null, error: { message: "rls error on listing_agents" } },
+      ],
+    });
+
+    await expect(getAgentViewingSlots(supabase, AGENT_ID)).rejects.toThrow(
+      "Failed to fetch represented listings: rls error on listing_agents",
+    );
+  });
+
+  it("throws when the owned-listings query errors (no silent empty set)", async () => {
+    const { supabase } = makeSupabase({
+      listings: [{ data: null, error: { message: "listings read denied" } }],
+      listing_agents: [{ data: [], error: null }],
+    });
+
+    await expect(getAgentViewingSlots(supabase, AGENT_ID)).rejects.toThrow(
+      "Failed to fetch owned listings: listings read denied",
+    );
   });
 
   it("derives a human property_label from the embedded listing address", async () => {

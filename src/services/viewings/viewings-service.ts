@@ -7,6 +7,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ServiceError } from "@/types/service-error";
 import { isUuid } from "@/lib/validation/uuid";
+import { resolveAgentListingIds } from "@/services/listings/listing-agents-service";
 
 export type { ServiceError };
 
@@ -211,30 +212,21 @@ export async function getPendingViewingRequests(
   supabase: SupabaseClient,
   hostId: string,
 ): Promise<PendingViewingRequest[]> {
-  const [ownedResult, repResult] = await Promise.all([
-    supabase.from("listings").select("id").eq("user_id", hostId),
-    supabase
-      .from("listing_agents")
-      .select("listing_id")
-      .eq("agent_id", hostId)
-      .eq("status", "active"),
-  ]);
-
-  const ownedIds = ((ownedResult.data as Array<{ id: string }> | null) ?? []).map(
-    (l) => l.id,
-  );
-  const repIds = ((repResult.data as Array<{ listing_id: string }> | null) ?? []).map(
-    (r) => r.listing_id,
-  );
-  const listingIds = [...new Set([...ownedIds, ...repIds])];
+  const listingIds = await resolveAgentListingIds(supabase, hostId);
   if (listingIds.length === 0) return [];
 
-  const { data: rows } = await supabase
+  const { data: rows, error: viewingsError } = await supabase
     .from("viewings")
     .select("id, listing_id, preferred_time, notes, created_at, user_id")
     .in("listing_id", listingIds)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
+
+  if (viewingsError) {
+    throw new Error(
+      `Failed to fetch pending viewing requests: ${viewingsError.message}`,
+    );
+  }
 
   const requests = (rows as Array<{
     id: string;

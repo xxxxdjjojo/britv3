@@ -82,15 +82,58 @@ export async function getRepresentedListings(
   supabase: SupabaseClient,
   agentId: string,
 ): Promise<string[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("listing_agents")
     .select("listing_id")
     .eq("agent_id", agentId)
     .eq("status", "active");
 
+  if (error) {
+    throw new Error(`Failed to fetch represented listings: ${error.message}`);
+  }
+
   return ((data as Array<{ listing_id: string }> | null) ?? []).map(
     (r) => r.listing_id,
   );
+}
+
+/**
+ * Resolve the listing ids this agent is involved in — own listings unioned
+ * with listings they actively represent. Returns a deduplicated array.
+ * Throws on query error so callers are never silently returned an empty set.
+ */
+export async function resolveAgentListingIds(
+  supabase: SupabaseClient,
+  agentId: string,
+): Promise<string[]> {
+  const [ownedResult, repResult] = await Promise.all([
+    supabase.from("listings").select("id").eq("user_id", agentId),
+    supabase
+      .from("listing_agents")
+      .select("listing_id")
+      .eq("agent_id", agentId)
+      .eq("status", "active"),
+  ]);
+
+  if (ownedResult.error) {
+    throw new Error(
+      `Failed to fetch owned listings: ${ownedResult.error.message}`,
+    );
+  }
+  if (repResult.error) {
+    throw new Error(
+      `Failed to fetch represented listings: ${repResult.error.message}`,
+    );
+  }
+
+  const ownedIds = (
+    (ownedResult.data as Array<{ id: string }> | null) ?? []
+  ).map((l) => l.id);
+  const repIds = (
+    (repResult.data as Array<{ listing_id: string }> | null) ?? []
+  ).map((r) => r.listing_id);
+
+  return [...new Set([...ownedIds, ...repIds])];
 }
 
 /**
@@ -101,20 +144,28 @@ export async function getListingAgents(
   supabase: SupabaseClient,
   listingId: string,
 ): Promise<ListingAgent[]> {
-  const { data: rows } = await supabase
+  const { data: rows, error: agentsError } = await supabase
     .from("listing_agents")
     .select("agent_id, created_at")
     .eq("listing_id", listingId)
     .eq("status", "active");
 
+  if (agentsError) {
+    throw new Error(`Failed to fetch listing agents: ${agentsError.message}`);
+  }
+
   const agents = (rows as Array<{ agent_id: string; created_at: string }> | null) ?? [];
   if (agents.length === 0) return [];
 
   const agentIds = agents.map((a) => a.agent_id);
-  const { data: profiles } = await supabase
+  const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
     .select("id, display_name")
     .in("id", agentIds);
+
+  if (profilesError) {
+    throw new Error(`Failed to fetch agent profiles: ${profilesError.message}`);
+  }
 
   const nameMap = new Map<string, string | null>(
     ((profiles as Array<{ id: string; display_name: string | null }> | null) ?? []).map(

@@ -17,6 +17,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AgentViewingSlot, AgentViewingFeedback } from "@/types/agent";
+import { resolveAgentListingIds } from "@/services/listings/listing-agents-service";
 
 type ListingAddress = {
   title: string | null;
@@ -87,33 +88,6 @@ function toAgentSlot(
     notes: row.notes,
     created_at: row.created_at,
   };
-}
-
-/**
- * Resolve the listing ids this agent is involved in — own listings unioned
- * with listings they actively represent. Returns a deduplicated array.
- */
-async function resolveAgentListingIds(
-  supabase: SupabaseClient,
-  agentId: string,
-): Promise<string[]> {
-  const [ownedResult, repResult] = await Promise.all([
-    supabase.from("listings").select("id").eq("user_id", agentId),
-    supabase
-      .from("listing_agents")
-      .select("listing_id")
-      .eq("agent_id", agentId)
-      .eq("status", "active"),
-  ]);
-
-  const ownedIds = ((ownedResult.data as Array<{ id: string }> | null) ?? []).map(
-    (l) => l.id,
-  );
-  const repIds = ((repResult.data as Array<{ listing_id: string }> | null) ?? []).map(
-    (r) => r.listing_id,
-  );
-
-  return [...new Set([...ownedIds, ...repIds])];
 }
 
 /**
