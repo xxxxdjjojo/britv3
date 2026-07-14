@@ -19,6 +19,8 @@ suppressing an alert — deferral is documented here instead.
 | OR-11 | Audit writes are best-effort (never block the action) | Blocking would let an audit outage take down support | Append-only table; Sentry on write failure | Compliance requirement change |
 | OR-12 | GoCardless webhook/DLQ parity with the Stripe DLQ pattern not audited | Stripe path is the money-critical one; GoCardless is lower volume | `truedeed_audit_log` idempotency; runbook | GoCardless incident |
 | OR-13 | `status.truedeed.co.uk` DNS not pointed at the app | `/status` is app-hosted for now (shares fate — see OR-02) | Error pages link to in-app `/status` (PR 2) | External status host adopted |
+| OR-14 | Bounces update `email_logs.status` but do **not** auto-suppress future sends | Suppression-list plumbing is a separate build; low volume today | `email_failures_24h` alert (PR 5) surfaces bounce spikes; manual review | Repeated sends to hard-bounced addresses / deliverability hit |
+| OR-15 | No `ai_usage` table — `ai.cost_spike` alert cannot fire | AI usage instrumentation not yet built; Anthropic spend low | Anthropic status ping (PR 4) covers outage, not cost; AI playbooks flag the gap | AI feature usage grows / cost becomes material |
 
 ## Notes
 
