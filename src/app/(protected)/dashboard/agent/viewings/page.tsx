@@ -51,7 +51,15 @@ export default async function AgentViewingsPage() {
       });
       return [];
     }),
-    getManageableListings(supabase, user.id).catch(() => []),
+    getManageableListings(supabase, user.id).catch((error) => {
+      captureException(error, {
+        module: "dashboard",
+        feature: "agent",
+        route: "/dashboard/agent/viewings",
+        operation: "getManageableListings",
+      });
+      return [];
+    }),
   ]);
 
   return (
