@@ -1,7 +1,15 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { AssignAgentManager } from "@/components/listings/AssignAgentManager";
+import { createClient } from "@/lib/supabase/client";
 import type { ListingAgent } from "@/services/listings/listing-agents-service";
+
+// The picker sources agents via the list_estate_agents SECURITY DEFINER rpc on
+// the Supabase browser client (a plain user_roles query returns [] under
+// owner-only RLS). Mock the client so we control the rpc result.
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: vi.fn(),
+}));
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -15,39 +23,25 @@ const ASSIGNED_AGENTS: ListingAgent[] = [
   { agent_id: AGENT_ID_A, display_name: "Jane Smith", created_at: "2025-01-01T00:00:00Z" },
 ];
 
-const PICKABLE_AGENTS = [
-  {
-    id: AGENT_ID_A,
-    full_name: "Jane Smith",
-    agency_name: "Smith & Co",
-    avatar_url: null,
-    areas_covered: [],
-    fee_percentage: null,
-    average_rating: null,
-    review_count: 0,
-    sold_count: 0,
-    average_days_to_sell: null,
-    bio: null,
-  },
-  {
-    id: AGENT_ID_B,
-    full_name: "Bob Jones",
-    agency_name: "Jones Estates",
-    avatar_url: null,
-    areas_covered: [],
-    fee_percentage: null,
-    average_rating: null,
-    review_count: 0,
-    sold_count: 0,
-    average_days_to_sell: null,
-    bio: null,
-  },
+// Rows as returned by the list_estate_agents rpc (agent_id / display_name /
+// agency_name).
+const PICKABLE_ROWS = [
+  { agent_id: AGENT_ID_A, display_name: "Jane Smith", agency_name: "Smith & Co" },
+  { agent_id: AGENT_ID_B, display_name: "Bob Jones", agency_name: "Jones Estates" },
 ];
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
+// Mock the Supabase browser-client rpc used to load the picker options.
+function mockRpc(result: { data: unknown; error: unknown }): ReturnType<typeof vi.fn> {
+  const rpc = vi.fn().mockResolvedValue(result);
+  vi.mocked(createClient).mockReturnValue({ rpc } as never);
+  return rpc;
+}
+
+// Mock fetch (used only by the assign/remove POST/DELETE to /api/listings/...).
 function mockFetch(responses: Array<{ ok: boolean; json: unknown }>): void {
   let callIndex = 0;
   vi.stubGlobal(
@@ -77,7 +71,8 @@ afterEach(() => {
 
 describe("AssignAgentManager", () => {
   it("renders the initial assigned agents", async () => {
-    mockFetch([{ ok: true, json: PICKABLE_AGENTS }]);
+    mockRpc({ data: PICKABLE_ROWS, error: null });
+    mockFetch([{ ok: true, json: [] }]);
 
     render(
       <AssignAgentManager listingId={LISTING_ID} initialAgents={ASSIGNED_AGENTS} />,
@@ -90,7 +85,8 @@ describe("AssignAgentManager", () => {
   });
 
   it("shows the empty state message when no agents are assigned", async () => {
-    mockFetch([{ ok: true, json: PICKABLE_AGENTS }]);
+    mockRpc({ data: PICKABLE_ROWS, error: null });
+    mockFetch([{ ok: true, json: [] }]);
 
     render(<AssignAgentManager listingId={LISTING_ID} initialAgents={[]} />);
 
@@ -99,21 +95,36 @@ describe("AssignAgentManager", () => {
     ).toBeInTheDocument();
   });
 
-  it("fetches pickable agents from /api/seller/agents on mount", async () => {
-    mockFetch([{ ok: true, json: PICKABLE_AGENTS }]);
+  it("loads pickable agents via the list_estate_agents rpc on mount", async () => {
+    const rpc = mockRpc({ data: PICKABLE_ROWS, error: null });
+    mockFetch([{ ok: true, json: [] }]);
 
     render(<AssignAgentManager listingId={LISTING_ID} initialAgents={[]} />);
 
-    const fetchMock = vi.mocked(fetch);
     await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledWith("/api/seller/agents");
+      expect(rpc).toHaveBeenCalledWith("list_estate_agents");
     });
   });
 
+  it("surfaces a load error toast when the rpc fails (does not silently show empty)", async () => {
+    const { toast } = await import("sonner");
+    const errorSpy = vi.spyOn(toast, "error").mockImplementation(() => "" as never);
+    mockRpc({ data: null, error: { message: "boom" } });
+    mockFetch([{ ok: true, json: [] }]);
+
+    render(<AssignAgentManager listingId={LISTING_ID} initialAgents={[]} />);
+
+    await waitFor(() => {
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/could not load estate agents/i),
+      );
+    });
+    errorSpy.mockRestore();
+  });
+
   it("issues a DELETE request when Remove is clicked and removes the agent from the list", async () => {
+    mockRpc({ data: PICKABLE_ROWS, error: null });
     mockFetch([
-      // /api/seller/agents — initial load
-      { ok: true, json: PICKABLE_AGENTS },
       // DELETE response
       { ok: true, json: { success: true } },
     ]);
@@ -147,7 +158,8 @@ describe("AssignAgentManager", () => {
   });
 
   it("the Assign button starts disabled with no agent selected", async () => {
-    mockFetch([{ ok: true, json: [PICKABLE_AGENTS[1]] }]);
+    mockRpc({ data: [PICKABLE_ROWS[1]], error: null });
+    mockFetch([{ ok: true, json: [] }]);
 
     render(<AssignAgentManager listingId={LISTING_ID} initialAgents={[]} />);
 
@@ -155,32 +167,24 @@ describe("AssignAgentManager", () => {
     expect(assignButton).toBeDisabled();
   });
 
-  it("issues a POST when handleAssign is called with a selected agent id", async () => {
-    const updatedAgents: ListingAgent[] = [
-      { agent_id: AGENT_ID_B, display_name: "Bob Jones", created_at: "2025-01-02T00:00:00Z" },
-    ];
-
+  it("keeps the assign flow wired to /api/listings/[id]/agents", async () => {
+    const rpc = mockRpc({ data: [PICKABLE_ROWS[1]], error: null });
     mockFetch([
-      // /api/seller/agents
-      { ok: true, json: [PICKABLE_AGENTS[1]] },
       // POST /api/listings/[id]/agents
-      { ok: true, json: updatedAgents },
+      { ok: true, json: [] },
     ]);
 
     render(<AssignAgentManager listingId={LISTING_ID} initialAgents={[]} />);
 
-    // Simulate selecting an agent by calling the internal state-setter via
-    // the onValueChange prop of Select. Because Base UI Select portals escape
-    // the component root in happy-dom, we trigger the selection programmatically
-    // rather than via DOM click. We assert on the network call + resulting list.
+    // Picker loads via the rpc, not via fetch.
     await waitFor(() => {
-      expect(vi.mocked(fetch)).toHaveBeenCalledWith("/api/seller/agents");
+      expect(rpc).toHaveBeenCalledWith("list_estate_agents");
     });
 
     // The POST is not fired automatically — requires user selection + click.
     // Assert the Assign button is present (full Select interaction is not
-    // feasible in happy-dom with Base UI portals; DELETE + fetch calls above
-    // cover the network contract).
+    // feasible in happy-dom with Base UI portals; the DELETE test above covers
+    // the /api/listings mutation contract).
     expect(screen.getByRole("button", { name: /assign/i })).toBeInTheDocument();
   });
 });

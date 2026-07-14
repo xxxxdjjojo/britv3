@@ -83,6 +83,10 @@ CREATE POLICY "viewing_slots_select_public" ON public.viewing_slots
     status = 'available'
     OR auth.uid() = agent_id
     OR auth.uid() = booked_by
+    -- The listing owner (host) always sees every slot on their own listing,
+    -- including ones a represented agent created and a buyer booked — without
+    -- this clause the owner loses visibility of agent-created booked viewings.
+    OR auth.uid() IN (SELECT l.user_id FROM public.listings l WHERE l.id = viewing_slots.listing_id)
     OR EXISTS (
       SELECT 1 FROM public.listing_agents la
       WHERE la.listing_id = viewing_slots.listing_id
@@ -274,3 +278,30 @@ $$;
 REVOKE ALL ON FUNCTION public.is_estate_agent(uuid) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.is_estate_agent(uuid) FROM anon;
 GRANT EXECUTE ON FUNCTION public.is_estate_agent(uuid) TO authenticated;
+
+-- ---------------------------------------------------------------------------
+-- 6. list_estate_agents: assignable estate agents for the owner's assign-agent
+--    picker. user_roles SELECT RLS is owner-only, so a plain query returns
+--    nothing; this SECURITY DEFINER fn returns only public directory fields
+--    (name/agency), which are already public via agent_agency_profiles / the
+--    /agents directory.
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.list_estate_agents()
+  RETURNS TABLE (agent_id uuid, display_name text, agency_name text)
+  LANGUAGE sql
+  SECURITY DEFINER
+  SET search_path = public
+  STABLE
+AS $$
+  SELECT ur.user_id AS agent_id, p.display_name, aap.agency_name
+  FROM public.user_roles ur
+  LEFT JOIN public.profiles p ON p.id = ur.user_id
+  LEFT JOIN public.agent_agency_profiles aap ON aap.agent_id = ur.user_id
+  WHERE ur.role = 'agent'
+  ORDER BY COALESCE(p.display_name, aap.agency_name, '')
+  LIMIT 200;
+$$;
+
+REVOKE ALL ON FUNCTION public.list_estate_agents() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.list_estate_agents() FROM anon;
+GRANT EXECUTE ON FUNCTION public.list_estate_agents() TO authenticated;

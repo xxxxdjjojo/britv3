@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 import {
   Card,
   CardContent,
@@ -16,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { AgentProfile } from "@/types/seller";
 import type { ListingAgent } from "@/services/listings/listing-agents-service";
 
 // ---------------------------------------------------------------------------
@@ -28,6 +28,19 @@ type Props = Readonly<{
   initialAgents: Array<ListingAgent>;
 }>;
 
+// A pickable estate agent, as returned by the list_estate_agents rpc.
+type AgentOption = Readonly<{
+  id: string;
+  label: string;
+}>;
+
+// Shape of a row returned by the list_estate_agents SECURITY DEFINER rpc.
+type ListEstateAgentRow = Readonly<{
+  agent_id: string;
+  display_name: string | null;
+  agency_name: string | null;
+}>;
+
 // ---------------------------------------------------------------------------
 // AssignAgentManager
 // Lets a property owner view, assign, and remove estate-agent representation
@@ -37,31 +50,39 @@ type Props = Readonly<{
 
 export function AssignAgentManager({ listingId, initialAgents }: Props): React.ReactElement {
   const [agents, setAgents] = useState<ListingAgent[]>(initialAgents);
-  const [pickableAgents, setPickableAgents] = useState<AgentProfile[]>([]);
+  const [pickableAgents, setPickableAgents] = useState<AgentOption[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string>("");
   const [loadingAgents, setLoadingAgents] = useState(false);
   const [assigning, setAssigning] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
 
-  // Fetch pickable agents on mount so the select is ready immediately.
+  // Load pickable agents on mount so the select is ready immediately. Sourced
+  // from the list_estate_agents SECURITY DEFINER rpc: user_roles SELECT RLS is
+  // owner-only, so a plain cross-user query returns nothing — the rpc exposes
+  // only public directory fields (name/agency) for every estate agent.
   useEffect(() => {
     let cancelled = false;
     setLoadingAgents(true);
 
-    fetch("/api/seller/agents")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load agents");
-        return res.json() as Promise<AgentProfile[]>;
-      })
-      .then((data) => {
-        if (!cancelled) setPickableAgents(data);
-      })
-      .catch(() => {
-        if (!cancelled) toast.error("Could not load estate agents list");
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingAgents(false);
-      });
+    void (async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.rpc("list_estate_agents");
+      if (cancelled) return;
+
+      if (error) {
+        toast.error("Could not load estate agents list");
+      } else {
+        const rows = (data ?? []) as ListEstateAgentRow[];
+        setPickableAgents(
+          rows.map((row) => ({
+            id: row.agent_id,
+            label: row.display_name ?? row.agency_name ?? "Estate agent",
+          })),
+        );
+      }
+
+      setLoadingAgents(false);
+    })();
 
     return () => {
       cancelled = true;
@@ -185,8 +206,7 @@ export function AssignAgentManager({ listingId, initialAgents }: Props): React.R
               <SelectContent>
                 {availableToAssign.map((agent) => (
                   <SelectItem key={agent.id} value={agent.id}>
-                    {agent.full_name}
-                    {agent.agency_name ? ` · ${agent.agency_name}` : ""}
+                    {agent.label}
                   </SelectItem>
                 ))}
               </SelectContent>

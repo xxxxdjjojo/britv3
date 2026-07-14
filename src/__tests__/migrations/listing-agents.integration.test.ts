@@ -76,13 +76,16 @@ describe.runIf(ENABLED)("listing_agents_viewing_parity migration — post-state"
     expect(cmds).not.toContain("DELETE");
   });
 
-  it("viewing_slots_select_public references listing_agents (represented agent)", async () => {
+  it("viewing_slots_select_public references listing_agents (represented agent) and listings (owner clause)", async () => {
     const { rows } = await getPool().query<{ qual: string }>(
       `select qual from pg_policies
        where tablename='viewing_slots' and policyname='viewing_slots_select_public'`,
     );
     expect(rows).toHaveLength(1);
     expect(rows[0].qual).toContain("listing_agents");
+    // Owner-of-listing clause: the host must see booked agent-created slots on
+    // their own listing.
+    expect(rows[0].qual).toContain("listings");
   });
 
   it("viewing_slots host insert/update/delete policies reference listing_agents", async () => {
@@ -125,6 +128,19 @@ describe.runIf(ENABLED)("listing_agents_viewing_parity migration — post-state"
     expect(rows.some((r) => r.nargs === 1)).toBe(true);
     // authenticated has EXECUTE; anon must not
     const acl = rows.find((r) => r.nargs === 1)?.acl ?? "";
+    expect(acl).toContain("authenticated=X");
+    expect(acl).not.toMatch(/(^|,)anon=X/);
+  });
+
+  it("list_estate_agents() exists and is authenticated-only", async () => {
+    const { rows } = await getPool().query<{ nargs: number; acl: string | null }>(
+      `select pronargs as nargs, array_to_string(proacl::text[], ',') as acl
+       from pg_proc where proname='list_estate_agents'`,
+    );
+    expect(rows.some((r) => r.nargs === 0)).toBe(true);
+    // authenticated has EXECUTE; anon must not (returns directory names, not
+    // for anonymous callers).
+    const acl = rows.find((r) => r.nargs === 0)?.acl ?? "";
     expect(acl).toContain("authenticated=X");
     expect(acl).not.toMatch(/(^|,)anon=X/);
   });
