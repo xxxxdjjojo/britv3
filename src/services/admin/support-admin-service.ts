@@ -41,6 +41,8 @@ export type AdminTicketDetail = AdminTicketSummary &
     name: string | null;
     /** Account owner, if the ticket was raised by a signed-in user (null for guests). */
     userId: string | null;
+    /** Request-correlation id captured at intake (used to build the Sentry search link). */
+    correlationId: string | null;
     messages: readonly AdminTicketMessage[];
   }>;
 
@@ -83,7 +85,7 @@ export async function getTicketDetail(
 ): Promise<AdminTicketDetail | null> {
   const { data: ticket, error } = await supabase
     .from("support_tickets")
-    .select(`${SUMMARY_COLS}, name, user_id`)
+    .select(`${SUMMARY_COLS}, name, user_id, correlation_id`)
     .eq("id", id)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -100,6 +102,7 @@ export async function getTicketDetail(
     ...mapSummary(ticket as Record<string, unknown>),
     name: ((ticket as Record<string, unknown>).name as string) ?? null,
     userId: ((ticket as Record<string, unknown>).user_id as string) ?? null,
+    correlationId: ((ticket as Record<string, unknown>).correlation_id as string) ?? null,
     messages: (messages ?? []).map((m) => {
       const row = m as Record<string, unknown>;
       return {

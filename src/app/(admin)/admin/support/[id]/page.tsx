@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { SupportTicketAdminClient } from "@/components/admin/SupportTicketAdminClient";
 import { Tier1ActionsPanel } from "@/components/admin/Tier1ActionsPanel";
+import { TriagePacketButton } from "@/components/admin/TriagePacketButton";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getTicketDetail } from "@/services/admin/support-admin-service";
 import { actionsForTarget } from "@/services/admin/tier1-actions/registry";
@@ -38,7 +39,18 @@ export default async function AdminSupportTicketPage({
         <div className="lg:col-span-2">
           <SupportTicketAdminClient ticket={ticket} />
         </div>
-        <aside>
+        <aside className="space-y-6">
+          <div className="rounded-xl border border-neutral-200 bg-white p-4">
+            <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-neutral-500">
+              Triage packet
+            </h2>
+            <p className="mb-3 text-xs text-neutral-500">
+              Generate a redacted, LLM-safe summary for AI Recommend mode. Reading the account
+              state is audited; the packet contains no PII or secrets.
+            </p>
+            <TriagePacketButton ticketId={ticket.id} />
+          </div>
+
           <div className="rounded-xl border border-neutral-200 bg-white p-4">
             <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-neutral-500">
               Tier-1 Actions
