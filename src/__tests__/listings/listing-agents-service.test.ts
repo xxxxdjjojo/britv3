@@ -143,14 +143,24 @@ describe("removeAgent", () => {
     expect(ops[0].eq).toContainEqual(["status", "active"]);
   });
 
-  it("throws on DB error", async () => {
+  it("throws a friendly owner-denial error on RLS denial (42501)", async () => {
     const { supabase } = makeSupabase([
-      { data: null, error: { code: "42501", message: "no permission" } },
+      { data: null, error: { code: "42501", message: "permission denied" } },
     ]);
 
     await expect(
       removeAgent(supabase, { listingId: LISTING_ID, agentId: AGENT_ID }),
-    ).rejects.toThrow("no permission");
+    ).rejects.toThrow("Only the listing owner can assign an agent");
+  });
+
+  it("rethrows unexpected errors with the DB message", async () => {
+    const { supabase } = makeSupabase([
+      { data: null, error: { code: "99999", message: "something else" } },
+    ]);
+
+    await expect(
+      removeAgent(supabase, { listingId: LISTING_ID, agentId: AGENT_ID }),
+    ).rejects.toThrow("something else");
   });
 });
 

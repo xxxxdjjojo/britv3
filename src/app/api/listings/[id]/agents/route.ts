@@ -92,14 +92,19 @@ export async function POST(
 
   // Defense-in-depth PII guard: confirm the target user is an estate agent.
   // Assigning a non-agent would grant them viewing access including buyer names.
-  const { data: roleRows } = await supabase
-    .from("user_roles")
-    .select("user_id")
-    .eq("user_id", agentId)
-    .eq("role", "agent")
-    .limit(1);
+  // user_roles SELECT RLS is owner-only, so an owner querying another user's
+  // roles gets [] — validate via the SECURITY DEFINER RPC, which works
+  // cross-user and returns only a boolean.
+  const { data: isAgent, error: roleError } = await supabase.rpc(
+    "is_estate_agent",
+    { p_user_id: agentId },
+  );
 
-  const isAgent = Array.isArray(roleRows) && roleRows.length > 0;
+  if (roleError) {
+    console.error("[listing-agents] role check error:", roleError.message);
+    return NextResponse.json({ error: "Failed to assign agent" }, { status: 500 });
+  }
+
   if (!isAgent) {
     return NextResponse.json(
       { error: "Selected user is not an estate agent" },

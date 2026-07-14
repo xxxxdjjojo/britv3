@@ -251,3 +251,26 @@ $$;
 REVOKE ALL ON FUNCTION public.respond_viewing_request(uuid, text, uuid) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.respond_viewing_request(uuid, text, uuid) FROM anon;
 GRANT EXECUTE ON FUNCTION public.respond_viewing_request(uuid, text, uuid) TO authenticated;
+
+-- ---------------------------------------------------------------------------
+-- 5. is_estate_agent — lets the assign-agent API validate a target user holds
+--    the 'agent' role WITHOUT exposing user_roles (whose SELECT RLS is
+--    owner-only, so an owner querying another user's roles gets []). Returns
+--    only a boolean, so no roles are leaked.
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.is_estate_agent(p_user_id uuid)
+  RETURNS boolean
+  LANGUAGE sql
+  SECURITY DEFINER
+  SET search_path = public
+  STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_roles
+    WHERE user_id = p_user_id AND role = 'agent'
+  );
+$$;
+
+REVOKE ALL ON FUNCTION public.is_estate_agent(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.is_estate_agent(uuid) FROM anon;
+GRANT EXECUTE ON FUNCTION public.is_estate_agent(uuid) TO authenticated;

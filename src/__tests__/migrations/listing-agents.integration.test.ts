@@ -116,4 +116,16 @@ describe.runIf(ENABLED)("listing_agents_viewing_parity migration — post-state"
     expect(rows).toHaveLength(1);
     expect(rows[0].def).toContain("listing_agents");
   });
+
+  it("is_estate_agent(uuid) exists and is authenticated-only", async () => {
+    const { rows } = await getPool().query<{ nargs: number; acl: string | null }>(
+      `select pronargs as nargs, array_to_string(proacl::text[], ',') as acl
+       from pg_proc where proname='is_estate_agent'`,
+    );
+    expect(rows.some((r) => r.nargs === 1)).toBe(true);
+    // authenticated has EXECUTE; anon must not
+    const acl = rows.find((r) => r.nargs === 1)?.acl ?? "";
+    expect(acl).toContain("authenticated=X");
+    expect(acl).not.toMatch(/(^|,)anon=X/);
+  });
 });

@@ -52,24 +52,30 @@ function makeRequest(method: string, body?: unknown, searchParams?: Record<strin
 }
 
 function makeAuthSupabase(
-  extraFromRows?: Array<{ data: unknown; error: unknown }>,
-): { auth: { getUser: ReturnType<typeof vi.fn> }; from: ReturnType<typeof vi.fn> } {
+  rpcResult?: { data: unknown; error: unknown },
+): {
+  auth: { getUser: ReturnType<typeof vi.fn> };
+  from: ReturnType<typeof vi.fn>;
+  rpc: ReturnType<typeof vi.fn>;
+} {
   const getUser = vi.fn().mockResolvedValue({ data: { user: { id: USER_ID } }, error: null });
 
-  let fromCallCount = 0;
+  // getListingAgents / removeAgent are mocked at the service layer, so from()
+  // is only exercised for incidental chains — return an inert builder.
   const from = vi.fn(() => {
-    const callIndex = fromCallCount++;
-    const rows: { data: unknown; error: unknown } =
-      extraFromRows?.[callIndex] ?? { data: [], error: null };
     const builder: Record<string, unknown> = {
       select: vi.fn(() => builder),
       eq: vi.fn(() => builder),
-      limit: vi.fn(async () => rows),
+      limit: vi.fn(async () => ({ data: [], error: null })),
     };
     return builder;
   });
 
-  return { auth: { getUser }, from };
+  // is_estate_agent role-check RPC. Defaults to "is an agent" so happy paths
+  // that don't care about the role check still proceed.
+  const rpc = vi.fn().mockResolvedValue(rpcResult ?? { data: true, error: null });
+
+  return { auth: { getUser }, from, rpc };
 }
 
 beforeEach(() => {
@@ -137,8 +143,8 @@ describe("POST /api/listings/[id]/agents", () => {
   });
 
   it("returns 400 when the target user is not an estate agent", async () => {
-    // The user_roles lookup returns empty — user is not an agent.
-    const supabase = makeAuthSupabase([{ data: [], error: null }]);
+    // The is_estate_agent RPC resolves false — user is not an agent.
+    const supabase = makeAuthSupabase({ data: false, error: null });
     mockCreateClient.mockResolvedValue(supabase);
 
     const res = await POST(makeRequest("POST", { agentId: AGENT_ID }) as never, { params } as never);
@@ -149,8 +155,8 @@ describe("POST /api/listings/[id]/agents", () => {
   });
 
   it("calls assignAgent with correct args and returns refreshed list on success", async () => {
-    // user_roles lookup returns one row → user is an agent
-    const supabase = makeAuthSupabase([{ data: [{ user_id: AGENT_ID }], error: null }]);
+    // is_estate_agent RPC resolves true → user is an agent
+    const supabase = makeAuthSupabase({ data: true, error: null });
     mockCreateClient.mockResolvedValue(supabase);
     mockAssignAgent.mockResolvedValue(undefined);
 
@@ -166,7 +172,7 @@ describe("POST /api/listings/[id]/agents", () => {
   });
 
   it("returns 403 when assignAgent throws the owner-denial message", async () => {
-    const supabase = makeAuthSupabase([{ data: [{ user_id: AGENT_ID }], error: null }]);
+    const supabase = makeAuthSupabase({ data: true, error: null });
     mockCreateClient.mockResolvedValue(supabase);
     mockAssignAgent.mockRejectedValue(new Error("Only the listing owner can assign an agent"));
 

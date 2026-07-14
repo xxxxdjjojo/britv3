@@ -65,9 +65,13 @@ export async function removeAgent(
     .eq("agent_id", input.agentId)
     .eq("status", "active");
 
-  if (error) {
-    throw new Error(error.message);
+  if (!error) return;
+
+  if (error.code === "42501") {
+    throw new Error("Only the listing owner can assign an agent");
   }
+
+  throw new Error(error.message);
 }
 
 // ---------------------------------------------------------------------------
