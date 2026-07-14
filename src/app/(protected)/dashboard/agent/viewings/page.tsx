@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { captureException } from "@/lib/observability/capture-exception";
-import { getAgentViewingSlots } from "@/services/agent/agent-viewing-service";
+import {
+  getAgentViewingSlots,
+  getManageableListings,
+} from "@/services/agent/agent-viewing-service";
 import { getPendingViewingRequests } from "@/services/viewings/viewings-service";
 import { ViewingCalendar } from "@/components/dashboard/agent/viewings/ViewingCalendar";
 import { ViewingRequestsPanel } from "@/components/dashboard/viewings/ViewingRequestsPanel";
@@ -26,7 +29,7 @@ export default async function AgentViewingsPage() {
   const end = new Date(start);
   end.setMonth(end.getMonth() + 1);
 
-  const [slots, requests] = await Promise.all([
+  const [slots, requests, manageableListings] = await Promise.all([
     getAgentViewingSlots(supabase, user.id, undefined, {
       start: start.toISOString(),
       end: end.toISOString(),
@@ -48,6 +51,7 @@ export default async function AgentViewingsPage() {
       });
       return [];
     }),
+    getManageableListings(supabase, user.id).catch(() => []),
   ]);
 
   return (
@@ -59,7 +63,7 @@ export default async function AgentViewingsPage() {
         </p>
       </div>
       <ViewingRequestsPanel requests={requests} />
-      <ViewingCalendar initialSlots={slots} />
+      <ViewingCalendar initialSlots={slots} manageableListings={manageableListings} />
     </div>
   );
 }

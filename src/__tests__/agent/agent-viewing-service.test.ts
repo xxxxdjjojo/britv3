@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   getAgentViewingSlots,
+  getManageableListings,
   createViewingSlot,
   updateViewingSlot,
   deleteViewingSlot,
@@ -370,6 +371,102 @@ describe("getAgentViewingSlots — scope to owned + represented listings", () =>
     const slots = await getAgentViewingSlots(supabase, AGENT_ID);
 
     expect(slots[0].property_label).toBe("8 Primrose Hill Road, NW1 8YD");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getManageableListings
+// ---------------------------------------------------------------------------
+
+describe("getManageableListings", () => {
+  it("returns [] when the agent owns and represents no listings", async () => {
+    // resolveAgentListingIds: listings (owned) → [], listing_agents (rep) → []
+    // Empty → getManageableListings returns [] without a second listings query.
+    const { supabase } = makeSupabase({
+      listings: [{ data: [], error: null }],
+      listing_agents: [{ data: [], error: null }],
+    });
+
+    const result = await getManageableListings(supabase, AGENT_ID);
+
+    expect(result).toEqual([]);
+  });
+
+  it("returns id + label rows for owned listings sorted by label", async () => {
+    // resolveAgentListingIds: listings → [LISTING_ID, REP_LISTING_ID], listing_agents → []
+    // Then getManageableListings: listings → rows with address data
+    const { supabase } = makeSupabase({
+      listings: [
+        { data: [{ id: LISTING_ID }, { id: REP_LISTING_ID }], error: null },
+        {
+          data: [
+            {
+              id: LISTING_ID,
+              properties: {
+                title: "Charming 3-Bed",
+                address_line1: "8 Primrose Hill Road",
+                city: "London",
+                postcode: "NW1 8YD",
+              },
+            },
+            {
+              id: REP_LISTING_ID,
+              properties: {
+                title: "Flat 2B",
+                address_line1: "10 Acacia Avenue",
+                city: "London",
+                postcode: "W5 3AB",
+              },
+            },
+          ],
+          error: null,
+        },
+      ],
+      listing_agents: [{ data: [], error: null }],
+    });
+
+    const result = await getManageableListings(supabase, AGENT_ID);
+
+    // Sorted by label (address_line1 + postcode)
+    expect(result).toHaveLength(2);
+    expect(result[0].label).toBe("10 Acacia Avenue, W5 3AB");
+    expect(result[0].id).toBe(REP_LISTING_ID);
+    expect(result[1].label).toBe("8 Primrose Hill Road, NW1 8YD");
+    expect(result[1].id).toBe(LISTING_ID);
+  });
+
+  it("throws when the listings query errors", async () => {
+    // resolveAgentListingIds: listings → [LISTING_ID], listing_agents → []
+    // Then getManageableListings: listings → error
+    const { supabase } = makeSupabase({
+      listings: [
+        { data: [{ id: LISTING_ID }], error: null },
+        { data: null, error: { message: "permission denied" } },
+      ],
+      listing_agents: [{ data: [], error: null }],
+    });
+
+    await expect(getManageableListings(supabase, AGENT_ID)).rejects.toThrow(
+      "Failed to fetch manageable listings: permission denied",
+    );
+  });
+
+  it("falls back to the listing id as label when no address is available", async () => {
+    // resolveAgentListingIds: listings → [LISTING_ID], listing_agents → []
+    // Then getManageableListings: listings → row with null properties
+    const { supabase } = makeSupabase({
+      listings: [
+        { data: [{ id: LISTING_ID }], error: null },
+        { data: [{ id: LISTING_ID, properties: null }], error: null },
+      ],
+      listing_agents: [{ data: [], error: null }],
+    });
+
+    const result = await getManageableListings(supabase, AGENT_ID);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe(LISTING_ID);
+    expect(result[0].label).toBe(LISTING_ID);
   });
 });
 

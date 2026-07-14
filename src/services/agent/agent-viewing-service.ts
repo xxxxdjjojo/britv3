@@ -114,6 +114,46 @@ async function resolveBookedByNames(
 }
 
 /**
+ * Get manageable listings for an agent — all listings the agent owns or
+ * actively represents, with a human-readable label for each.
+ * Suitable for driving a property picker in the Publish Availability dialog.
+ */
+export async function getManageableListings(
+  supabase: SupabaseClient,
+  agentId: string,
+): Promise<Array<{ id: string; label: string }>> {
+  const listingIds = await resolveAgentListingIds(supabase, agentId);
+
+  if (listingIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("listings")
+    .select(
+      "id, properties(title, address_line1, city, postcode)",
+    )
+    .in("id", listingIds);
+
+  if (error) {
+    throw new Error(`Failed to fetch manageable listings: ${error.message}`);
+  }
+
+  type ListingRow = {
+    id: string;
+    properties: EmbeddedOne<ListingAddress>;
+  };
+
+  const rows = ((data ?? []) as unknown as ListingRow[]);
+
+  return rows
+    .map((row) => ({
+      id: row.id,
+      label:
+        toPropertyLabel(firstOrSelf(row.properties)) ?? row.id,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+}
+
+/**
  * Get all viewing slots for an agent, with optional property and date filters.
  * Scoped to listings the agent owns OR actively represents (parity).
  */

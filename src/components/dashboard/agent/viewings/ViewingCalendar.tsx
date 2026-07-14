@@ -17,10 +17,19 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Plus, Clock, Home } from "lucide-react";
 import type { AgentViewingSlot } from "@/types/agent";
 
 type ViewMode = "month" | "week" | "day";
+
+type ManageableListing = { id: string; label: string };
 
 function isSameDay(a: Date, b: Date): boolean {
   return (
@@ -100,11 +109,18 @@ function SlotBadge({ slot }: Readonly<{ slot: AgentViewingSlot }>) {
       <span className="font-medium">{formatTime(slot.start_time)}</span>
       {" — "}
       <span className="truncate">{slot.is_booked ? "Booked" : "Available"}</span>
+      {slot.is_booked && slot.booked_by_name && (
+        <span className="ml-1 text-muted-foreground">
+          {slot.booked_by_name}
+        </span>
+      )}
     </div>
   );
 }
 
-function PublishAvailabilityDialog() {
+function PublishAvailabilityDialog({
+  manageableListings,
+}: Readonly<{ manageableListings: ManageableListing[] }>) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
@@ -165,15 +181,32 @@ function PublishAvailabilityDialog() {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
-            <Label htmlFor="property_id">Property ID</Label>
-            <Input
-              id="property_id"
-              value={form.property_id}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, property_id: e.target.value }))
-              }
-              placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
-            />
+            <Label htmlFor="property_id">Property</Label>
+            {manageableListings.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                You have no listings to publish availability for. Ask the
+                property owner to add you as their agent, or list a property
+                first.
+              </p>
+            ) : (
+              <Select
+                value={form.property_id}
+                onValueChange={(value) =>
+                  setForm((f) => ({ ...f, property_id: value ?? "" }))
+                }
+              >
+                <SelectTrigger id="property_id" className="w-full">
+                  <SelectValue placeholder="Select a property…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {manageableListings.map((listing) => (
+                    <SelectItem key={listing.id} value={listing.id}>
+                      {listing.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
           <div className="space-y-1">
             <Label htmlFor="slot_date">Date</Label>
@@ -218,7 +251,10 @@ function PublishAvailabilityDialog() {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button
+              type="submit"
+              disabled={submitting || manageableListings.length === 0}
+            >
               {submitting ? "Publishing..." : "Publish Slot"}
             </Button>
           </div>
@@ -266,6 +302,11 @@ function DaySlotList({
                 {slot.is_booked ? "Booked" : "Available"}
               </Badge>
             </div>
+            {slot.is_booked && slot.booked_by_name && (
+              <p className="text-xs text-muted-foreground">
+                Buyer: {slot.booked_by_name}
+              </p>
+            )}
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Home className="size-3" />
               <span className="truncate">
@@ -334,7 +375,11 @@ function WeekView({
 
 export function ViewingCalendar({
   initialSlots,
-}: Readonly<{ initialSlots: AgentViewingSlot[] }>) {
+  manageableListings = [],
+}: Readonly<{
+  initialSlots: AgentViewingSlot[];
+  manageableListings?: ManageableListing[];
+}>) {
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [slots] = useState<AgentViewingSlot[]>(initialSlots);
@@ -409,7 +454,7 @@ export function ViewingCalendar({
               </button>
             ))}
           </div>
-          <PublishAvailabilityDialog />
+          <PublishAvailabilityDialog manageableListings={manageableListings} />
         </div>
       </div>
 

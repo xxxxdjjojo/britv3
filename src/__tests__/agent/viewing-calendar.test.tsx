@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { ViewingCalendar } from "@/components/dashboard/agent/viewings/ViewingCalendar";
 import type { AgentViewingSlot } from "@/types/agent";
 
@@ -68,5 +68,63 @@ describe("ViewingCalendar", () => {
     expect(
       screen.getAllByTestId("viewing-dot-available").length,
     ).toBeGreaterThan(0);
+  });
+
+  it("shows the buyer name for a booked slot when booked_by_name is set", () => {
+    const slots: AgentViewingSlot[] = [
+      {
+        id: "slot-named-buyer",
+        agent_id: "agent-1",
+        property_id: PROPERTY_UUID,
+        property_label: ADDRESS_LABEL,
+        start_time: todayAt(11),
+        end_time: todayAt(11, 30),
+        is_booked: true,
+        booked_by: "buyer-uuid-2222",
+        booked_by_name: "Jane Buyer",
+        notes: null,
+        created_at: todayAt(9),
+      },
+    ];
+
+    render(<ViewingCalendar initialSlots={slots} />);
+
+    // The buyer name must appear (rendered as "Buyer: Jane Buyer")
+    expect(screen.getByText(/Jane Buyer/)).toBeInTheDocument();
+    // The raw UUID must NOT appear
+    expect(screen.queryByText(/buyer-uuid-2222/)).toBeNull();
+    // The "Booked" label must still appear as its own standalone node
+    expect(screen.getAllByText("Booked").length).toBeGreaterThan(0);
+  });
+
+  it("shows an empty-state message in the Publish Availability dialog when no manageable listings", () => {
+    render(<ViewingCalendar initialSlots={[]} manageableListings={[]} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /publish availability/i }));
+
+    expect(
+      screen.getByText(/you have no listings to publish availability for/i),
+    ).toBeInTheDocument();
+    // Raw "Property ID" text input must be gone
+    expect(screen.queryByLabelText(/property id/i)).toBeNull();
+    // Submit button must be disabled
+    expect(screen.getByRole("button", { name: /publish slot/i })).toBeDisabled();
+  });
+
+  it("shows a Select (not a raw Property ID input) in the Publish Availability dialog when listings exist", () => {
+    const manageable = [{ id: PROPERTY_UUID, label: ADDRESS_LABEL }];
+
+    render(
+      <ViewingCalendar initialSlots={[]} manageableListings={manageable} />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /publish availability/i }));
+
+    // The raw "Property ID" text input must be gone
+    expect(screen.queryByLabelText(/property id/i)).toBeNull();
+    // The Select trigger placeholder must be visible
+    expect(screen.getByText(/select a property/i)).toBeInTheDocument();
+    // The submit button must be enabled (manageable listings exist)
+    expect(screen.getByRole("button", { name: /publish slot/i })).not.toBeDisabled();
   });
 });
