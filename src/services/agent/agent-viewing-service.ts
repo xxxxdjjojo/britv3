@@ -1,9 +1,15 @@
 /**
  * Agent Viewing Service — manage viewing slots and feedback.
- * All operations scoped to authenticated agent via agentId.
  *
- * Host availability lives in the canonical `viewing_slots` table (the same table
- * the buyer-facing Book-a-Viewing modal reads), NOT the legacy
+ * Viewing slots are scoped to listings the agent owns OR actively represents
+ * (parity). "Represents" means an active row in `listing_agents` for the
+ * agent's id. This covers both:
+ *   - Slots the agent created on their own listings.
+ *   - Slots the listing owner created on a listing where this agent is
+ *     a represented agent.
+ *
+ * Host availability lives in the canonical `viewing_slots` table (the same
+ * table the buyer-facing Book-a-Viewing modal reads), NOT the legacy
  * `agent_viewing_slots`. This service keeps the historical `AgentViewingSlot`
  * shape so its callers (agent dashboard, ViewingCalendar) need no change:
  *   property_id ⇐ listing_id, is_booked ⇐ (status === 'booked').
@@ -62,7 +68,10 @@ function toPropertyLabel(
   return line || address.title || null;
 }
 
-function toAgentSlot(row: ViewingSlotRow): AgentViewingSlot {
+function toAgentSlot(
+  row: ViewingSlotRow,
+  nameMap: Map<string, string | null> = new Map(),
+): AgentViewingSlot {
   return {
     id: row.id,
     agent_id: row.agent_id,
@@ -74,13 +83,65 @@ function toAgentSlot(row: ViewingSlotRow): AgentViewingSlot {
     end_time: row.end_time,
     is_booked: row.status === "booked",
     booked_by: row.booked_by,
+    booked_by_name: row.booked_by ? (nameMap.get(row.booked_by) ?? null) : null,
     notes: row.notes,
     created_at: row.created_at,
   };
 }
 
 /**
+ * Resolve the listing ids this agent is involved in — own listings unioned
+ * with listings they actively represent. Returns a deduplicated array.
+ */
+async function resolveAgentListingIds(
+  supabase: SupabaseClient,
+  agentId: string,
+): Promise<string[]> {
+  const [ownedResult, repResult] = await Promise.all([
+    supabase.from("listings").select("id").eq("user_id", agentId),
+    supabase
+      .from("listing_agents")
+      .select("listing_id")
+      .eq("agent_id", agentId)
+      .eq("status", "active"),
+  ]);
+
+  const ownedIds = ((ownedResult.data as Array<{ id: string }> | null) ?? []).map(
+    (l) => l.id,
+  );
+  const repIds = ((repResult.data as Array<{ listing_id: string }> | null) ?? []).map(
+    (r) => r.listing_id,
+  );
+
+  return [...new Set([...ownedIds, ...repIds])];
+}
+
+/**
+ * Resolve buyer display names for a set of user ids from `profiles`.
+ * Returns a Map keyed by user id → display name (null when no profile found).
+ */
+async function resolveBookedByNames(
+  supabase: SupabaseClient,
+  userIds: string[],
+): Promise<Map<string, string | null>> {
+  const unique = [...new Set(userIds)].filter(Boolean);
+  if (unique.length === 0) return new Map();
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, display_name")
+    .in("id", unique);
+
+  return new Map(
+    ((data as Array<{ id: string; display_name: string | null }> | null) ?? []).map(
+      (p) => [p.id, p.display_name ?? null],
+    ),
+  );
+}
+
+/**
  * Get all viewing slots for an agent, with optional property and date filters.
+ * Scoped to listings the agent owns OR actively represents (parity).
  */
 export async function getAgentViewingSlots(
   supabase: SupabaseClient,
@@ -88,14 +149,22 @@ export async function getAgentViewingSlots(
   propertyId?: string,
   dateRange?: { start: string; end: string },
 ): Promise<AgentViewingSlot[]> {
+  const listingIds = await resolveAgentListingIds(supabase, agentId);
+
+  if (listingIds.length === 0) return [];
+
+  // When a specific property is requested, guard: if it's not in the agent's
+  // scope, return empty immediately.
+  if (propertyId !== undefined && !listingIds.includes(propertyId)) {
+    return [];
+  }
+
+  const effectiveListingIds = propertyId ? [propertyId] : listingIds;
+
   let query = supabase
     .from("viewing_slots")
     .select(SLOT_COLUMNS)
-    .eq("agent_id", agentId);
-
-  if (propertyId) {
-    query = query.eq("listing_id", propertyId);
-  }
+    .in("listing_id", effectiveListingIds);
 
   if (dateRange) {
     query = query
@@ -109,7 +178,15 @@ export async function getAgentViewingSlots(
     throw new Error(`Failed to fetch viewing slots: ${error.message}`);
   }
 
-  return ((data ?? []) as unknown as ViewingSlotRow[]).map(toAgentSlot);
+  const rows = ((data ?? []) as unknown as ViewingSlotRow[]);
+
+  // Resolve buyer names for all booked slots in a single query.
+  const bookedByIds = rows
+    .map((r) => r.booked_by)
+    .filter((id): id is string => id !== null);
+  const nameMap = await resolveBookedByNames(supabase, bookedByIds);
+
+  return rows.map((row) => toAgentSlot(row, nameMap));
 }
 
 /**

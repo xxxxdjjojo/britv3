@@ -267,6 +267,19 @@ export async function getUserEntityIds(
     entityIds.push(...listings.map((l) => l.id));
   }
 
+  // Listings where the user is an active represented agent — so listing-keyed
+  // viewing events (viewing_scheduled, viewing_requested) reach represented agents
+  // even though they are not the listing owner.
+  const { data: repListings } = await supabase
+    .from("listing_agents")
+    .select("listing_id")
+    .eq("agent_id", userId)
+    .eq("status", "active");
+
+  if (repListings) {
+    entityIds.push(...repListings.map((r) => r.listing_id));
+  }
+
   // Service requests (RFQs) owned by the user — so quote_received events surface
   const { data: rfqs } = await supabase
     .from("service_requests")

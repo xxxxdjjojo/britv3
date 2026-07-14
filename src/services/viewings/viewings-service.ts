@@ -204,18 +204,29 @@ export type PendingViewingRequest = Readonly<{
 
 /**
  * Get pending (slot-less) viewing requests on the host's listings, newest first.
- * RLS lets the listing owner read viewings on their own listings.
+ * Scoped to listings owned by the host OR listings where the host is an active
+ * represented agent (parity with agent viewing slot scoping).
  */
 export async function getPendingViewingRequests(
   supabase: SupabaseClient,
   hostId: string,
 ): Promise<PendingViewingRequest[]> {
-  const { data: owned } = await supabase
-    .from("listings")
-    .select("id")
-    .eq("user_id", hostId);
+  const [ownedResult, repResult] = await Promise.all([
+    supabase.from("listings").select("id").eq("user_id", hostId),
+    supabase
+      .from("listing_agents")
+      .select("listing_id")
+      .eq("agent_id", hostId)
+      .eq("status", "active"),
+  ]);
 
-  const listingIds = ((owned as Array<{ id: string }> | null) ?? []).map((l) => l.id);
+  const ownedIds = ((ownedResult.data as Array<{ id: string }> | null) ?? []).map(
+    (l) => l.id,
+  );
+  const repIds = ((repResult.data as Array<{ listing_id: string }> | null) ?? []).map(
+    (r) => r.listing_id,
+  );
+  const listingIds = [...new Set([...ownedIds, ...repIds])];
   if (listingIds.length === 0) return [];
 
   const { data: rows } = await supabase

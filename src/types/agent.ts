@@ -354,6 +354,8 @@ export type AgentViewingSlot = Readonly<{
   end_time: string;
   is_booked: boolean;
   booked_by: string | null;
+  /** Display name of the buyer who booked the slot, null when unbooked or profile unavailable. */
+  booked_by_name: string | null;
   notes: string | null;
   created_at: string;
 }>;
