@@ -41,6 +41,23 @@ const REQUIRED_FEATURE_PLAYBOOKS = [
   "payments/gocardless-mandate-failures.md",
   "payments/dunning-stuck.md",
   "payments/promo-code-issues.md",
+  // PR 11 — email
+  "email/resend-outage.md",
+  "email/bounce-and-suppression.md",
+  "email/lifecycle-drip-stuck.md",
+  "email/resend-webhook-verify-failures.md",
+  // PR 11 — files / storage
+  "files/attachment-upload-failures.md",
+  "files/storage-rls-denials.md",
+  // PR 11 — AI
+  "ai/anthropic-outage-or-429.md",
+  "ai/ai-cost-anomaly.md",
+  // PR 11 — DB / infra
+  "infra/supabase-degraded.md",
+  "infra/migration-drift.md",
+  "infra/upstash-redis-down.md",
+  "infra/inngest-backlog.md",
+  "infra/vercel-deploy-rollback.md",
 ] as const;
 
 const REQUIRED_RUNBOOKS = [
@@ -49,6 +66,13 @@ const REQUIRED_RUNBOOKS = [
   "stripe-webhook-backlog-replay.md",
   "auth-outage.md",
   "deploy-rollback.md",
+  // PR 11
+  "email-outage.md",
+  "redis-down.md",
+  "inngest-backlog.md",
+  "secret-rotation.md",
+  "data-breach.md",
+  "dr-restore.md",
 ] as const;
 
 type FrontMatter = Readonly<{
