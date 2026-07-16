@@ -56,7 +56,7 @@ describe("ReferralDashboard", () => {
     expect(screen.getByText("2 months credited")).toBeInTheDocument();
     expect(screen.getByText("4 of 12 credits used in the last 12 months")).toBeInTheDocument();
     expect(screen.getByText("Ambassador unlocked")).toBeInTheDocument();
-    expect(screen.getByText(/you earn one month/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/you earn one month/i)).not.toHaveLength(0);
     expect(screen.queryByText(/both.*month/i)).not.toBeInTheDocument();
 
     const whatsapp = screen.getByRole("link", { name: /share on whatsapp/i });

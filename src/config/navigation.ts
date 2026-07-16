@@ -609,6 +609,7 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
     { href: "/dashboard/provider/quotes/builder", label: "Quotes", icon: MessagesSquare },
     { href: "/dashboard/provider/reviews", label: "Reviews", icon: Star },
     { href: "/dashboard/provider/verification", label: "Verification", icon: BadgeCheck },
+    { href: "/dashboard/provider/referrals", label: "Referrals", icon: UserPlus },
     { href: "/dashboard/provider/payments", label: "Earnings", icon: PoundSterling },
     { href: "/dashboard/provider/boost", label: "Boost My Profile", icon: Sparkles },
   ],

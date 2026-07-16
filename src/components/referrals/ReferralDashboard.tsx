@@ -39,10 +39,38 @@ export function ReferralDashboard({ stats, showCelebration, celebrationTier }: P
         onComplete={() => setCelebrating(false)}
       />
 
-      <TierProgressBar
+      <section aria-labelledby="bring-your-crew-heading" className="space-y-4">
+        <div>
+          <h2 id="bring-your-crew-heading" className="text-2xl font-bold text-neutral-900">
+            Bring Your Crew
+          </h2>
+          <p className="mt-1 text-sm text-neutral-600">
+            Invite trusted providers. You earn one month of subscription credit after each first paid invoice.
+          </p>
+        </div>
+
+        <TierProgressBar
         currentTier={currentStats.tier}
         successfulReferrals={currentStats.successful_referrals}
-      />
+        />
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <p className="text-2xl font-bold text-neutral-900">
+              {currentStats.credited_months} months credited
+            </p>
+            <p className="mt-1 text-sm text-neutral-500">Applied to your provider subscription</p>
+          </div>
+          <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <p className="text-2xl font-bold text-neutral-900">
+              {currentStats.credit_cap_used} / {currentStats.credit_cap_limit}
+            </p>
+            <p className="mt-1 text-sm text-neutral-500">
+              {currentStats.credit_cap_used} of {currentStats.credit_cap_limit} credits used in the last 12 months
+            </p>
+          </div>
+        </div>
+      </section>
 
       <ReferralSharePanel
         referralUrl={currentStats.referral_url}

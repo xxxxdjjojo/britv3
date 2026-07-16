@@ -1,6 +1,6 @@
 "use client";
 
-import type { Referral, ReferralStatus } from "@/types/referrals";
+import type { ProviderReferralState, Referral } from "@/types/referrals";
 
 type Props = Readonly<{
   referrals: readonly Referral[];
@@ -9,9 +9,12 @@ type Props = Readonly<{
   onShowAll?: () => void;
 }>;
 
-const STATUS_CONFIG: Record<ReferralStatus, { label: string; className: string }> = {
-  pending: { label: "Pending", className: "bg-neutral-100 text-neutral-600" },
-  rewarded: { label: "Rewarded", className: "bg-green-100 text-green-700" },
+const STATUS_CONFIG: Record<ProviderReferralState, { label: string; className: string }> = {
+  invited: { label: "Invited", className: "bg-neutral-100 text-neutral-700" },
+  signed_up: { label: "Signed up", className: "bg-blue-100 text-blue-800" },
+  gate_complete: { label: "Gate complete", className: "bg-violet-100 text-violet-800" },
+  converted: { label: "Converted", className: "bg-amber-100 text-amber-800" },
+  credited: { label: "Credited", className: "bg-green-100 text-green-800" },
 };
 
 function formatDate(iso: string): string {
@@ -33,7 +36,7 @@ export function ReferralActivityFeed({ referrals, totalRewardsPence, hasMore, on
         </div>
         <div className="rounded-xl border border-neutral-200 bg-white p-5 text-center shadow-sm">
           <p className="text-3xl font-bold text-neutral-900">
-            {referrals.filter((r) => r.status === "rewarded").length}
+            {referrals.filter((r) => r.provider_state === "converted" || r.provider_state === "credited").length}
           </p>
           <p className="mt-1 text-sm text-neutral-500">Successful</p>
         </div>
@@ -74,7 +77,8 @@ export function ReferralActivityFeed({ referrals, totalRewardsPence, hasMore, on
               </thead>
               <tbody className="divide-y divide-neutral-100">
                 {referrals.map((referral) => {
-                  const config = STATUS_CONFIG[referral.status];
+                  const state = referral.provider_state ?? (referral.status === "rewarded" ? "credited" : "invited");
+                  const config = STATUS_CONFIG[state];
                   return (
                     <tr key={referral.id} className="transition-colors hover:bg-neutral-50">
                       <td className="px-6 py-4 text-neutral-700">

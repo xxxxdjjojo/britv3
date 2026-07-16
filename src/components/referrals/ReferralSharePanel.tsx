@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import posthog from "posthog-js";
-import { QRCodeSVG } from "qrcode.react";
 
 type Props = Readonly<{
   referralUrl: string;
@@ -12,7 +11,6 @@ type Props = Readonly<{
 
 export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
   const [copied, setCopied] = useState(false);
-  const [showQr, setShowQr] = useState(false);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -26,22 +24,20 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
     }
   }, [referralUrl, referralCode]);
 
-  const whatsappText = encodeURIComponent(
-    `Hey, I've been using TrueDeed and it's brilliant for getting quality leads. Join using my link and we both get a month free: ${referralUrl}`,
-  );
+  const shareText = `Join my trusted provider crew on TrueDeed: ${referralUrl}`;
+  const whatsappText = encodeURIComponent(shareText);
+  const smsText = encodeURIComponent(shareText);
 
-  const emailSubject = encodeURIComponent("Join TrueDeed — we both get a free month");
+  const emailSubject = encodeURIComponent("Join my TrueDeed provider crew");
   const emailBody = encodeURIComponent(
-    `Hi,\n\nI've been using TrueDeed to grow my trade business and it's been great — verified leads, no bidding wars, fixed monthly pricing.\n\nIf you sign up using my referral link, we both get 1 month free:\n${referralUrl}\n\nHope to see you there!`,
+    `Hi,\n\nI’m building my trusted provider crew on TrueDeed. Join with my referral link:\n${referralUrl}\n\nOnce your first provider subscription invoice is paid, I earn one month of credit.`,
   );
-
-  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`;
 
   return (
     <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-      <h2 className="mb-2 text-lg font-bold text-neutral-900">Share Your Link</h2>
+      <h2 className="mb-2 text-lg font-bold text-neutral-900">Invite a provider</h2>
       <p className="mb-4 text-sm text-neutral-500">
-        Every tradesperson you refer earns you BOTH 1 month free.
+        You earn one month of subscription credit after their first paid provider invoice.
       </p>
 
       {/* URL + copy */}
@@ -50,13 +46,15 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
           readOnly
           type="text"
           value={referralUrl}
-          className="flex-1 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700 focus:outline-none"
+          aria-label="Referral link"
+          className="min-h-11 flex-1 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700 focus:outline-none"
           onFocus={(e) => e.target.select()}
         />
         <button
           type="button"
           onClick={handleCopy}
-          className="shrink-0 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2D7A5F]"
+          aria-label="Copy referral link"
+          className="min-h-11 shrink-0 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2D7A5F]"
         >
           {copied ? "Copied!" : "Copy Link"}
         </button>
@@ -68,50 +66,29 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
           href={`https://wa.me/?text=${whatsappText}`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Share on WhatsApp"
           onClick={() => posthog.capture("referral.link_shared", { code: referralCode, channel: "whatsapp" })}
-          className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-100"
+          className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#1B4D3E] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#153d31]"
         >
           WhatsApp
         </a>
         <a
+          href={`sms:?&body=${smsText}`}
+          aria-label="Share by SMS"
+          onClick={() => posthog.capture("referral.link_shared", { code: referralCode, channel: "sms" })}
+          className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100"
+        >
+          SMS
+        </a>
+        <a
           href={`mailto:?subject=${emailSubject}&body=${emailBody}`}
+          aria-label="Share by email"
           onClick={() => posthog.capture("referral.link_shared", { code: referralCode, channel: "email" })}
-          className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100"
+          className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100"
         >
           Email
         </a>
-        <a
-          href={linkedInUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => posthog.capture("referral.link_shared", { code: referralCode, channel: "linkedin" })}
-          className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100"
-        >
-          LinkedIn
-        </a>
-        <button
-          type="button"
-          onClick={() => setShowQr(!showQr)}
-          className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100"
-        >
-          {showQr ? "Hide QR" : "QR Code"}
-        </button>
       </div>
-
-      {/* QR Code (toggle) */}
-      {showQr && (
-        <div className="mt-4 flex flex-col items-center gap-3 rounded-lg border border-neutral-100 bg-neutral-50 p-6">
-          <QRCodeSVG
-            value={referralUrl}
-            size={200}
-            level="M"
-            className="rounded-lg"
-          />
-          <p className="text-xs text-neutral-500">
-            Scan or screenshot to share on-site
-          </p>
-        </div>
-      )}
     </div>
   );
 }

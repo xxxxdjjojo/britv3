@@ -23,6 +23,8 @@ function createMockSupabase(overrides: Record<string, unknown> = {}) {
     update: vi.fn().mockReturnThis(),
     upsert: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
+    neq: vi.fn().mockReturnThis(),
+    gte: vi.fn().mockReturnThis(),
     in: vi.fn().mockReturnThis(),
     order: vi.fn().mockReturnThis(),
     limit: vi.fn().mockReturnThis(),
@@ -138,9 +140,9 @@ describe("getReferralDashboard", () => {
     // .order().limit() chain — limit() is the final awaitable
     chain.limit.mockResolvedValueOnce({
       data: [
-        { id: "1", status: "rewarded", referral_code: "ABC12345", referred_name: "Dave", created_at: "2026-01-01", converted_at: "2026-01-15", referrer_id: "user-1", referred_id: "user-2", track: "trade_to_trade" },
-        { id: "2", status: "rewarded", referral_code: "ABC12345", referred_name: "Sarah", created_at: "2026-01-10", converted_at: "2026-01-25", referrer_id: "user-1", referred_id: "user-3", track: "trade_to_trade" },
-        { id: "3", status: "rewarded", referral_code: "ABC12345", referred_name: "Mike", created_at: "2026-02-01", converted_at: "2026-02-15", referrer_id: "user-1", referred_id: "user-4", track: "trade_to_trade" },
+        { id: "1", status: "rewarded", provider_state: "credited", referral_code: "ABC12345", referred_name: "Dave", created_at: "2026-01-01", converted_at: "2026-01-15", referrer_id: "user-1", referred_id: "user-2", track: "trade_to_trade" },
+        { id: "2", status: "rewarded", provider_state: "credited", referral_code: "ABC12345", referred_name: "Sarah", created_at: "2026-01-10", converted_at: "2026-01-25", referrer_id: "user-1", referred_id: "user-3", track: "trade_to_trade" },
+        { id: "3", status: "rewarded", provider_state: "credited", referral_code: "ABC12345", referred_name: "Mike", created_at: "2026-02-01", converted_at: "2026-02-15", referrer_id: "user-1", referred_id: "user-4", track: "trade_to_trade" },
       ],
       error: null,
     });
