@@ -13,6 +13,7 @@ function migration(suffix: string): string {
 const REFERRER = "30000000-0000-4000-8000-000000000001";
 const REFERRED = "30000000-0000-4000-8000-000000000002";
 const OTHER = "30000000-0000-4000-8000-000000000003";
+const SQUATTED = "30000000-0000-4000-8000-000000000005";
 
 const PREREQ = `
 create type public.user_role as enum ('homebuyer','renter','seller','landlord','agent','service_provider');
@@ -33,6 +34,8 @@ create table public.referrals(id uuid primary key default gen_random_uuid(), ref
   status public.referral_status default 'pending', referred_name text, created_at timestamptz default now(), converted_at timestamptz,
   unique(referred_id));
 alter table public.referrals enable row level security;
+create table public.referral_codes_v2(id uuid primary key default gen_random_uuid(), user_id uuid not null unique references auth.users(id),
+  code text not null unique, created_at timestamptz not null default now());
 create table public.subscriptions(id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id),
   stripe_subscription_id text, stripe_customer_id text, status text default 'active', plan_name text,
   price_amount integer, currency text default 'gbp', role text, created_at timestamptz default now(), updated_at timestamptz default now());
@@ -58,6 +61,8 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
       db.sql(`insert into auth.users(id,email) values ('${id}','${email}');
         insert into public.profiles(id,active_role) values ('${id}','service_provider');`);
     }
+    db.sql(`insert into auth.users(id,email) values ('${SQUATTED}','squatted@example.test');
+      insert into public.profiles(id,active_role) values ('${SQUATTED}','service_provider');`);
     db.sqlFile(migration("vouch_referral_canonical_schema"));
     db.sqlFile(migration("referral_credit_transactions"));
     db.sqlFile(migration("vouch_referral_contract_corrections"));
@@ -136,6 +141,33 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
   it("keeps referral mutation RPCs service-only", () => {
     expect(db.sql(`select has_function_privilege('authenticated','public.advance_provider_referral(uuid,uuid,text)','EXECUTE');`)).toBe("f");
     expect(db.sql(`select has_function_privilege('service_role','public.issue_referral_credit(uuid,uuid,integer)','EXECUTE');`)).toBe("t");
+  });
+
+  it("preserves an existing attribution when a later cookie claim is attempted", () => {
+    const existing = createReferral("signed_up", SQUATTED, OTHER);
+    db.sql(`insert into public.referral_codes_v2(user_id,code) values ('${REFERRER}','TRUSTED123');`);
+
+    expect(db.sql(`select outcome from public.attribute_referral_signup('${SQUATTED}','TRUSTED123',null);`))
+      .toBe("already_attributed");
+    expect(db.sql(`select referrer_id from public.referrals where id='${existing}';`)).toBe(OTHER);
+    expect(db.sql(`select has_table_privilege('authenticated','public.referrals','INSERT');`)).toBe("f");
+    expect(db.sql(`select has_table_privilege('authenticated','public.referrals','UPDATE');`)).toBe("f");
+    for (const column of ["referrer_id", "referred_id", "referral_code", "track", "status", "referred_name", "created_at", "converted_at"]) {
+      expect(db.sql(`select has_column_privilege('authenticated','public.referrals','${column}','INSERT');`), column)
+        .toBe("f");
+    }
+  });
+
+  it("lets only the owning provider revoke a pending vouch request", () => {
+    const requestId = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,invited_email)
+      values ('${REFERRER}','client','client@example.test') returning id;`);
+    expect(() => db.sql(`select public.revoke_vouch_request('${requestId}','${OTHER}');`))
+      .toThrow(/vouch_request_not_owned/);
+    expect(db.sql(`select public.revoke_vouch_request('${requestId}','${REFERRER}');`)).toBe("revoked");
+    expect(db.sql(`select status || ':' || (revoked_at is not null) from public.vouch_requests where id='${requestId}';`))
+      .toBe("revoked:true");
+    expect(() => db.sql(`select public.revoke_vouch_request('${requestId}','${REFERRER}');`))
+      .toThrow(/vouch_request_not_pending/);
   });
 
   it("persists retry attempts and a Stripe balance transaction atomically", () => {
