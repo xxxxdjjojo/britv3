@@ -245,6 +245,9 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/market-trends",
   "/area-prices",
   "/reviews",
+  "/join",
+  "/vouch",
+  "/vouched",
   // Pre-launch coming-soon splash + referral queue (public, unauthenticated)
   "/coming-soon",
   "/queue",
