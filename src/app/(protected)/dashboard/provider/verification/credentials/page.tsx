@@ -27,8 +27,8 @@ const DOCUMENT_CONFIGS: DocumentConfig[] = [
 
 type ProviderDocRow = {
   document_type: string;
-  status: "pending" | "approved" | "rejected" | "more_info_required";
-  storage_path: string | null;
+  verification_status: "pending" | "approved" | "rejected" | "more_info_required";
+  file_name: string;
 };
 
 export default async function CredentialsPage() {
@@ -42,19 +42,11 @@ export default async function CredentialsPage() {
     redirect("/login");
   }
 
-  const { data: providerProfile } = await supabase
-    .from("service_provider_details")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  const providerId = providerProfile?.id ?? user.id;
-
   // Fetch existing documents for this provider
   const { data: docs } = await supabase
     .from("provider_documents")
-    .select("document_type, status, storage_path")
-    .eq("provider_id", providerId);
+    .select("document_type, verification_status, file_name")
+    .eq("user_id", user.id);
 
   const docMap = new Map<string, ProviderDocRow>(
     (docs ?? []).map((d) => [d.document_type as string, d as ProviderDocRow]),
@@ -89,12 +81,8 @@ export default async function CredentialsPage() {
 
           const existingDoc = existing
             ? {
-                // Derive a display filename from storage_path or fall back to a
-                // generic label when the path isn't stored in the new schema
-                file_name: existing.storage_path
-                  ? existing.storage_path.split("/").pop() ?? label
-                  : `${label} (uploaded)`,
-                status: existing.status,
+                file_name: existing.file_name,
+                status: existing.verification_status,
               }
             : undefined;
 

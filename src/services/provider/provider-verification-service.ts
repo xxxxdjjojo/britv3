@@ -126,8 +126,8 @@ export async function getVerificationSteps(
     const [docsResult, refsResult] = await Promise.allSettled([
       supabase
         .from("provider_documents")
-        .select("document_type, status, updated_at, rejection_reason")
-        .eq("provider_id", providerId),
+        .select("document_type, verification_status, updated_at, reviewer_notes")
+        .eq("user_id", providerId),
 
       supabase
         .from("provider_references")
@@ -135,7 +135,12 @@ export async function getVerificationSteps(
         .eq("provider_id", providerId),
     ]);
 
-    const docs: Array<{ document_type: string; status: string; updated_at: string | null; rejection_reason?: string | null }> =
+    const docs: Array<{
+      document_type: string;
+      verification_status: string;
+      updated_at: string | null;
+      reviewer_notes: string | null;
+    }> =
       docsResult.status === "fulfilled" && !docsResult.value.error
         ? (docsResult.value.data ?? [])
         : [];
@@ -156,15 +161,23 @@ export async function getVerificationSteps(
         );
 
         if (matchingDocs.length > 0) {
-          const hasApproved = matchingDocs.some((d) => d.status === "approved");
-          const hasRejected = matchingDocs.some((d) => d.status === "rejected");
-          const hasPending = matchingDocs.some((d) => d.status === "pending");
+          const hasApproved = matchingDocs.some(
+            (d) => d.verification_status === "approved",
+          );
+          const hasRejected = matchingDocs.some(
+            (d) => d.verification_status === "rejected",
+          );
+          const hasPending = matchingDocs.some(
+            (d) => d.verification_status === "pending",
+          );
 
           if (hasApproved) status = "approved";
           else if (hasRejected) {
             status = "rejected";
-            const rejectedDoc = matchingDocs.find((d) => d.status === "rejected");
-            rejectionReason = rejectedDoc?.rejection_reason ?? null;
+            const rejectedDoc = matchingDocs.find(
+              (d) => d.verification_status === "rejected",
+            );
+            rejectionReason = rejectedDoc?.reviewer_notes ?? null;
           }
           else if (hasPending) status = "submitted";
           else status = "in_progress";
@@ -350,32 +363,36 @@ export async function uploadVerificationDocument(
   }
 
   const ext = file.name.split(".").pop() ?? "bin";
-  const storagePath = `${providerId}/${documentType}/${Date.now()}.${ext}`;
+  const storagePath = `provider-documents/${providerId}/${documentType}/${Date.now()}.${ext}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("provider-documents")
+  const storageBucket = supabase.storage.from("provider-docs");
+  const { error: uploadError } = await storageBucket
     .upload(storagePath, file, { upsert: true });
 
   if (uploadError) throw new Error(`Storage upload failed: ${uploadError.message}`);
 
-  const { data: upsertData, error: upsertError } = await supabase
+  const { data: urlData } = storageBucket.getPublicUrl(storagePath);
+
+  const { data: document, error: insertError } = await supabase
     .from("provider_documents")
-    .upsert(
-      {
-        provider_id: providerId,
-        document_type: documentType,
-        storage_path: storagePath,
-        status: "pending",
-      },
-      { onConflict: "provider_id,document_type" },
-    )
+    .insert({
+      user_id: providerId,
+      document_type: documentType,
+      file_name: file.name,
+      file_url: urlData.publicUrl,
+      file_size: file.size,
+      mime_type: file.type,
+      verification_status: "pending",
+    })
     .select("id")
     .single();
 
-  if (upsertError) throw new Error(`Document record upsert failed: ${upsertError.message}`);
+  if (insertError) {
+    throw new Error(`Document record insert failed: ${insertError.message}`);
+  }
 
   return {
     storage_path: storagePath,
-    document_id: (upsertData as { id: string }).id,
+    document_id: (document as { id: string }).id,
   };
 }
