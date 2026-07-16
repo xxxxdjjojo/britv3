@@ -11,7 +11,8 @@ vi.mock("@/lib/analytics/posthog-server", () => ({
 }));
 
 function makeSupabaseClient() {
-  const rpc = vi.fn().mockImplementation((name: string) => {
+  let snapshot: Record<string, unknown> | null = null;
+  const rpc = vi.fn().mockImplementation((name: string, args: Record<string, unknown>) => {
     if (name === "claim_referral_credit") {
       return Promise.resolve({
         data: {
@@ -21,25 +22,46 @@ function makeSupabaseClient() {
           credit_months: 1,
           status: "applying",
           idempotency_key: "referral-credit:referral_123:referrer_123",
+          ...snapshot,
         },
         error: null,
       });
     }
+    if (name === "snapshot_referral_credit_billing") {
+      snapshot ??= {
+        stripe_customer_id: args.p_stripe_customer_id,
+        amount_pence: args.p_amount_pence,
+        currency: args.p_currency,
+      };
+      return Promise.resolve({ data: snapshot, error: null });
+    }
     return Promise.resolve({ data: null, error: null });
   });
-  const subscription = {
-    stripe_customer_id: "cus_referrer_123",
-    price_amount: 2_500,
-    currency: "gbp",
-  };
   const builder: Record<string, unknown> = {};
   for (const method of ["select", "eq"]) {
     builder[method] = vi.fn(() => builder);
   }
-  builder.maybeSingle = vi.fn().mockResolvedValue({
-    data: subscription,
-    error: null,
-  });
+  builder.maybeSingle = vi.fn()
+    .mockResolvedValueOnce({
+      data: {
+        stripe_customer_id: "cus_referrer_original",
+        price_amount: 120_000,
+        currency: "gbp",
+        billing_interval: "year",
+        billing_interval_count: 1,
+      },
+      error: null,
+    })
+    .mockResolvedValueOnce({
+      data: {
+        stripe_customer_id: "cus_referrer_mutated",
+        price_amount: 3_000,
+        currency: "usd",
+        billing_interval: "month",
+        billing_interval_count: 1,
+      },
+      error: null,
+    });
 
   return {
     client: {
@@ -74,12 +96,23 @@ describe("applyReferralCredit", () => {
       p_error_details: { message: "Stripe temporarily unavailable" },
     });
     expect(createBalanceTransaction).toHaveBeenCalledTimes(2);
+    expect(createBalanceTransaction.mock.calls[0].slice(0, 2)).toEqual([
+      "cus_referrer_original",
+      expect.objectContaining({ amount: -10_000, currency: "gbp" }),
+    ]);
+    expect(createBalanceTransaction.mock.calls[1].slice(0, 2)).toEqual([
+      "cus_referrer_original",
+      expect.objectContaining({ amount: -10_000, currency: "gbp" }),
+    ]);
     expect(createBalanceTransaction.mock.calls[0][2]).toEqual({
       idempotencyKey: "referral-credit:referral_123:referrer_123",
     });
     expect(createBalanceTransaction.mock.calls[1][2]).toEqual({
       idempotencyKey: "referral-credit:referral_123:referrer_123",
     });
+    expect(rpc).toHaveBeenCalledTimes(5);
+    expect(rpc.mock.calls.filter(([name]) => name === "snapshot_referral_credit_billing"))
+      .toHaveLength(1);
     expect(rpc).toHaveBeenCalledWith("mark_referral_credit_applied", {
       p_credit_id: "credit_123",
       p_application_token: expect.any(String),

@@ -208,13 +208,17 @@ describe("processStripeEvent", () => {
     expect(createBalanceTransaction).not.toHaveBeenCalled();
   });
 
-  it.each(["invoice.payment_succeeded", "invoice.paid"] as const)(
-    "converts and records one referrer credit on the first positive paid provider %s event",
-    async (eventType) => {
+  it(
+    "converts and records one referrer credit on the first positive paid provider invoice.paid event",
+    async () => {
     const { client, rpc } = makeSupabaseMock([
       { data: null, error: null },
       {
-        data: { user_id: "provider_123", role: "service_provider" },
+        data: {
+          user_id: "provider_123",
+          role: "service_provider",
+          stripe_subscription_id: "sub_provider_123",
+        },
         error: null,
       },
       {
@@ -232,7 +236,7 @@ describe("processStripeEvent", () => {
     ]);
     const event = {
       id: "evt_invoice_provider_first_paid",
-      type: eventType,
+      type: "invoice.paid",
       data: {
         object: {
           id: "in_provider_first_paid",
@@ -323,6 +327,90 @@ describe("processStripeEvent", () => {
           amount_paid: 2_500,
           billing_reason: "manual",
           parent: null,
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(inngestSend).not.toHaveBeenCalled();
+  });
+
+  it("does not convert a boost subscription invoice on the provider customer", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      {
+        data: {
+          user_id: "provider_123",
+          role: "service_provider",
+          stripe_subscription_id: "sub_provider_plan",
+        },
+        error: null,
+      },
+      { data: { user_id: "provider_123" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_boost",
+      type: "invoice.paid",
+      data: {
+        object: {
+          id: "in_provider_boost",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 1_500,
+          parent: {
+            type: "subscription_details",
+            subscription_details: { subscription: "sub_provider_boost" },
+          },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(inngestSend).not.toHaveBeenCalled();
+  });
+
+  it("does not enqueue a second conversion for invoice.payment_succeeded", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      {
+        data: {
+          user_id: "provider_123",
+          role: "service_provider",
+          stripe_subscription_id: "sub_provider_123",
+        },
+        error: null,
+      },
+      {
+        data: {
+          id: "referral_123",
+          referrer_id: "referrer_123",
+          provider_state: "gate_complete",
+        },
+        error: null,
+      },
+      { data: "converted", error: null },
+      { data: "credit_123", error: null },
+      { data: { user_id: "provider_123" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_payment_succeeded",
+      type: "invoice.payment_succeeded",
+      data: {
+        object: {
+          id: "in_provider_first_paid",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 2_500,
+          parent: {
+            type: "subscription_details",
+            subscription_details: { subscription: "sub_provider_123" },
+          },
         },
       },
     } as unknown as Stripe.Event;
