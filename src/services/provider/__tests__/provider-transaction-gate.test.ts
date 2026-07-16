@@ -19,7 +19,7 @@ type ProfileRow = {
   active_role: string;
   provider_verification_status: string | null;
 } | null;
-type SubRow = { status: string } | null;
+type SubRow = { status: string; role: string } | null;
 type ConnectRow = { charges_enabled: boolean; payouts_enabled: boolean } | null;
 
 function makeSupabaseMock(opts: {
@@ -38,7 +38,7 @@ function makeSupabaseMock(opts: {
       active_role: "service_provider",
       provider_verification_status: "verified",
     },
-    subscription = { status: "active" },
+    subscription = { status: "active", role: "provider" },
     connect = { charges_enabled: true, payouts_enabled: true },
     gate = {
       peer_count: 3,
@@ -97,7 +97,9 @@ describe("checkProviderCanTransact", () => {
   });
 
   it("blocks when subscription is not active", async () => {
-    const supabase = makeSupabaseMock({ subscription: { status: "canceled" } });
+    const supabase = makeSupabaseMock({
+      subscription: { status: "canceled", role: "provider" },
+    });
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,
     });
@@ -140,7 +142,9 @@ describe("checkProviderCanTransact", () => {
   });
 
   it("treats a trialing subscription as active", async () => {
-    const supabase = makeSupabaseMock({ subscription: { status: "trialing" } });
+    const supabase = makeSupabaseMock({
+      subscription: { status: "trialing", role: "provider" },
+    });
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,
     });

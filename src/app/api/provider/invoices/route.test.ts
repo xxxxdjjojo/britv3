@@ -48,7 +48,9 @@ function makeSupabase(user: GetUserResult["data"]["user"]) {
           provider_verification_status: "verified",
         });
       }
-      if (table === "subscriptions") return row({ status: "active" });
+      if (table === "subscriptions") {
+        return row({ status: "active", role: "provider" });
+      }
       if (table === "stripe_connect_accounts") {
         return row({ charges_enabled: true, payouts_enabled: true });
       }

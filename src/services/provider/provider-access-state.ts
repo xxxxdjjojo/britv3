@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ProviderAccessState } from "./provider-access-policy";
 
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(["active", "trialing"]);
+const PROVIDER_SUBSCRIPTION_ROLES = new Set(["provider", "service_provider"]);
 
 type GateStatusRow = {
   peer_count: number;
@@ -33,7 +34,7 @@ export async function getProviderAccessState(
         supabase.rpc("vouch_gate_status", { p_profile_id: userId }),
         supabase
           .from("subscriptions")
-          .select("status")
+          .select("status, role")
           .eq("user_id", userId)
           .maybeSingle(),
         supabase
@@ -60,7 +61,10 @@ export async function getProviderAccessState(
     const gate = ((gateResult.data as GateStatusRow[] | null)?.[0] ?? null);
     if (!gate) throw new Error("Provider vouch status is missing");
 
-    const subscription = subscriptionResult.data as { status: string } | null;
+    const subscription = subscriptionResult.data as {
+      status: string;
+      role: string | null;
+    } | null;
     const connect = connectResult.data as {
       charges_enabled: boolean;
       payouts_enabled: boolean;
@@ -77,7 +81,9 @@ export async function getProviderAccessState(
       grandfathered: gate.grandfathered,
       vouchComplete: gate.gate_complete,
       subscriptionActive:
-        !!subscription && ACTIVE_SUBSCRIPTION_STATUSES.has(subscription.status),
+        !!subscription &&
+        ACTIVE_SUBSCRIPTION_STATUSES.has(subscription.status) &&
+        PROVIDER_SUBSCRIPTION_ROLES.has(subscription.role ?? ""),
       stripeConnectReady:
         connect?.charges_enabled === true && connect.payouts_enabled === true,
     };

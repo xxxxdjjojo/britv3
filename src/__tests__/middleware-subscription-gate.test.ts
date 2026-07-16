@@ -51,7 +51,11 @@ type AppMetadata = {
   admin_role?: string;
 };
 
-type SubscriptionRow = { status?: string; plan_name?: string } | null;
+type SubscriptionRow = {
+  status?: string;
+  plan_name?: string;
+  role?: string;
+} | null;
 
 type SubscriptionQueryOutcome =
   | { kind: "ok"; row: SubscriptionRow }
@@ -337,7 +341,10 @@ describe("middleware: provider business sections are confined", () => {
           },
           error: null,
         },
-        subscription: { kind: "ok", row: { status: "active" } },
+        subscription: {
+          kind: "ok",
+          row: { status: "active", role: "provider" },
+        },
         gate: {
           data: [{
             peer_count: 3,
@@ -433,7 +440,10 @@ describe("middleware: provider business sections are confined", () => {
         },
         error: null,
       },
-      subscription: { kind: "ok", row: { status: "active" } },
+      subscription: {
+        kind: "ok",
+        row: { status: "active", role: "provider" },
+      },
       gate: { data: null, error: { message: "database unavailable" } },
     });
     createServerClientMock.mockReturnValue(supabase);

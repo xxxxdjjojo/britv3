@@ -56,7 +56,9 @@ function providerSupabase() {
           verification_level: "professional",
         });
       }
-      if (table === "subscriptions") return query({ status: "active" });
+      if (table === "subscriptions") {
+        return query({ status: "active", role: "provider" });
+      }
       if (table === "stripe_connect_accounts") {
         return query({ charges_enabled: true, payouts_enabled: true });
       }
