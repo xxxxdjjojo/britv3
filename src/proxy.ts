@@ -6,6 +6,12 @@ import { isFeatureEnabled } from "@/lib/features";
 import { ADMIN_ROLES, ADMIN_ROUTE_PERMISSIONS, hasPermission, type AdminRole } from "@/lib/admin-permissions";
 import { captureException } from "@/lib/observability/capture-exception";
 import { CORRELATION_ID_HEADER, getCorrelationId } from "@/lib/observability/correlation-id";
+import {
+  evaluateProviderAccess,
+  isVouchGateBypassed,
+  providerRequirementForPath,
+} from "@/services/provider/provider-access-policy";
+import { getProviderAccessState } from "@/services/provider/provider-access-state";
 
 /** Profile columns fetched by the consolidated middleware query. */
 type MiddlewareProfileData = {
@@ -372,26 +378,6 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // ── Provider "open" sections (product decision 2026-06-27) ────────────────
-  // Jobs, Quotes, Reviews and Earnings are intentionally reachable by a service
-  // provider BEFORE they subscribe or finish verification, so a new provider
-  // can explore leads and build quotes before paying. Every OTHER provider
-  // section stays behind the verification + subscription gates below.
-  const PROVIDER_OPEN_PREFIXES = [
-    "/dashboard/provider/jobs",
-    "/dashboard/provider/quotes",
-    "/dashboard/provider/reviews",
-    "/dashboard/provider/payments",
-    // Boost is a sales/eligibility page: it must be viewable by any provider so
-    // they can see what boosting offers and what they need (verify + subscribe).
-    // The page renders its own eligibility banner and the purchase API enforces
-    // canPurchaseBoost server-side, so it is safe before verification/subscription.
-    "/dashboard/provider/boost",
-  ] as const;
-  const isProviderOpenPage = PROVIDER_OPEN_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-
   // ── Role check + role-route enforcement ───────────────────────────────
   if (isDashboardRoute) {
     // Determine the user's actual role from JWT claims or DB
@@ -417,42 +403,51 @@ export async function proxy(request: NextRequest) {
       }
     }
 
-    // ── Professional verification gate ────────────────────────────────────
-    // Only providers carry a blanket verification gate before accessing most
-    // dashboard pages. Agents are trust-checked at action/API boundaries, not
-    // at the dashboard wall (a phantom /dashboard/agent/verification redirect
-    // previously 404'd every non-professional agent).
-    // Exempt: overview, billing, verification, and referrals pages.
-    // JWT path: fail open — verification status isn't in JWT claims yet.
-    const VERIFICATION_GATED_PREFIXES = ["/dashboard/provider"] as const;
+    // Provider trust state is always database-backed. JWT claims may avoid a
+    // role lookup, but never bypass admin verification, vouches or billing.
+    if (pathname.startsWith("/dashboard/provider")) {
+      try {
+        const accessState = await getProviderAccessState(supabase, user!.id, {
+          emailConfirmed: !!user!.email_confirmed_at,
+          roleHint: actualRole,
+        });
+        const decision = evaluateProviderAccess(
+          accessState,
+          providerRequirementForPath(pathname),
+          { vouchGateBypass: isVouchGateBypassed() },
+        );
 
-    const isVerificationGatedRoute = VERIFICATION_GATED_PREFIXES.some(
-      (prefix) => pathname.startsWith(prefix),
-    );
-
-    if (isVerificationGatedRoute && !hasClaims) {
-      const isVerificationExempt =
-        VERIFICATION_GATED_PREFIXES.some((prefix) => pathname === prefix) || // overview exact match
-        pathname.includes("/billing") ||
-        pathname.includes("/verification") ||
-        pathname.includes("/referrals") ||
-        isProviderOpenPage;
-
-      if (!isVerificationExempt) {
-        // The gate is provider-only (see VERIFICATION_GATED_PREFIXES), so the
-        // redirect target is a literal — never build it from a role variable, or
-        // a future gate addition silently resurrects a phantom redirect (the
-        // exact bug this block used to have for agents).
-        const providerVerified =
-          profileData?.provider_verification_status === "verified";
-
-        if (!providerVerified) {
+        if (!decision.allowed) {
+          if (decision.reason === "wrong_role") {
+            return redirectWithHeaders("/forbidden", nonce, request);
+          }
+          if (decision.reason === "subscription_inactive") {
+            return redirectWithHeaders(
+              "/dashboard/provider/billing/checkout/subscription",
+              nonce,
+              request,
+            );
+          }
           return redirectWithHeaders(
             "/dashboard/provider/verification",
             nonce,
             request,
           );
         }
+      } catch (error) {
+        captureException(error, {
+          module: "provider",
+          feature: "access-gate",
+          operation: "provider-access-state.select",
+          route: pathname,
+          correlationId,
+        });
+        const unavailable = NextResponse.json(
+          { code: "provider_access_unavailable" },
+          { status: 503 },
+        );
+        setResponseHeaders(unavailable, nonce, correlationId);
+        return unavailable;
       }
     }
   }
@@ -464,7 +459,6 @@ export async function proxy(request: NextRequest) {
   const SUBSCRIPTION_GATED_PREFIXES = [
     "/dashboard/agent",
     "/dashboard/landlord",
-    "/dashboard/provider",
   ];
 
   if (isAuthenticated) {
@@ -481,7 +475,7 @@ export async function proxy(request: NextRequest) {
       (prefix) => pathname === prefix,
     );
 
-    if (isGatedRoute && !isBillingPage && !isReferralsPage && !isDashboardOverview && !isProviderOpenPage) {
+    if (isGatedRoute && !isBillingPage && !isReferralsPage && !isDashboardOverview) {
       if (hasClaims) {
         const hasPlan = appMetadata?.plan && appMetadata.plan !== "";
         if (!hasPlan) {

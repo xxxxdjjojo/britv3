@@ -4,20 +4,21 @@ import { ProviderContextWrapper } from "@/components/dashboard/provider/Provider
 import { resolveProviderId } from "@/lib/provider/resolve-provider";
 import { dashboardPathForRole } from "@/lib/routes";
 import type { UserRole } from "@/types/auth";
+import { evaluateProviderAccess } from "@/services/provider/provider-access-policy";
+import { getProviderAccessState } from "@/services/provider/provider-access-state";
 
 export default async function ProviderLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("active_role")
-    .eq("id", user.id)
-    .single();
+  const accessState = await getProviderAccessState(supabase, user.id, {
+    emailConfirmed: !!user.email_confirmed_at,
+  });
+  const layoutDecision = evaluateProviderAccess(accessState, "progress");
 
-  if (profile?.active_role !== "service_provider") {
-    const activeRole = profile?.active_role as UserRole | null | undefined;
+  if (!layoutDecision.allowed) {
+    const activeRole = accessState.role as UserRole | null | undefined;
     redirect(
       activeRole ? dashboardPathForRole(activeRole) : "/dashboard/homebuyer",
     );

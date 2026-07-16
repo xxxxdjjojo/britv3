@@ -59,9 +59,15 @@ type SubscriptionQueryOutcome =
   | { kind: "throw"; error: Error };
 
 type MockOptions = {
-  user: { id: string; app_metadata?: AppMetadata } | null;
+  user: {
+    id: string;
+    app_metadata?: AppMetadata;
+    email_confirmed_at?: string;
+  } | null;
   subscription?: SubscriptionQueryOutcome;
   profile?: { data: unknown; error: unknown };
+  gate?: { data: unknown; error: unknown };
+  connect?: { data: unknown; error: unknown };
 };
 
 function buildSupabaseMock(opts: MockOptions) {
@@ -97,8 +103,24 @@ function buildSupabaseMock(opts: MockOptions) {
   const profileSingle = vi.fn().mockResolvedValue(
     opts.profile ?? { data: { active_role: "agent", is_admin: false, admin_role: null, provider_verification_status: null, verification_level: "professional" }, error: null },
   );
-  const profileEq = vi.fn(() => ({ single: profileSingle }));
+  const profileMaybeSingle = vi.fn().mockResolvedValue(
+    opts.profile ?? { data: { active_role: "agent", is_admin: false, admin_role: null, provider_verification_status: null, verification_level: "professional" }, error: null },
+  );
+  const profileEq = vi.fn(() => ({
+    single: profileSingle,
+    maybeSingle: profileMaybeSingle,
+  }));
   const profileSelect = vi.fn(() => ({ eq: profileEq }));
+
+  const connectMaybeSingle = vi.fn().mockResolvedValue(
+    opts.connect ?? {
+      data: { charges_enabled: true, payouts_enabled: true },
+      error: null,
+    },
+  );
+  const connectSelect = vi.fn(() => ({
+    eq: vi.fn(() => ({ maybeSingle: connectMaybeSingle })),
+  }));
 
   const from = vi.fn((table: string) => {
     if (table === "subscriptions") {
@@ -107,6 +129,9 @@ function buildSupabaseMock(opts: MockOptions) {
     if (table === "profiles") {
       return { select: profileSelect };
     }
+    if (table === "stripe_connect_accounts") {
+      return { select: connectSelect };
+    }
     return { select: vi.fn(() => ({ eq: vi.fn(() => ({ single: vi.fn().mockResolvedValue({ data: null, error: null }) })) })) };
   });
 
@@ -114,6 +139,17 @@ function buildSupabaseMock(opts: MockOptions) {
     supabase: {
       auth: { getUser, mfa },
       from,
+      rpc: vi.fn().mockResolvedValue(
+        opts.gate ?? {
+          data: [{
+            peer_count: 3,
+            client_count: 3,
+            grandfathered: false,
+            gate_complete: true,
+          }],
+          error: null,
+        },
+      ),
     },
     spies: {
       getUser,
@@ -273,45 +309,71 @@ describe("middleware: subscription gate", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Provider "open" sections — product decision 2026-06-27.
-//
-// Service providers can use Jobs, Quotes, Reviews and Earnings BEFORE they
-// subscribe or finish verification, so a new provider can explore and build
-// quotes before paying. These four sections must therefore pass BOTH gates
-// (verification + subscription) even when the provider has no plan / is not
-// verified. Every OTHER provider section stays gated.
+// Provider business sections use the canonical database-backed gate. JWT role
+// and plan claims cannot make jobs, quotes, reviews or payments public.
 // ---------------------------------------------------------------------------
 
-describe("middleware: provider-open sections bypass the gates", () => {
-  const OPEN_PATHS = [
+describe("middleware: provider business sections are confined", () => {
+  const BUSINESS_PATHS = [
     "/dashboard/provider/jobs/leads",
-    "/dashboard/provider/jobs/active",
-    "/dashboard/provider/jobs/completed",
     "/dashboard/provider/quotes",
-    "/dashboard/provider/quotes/builder",
     "/dashboard/provider/reviews",
     "/dashboard/provider/payments",
+    "/dashboard/provider/boost",
   ];
 
-  // ── Subscription gate (JWT-claims path: provider has role but no plan) ────
-  for (const path of OPEN_PATHS) {
-    it(`subscription gate: provider without a plan can access ${path}`, async () => {
+  for (const path of BUSINESS_PATHS) {
+    it(`vouch gate: incomplete provider with JWT claims is blocked from ${path}`, async () => {
       const { supabase } = buildSupabaseMock({
-        user: { id: "prov-1", app_metadata: { role: "service_provider" } },
+        user: {
+          id: "prov-1",
+          email_confirmed_at: "2026-07-01T00:00:00Z",
+          app_metadata: { role: "service_provider", plan: "pro" },
+        },
+        profile: {
+          data: {
+            active_role: "service_provider",
+            provider_verification_status: "verified",
+          },
+          error: null,
+        },
+        subscription: { kind: "ok", row: { status: "active" } },
+        gate: {
+          data: [{
+            peer_count: 3,
+            client_count: 2,
+            grandfathered: false,
+            gate_complete: false,
+          }],
+          error: null,
+        },
       });
       createServerClientMock.mockReturnValue(supabase);
 
       const { proxy } = await import("../proxy");
       const response = await proxy(makeRequest(path));
 
-      expect(response.status).toBe(200);
-      expect(response.headers.get("location")).toBeNull();
+      expect(response.status).toBe(307);
+      expect(response.headers.get("location")).toContain(
+        "/dashboard/provider/verification",
+      );
     });
   }
 
-  it("subscription gate: a NON-open provider section still redirects to checkout", async () => {
+  it("subscription gate: a complete provider without an active subscription redirects to checkout", async () => {
     const { supabase } = buildSupabaseMock({
-      user: { id: "prov-1", app_metadata: { role: "service_provider" } },
+      user: {
+        id: "prov-1",
+        email_confirmed_at: "2026-07-01T00:00:00Z",
+        app_metadata: { role: "service_provider" },
+      },
+      profile: {
+        data: {
+          active_role: "service_provider",
+          provider_verification_status: "verified",
+        },
+        error: null,
+      },
     });
     createServerClientMock.mockReturnValue(supabase);
 
@@ -324,60 +386,65 @@ describe("middleware: provider-open sections bypass the gates", () => {
     );
   });
 
-  // ── Verification gate (DB path: provider unverified, no JWT claims) ───────
-  it("verification gate: an UNVERIFIED provider can access an open section (quotes)", async () => {
-    isFeatureEnabledMock.mockReturnValue(false); // force DB path → verification gate runs
+  it("allows an incomplete provider to reach the verification flow", async () => {
     const { supabase } = buildSupabaseMock({
-      user: { id: "prov-1" }, // no app_metadata.role → DB profile lookup
+      user: {
+        id: "prov-1",
+        email_confirmed_at: "2026-07-01T00:00:00Z",
+        app_metadata: { role: "service_provider" },
+      },
       profile: {
         data: {
           active_role: "service_provider",
-          is_admin: false,
-          admin_role: null,
-          provider_verification_status: "unverified",
-          verification_level: "basic",
+          provider_verification_status: "verified",
         },
         error: null,
       },
-      // Active sub so only the verification gate is under test here.
-      subscription: { kind: "ok", row: { status: "active", plan_name: "Pro" } },
+      gate: {
+        data: [{
+          peer_count: 0,
+          client_count: 0,
+          grandfathered: false,
+          gate_complete: false,
+        }],
+        error: null,
+      },
     });
     createServerClientMock.mockReturnValue(supabase);
 
     const { proxy } = await import("../proxy");
-    const response = await proxy(
-      makeRequest("/dashboard/provider/quotes/builder"),
-    );
+    const response = await proxy(makeRequest("/dashboard/provider/verification"));
 
     expect(response.status).toBe(200);
     expect(response.headers.get("location")).toBeNull();
   });
 
-  it("verification gate: an UNVERIFIED provider is still blocked from a NON-open section", async () => {
-    isFeatureEnabledMock.mockReturnValue(false);
+  it("fails closed with 503 when the vouch status lookup fails", async () => {
     const { supabase } = buildSupabaseMock({
-      user: { id: "prov-1" },
+      user: {
+        id: "prov-1",
+        email_confirmed_at: "2026-07-01T00:00:00Z",
+        app_metadata: { role: "service_provider" },
+      },
       profile: {
         data: {
           active_role: "service_provider",
-          is_admin: false,
-          admin_role: null,
-          provider_verification_status: "unverified",
-          verification_level: "basic",
+          provider_verification_status: "verified",
         },
         error: null,
       },
-      subscription: { kind: "ok", row: { status: "active", plan_name: "Pro" } },
+      subscription: { kind: "ok", row: { status: "active" } },
+      gate: { data: null, error: { message: "database unavailable" } },
     });
     createServerClientMock.mockReturnValue(supabase);
 
     const { proxy } = await import("../proxy");
     const response = await proxy(makeRequest("/dashboard/provider/analytics"));
 
-    expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toContain(
-      "/dashboard/provider/verification",
-    );
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({
+      code: "provider_access_unavailable",
+    });
   });
 });
 
