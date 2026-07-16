@@ -67,6 +67,12 @@ async function requestProviderReferralCredit(
   customerId: string,
 ): Promise<void> {
   if (invoice.status !== "paid" || (invoice.amount_paid ?? 0) <= 0) return;
+  if (
+    invoice.parent?.type !== "subscription_details" ||
+    !invoice.parent.subscription_details?.subscription
+  ) {
+    return;
+  }
 
   const { data: subscription, error: subscriptionError } = await supabase
     .from("subscriptions")
