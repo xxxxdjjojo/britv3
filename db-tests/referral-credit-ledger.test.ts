@@ -33,6 +33,9 @@ create table public.referrals(id uuid primary key default gen_random_uuid(), ref
   status public.referral_status default 'pending', referred_name text, created_at timestamptz default now(), converted_at timestamptz,
   unique(referred_id));
 alter table public.referrals enable row level security;
+create table public.subscriptions(id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id),
+  stripe_subscription_id text, stripe_customer_id text, status text default 'active', plan_name text,
+  price_amount integer, currency text default 'gbp', role text, created_at timestamptz default now(), updated_at timestamptz default now());
 `;
 
 let db: DbHarness;
@@ -59,6 +62,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
     db.sqlFile(migration("referral_credit_transactions"));
     db.sqlFile(migration("vouch_referral_contract_corrections"));
     db.sqlFile(migration("durable_referral_credit_application"));
+    db.sqlFile(migration("referral_credit_billing_snapshot"));
   });
 
   afterAll(() => db?.stop());
@@ -148,10 +152,17 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
     expect(() => db.sql(`select public.mark_referral_credit_failed('${creditId}','${contenderToken}','{}'::jsonb);`))
       .toThrow(/referral_credit_not_retryable/);
 
+    expect(db.sql(`select public.snapshot_referral_credit_billing('${creditId}','${firstToken}',
+      'cus_original',10000,'gbp')->>'amount_pence';`)).toBe("10000");
+
     db.sql(`select public.mark_referral_credit_failed('${creditId}','${firstToken}','{"message":"temporary"}'::jsonb);`);
     expect(db.sql(`select public.claim_referral_credit('${creditId}','${contenderToken}')->>'status';`)).toBe("applying");
     expect(db.sql(`select status || ':' || attempt_count from public.referral_credits where id='${creditId}';`))
       .toBe("applying:2");
+    expect(db.sql(`select public.snapshot_referral_credit_billing('${creditId}','${contenderToken}',
+      'cus_mutated',3000,'usd')->>'stripe_customer_id';`)).toBe("cus_original");
+    expect(db.sql(`select stripe_customer_id || ':' || amount_pence || ':' || currency
+      from public.referral_credits where id='${creditId}';`)).toBe("cus_original:10000:gbp");
 
     db.sql(`select public.mark_referral_credit_applied('${creditId}','${contenderToken}','cbtxn_123');`);
     expect(db.sql(`select status || ':' || stripe_balance_transaction_id from public.referral_credits where id='${creditId}';`))
@@ -164,5 +175,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
     expect(db.sql(`select has_function_privilege('authenticated','public.claim_referral_credit(uuid,uuid)','EXECUTE');`)).toBe("f");
     expect(db.sql(`select has_function_privilege('service_role','public.claim_referral_credit(uuid,uuid)','EXECUTE');`)).toBe("t");
     expect(db.sql(`select has_function_privilege('anon','public.mark_referral_credit_applied(uuid,uuid,text)','EXECUTE');`)).toBe("f");
+    expect(db.sql(`select has_function_privilege('authenticated',
+      'public.snapshot_referral_credit_billing(uuid,uuid,text,integer,text)','EXECUTE');`)).toBe("f");
   });
 });

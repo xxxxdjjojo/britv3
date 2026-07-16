@@ -76,7 +76,7 @@ async function requestProviderReferralCredit(
 
   const { data: subscription, error: subscriptionError } = await supabase
     .from("subscriptions")
-    .select("user_id, role")
+    .select("user_id, role, stripe_subscription_id")
     .eq("stripe_customer_id", customerId)
     .maybeSingle();
   if (subscriptionError) {
@@ -88,11 +88,20 @@ async function requestProviderReferralCredit(
   const providerSubscription = subscription as {
     user_id: string;
     role: string | null;
+    stripe_subscription_id: string | null;
   } | null;
   if (
     !providerSubscription ||
     !["provider", "service_provider"].includes(providerSubscription.role ?? "")
   ) {
+    return;
+  }
+
+  const invoiceSubscription = invoice.parent.subscription_details.subscription;
+  const invoiceSubscriptionId = typeof invoiceSubscription === "string"
+    ? invoiceSubscription
+    : invoiceSubscription.id;
+  if (providerSubscription.stripe_subscription_id !== invoiceSubscriptionId) {
     return;
   }
 
@@ -190,6 +199,8 @@ export async function processStripeEvent(
             plan_name: resolveInternalPlanId(plan?.id, plan?.nickname ?? null),
             price_amount: item?.price.unit_amount ?? null,
             currency: plan?.currency ?? "gbp",
+            billing_interval: plan?.recurring?.interval ?? null,
+            billing_interval_count: plan?.recurring?.interval_count ?? null,
             current_period_end: item?.current_period_end
               ? new Date(item.current_period_end * 1000).toISOString()
               : null,
@@ -264,6 +275,8 @@ export async function processStripeEvent(
             plan_name: resolveInternalPlanId(plan?.id, plan?.nickname ?? null),
             price_amount: item?.price.unit_amount ?? null,
             currency: plan?.currency ?? "gbp",
+            billing_interval: plan?.recurring?.interval ?? null,
+            billing_interval_count: plan?.recurring?.interval_count ?? null,
             current_period_end: item?.current_period_end
               ? new Date(item.current_period_end * 1000).toISOString()
               : null,
@@ -388,8 +401,12 @@ export async function processStripeEvent(
       break;
     }
 
-    case "invoice.paid":
-    case "invoice.payment_succeeded": {
+    case "invoice.payment_succeeded":
+      // `invoice.paid` is the canonical paid-invoice signal. Stripe may emit
+      // both for one invoice; handling only one prevents duplicate emails/jobs.
+      break;
+
+    case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = typeof invoice.customer === "string"
         ? invoice.customer
