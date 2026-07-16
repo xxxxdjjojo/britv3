@@ -125,7 +125,21 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("canonical vouch and referral schema"
     );
     expect(db.sql(`select count(*) from information_schema.columns
       where table_schema='public' and table_name='referrals'
-        and column_name in ('invite_token','provider_state','invited_email');`)).toBe("3");
+        and column_name in ('invite_token','provider_state','invited_email',
+          'signed_up_at','gate_completed_at','credited_at');`)).toBe("6");
+  });
+
+  it("stores invite channel and structured relationship evidence", () => {
+    expect(db.sql(`select string_agg(column_name,',' order by column_name)
+      from information_schema.columns where table_schema='public'
+        and table_name='vouch_requests'
+        and column_name in ('invite_channel','voucher_trade','relationship_evidence');`))
+      .toBe("invite_channel,relationship_evidence,voucher_trade");
+    expect(db.sql(`select string_agg(column_name,',' order by column_name)
+      from information_schema.columns where table_schema='public'
+        and table_name='vouches'
+        and column_name in ('voucher_trade','relationship_evidence');`))
+      .toBe("relationship_evidence,voucher_trade");
   });
 
   it("exposes only owner reads and service writes", () => {

@@ -92,14 +92,55 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
       .toThrow(/invited_email_mismatch/);
   });
 
-  it("detects reciprocal peer vouches and records a durable fraud flag", () => {
+  it("flags a reciprocal peer vouch within 90 days without blocking it", () => {
     expect(db.sql(`select count(*) from public.vouches
       where provider_id='${TARGET}' and voucher_profile_id='${ELIGIBLE_PEER}' and revoked_at is null;`)).toBe("1");
     const reciprocalRequest = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,voucher_profile_id,invited_email)
       values ('${ELIGIBLE_PEER}','peer','${TARGET}','target@example.test') returning id;`);
-    expect(db.sql(`select outcome from public.accept_vouch_request('${reciprocalRequest}','${TARGET}',false);`)).toBe("flagged");
+    expect(db.sql(`select outcome from public.accept_vouch_request('${reciprocalRequest}','${TARGET}',false);`)).toBe("accepted");
     expect(db.sql(`select count(*) from public.fraud_flags where vouch_request_id='${reciprocalRequest}' and flag_type='reciprocal_vouch';`)).toBe("1");
-    expect(db.sql(`select count(*) from public.vouches where request_id='${reciprocalRequest}';`)).toBe("0");
+    expect(db.sql(`select count(*) from public.vouches where request_id='${reciprocalRequest}';`)).toBe("1");
+    expect(db.sql(`select status from public.vouch_requests where id='${reciprocalRequest}';`)).toBe("accepted");
+  });
+
+  it("ignores reverse vouches older than 90 days", () => {
+    const provider = "20000000-0000-4000-8000-000000000006";
+    const peer = "20000000-0000-4000-8000-000000000007";
+    for (const [id, email] of [[provider, "old-provider@example.test"], [peer, "old-peer@example.test"]]) {
+      db.sql(`insert into auth.users(id,email) values ('${id}','${email}');
+        insert into public.profiles(id,active_role,provider_verification_status,created_at)
+          values ('${id}','service_provider','verified',now()-interval '30 days');
+        insert into public.service_provider_details(user_id,slug,vouch_gate_grandfathered_at)
+          values ('${id}','old-${id.slice(-1)}',now());`);
+    }
+    const oldRequest = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,voucher_profile_id,invited_email)
+      values ('${provider}','peer','${peer}','old-peer@example.test') returning id;`);
+    db.sql(`insert into public.vouches(request_id,provider_id,voucher_kind,voucher_profile_id,accepted_at)
+      values ('${oldRequest}','${provider}','peer','${peer}',now()-interval '91 days');
+      update public.vouch_requests set status='accepted',responded_at=now()-interval '91 days' where id='${oldRequest}';`);
+    const current = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,voucher_profile_id,invited_email)
+      values ('${peer}','peer','${provider}','old-provider@example.test') returning id;`);
+    expect(db.sql(`select outcome from public.accept_vouch_request('${current}','${provider}',false);`)).toBe("accepted");
+    expect(db.sql(`select count(*) from public.fraud_flags where vouch_request_id='${current}';`)).toBe("0");
+  });
+
+  it("requires an authenticated voucher and one active provider-voucher pair", () => {
+    expect(() => db.sql(`insert into public.vouches(request_id,provider_id,voucher_kind,voucher_profile_id)
+      values (gen_random_uuid(),'${TARGET}','client',null);`)).toThrow();
+
+    const duplicateKind = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,voucher_profile_id,invited_email)
+      values ('${TARGET}','client','${ELIGIBLE_PEER}','peer@example.test') returning id;`);
+    expect(() => db.sql(`select * from public.accept_vouch_request('${duplicateKind}','${ELIGIBLE_PEER}',false);`))
+      .toThrow(/vouches_one_active_pair/);
+  });
+
+  it("lets an authenticated voucher read the vouch they supplied", () => {
+    const count = db.sql(`begin;
+      set local role authenticated;
+      set local request.jwt.claims = '{"sub":"${ELIGIBLE_PEER}"}';
+      select count(*) from public.vouches where voucher_profile_id='${ELIGIBLE_PEER}';
+      commit;`).split("\n")[0];
+    expect(Number(count)).toBeGreaterThan(0);
   });
 
   it("exposes transition RPCs only to service_role", () => {

@@ -66,6 +66,8 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
     expect(db.sql(`select public.advance_provider_referral('${id}','${REFERRED}','signed_up');`)).toBe("signed_up");
     expect(db.sql(`select public.advance_provider_referral('${id}','${REFERRED}','gate_complete');`)).toBe("gate_complete");
     expect(db.sql(`select public.advance_provider_referral('${id}','${REFERRED}','converted');`)).toBe("converted");
+    expect(db.sql(`select signed_up_at is not null and gate_completed_at is not null and converted_at is not null
+      from public.referrals where id='${id}';`)).toBe("t");
     expect(() => db.sql(`select public.advance_provider_referral('${id}','${REFERRED}','signed_up');`))
       .toThrow(/invalid_referral_transition/);
     expect(() => db.sql(`select public.advance_provider_referral('${id}','${OTHER}','credited');`))
@@ -87,6 +89,9 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
     expect(db.sql(`select count(*) from public.referral_credits where referral_id='${id}';`)).toBe("1");
     expect(db.sql(`select idempotency_key from public.referral_credits where id='${first}';`))
       .toBe(`referral-credit:${id}:${REFERRER}`);
+    expect(db.sql(`select credited_at is not null from public.referrals where id='${id}';`)).toBe("t");
+    expect(() => db.sql(`insert into public.referral_credits(referral_id,member_id,idempotency_key)
+      values ('${id}','${OTHER}','second-credit-for-one-referral');`)).toThrow(/referral_credits_one_referral/);
   });
 
   it("cannot credit the referred member or any non-referrer", () => {
