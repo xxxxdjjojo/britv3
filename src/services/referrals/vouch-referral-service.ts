@@ -28,14 +28,15 @@ export async function createVouchRequest(input: Readonly<{
 }>): Promise<{ id: string; inviteToken: string }> {
   const admin = createAdminClient();
   const email = input.invitedEmail.trim().toLowerCase();
-  const { data, error } = await admin
-    .from("vouch_requests")
-    .insert({ provider_id: input.providerId, voucher_kind: input.voucherKind, invited_email: email })
-    .select("id, invite_token")
-    .single();
-  if (error || !data) throw new Error(`Vouch request creation failed: ${error?.message ?? "missing row"}`);
+  const { data, error } = await admin.rpc("create_vouch_request", {
+    p_provider_id: input.providerId,
+    p_voucher_kind: input.voucherKind,
+    p_invited_email: email,
+  });
+  const row = first(data as Array<{ id: string; invite_token: string }> | null);
+  if (error || !row) throw new Error(`Vouch request creation failed: ${error?.message ?? "missing row"}`);
   captureBusinessEvent("vouch_request_sent", input.providerId, { voucherKind: input.voucherKind });
-  return { id: data.id, inviteToken: data.invite_token };
+  return { id: row.id, inviteToken: row.invite_token };
 }
 
 export type SafeVouchInvite = Readonly<{
@@ -67,7 +68,7 @@ export async function getVouchInvite(token: string): Promise<SafeVouchInvite | n
     provider: {
       displayName: row.profiles?.display_name ?? "TrueDeed provider",
       businessName: details?.business_name ?? "Independent provider",
-      trade: details?.primary_trade ?? details?.services?.[0] ?? "Service provider",
+      trade: details?.services?.[0] ?? "Service provider",
     },
     voucherKind: row.voucher_kind,
     status: row.status,
@@ -89,9 +90,12 @@ export async function respondToVouch(input: Readonly<{
     p_public_attribution_consent: input.publicAttributionConsent ?? false,
   });
   if (error) throw new Error(`Vouch response failed: ${error.message}`);
-  const result = first(data as { outcome: string; vouch_id?: string }[] | null);
+  const result = first(data as { outcome: string; vouch_id?: string; gate_just_completed?: boolean; provider_id?: string }[] | null);
   if (input.decision === "accept") {
     captureBusinessEvent("vouch_accepted", input.actorProfileId);
+  }
+  if (result?.gate_just_completed) {
+    captureBusinessEvent("gate_completed", result.provider_id ?? input.actorProfileId);
   }
   return { outcome: result?.outcome ?? input.decision, vouchId: result?.vouch_id };
 }
@@ -107,7 +111,6 @@ export async function getVouchGateStatus(profileId: string) {
   const { data, error } = await admin.rpc("vouch_gate_status", { p_profile_id: profileId });
   if (error) throw new Error(`Vouch gate lookup failed: ${error.message}`);
   const row = first(data as Array<{ peer_count: number; client_count: number; grandfathered: boolean; gate_complete: boolean }> | null);
-  if (row?.gate_complete) captureBusinessEvent("gate_completed", profileId);
   return row ?? { peer_count: 0, client_count: 0, grandfathered: false, gate_complete: false };
 }
 
@@ -116,18 +119,14 @@ export async function createReferralInvite(input: Readonly<{
   invitedEmail: string;
 }>): Promise<{ id: string; inviteToken: string; url: string }> {
   const admin = createAdminClient();
-  const inviteToken = crypto.randomUUID();
-  const { data, error } = await admin.from("referrals").insert({
-    referrer_id: input.referrerId,
-    referral_code: inviteToken.replaceAll("-", "").slice(0, 12).toUpperCase(),
-    track: "trade_to_trade",
-    status: "pending",
-    provider_state: "invited",
-    invite_token: inviteToken,
-    invited_email: input.invitedEmail.trim().toLowerCase(),
-  }).select("id").single();
-  if (error || !data) throw new Error(`Referral invite creation failed: ${error?.message ?? "missing row"}`);
-  return { id: data.id, inviteToken, url: `/join?invite=${inviteToken}` };
+  const { data, error } = await admin.rpc("create_provider_referral_invite", {
+    p_referrer_id: input.referrerId,
+    p_invited_email: input.invitedEmail.trim().toLowerCase(),
+  });
+  const row = first(data as Array<{ id: string; invite_token: string }> | null);
+  if (error || !row) throw new Error(`Referral invite creation failed: ${error?.message ?? "missing row"}`);
+  const inviteToken = row.invite_token;
+  return { id: row.id, inviteToken, url: `/join?invite=${inviteToken}` };
 }
 
 export async function advanceProviderReferral(referralId: string, referredProfileId: string, targetState: string) {
@@ -144,6 +143,10 @@ export async function advanceProviderReferral(referralId: string, referredProfil
   return data;
 }
 
+export function trackReferralCreditApplied(memberId: string, referralId: string, creditMonths: number): void {
+  captureBusinessEvent("credit_applied", memberId, { referralId, creditMonths });
+}
+
 export async function issueReferralCredit(referralId: string, memberId: string, creditMonths = 1) {
   const admin = createAdminClient();
   const { data, error } = await admin.rpc("issue_referral_credit", {
@@ -152,7 +155,6 @@ export async function issueReferralCredit(referralId: string, memberId: string, 
     p_credit_months: creditMonths,
   });
   if (error) throw new Error(`Referral credit issuance failed: ${error.message}`);
-  captureBusinessEvent("credit_applied", memberId, { referralId, creditMonths });
   return data;
 }
 

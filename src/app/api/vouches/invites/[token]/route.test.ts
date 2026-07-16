@@ -28,7 +28,7 @@ describe("GET /api/vouches/invites/:token", () => {
         status: "pending",
         expires_at: "2026-08-01T00:00:00.000Z",
         profiles: { display_name: "Ada Provider" },
-        service_provider_details: { business_name: "Ada Plumbing", primary_trade: "Plumber" },
+        service_provider_details: { business_name: "Ada Plumbing", services: ["Plumber"] },
       },
       error: null,
     });

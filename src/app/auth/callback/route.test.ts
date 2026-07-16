@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
   exchangeCodeForSession: vi.fn(),
   getUser: vi.fn(),
   rolesEq: vi.fn(),
-  attributeReferralAfterAuthentication: vi.fn(),
+  adminRpc: vi.fn(),
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
@@ -14,8 +14,8 @@ vi.mock("@/lib/supabase/server", () => ({
     from: vi.fn(() => ({ select: vi.fn(() => ({ eq: mocks.rolesEq })) })),
   })),
 }));
-vi.mock("@/services/referrals/vouch-referral-service", () => ({
-  attributeReferralAfterAuthentication: mocks.attributeReferralAfterAuthentication,
+vi.mock("@/lib/supabase/admin", () => ({
+  createAdminClient: () => ({ rpc: mocks.adminRpc }),
 }));
 vi.mock("@/services/email/email-service", () => ({ sendWelcome: vi.fn() }));
 vi.mock("@/inngest/client", () => ({ inngest: { send: vi.fn() } }));
@@ -30,7 +30,7 @@ describe("OAuth callback referral attribution", () => {
       data: { user: { id: "member-2", email: "member@example.test", user_metadata: {} } },
     });
     mocks.rolesEq.mockResolvedValue({ data: [{ role: "service_provider" }] });
-    mocks.attributeReferralAfterAuthentication.mockResolvedValue({ attributed: true, outcome: "attributed" });
+    mocks.adminRpc.mockResolvedValue({ data: [{ outcome: "attributed" }], error: null });
   });
 
   it("attributes ref and invite cookies only after the session is established", async () => {
@@ -43,13 +43,16 @@ describe("OAuth callback referral attribution", () => {
     const response = await GET(request);
 
     expect(mocks.exchangeCodeForSession).toHaveBeenCalledWith("oauth-code");
-    expect(mocks.attributeReferralAfterAuthentication).toHaveBeenCalledWith({
-      userId: "member-2",
-      referralCode: "ABC12345",
-      inviteToken: "11111111-1111-4111-8111-111111111111",
+    expect(mocks.adminRpc).toHaveBeenCalledWith("attribute_referral_signup", {
+      p_referred_profile_id: "member-2",
+      p_referral_code: "ABC12345",
+      p_invite_token: "11111111-1111-4111-8111-111111111111",
     });
     expect(response.headers.get("location")).toBe(
       "https://truedeed.test/vouch/token-1?consent=1",
     );
+    const setCookie = response.headers.get("set-cookie") ?? "";
+    expect(setCookie).toContain("britestate_ref=");
+    expect(setCookie).toContain("truedeed_invite=");
   });
 });
