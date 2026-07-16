@@ -15,7 +15,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { checkProviderCanTransact } from "../provider-transaction-gate";
 
-type ProfileRow = { provider_verification_status: string | null } | null;
+type ProfileRow = {
+  active_role: string;
+  provider_verification_status: string | null;
+} | null;
 type SubRow = { status: string } | null;
 type ConnectRow = { charges_enabled: boolean; payouts_enabled: boolean } | null;
 
@@ -31,7 +34,10 @@ function makeSupabaseMock(opts: {
   };
 }) {
   const {
-    profile = { provider_verification_status: "verified" },
+    profile = {
+      active_role: "service_provider",
+      provider_verification_status: "verified",
+    },
     subscription = { status: "active" },
     connect = { charges_enabled: true, payouts_enabled: true },
     gate = {
@@ -79,7 +85,10 @@ describe("checkProviderCanTransact", () => {
 
   it("blocks when not admin-approved (pending_review)", async () => {
     const supabase = makeSupabaseMock({
-      profile: { provider_verification_status: "pending_review" },
+      profile: {
+        active_role: "service_provider",
+        provider_verification_status: "pending_review",
+      },
     });
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,

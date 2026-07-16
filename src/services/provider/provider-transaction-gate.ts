@@ -44,7 +44,6 @@ export async function checkProviderCanTransact(
   try {
     const state = await getProviderAccessState(supabase, userId, {
       emailConfirmed: opts.emailConfirmed,
-      roleHint: "service_provider",
     });
     const decision = evaluateProviderAccess(state, "transaction", {
       vouchGateBypass: isVouchGateBypassed(),

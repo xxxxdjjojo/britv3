@@ -67,7 +67,9 @@ export async function getProviderAccessState(
     } | null;
 
     return {
-      role: options.roleHint || profile.active_role,
+      // The database role is authoritative. A JWT hint must never grant a
+      // provider capability after the user's active role changes.
+      role: profile.active_role,
       emailConfirmed: options.emailConfirmed,
       adminVerified: profile.provider_verification_status === "verified",
       peerVouchCount: gate.peer_count,

@@ -13,7 +13,7 @@ import { issueCertificate } from "@/services/provider/provider-certificate-servi
 import type { CertificateType, CertificateInput } from "@/services/provider/provider-certificate-service";
 
 export async function POST(request: Request) {
-  const providerAccess = await requireProviderAccess();
+  const providerAccess = await requireProviderAccess("progress");
   if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 

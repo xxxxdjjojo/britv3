@@ -9,6 +9,8 @@ vi.mock("@/lib/supabase/server", () => ({
   createClient: createClientMock,
 }));
 
+import { POST } from "./route";
+
 function query(data: unknown) {
   return {
     select: vi.fn().mockReturnThis(),
@@ -60,8 +62,6 @@ beforeEach(() => {
 
 describe("POST /api/provider/quotes", () => {
   it("rejects an authenticated provider whose vouch gate is incomplete", async () => {
-    const { POST } = await import("./route");
-
     const response = await POST(
       new NextRequest("https://truedeed.test/api/provider/quotes", {
         method: "POST",

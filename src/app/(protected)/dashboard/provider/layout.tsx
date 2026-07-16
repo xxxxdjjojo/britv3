@@ -12,9 +12,27 @@ export default async function ProviderLayout({ children }: Readonly<{ children: 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const accessState = await getProviderAccessState(supabase, user.id, {
-    emailConfirmed: !!user.email_confirmed_at,
-  });
+  let accessState: Awaited<ReturnType<typeof getProviderAccessState>>;
+  try {
+    accessState = await getProviderAccessState(supabase, user.id, {
+      emailConfirmed: !!user.email_confirmed_at,
+    });
+  } catch {
+    return (
+      <section
+        role="alert"
+        className="mx-auto max-w-2xl rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-950"
+      >
+        <h1 className="text-lg font-semibold">
+          We can’t verify your provider access right now
+        </h1>
+        <p className="mt-2 text-sm">
+          Your provider tools remain locked. Refresh the page in a moment or
+          contact support if the problem continues.
+        </p>
+      </section>
+    );
+  }
   const layoutDecision = evaluateProviderAccess(accessState, "progress");
 
   if (!layoutDecision.allowed) {
