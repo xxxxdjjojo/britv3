@@ -20,6 +20,14 @@ vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
 }));
 
+const { inngestSend } = vi.hoisted(() => ({
+  inngestSend: vi.fn().mockResolvedValue({ ids: ["inngest-referral-credit"] }),
+}));
+
+vi.mock("@/inngest/client", () => ({
+  inngest: { send: inngestSend },
+}));
+
 // ---------------------------------------------------------------------------
 // SUT imported after mocks
 // ---------------------------------------------------------------------------
@@ -41,6 +49,7 @@ type EqResult = { data: unknown; error: { message: string } | null };
  */
 function makeSupabaseMock(results: EqResult[] = []) {
   const calls: { table: string }[] = [];
+  const rpc = vi.fn().mockImplementation(() => Promise.resolve(nextResult()));
   let cursor = 0;
 
   function nextResult(): EqResult {
@@ -79,8 +88,13 @@ function makeSupabaseMock(results: EqResult[] = []) {
   });
 
   return {
-    client: { from, auth: { admin: { updateUserById: vi.fn().mockResolvedValue({}) } } } as unknown as SupabaseClient,
+    client: {
+      from,
+      rpc,
+      auth: { admin: { updateUserById: vi.fn().mockResolvedValue({}) } },
+    } as unknown as SupabaseClient,
     calls,
+    rpc,
   };
 }
 
@@ -191,5 +205,57 @@ describe("processStripeEvent", () => {
     expect(calls.map(({ table }) => table)).not.toContain("referrals");
     expect(calls.map(({ table }) => table)).not.toContain("referral_rewards");
     expect(createBalanceTransaction).not.toHaveBeenCalled();
+  });
+
+  it("converts and records one referrer credit on the first positive paid provider invoice", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      {
+        data: { user_id: "provider_123", role: "service_provider" },
+        error: null,
+      },
+      {
+        data: {
+          id: "referral_123",
+          referrer_id: "referrer_123",
+          provider_state: "gate_complete",
+        },
+        error: null,
+      },
+      { data: "converted", error: null },
+      { data: "credit_123", error: null },
+      { data: { user_id: "provider_123" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_first_paid",
+      type: "invoice.payment_succeeded",
+      data: {
+        object: {
+          id: "in_provider_first_paid",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 2_500,
+          billing_reason: "subscription_create",
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).toHaveBeenNthCalledWith(1, "advance_provider_referral", {
+      p_referral_id: "referral_123",
+      p_referred_profile_id: "provider_123",
+      p_target_state: "converted",
+    });
+    expect(rpc).toHaveBeenNthCalledWith(2, "issue_referral_credit", {
+      p_referral_id: "referral_123",
+      p_member_id: "referrer_123",
+      p_credit_months: 1,
+    });
+    expect(inngestSend).toHaveBeenCalledWith({
+      name: "billing/referral.credit-requested",
+      data: { creditId: "credit_123" },
+    });
   });
 });
