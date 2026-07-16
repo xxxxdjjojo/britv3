@@ -81,6 +81,21 @@ function setResponseHeaders(
   response.headers.set(CORRELATION_ID_HEADER, correlationId);
 }
 
+const ATTRIBUTION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV !== "development",
+  sameSite: "lax" as const,
+  maxAge: 90 * 24 * 60 * 60,
+  path: "/",
+};
+
+function copyAttributionCookies(request: NextRequest, response: NextResponse): void {
+  for (const name of ["britestate_ref", "truedeed_invite"] as const) {
+    const value = request.cookies.get(name)?.value;
+    if (value) response.cookies.set(name, value, ATTRIBUTION_COOKIE_OPTIONS);
+  }
+}
+
 /**
  * Check if a pathname matches any route in the list.
  * Supports exact match and prefix match (e.g., /dashboard matches /dashboard/homebuyer).
@@ -108,6 +123,7 @@ function redirectWithHeaders(
     }
   }
   const response = NextResponse.redirect(url);
+  copyAttributionCookies(request, response);
   setResponseHeaders(response, nonce, getCorrelationId(request.headers));
   return response;
 }
@@ -150,14 +166,18 @@ export async function proxy(request: NextRequest) {
   if (refParam && !request.cookies.get("britestate_ref")) {
     const sanitizedRef = refParam.replace(/[^A-Za-z0-9]/g, "").slice(0, 12);
     if (sanitizedRef.length >= 6) {
-      response.cookies.set("britestate_ref", sanitizedRef, {
-        httpOnly: true, // ENG REVIEW 6A: secure — read server-side only
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: "lax",
-        maxAge: 90 * 24 * 60 * 60, // 90 days
-        path: "/",
-      });
+      request.cookies.set("britestate_ref", sanitizedRef);
+      response.cookies.set("britestate_ref", sanitizedRef, ATTRIBUTION_COOKIE_OPTIONS);
     }
+  }
+  const inviteParam = request.nextUrl.searchParams.get("invite");
+  if (
+    inviteParam &&
+    !request.cookies.get("truedeed_invite") &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(inviteParam)
+  ) {
+    request.cookies.set("truedeed_invite", inviteParam);
+    response.cookies.set("truedeed_invite", inviteParam, ATTRIBUTION_COOKIE_OPTIONS);
   }
 
   // Skip auth checks if Supabase is not configured
@@ -184,6 +204,7 @@ export async function proxy(request: NextRequest) {
               headers: requestHeaders,
             },
           });
+          copyAttributionCookies(request, response);
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options),
           );
