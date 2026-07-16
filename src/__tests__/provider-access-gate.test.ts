@@ -99,4 +99,25 @@ describe("provider dashboard access", () => {
       "/dashboard/provider/verification",
     );
   });
+
+  it("fails closed for a protected provider route when Supabase is unconfigured", async () => {
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const { proxy } = await import("../proxy");
+    const response = await proxy(
+      new NextRequest("https://truedeed.test/dashboard/provider/jobs/leads"),
+    );
+    expect(response.status).toBe(503);
+  });
+
+  it("keeps the authentication callback reachable without a session", async () => {
+    const supabase = providerSupabase();
+    supabase.auth.getUser.mockResolvedValue({ data: { user: null }, error: null });
+    createServerClientMock.mockReturnValue(supabase);
+    const { proxy } = await import("../proxy");
+    const response = await proxy(
+      new NextRequest("https://truedeed.test/auth/callback?code=oauth-code"),
+    );
+    expect(response.status).toBe(200);
+  });
 });
