@@ -28,6 +28,46 @@ const mockClient = {} as ReturnType<typeof import("@supabase/supabase-js").creat
 // ---------------------------------------------------------------------------
 
 describe("getProviderDashboardStats", () => {
+  it("reports pending verification from canonical provider document rows", async () => {
+    const emptyQuery = {
+      select: vi.fn(),
+    } as Record<string, unknown>;
+    const chainMethods = ["select", "eq", "in", "not"];
+    for (const method of chainMethods) {
+      emptyQuery[method] = vi.fn(() => emptyQuery);
+    }
+    emptyQuery.then = (resolve: (value: unknown) => unknown) =>
+      Promise.resolve({ data: [], count: 0, error: null }).then(resolve);
+
+    let selectedColumns = "";
+    let ownerColumn = "";
+    const documentQuery: Record<string, unknown> = {};
+    documentQuery.select = vi.fn((columns: string) => {
+      selectedColumns = columns;
+      return documentQuery;
+    });
+    documentQuery.eq = vi.fn((column: string) => {
+      ownerColumn = column;
+      return documentQuery;
+    });
+    documentQuery.then = (resolve: (value: unknown) => unknown) =>
+      Promise.resolve(
+        selectedColumns === "verification_status" && ownerColumn === "user_id"
+          ? { data: [{ verification_status: "pending" }], error: null }
+          : { data: null, error: { message: "provider_documents column does not exist" } },
+      ).then(resolve);
+
+    const client = {
+      from: vi.fn((table: string) =>
+        table === "provider_documents" ? documentQuery : emptyQuery,
+      ),
+    } as unknown as typeof mockClient;
+
+    const result = await getProviderDashboardStats("provider-uuid-1", client);
+
+    expect(result.verificationStatus).toBe("pending");
+  });
+
   it("returns the correct KPI shape for an active provider", async () => {
     const result = await getProviderDashboardStats("provider-uuid-1", mockClient);
 
