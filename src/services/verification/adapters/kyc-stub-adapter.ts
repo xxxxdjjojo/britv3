@@ -7,6 +7,8 @@
  * activates a real provider (e.g. Stripe Identity / Didit).
  */
 
+import { env } from "@/env";
+import { DiditKycAdapter } from "@/services/verification/adapters/didit-kyc-adapter";
 import type {
   KycProvider,
   KycSession,
@@ -27,10 +29,14 @@ export class StubKycAdapter implements KycProvider {
 
 let _provider: KycProvider | null = null;
 
-/** Resolve the active KYC provider. Only the stub is wired today. */
+/** Resolve the active KYC provider from KYC_PROVIDER (stub is the default). */
 export function getKycProvider(): KycProvider {
   if (_provider) return _provider;
-  // Real adapters (stripe/didit) plug in here keyed on KYC_PROVIDER.
-  _provider = new StubKycAdapter();
+  _provider = env.KYC_PROVIDER === "didit" ? new DiditKycAdapter() : new StubKycAdapter();
   return _provider;
+}
+
+/** Test-only: clear the memoized provider. */
+export function _resetKycProviderForTests(): void {
+  _provider = null;
 }
