@@ -71,4 +71,17 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("service-owned referral Ambassador ba
     expect(db.sql(`select has_table_privilege('authenticated','public.provider_badges','INSERT');`)).toBe("f");
     expect(db.sql(`select has_table_privilege('service_role','public.provider_badges','INSERT');`)).toBe("t");
   });
+
+  it("does not count legacy homeowner referrals toward provider Ambassador", () => {
+    const provider = "70000000-0000-4000-8000-000000000002";
+    db.sql(`insert into auth.users(id,email) values ('${provider}','legacy@example.test');
+      insert into public.profiles(id,active_role) values ('${provider}','service_provider');
+      insert into public.service_provider_details(user_id,slug) values ('${provider}','legacy-track');`);
+    for (let index = 0; index < 3; index += 1) {
+      db.sql(`insert into public.referrals(referrer_id,referral_code,track,provider_state)
+        values ('${provider}','LEGACY-${index}','trade_to_homeowner','converted');`);
+    }
+    expect(db.sql(`select count(*) from public.provider_badges
+      where provider_id='${provider}' and badge_type='referral_ambassador';`)).toBe("0");
+  });
 });
