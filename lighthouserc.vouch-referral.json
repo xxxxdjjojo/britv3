@@ -2,8 +2,9 @@
   "ci": {
     "collect": {
       "url": [
-        "http://localhost:3004/",
-        "http://localhost:3004/properties/modern-2-bed-flat-clifton-bristol-sale"
+        "http://127.0.0.1:3014/join?invite=20000000-0000-4000-8000-000000000001",
+        "http://127.0.0.1:3014/vouch/10000000-0000-4000-8000-000000000001",
+        "http://127.0.0.1:3014/vouched/vouch-gate-complete"
       ],
       "numberOfRuns": 3
     },
@@ -15,6 +16,9 @@
         "total-blocking-time": ["error", { "maxNumericValue": 200, "aggregationMethod": "median" }]
       }
     },
-    "upload": { "target": "temporary-public-storage" }
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "test-results/evidence/vouch-referral/lighthouse-public"
+    }
   }
 }

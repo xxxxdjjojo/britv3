@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       E2E_BASE_URL: https://www.truedeed.co.uk
+      PRODUCTION_URL: https://www.truedeed.co.uk
+      VOUCH_PUBLIC_SLUG: ${{ vars.VOUCH_PUBLIC_SLUG }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -44,13 +46,27 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Require production vouch fixture
+        run: test -n "$VOUCH_PUBLIC_SLUG"
+
       - name: Production link-health E2E
-        run: pnpm exec playwright test e2e/link-health.spec.ts --project=chromium
+        run: pnpm exec playwright test e2e/link-health.spec.ts --project=chromium --no-deps
+
+      - name: Production render and access smoke
+        run: pnpm exec playwright test e2e/production-smoke.spec.ts --project=chromium --no-deps
 
       - name: Upload Playwright report
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: production-link-health-report
           path: playwright-report/
           if-no-files-found: ignore
+
+      - name: Upload production screenshots and traces
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-vouch-referral-evidence
+          path: test-results/
+          if-no-files-found: error

@@ -1,10 +1,9 @@
-# Performance budget gate (REPORT-ONLY initially).
+# Performance budget gate.
 # Builds a production bundle, serves it, and runs:
 #   1. e2e/perf route-status guard (critical routes return < 400)
 #   2. vitest bundle budget (Recharts code-split off the detail first load)
-#   3. Lighthouse CI against homepage + property detail (assertions are "warn")
-# Flip lighthouserc assertions warn -> error, and remove continue-on-error,
-# once the budgets are consistently green.
+#   3. Lighthouse CI against homepage + property detail (hard budgets)
+#   4. Isolated vouch/referral public and authenticated median budgets
 name: Perf budget
 
 on:
@@ -14,7 +13,13 @@ on:
       - "src/**"
       - "next.config.ts"
       - "lighthouserc.json"
+      - "lighthouserc.vouch-referral*"
       - "e2e/perf/**"
+      - "e2e/vouch-referral*"
+      - "e2e/fixtures/vouch-referral-proof.ts"
+      - "playwright.vouch-referral.config.ts"
+      - "scripts/e2e-vouch-referral*"
+      - "supabase/migrations/**"
   workflow_dispatch:
 
 jobs:
@@ -59,6 +64,49 @@ jobs:
       - name: Route-status guard (e2e/perf)
         run: pnpm exec playwright test e2e/perf/critical-routes-status.spec.ts --project=chromium --no-deps
 
-      - name: Lighthouse CI (report-only)
+      - name: Lighthouse CI
         run: npx --yes @lhci/cli@0.14.x autorun
-        continue-on-error: true
+
+  vouch-referral-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.108.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Prepare isolated database, fixtures, and production build
+        run: scripts/e2e-vouch-referral-local.sh prepare-only
+
+      - name: Start exact production build
+        run: |
+          PORT=3014 pnpm start > /tmp/vouch-referral-next.log 2>&1 &
+          npx --yes wait-on http://127.0.0.1:3014/join --timeout 120000
+
+      - name: Public vouch/referral Lighthouse median
+        run: npx --yes @lhci/cli@0.14.x autorun --config=lighthouserc.vouch-referral.json
+
+      - name: Authenticated provider progress Lighthouse median
+        env:
+          PERF_BASE_URL: http://127.0.0.1:3014
+        run: npx --yes @lhci/cli@0.14.x autorun --config=lighthouserc.vouch-referral-authenticated.cjs
+
+      - name: Upload feature Lighthouse evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vouch-referral-lighthouse
+          path: test-results/evidence/vouch-referral/
+          if-no-files-found: error
