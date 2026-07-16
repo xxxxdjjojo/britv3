@@ -3,8 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const SECRET = "whsec_test";
 
+const envMock: { DIDIT_WEBHOOK_SECRET: string } = { DIDIT_WEBHOOK_SECRET: "whsec_test" };
 vi.mock("@/env", () => ({
-  env: { DIDIT_WEBHOOK_SECRET: "whsec_test" },
+  get env() {
+    return envMock;
+  },
 }));
 
 const fromMock = vi.fn();
@@ -40,6 +43,14 @@ function signedRequest(payload: object, overrides?: { signature?: string; timest
 describe("POST /api/webhooks/didit", () => {
   beforeEach(() => {
     fromMock.mockReset();
+    envMock.DIDIT_WEBHOOK_SECRET = "whsec_test";
+  });
+
+  it("500s (loud) when the webhook secret is unset, without touching the database", async () => {
+    envMock.DIDIT_WEBHOOK_SECRET = "";
+    const res = await POST(signedRequest({ session_id: "s1", status: "Approved", vendor_data: "user-1" }));
+    expect(res.status).toBe(500);
+    expect(fromMock).not.toHaveBeenCalled();
   });
 
   it("401s on a bad signature without touching the database", async () => {
