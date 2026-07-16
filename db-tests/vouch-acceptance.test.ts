@@ -34,6 +34,8 @@ create table public.referrals(id uuid primary key default gen_random_uuid(), ref
   status public.referral_status default 'pending', referred_name text, created_at timestamptz default now(), converted_at timestamptz,
   unique(referred_id));
 alter table public.referrals enable row level security;
+create table public.referral_codes_v2(id uuid primary key default gen_random_uuid(), user_id uuid not null unique references auth.users(id),
+  code text not null unique, created_at timestamptz not null default now());
 `;
 
 let db: DbHarness;
@@ -62,6 +64,8 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
     db.sqlFile(migration("vouch_referral_canonical_schema"));
     db.sqlFile(migration("vouch_acceptance_transitions"));
     db.sqlFile(migration("vouch_referral_contract_corrections"));
+    db.sqlFile(migration("attribute_referral_signup"));
+    db.sqlFile(migration("referral_attribution_and_pending_vouch_revoke"));
   });
 
   afterAll(() => db?.stop());
@@ -183,6 +187,32 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
     expect(db.sql(`select has_function_privilege('authenticated','public.accept_vouch_request(uuid,uuid,boolean)','EXECUTE');`)).toBe("f");
     expect(db.sql(`select has_function_privilege('service_role','public.accept_vouch_request(uuid,uuid,boolean)','EXECUTE');`)).toBe("t");
     expect(db.sql(`select has_function_privilege('anon','public.decline_vouch_request(uuid,uuid)','EXECUTE');`)).toBe("f");
+  });
+
+  it("preserves prior attribution and removes every authenticated insert path", () => {
+    const existing = db.sql(`insert into public.referrals(referrer_id,referred_id,referral_code,provider_state)
+      values ('${TARGET}','${CLIENT}','LEGACY-ROW','signed_up') returning id;`);
+    db.sql(`insert into public.referral_codes_v2(user_id,code) values ('${ELIGIBLE_PEER}','TRUSTED123');`);
+
+    expect(db.sql(`select outcome from public.attribute_referral_signup('${CLIENT}','TRUSTED123',null);`))
+      .toBe("already_attributed");
+    expect(db.sql(`select referrer_id from public.referrals where id='${existing}';`)).toBe(TARGET);
+    for (const column of ["referrer_id", "referred_id", "referral_code", "track", "status", "referred_name", "created_at", "converted_at"]) {
+      expect(db.sql(`select has_column_privilege('authenticated','public.referrals','${column}','INSERT');`), column)
+        .toBe("f");
+    }
+  });
+
+  it("lets only the owning provider revoke a pending request", () => {
+    const id = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,invited_email)
+      values ('${TARGET}','client','pending@example.test') returning id;`);
+    expect(() => db.sql(`select public.revoke_vouch_request('${id}','${ELIGIBLE_PEER}');`))
+      .toThrow(/vouch_request_not_owned/);
+    expect(db.sql(`select public.revoke_vouch_request('${id}','${TARGET}');`)).toBe("revoked");
+    expect(db.sql(`select status || ':' || (revoked_at is not null) from public.vouch_requests where id='${id}';`))
+      .toBe("revoked:true");
+    expect(() => db.sql(`select public.revoke_vouch_request('${id}','${TARGET}');`))
+      .toThrow(/vouch_request_not_pending/);
   });
 
   it("preserves evidence when a request is declined and an accepted vouch is revoked", () => {

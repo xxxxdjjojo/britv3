@@ -2,6 +2,10 @@
 -- rows remain authoritative: attribute_referral_signup returns
 -- already_attributed and never destructively reassigns a referred member.
 revoke insert, update on table public.referrals from authenticated;
+revoke insert (
+  referrer_id, referred_id, referral_code, track, status,
+  referred_name, created_at, converted_at
+) on table public.referrals from authenticated;
 
 create or replace function public.revoke_vouch_request(
   p_request_id uuid,
