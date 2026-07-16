@@ -74,8 +74,14 @@ describe("VouchGateProgress", () => {
     expect(screen.getByText("0 of 3 peers accepted")).toBeInTheDocument();
   });
 
-  it("opens a WhatsApp-first composer with correct share links and accessible tap targets", () => {
+  it("opens a WhatsApp-first composer with correct share links and accessible tap targets", async () => {
     const open = vi.spyOn(window, "open").mockImplementation(() => null);
+    vi.spyOn(global, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ inviteToken: "11111111-1111-4111-8111-111111111111" }), {
+        status: 201,
+        headers: { "content-type": "application/json" },
+      }),
+    );
     render(
       <VouchGateProgress
         peerCount={0}
@@ -93,7 +99,7 @@ describe("VouchGateProgress", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /create invitation/i }));
 
-    expect(screen.getByRole("link", { name: /share on whatsapp/i })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: /share on whatsapp/i })).toHaveAttribute(
       "href",
       expect.stringMatching(/^https:\/\/wa\.me\/\?text=/),
     );
