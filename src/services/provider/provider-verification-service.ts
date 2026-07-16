@@ -20,9 +20,9 @@ export const VERIFICATION_STEPS = [
   {
     stepId: "id_check",
     label: "Identity Verification",
-    description: "Upload a government-issued photo ID (passport, driving licence).",
+    description:
+      "Verify your identity with a quick document + selfie check — takes about 2 minutes.",
     required: true,
-    document_types: ["identity_proof", "dbs_check"] as VerificationDocumentType[],
   },
   {
     stepId: "insurance",
@@ -108,10 +108,22 @@ export type UpdateBadgeResult = Readonly<{
 // getVerificationSteps
 // ---------------------------------------------------------------------------
 
+/** profiles.kyc_status → id_check step status. */
+const STEP_STATUS_BY_KYC_STATUS: Record<string, VerificationStep["status"]> = {
+  not_started: "not_started",
+  pending: "submitted",
+  verified: "approved",
+  failed: "rejected",
+};
+
+const KYC_REJECTION_REASON =
+  "Identity verification was not successful. Please try again.";
+
 /**
  * Returns an ordered array of 5 verification steps with their current status.
- * Status is derived by checking provider_documents (for id_check, insurance,
- * qualifications) and provider_references (for client_references, peer_references).
+ * Status is derived by checking profiles.kyc_status (for id_check),
+ * provider_documents (for insurance, qualifications) and provider_references
+ * (for client_references, peer_references).
  *
  * Falls back to 'not_started' for every step on any database error.
  *
@@ -123,7 +135,7 @@ export async function getVerificationSteps(
   supabase: SupabaseClient,
 ): Promise<VerificationStep[]> {
   try {
-    const [docsResult, refsResult] = await Promise.allSettled([
+    const [docsResult, refsResult, kycResult] = await Promise.allSettled([
       supabase
         .from("provider_documents")
         .select("document_type, status, updated_at, rejection_reason")
@@ -133,6 +145,12 @@ export async function getVerificationSteps(
         .from("provider_references")
         .select("reference_type, status, requested_at")
         .eq("provider_id", providerId),
+
+      supabase
+        .from("profiles")
+        .select("kyc_status")
+        .eq("id", providerId)
+        .maybeSingle(),
     ]);
 
     const docs: Array<{ document_type: string; status: string; updated_at: string | null; rejection_reason?: string | null }> =
@@ -145,12 +163,21 @@ export async function getVerificationSteps(
         ? (refsResult.value.data ?? [])
         : [];
 
+    const kycStatus: string =
+      kycResult.status === "fulfilled" && !kycResult.value.error
+        ? ((kycResult.value.data as { kyc_status?: string } | null)?.kyc_status ??
+          "not_started")
+        : "not_started";
+
     return VERIFICATION_STEPS.map((step, idx): VerificationStep => {
       let status: VerificationStep["status"] = "not_started";
       let updatedAt: string | null = null;
       let rejectionReason: string | null = null;
 
-      if ("document_types" in step) {
+      if (step.stepId === "id_check") {
+        status = STEP_STATUS_BY_KYC_STATUS[kycStatus] ?? "not_started";
+        if (status === "rejected") rejectionReason = KYC_REJECTION_REASON;
+      } else if ("document_types" in step) {
         const matchingDocs = docs.filter((d) =>
           (step.document_types as readonly string[]).includes(d.document_type),
         );

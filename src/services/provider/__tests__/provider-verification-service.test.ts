@@ -10,6 +10,7 @@
  * references (see src/app/api/provider/references/route.test.ts).
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
@@ -147,6 +148,54 @@ describe("getVerificationSteps", () => {
     const step = result.find((s) => s.stepId === "client_references");
     // No verified and no in-flight refs -> nothing usable -> not_started.
     expect(step?.status).toBe("not_started");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getVerificationSteps — id_check from profiles.kyc_status
+// ---------------------------------------------------------------------------
+
+describe("getVerificationSteps — id_check from profiles.kyc_status", () => {
+  function fakeSupabaseWithKyc(kycStatus: string | null) {
+    return {
+      from: (table: string) => ({
+        select: () => ({
+          eq: () => {
+            if (table === "profiles") {
+              return {
+                maybeSingle: async () => ({
+                  data: kycStatus === null ? null : { kyc_status: kycStatus },
+                  error: null,
+                }),
+              };
+            }
+            return Promise.resolve({ data: [], error: null });
+          },
+        }),
+      }),
+    } as unknown as SupabaseClient;
+  }
+
+  it.each([
+    ["not_started", "not_started"],
+    ["pending", "submitted"],
+    ["verified", "approved"],
+    ["failed", "rejected"],
+  ] as const)("kyc_status %s → step status %s", async (kycStatus, expected) => {
+    const steps = await getVerificationSteps("user-1", fakeSupabaseWithKyc(kycStatus));
+    const idCheck = steps.find((s) => s.stepId === "id_check");
+    expect(idCheck?.status).toBe(expected);
+  });
+
+  it("treats a missing profile row as not_started", async () => {
+    const steps = await getVerificationSteps("user-1", fakeSupabaseWithKyc(null));
+    expect(steps.find((s) => s.stepId === "id_check")?.status).toBe("not_started");
+  });
+
+  it("sets a rejection reason when kyc failed", async () => {
+    const steps = await getVerificationSteps("user-1", fakeSupabaseWithKyc("failed"));
+    const idCheck = steps.find((s) => s.stepId === "id_check");
+    expect(idCheck?.rejectionReason).toMatch(/not successful/i);
   });
 });
 
