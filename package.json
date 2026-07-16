@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit --incremental false",
     "check:migrations": "node scripts/check-migration-versions.mjs",
     "check:brand": "node --no-warnings scripts/check-legacy-brand-references.ts",
+    "check:test-collection": "node scripts/check-test-collection.mjs",
     "test": "vitest",
     "test:routes": "vitest run src/__tests__/routes",
     "test:db": "RUN_DB_TESTS=1 vitest run --config vitest.db.config.ts db-tests --testTimeout=120000",
@@ -29,7 +30,7 @@
     "gstack:audit-listings": "echo \"Run in Claude Code: /audit-listings\"",
     "gstack:test-mls-sync": "echo \"Run in Claude Code: /test-mls-sync\"",
     "gstack:qa-marketplace": "echo \"Run in Claude Code: /qa-marketplace\"",
-    "gstack:test": "bun test ../test/gstack/"
+    "gstack:test": "bun test test/gstack/"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

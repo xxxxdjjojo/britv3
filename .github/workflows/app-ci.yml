@@ -13,6 +13,28 @@ on:
   workflow_dispatch:
 
 jobs:
+  db-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Real PostgreSQL contract tests
+        run: pnpm test:db
+
   route-integrity:
     runs-on: ubuntu-latest
     steps:
@@ -113,6 +135,9 @@ jobs:
 
       - name: Check brand references
         run: pnpm check:brand
+
+      - name: Check test collection
+        run: pnpm check:test-collection
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

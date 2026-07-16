@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 
 const BUN_TEST_ALLOWLIST = new Set([
   "test/gstack/integration.test.ts",
@@ -26,11 +27,13 @@ const RUNNERS = [
 
 const TEST_FILE_PATTERN = /\.(?:test|spec)\.(?:[cm]?[jt]sx?)$/;
 
-const trackedTestFiles = execFileSync("git", ["ls-files"], {
-  encoding: "utf8",
-})
+const trackedTestFiles = execFileSync(
+  "git",
+  ["ls-files", "--cached", "--others", "--exclude-standard"],
+  { encoding: "utf8" },
+)
   .split("\n")
-  .filter((path) => TEST_FILE_PATTERN.test(path));
+  .filter((path) => existsSync(path) && TEST_FILE_PATTERN.test(path));
 
 const violations = trackedTestFiles.flatMap((path) => {
   const owners = RUNNERS.filter((runner) => runner.matches(path)).map(
