@@ -22,6 +22,33 @@ describe("vouch and referral public route contract", () => {
 
     const referralService = source("src/services/referrals/unified-referral-service.ts");
     expect(referralService).toContain("/join?ref=${code}");
+    const vouchReferralService = source("src/services/referrals/vouch-referral-service.ts");
+    expect(vouchReferralService).toContain("/join?invite=${inviteToken}");
     expect(referralService).not.toMatch(/href=["'](?:#|javascript:|)["']/i);
+  });
+
+  it("exposes the agreed server API and analytics vocabulary", () => {
+    const serverModule = source("src/services/referrals/vouch-referral-service.ts");
+    for (const functionName of [
+      "createVouchRequest",
+      "getVouchInvite",
+      "respondToVouch",
+      "revokeVouchRequest",
+      "getVouchGateStatus",
+      "createReferralInvite",
+      "advanceProviderReferral",
+      "issueReferralCredit",
+    ]) {
+      expect(serverModule).toContain(`export async function ${functionName}`);
+    }
+    for (const eventName of [
+      "vouch_request_sent",
+      "vouch_accepted",
+      "gate_completed",
+      "referral_converted",
+      "credit_applied",
+    ]) {
+      expect(serverModule).toContain(`captureBusinessEvent(\"${eventName}\"`);
+    }
   });
 });
