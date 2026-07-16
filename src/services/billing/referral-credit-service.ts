@@ -106,7 +106,7 @@ export async function applyReferralCredit(
       const { data: subscription, error: subscriptionError } = await supabase
         .from("subscriptions")
         .select(
-          "stripe_customer_id, price_amount, currency, billing_interval, billing_interval_count",
+          "stripe_subscription_id, stripe_customer_id, price_amount, currency, billing_interval, billing_interval_count",
         )
         .eq("user_id", credit.member_id)
         .maybeSingle();
@@ -117,20 +117,53 @@ export async function applyReferralCredit(
       }
 
       const plan = subscription as {
+        stripe_subscription_id: string | null;
         stripe_customer_id: string | null;
         price_amount: number | null;
         currency: string | null;
         billing_interval: string | null;
         billing_interval_count: number | null;
       } | null;
-      if (!plan?.stripe_customer_id || !plan.price_amount) {
+      if (!plan) {
         throw new Error("Referrer has no billable Stripe subscription");
       }
 
-      const intervalCount = plan.billing_interval_count ?? 0;
-      const monthsPerPeriod = plan.billing_interval === "year"
+      let stripeCustomerId = plan.stripe_customer_id;
+      let priceAmount = plan.price_amount;
+      let currency = plan.currency;
+      let billingInterval = plan.billing_interval;
+      let billingIntervalCount = plan.billing_interval_count;
+
+      if (
+        !stripeCustomerId ||
+        !priceAmount ||
+        !billingInterval ||
+        !billingIntervalCount
+      ) {
+        if (!plan.stripe_subscription_id) {
+          throw new Error("Referrer subscription has no Stripe subscription id");
+        }
+        const stripeSubscription = await stripe.subscriptions.retrieve(
+          plan.stripe_subscription_id,
+        );
+        const stripePrice = stripeSubscription.items.data[0]?.price;
+        const recurring = stripePrice?.recurring;
+        stripeCustomerId = typeof stripeSubscription.customer === "string"
+          ? stripeSubscription.customer
+          : stripeSubscription.customer.id;
+        priceAmount = stripePrice?.unit_amount ?? null;
+        currency = stripePrice?.currency ?? null;
+        billingInterval = recurring?.interval ?? null;
+        billingIntervalCount = recurring?.interval_count ?? null;
+      }
+
+      if (!stripeCustomerId || !priceAmount) {
+        throw new Error("Referrer has no billable Stripe subscription");
+      }
+      const intervalCount = billingIntervalCount ?? 0;
+      const monthsPerPeriod = billingInterval === "year"
         ? intervalCount * 12
-        : plan.billing_interval === "month"
+        : billingInterval === "month"
           ? intervalCount
           : 0;
       if (monthsPerPeriod <= 0) {
@@ -142,11 +175,11 @@ export async function applyReferralCredit(
         {
           p_credit_id: creditId,
           p_application_token: applicationToken,
-          p_stripe_customer_id: plan.stripe_customer_id,
+          p_stripe_customer_id: stripeCustomerId,
           p_amount_pence: Math.round(
-            (plan.price_amount * credit.credit_months) / monthsPerPeriod,
+            (priceAmount * credit.credit_months) / monthsPerPeriod,
           ),
-          p_currency: plan.currency ?? "gbp",
+          p_currency: currency ?? "gbp",
         },
       );
       if (snapshotError || !snapshot) {

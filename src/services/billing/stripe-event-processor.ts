@@ -413,8 +413,12 @@ export async function processStripeEvent(
         : (invoice.customer as Stripe.Customer)?.id ?? null;
 
       // Renew any boost placement billed by this invoice (no-op if none).
-      const invoiceSubId = (invoice as unknown as { subscription?: string | { id: string } }).subscription;
-      const placementSubId = typeof invoiceSubId === "string" ? invoiceSubId : invoiceSubId?.id ?? null;
+      const invoiceSubscription = invoice.parent?.type === "subscription_details"
+        ? invoice.parent.subscription_details.subscription
+        : null;
+      const placementSubId = typeof invoiceSubscription === "string"
+        ? invoiceSubscription
+        : invoiceSubscription?.id ?? null;
       if (placementSubId) {
         const periodEnd = invoice.period_end ? new Date(invoice.period_end * 1000).toISOString() : null;
         await renewPlacementBySubscription(supabase, placementSubId, periodEnd);

@@ -211,8 +211,9 @@ describe("processStripeEvent", () => {
   it(
     "converts and records one referrer credit on the first positive paid provider invoice.paid event",
     async () => {
-    const { client, rpc } = makeSupabaseMock([
-      { data: null, error: null },
+      const { client, rpc } = makeSupabaseMock([
+        { data: null, error: null },
+        { data: null, error: null },
       {
         data: {
           user_id: "provider_123",
