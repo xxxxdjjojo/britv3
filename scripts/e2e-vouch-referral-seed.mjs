@@ -39,7 +39,7 @@ const clients = Array.from({ length: 5 }, (_, index) => ({
   email: `vouch-client-${index + 1}@truedeed.test`,
   name: ["Dani", "Eli", "Fran", "Gus", "Hana"][index],
 }));
-const referred = Array.from({ length: 15 }, (_, index) => ({
+const referred = Array.from({ length: 16 }, (_, index) => ({
   key: `referred_${index + 1}`,
   email: `vouch-referred-${index + 1}@truedeed.test`,
   name: `Crew member ${index + 1}`,
@@ -258,13 +258,13 @@ for (let index = 0; index < 12; index += 1) {
   referrals.push({
     id: uuid(31, index + 10),
     referrer_id: completeId,
-    referred_id: ids[`referred_${index + 4}`],
+    referred_id: ids[`referred_${index + 5}`],
     referral_code: `VOUCHCREDIT${index + 1}`,
     track: "trade_to_trade",
     status: "rewarded",
     provider_state: "credited",
     invite_token: uuid(32, index + 10),
-    invited_email: referred[index + 3].email,
+    invited_email: referred[index + 4].email,
     signed_up_at: NOW,
     gate_completed_at: NOW,
     converted_at: NOW,
