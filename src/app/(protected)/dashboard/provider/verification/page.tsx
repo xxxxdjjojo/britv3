@@ -5,6 +5,7 @@ import {
   getVerificationSteps,
   getProviderBadges,
 } from "@/services/provider/provider-verification-service";
+import { reconcilePendingKyc } from "@/services/verification/kyc-reconcile";
 import { VerificationStepper } from "@/components/dashboard/provider/VerificationStepper";
 import { TrustScoreGauge } from "@/components/dashboard/provider/TrustScoreGauge";
 
@@ -45,7 +46,11 @@ function computeTierLabel(score: number): string {
   return "Starter";
 }
 
-export default async function VerificationOverviewPage() {
+export default async function VerificationOverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ kyc?: string }>;
+}) {
   const supabase = await createClient();
 
   const {
@@ -54,6 +59,13 @@ export default async function VerificationOverviewPage() {
 
   if (!user) {
     redirect("/login");
+  }
+
+  const { kyc } = await searchParams;
+  if (kyc === "return") {
+    // Trader just came back from the hosted flow — close any webhook gap
+    // before rendering the steps.
+    await reconcilePendingKyc(user.id);
   }
 
   const { data: providerProfile } = await supabase
@@ -65,7 +77,7 @@ export default async function VerificationOverviewPage() {
   const providerId = providerProfile?.id ?? user.id;
 
   const [steps, badges] = await Promise.all([
-    getVerificationSteps(providerId, supabase),
+    getVerificationSteps(user.id, supabase),
     getProviderBadges(supabase, providerId).catch(() => []),
   ]);
 
