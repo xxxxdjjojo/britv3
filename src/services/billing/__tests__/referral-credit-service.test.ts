@@ -127,4 +127,85 @@ describe("applyReferralCredit", () => {
       appliedCallOrder,
     );
   });
+
+  it("hydrates a legacy subscription cadence from Stripe before applying credit", async () => {
+    const rpc = vi.fn().mockImplementation((name: string, args: Record<string, unknown>) => {
+      if (name === "claim_referral_credit") {
+        return Promise.resolve({
+          data: {
+            credit_id: "credit_legacy",
+            referral_id: "referral_legacy",
+            member_id: "referrer_legacy",
+            credit_months: 1,
+            status: "applying",
+            idempotency_key: "referral-credit:referral_legacy:referrer_legacy",
+          },
+          error: null,
+        });
+      }
+      if (name === "snapshot_referral_credit_billing") {
+        return Promise.resolve({
+          data: {
+            stripe_customer_id: args.p_stripe_customer_id,
+            amount_pence: args.p_amount_pence,
+            currency: args.p_currency,
+          },
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: null, error: null });
+    });
+    const builder: Record<string, unknown> = {};
+    for (const method of ["select", "eq"]) builder[method] = vi.fn(() => builder);
+    builder.maybeSingle = vi.fn().mockResolvedValue({
+      data: {
+        stripe_subscription_id: "sub_legacy",
+        stripe_customer_id: "cus_stale",
+        price_amount: 96_000,
+        currency: "gbp",
+        billing_interval: null,
+        billing_interval_count: null,
+      },
+      error: null,
+    });
+    const client = {
+      rpc,
+      from: vi.fn(() => builder),
+    } as unknown as SupabaseClient;
+    const createBalanceTransaction = vi.fn().mockResolvedValue({ id: "cbtxn_legacy" });
+    const retrieve = vi.fn().mockResolvedValue({
+      id: "sub_legacy",
+      customer: "cus_stripe_authoritative",
+      items: {
+        data: [{
+          price: {
+            unit_amount: 96_000,
+            currency: "gbp",
+            recurring: { interval: "year", interval_count: 1 },
+          },
+        }],
+      },
+    });
+    const stripe = {
+      subscriptions: { retrieve },
+      customers: { createBalanceTransaction },
+    } as unknown as Stripe;
+
+    await expect(applyReferralCredit(client, stripe, "credit_legacy"))
+      .resolves.toEqual({ status: "applied", transactionId: "cbtxn_legacy" });
+
+    expect(retrieve).toHaveBeenCalledWith("sub_legacy");
+    expect(rpc).toHaveBeenCalledWith("snapshot_referral_credit_billing", {
+      p_credit_id: "credit_legacy",
+      p_application_token: expect.any(String),
+      p_stripe_customer_id: "cus_stripe_authoritative",
+      p_amount_pence: 8_000,
+      p_currency: "gbp",
+    });
+    expect(createBalanceTransaction).toHaveBeenCalledWith(
+      "cus_stripe_authoritative",
+      expect.objectContaining({ amount: -8_000, currency: "gbp" }),
+      { idempotencyKey: "referral-credit:referral_legacy:referrer_legacy" },
+    );
+  });
 });

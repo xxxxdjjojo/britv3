@@ -420,4 +420,34 @@ describe("processStripeEvent", () => {
     expect(rpc).not.toHaveBeenCalled();
     expect(inngestSend).not.toHaveBeenCalled();
   });
+
+  it("renews a boost from the Stripe v20 subscription_details parent", async () => {
+    const { client, calls } = makeSupabaseMock([
+      { data: null, error: null },
+      { data: null, error: null },
+      { data: { user_id: "provider_123", role: "agent" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_boost_renewal",
+      type: "invoice.paid",
+      data: {
+        object: {
+          id: "in_boost_renewal",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 1_500,
+          period_end: 1_800_000_000,
+          parent: {
+            type: "subscription_details",
+            subscription_details: { subscription: "sub_provider_boost" },
+          },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(calls.map(({ table }) => table)).toContain("sponsored_placements");
+  });
 });
