@@ -161,46 +161,47 @@ describe("getVerificationSteps", () => {
     expect(result.length).toBeGreaterThan(0);
   });
 
-  // -- corrected verified-only reference counting ---------------------------
+  // -- canonical vouch gate counting -----------------------------------------
 
   /**
    * Builds a client where provider_documents resolves to [] and
-   * provider_references resolves to the supplied rows.
+   * vouch_requests resolves to the supplied canonical lifecycle rows.
    */
-  function makeRefsClient(refs: Array<{ reference_type: string; status: string; requested_at: string | null }>) {
+  function makeRefsClient(refs: Array<{ voucher_kind: string; status: string; requested_at: string | null }>) {
     const refChain = makeQueryMock({ data: refs, error: null }) as unknown as Record<string, unknown>;
     const docChain = makeQueryMock({ data: [], error: null }) as unknown as Record<string, unknown>;
     return {
       from: vi.fn((table: string) =>
-        table === "provider_references" ? refChain : docChain,
+        table === "vouch_requests" ? refChain : docChain,
       ),
     } as unknown as typeof emptyClient;
   }
 
-  it("marks a reference step 'approved' only when a ref is verified", async () => {
+  it("marks a vouch step approved only after all three canonical vouches are accepted", async () => {
     const client = makeRefsClient([
-      { reference_type: "client", status: "verified", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "client", status: "accepted", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "client", status: "accepted", requested_at: "2026-07-02T00:00:00Z" },
+      { voucher_kind: "client", status: "accepted", requested_at: "2026-07-03T00:00:00Z" },
     ]);
     const result = await getVerificationSteps("provider-uuid-1", client);
     const step = result.find((s) => s.stepId === "client_references");
     expect(step?.status).toBe("approved");
   });
 
-  it("marks a reference step 'in_progress' for submitted/sent/pending refs", async () => {
+  it("marks a vouch step in progress for partial acceptance or a pending invite", async () => {
     const client = makeRefsClient([
-      { reference_type: "peer", status: "submitted", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "peer", status: "accepted", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "peer", status: "pending", requested_at: "2026-07-02T00:00:00Z" },
     ]);
     const result = await getVerificationSteps("provider-uuid-1", client);
     const step = result.find((s) => s.stepId === "peer_references");
-    // Corrected behavior: 'submitted' is in-flight, NOT done — only 'verified'
-    // counts as approved.
     expect(step?.status).toBe("in_progress");
   });
 
   it("does NOT count terminal-fail refs (rejected/declined/expired/revoked/flagged) as done", async () => {
     const client = makeRefsClient([
-      { reference_type: "client", status: "rejected", requested_at: "2026-07-01T00:00:00Z" },
-      { reference_type: "client", status: "flagged", requested_at: "2026-07-02T00:00:00Z" },
+      { voucher_kind: "client", status: "declined", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "client", status: "revoked", requested_at: "2026-07-02T00:00:00Z" },
     ]);
     const result = await getVerificationSteps("provider-uuid-1", client);
     const step = result.find((s) => s.stepId === "client_references");
