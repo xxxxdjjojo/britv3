@@ -238,6 +238,10 @@ describe("processStripeEvent", () => {
           status: "paid",
           amount_paid: 2_500,
           billing_reason: "subscription_create",
+          parent: {
+            type: "subscription_details",
+            subscription_details: { subscription: "sub_provider_123" },
+          },
         },
       },
     } as unknown as Stripe.Event;
@@ -275,6 +279,47 @@ describe("processStripeEvent", () => {
           status: "paid",
           amount_paid: 0,
           billing_reason: "subscription_create",
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(inngestSend).not.toHaveBeenCalled();
+  });
+
+  it("does not convert a one-off invoice for a customer who also has a provider subscription", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      {
+        data: { user_id: "provider_123", role: "service_provider" },
+        error: null,
+      },
+      {
+        data: {
+          id: "referral_123",
+          referrer_id: "referrer_123",
+          provider_state: "gate_complete",
+        },
+        error: null,
+      },
+      { data: "converted", error: null },
+      { data: "credit_123", error: null },
+      { data: { user_id: "provider_123" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_one_off",
+      type: "invoice.payment_succeeded",
+      data: {
+        object: {
+          id: "in_provider_one_off",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 2_500,
+          billing_reason: "manual",
+          parent: null,
         },
       },
     } as unknown as Stripe.Event;
