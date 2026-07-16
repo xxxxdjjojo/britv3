@@ -388,6 +388,7 @@ export async function processStripeEvent(
       break;
     }
 
+    case "invoice.paid":
     case "invoice.payment_succeeded": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = typeof invoice.customer === "string"
