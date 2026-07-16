@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { markInvoicePaid } from "@/services/provider/provider-invoice-service";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -14,6 +15,8 @@ export async function PATCH(
   _request: NextRequest,
   context: RouteContext,
 ): Promise<NextResponse> {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id: invoiceId } = await context.params;
 
   const supabase = await createClient();

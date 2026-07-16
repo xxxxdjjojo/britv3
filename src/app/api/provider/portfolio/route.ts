@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import {
   getPortfolioItems,
   addPortfolioItem,
@@ -34,6 +35,8 @@ async function resolveProviderId(supabase: Awaited<ReturnType<typeof createClien
 
 /** GET /api/provider/portfolio — list portfolio items for authenticated provider */
 export async function GET() {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {
@@ -56,6 +59,8 @@ export async function GET() {
 
 /** POST /api/provider/portfolio — add a portfolio item */
 export async function POST(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {

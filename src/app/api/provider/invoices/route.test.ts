@@ -24,18 +24,44 @@ vi.mock("@/services/provider/provider-transaction-gate", () => ({
 import { POST } from "./route";
 
 type GetUserResult = {
-  data: { user: { id: string; email_confirmed_at: string | null } | null };
+  data: {
+    user: {
+      id: string;
+      email_confirmed_at: string | null;
+      app_metadata?: { role?: string };
+    } | null;
+  };
 };
 
 function makeSupabase(user: GetUserResult["data"]["user"]) {
+  const row = (data: unknown) => ({
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    maybeSingle: vi.fn().mockResolvedValue({ data, error: null }),
+  });
   return {
-    auth: { getUser: vi.fn().mockResolvedValue({ data: { user } }) },
-    from: vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-        }),
-      }),
+    auth: { getUser: vi.fn().mockResolvedValue({ data: { user }, error: null }) },
+    from: vi.fn((table: string) => {
+      if (table === "profiles") {
+        return row({
+          active_role: "service_provider",
+          provider_verification_status: "verified",
+        });
+      }
+      if (table === "subscriptions") return row({ status: "active" });
+      if (table === "stripe_connect_accounts") {
+        return row({ charges_enabled: true, payouts_enabled: true });
+      }
+      return row(null);
+    }),
+    rpc: vi.fn().mockResolvedValue({
+      data: [{
+        peer_count: 3,
+        client_count: 3,
+        grandfathered: false,
+        gate_complete: true,
+      }],
+      error: null,
     }),
   };
 }
@@ -59,7 +85,11 @@ describe("POST /api/provider/invoices — transaction gate", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     createClientMock.mockResolvedValue(
-      makeSupabase({ id: "user-1", email_confirmed_at: "2026-01-01T00:00:00Z" }),
+      makeSupabase({
+        id: "user-1",
+        email_confirmed_at: "2026-01-01T00:00:00Z",
+        app_metadata: { role: "service_provider" },
+      }),
     );
   });
 

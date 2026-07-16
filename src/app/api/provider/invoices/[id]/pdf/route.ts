@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import type { ProviderInvoice, InvoiceLineItem } from "@/types/provider-dashboard";
 import { brandConfig } from "@/config/brand";
 
@@ -153,6 +154,8 @@ export async function GET(
   _request: NextRequest,
   context: RouteContext,
 ): Promise<NextResponse> {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id: invoiceId } = await context.params;
 
   const supabase = await createClient();

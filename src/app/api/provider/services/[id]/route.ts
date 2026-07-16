@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import type { PricingType } from "@/types/provider-dashboard";
 
 const VALID_CATEGORIES = new Set([
@@ -30,6 +31,8 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 /** PATCH /api/provider/services/[id] — update a service */
 export async function PATCH(request: NextRequest, context: RouteContext) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id } = await context.params;
   const supabase = await createClient();
 
@@ -106,6 +109,8 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
 /** DELETE /api/provider/services/[id] — delete a service */
 export async function DELETE(_request: NextRequest, context: RouteContext) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id } = await context.params;
   const supabase = await createClient();
 

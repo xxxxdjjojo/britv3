@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 
 /** GET /api/provider/availability?year=YYYY&month=MM
  *  Returns provider_availability rows covering the requested month window.
  */
 export async function GET(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {
@@ -68,6 +71,8 @@ export async function GET(request: NextRequest) {
  *                        (simple single-day toggle; range rows from legacy API are untouched)
  */
 export async function POST(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {

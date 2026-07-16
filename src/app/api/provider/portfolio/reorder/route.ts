@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { reorderPortfolioItems } from "@/services/provider/provider-portfolio-service";
 
 async function resolveProviderId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<string> {
@@ -13,6 +14,8 @@ async function resolveProviderId(supabase: Awaited<ReturnType<typeof createClien
 
 /** PATCH /api/provider/portfolio/reorder — persist drag-and-drop order */
 export async function PATCH(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {

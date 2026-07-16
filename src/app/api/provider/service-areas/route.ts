@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 
 /** GET /api/provider/service-areas — fetch all service areas for authenticated provider */
 export async function GET() {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {
@@ -35,6 +38,8 @@ export async function GET() {
 
 /** POST /api/provider/service-areas — create a new service area zone */
 export async function POST(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {
@@ -112,6 +117,8 @@ export async function POST(request: NextRequest) {
 
 /** DELETE /api/provider/service-areas?id=<id> — delete a zone */
 export async function DELETE(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {

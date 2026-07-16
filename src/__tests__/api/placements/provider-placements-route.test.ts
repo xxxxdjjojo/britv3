@@ -5,7 +5,30 @@ import { PlacementPurchaseError } from "@/services/placements/purchase-guard";
 
 const getUser = vi.fn();
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn(async () => ({ auth: { getUser } })),
+  createClient: vi.fn(async () => {
+    const row = (data: unknown) => ({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue({ data, error: null }),
+    });
+    return {
+      auth: { getUser },
+      from: vi.fn((table: string) => {
+        if (table === "profiles") {
+          return row({ active_role: "service_provider", provider_verification_status: "verified" });
+        }
+        if (table === "subscriptions") return row({ status: "active" });
+        if (table === "stripe_connect_accounts") {
+          return row({ charges_enabled: true, payouts_enabled: true });
+        }
+        return row(null);
+      }),
+      rpc: vi.fn().mockResolvedValue({
+        data: [{ peer_count: 3, client_count: 3, grandfathered: false, gate_complete: true }],
+        error: null,
+      }),
+    };
+  }),
 }));
 
 const createPlacementCheckout = vi.fn();
@@ -43,7 +66,12 @@ describe("POST /api/provider/placements", () => {
   });
 
   it("returns 403 when the trader is not eligible to boost", async () => {
-    getUser.mockResolvedValue({ data: { user: { id: "u1", email: "t@x.com" } } });
+    getUser.mockResolvedValue({ data: { user: {
+      id: "u1",
+      email: "t@x.com",
+      email_confirmed_at: "2026-07-01T00:00:00Z",
+      app_metadata: { role: "service_provider" },
+    } } });
     createPlacementCheckout.mockRejectedValue(
       new PlacementPurchaseError("not_eligible", "You must have an approved profile and an active subscription."),
     );
@@ -54,14 +82,24 @@ describe("POST /api/provider/placements", () => {
   });
 
   it("returns 409 when slots are sold out", async () => {
-    getUser.mockResolvedValue({ data: { user: { id: "u1", email: "t@x.com" } } });
+    getUser.mockResolvedValue({ data: { user: {
+      id: "u1",
+      email: "t@x.com",
+      email_confirmed_at: "2026-07-01T00:00:00Z",
+      app_metadata: { role: "service_provider" },
+    } } });
     createPlacementCheckout.mockRejectedValue(new PlacementPurchaseError("sold_out", "All slots taken."));
     const res = await POST(postReq({ productId: PRODUCT_ID }));
     expect(res.status).toBe(409);
   });
 
   it("returns a checkout url for an eligible trader", async () => {
-    getUser.mockResolvedValue({ data: { user: { id: "u1", email: "t@x.com" } } });
+    getUser.mockResolvedValue({ data: { user: {
+      id: "u1",
+      email: "t@x.com",
+      email_confirmed_at: "2026-07-01T00:00:00Z",
+      app_metadata: { role: "service_provider" },
+    } } });
     createPlacementCheckout.mockResolvedValue({ checkout_url: "https://stripe.test/session" });
     const res = await POST(postReq({ productId: PRODUCT_ID }));
     expect(res.status).toBe(201);

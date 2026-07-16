@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   invoiceTotalPence,
@@ -25,6 +26,8 @@ function formatGbp(pence: number): string {
 }
 
 export async function POST(_request: NextRequest, { params }: { params: Params }) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id } = await params;
   const supabase = await createClient();
 
