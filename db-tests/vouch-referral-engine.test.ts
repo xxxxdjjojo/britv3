@@ -134,6 +134,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("canonical vouch and referral schema"
     expect(db.sql(`select has_table_privilege('service_role','public.vouch_requests','INSERT');`)).toBe("t");
     expect(db.sql(`select has_table_privilege('authenticated','public.provider_referrals','UPDATE');`)).toBe("f");
     expect(db.sql(`select has_table_privilege('authenticated','public.provider_references','INSERT');`)).toBe("f");
+    expect(db.sql(`select has_column_privilege('authenticated','public.referrals','provider_state','INSERT');`)).toBe("f");
   });
 
   it("derives a provider's peer and client progress", () => {

@@ -129,6 +129,14 @@ grant select, insert, update, delete on table public.vouch_requests, public.vouc
   public.referral_credits, public.fraud_flags to service_role;
 
 revoke insert, update, delete on table public.provider_references from anon, authenticated;
+-- Preserve the legacy pending-attribution insert surface temporarily, but do
+-- not allow callers to forge per-invite tokens or provider state. PR2 moves
+-- legacy attribution behind the authenticated callback before removing this.
+revoke insert on table public.referrals from authenticated;
+grant insert (
+  referrer_id, referred_id, referral_code, track, status,
+  referred_name, created_at, converted_at
+) on table public.referrals to authenticated;
 drop policy if exists provider_referrals_insert_own on public.provider_referrals;
 drop policy if exists "provider_referrals_insert_own" on public.provider_referrals;
 drop policy if exists provider_referrals_update_own on public.provider_referrals;

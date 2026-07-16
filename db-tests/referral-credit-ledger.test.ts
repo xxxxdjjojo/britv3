@@ -89,6 +89,13 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
       .toBe(`referral-credit:${id}:${REFERRER}`);
   });
 
+  it("cannot credit the referred member or any non-referrer", () => {
+    const id = createReferral("converted");
+    expect(() => db.sql(`select public.issue_referral_credit('${id}','${REFERRED}',1);`))
+      .toThrow(/credit_recipient_must_be_referrer/);
+    expect(db.sql(`select count(*) from public.referral_credits where referral_id='${id}';`)).toBe("0");
+  });
+
   it("counts every non-void state toward the rolling 12-month cap", () => {
     const statuses = ["pending", "applying", "applied", "failed"];
     for (let i = 0; i < 12; i += 1) {
