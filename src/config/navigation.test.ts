@@ -345,6 +345,13 @@ describe("canonical hrefs", () => {
 // ---------------------------------------------------------------------------
 
 describe("role-aware quick links", () => {
+  it("keeps provider referrals reachable from desktop, mobile, and command navigation", () => {
+    const referralHref = "/dashboard/provider/referrals";
+    expect(ROLE_NAV_ITEMS.service_provider.map((item) => item.href)).toContain(referralHref);
+    expect(TAB_CONFIG.service_provider.map((item) => item.href)).toContain(referralHref);
+    expect(COMMAND_PALETTE_ROUTES.map((item) => item.href)).toContain(referralHref);
+  });
+
   it("uses renderable saved destinations for every role", () => {
     expect(savedDashboardPathForRole("homebuyer")).toBe("/dashboard/homebuyer/saved");
     expect(savedDashboardPathForRole("renter")).toBe("/dashboard/renter/saved");
@@ -439,5 +446,4 @@ describe("ROLE_PRIMARY_CTA", () => {
     expect(cta.href.startsWith("/")).toBe(true);
   });
 });
-
 
