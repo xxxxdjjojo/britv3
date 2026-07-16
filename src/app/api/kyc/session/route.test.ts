@@ -90,4 +90,20 @@ describe("POST /api/kyc/session", () => {
     const res = await POST(makeRequest());
     expect(res.status).toBe(500);
   });
+
+  it("429s once the per-user session limit is exceeded", async () => {
+    // Isolated user id so this test doesn't consume another test's token budget.
+    getUserMock.mockResolvedValue({ data: { user: { id: "rate-user", email: "r@example.com" } } });
+    createSessionMock.mockResolvedValue({ providerRef: "sess-r", status: "pending", redirectUrl: "https://verify.didit.me/session/r" });
+
+    // Limit is 5/hour; the 6th call for the same user must be rejected.
+    const statuses: number[] = [];
+    for (let i = 0; i < 6; i += 1) {
+      const res = await POST(makeRequest());
+      statuses.push(res.status);
+    }
+
+    expect(statuses.slice(0, 5)).toEqual([200, 200, 200, 200, 200]);
+    expect(statuses[5]).toBe(429);
+  });
 });
