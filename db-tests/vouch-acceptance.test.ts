@@ -66,6 +66,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
     db.sqlFile(migration("vouch_referral_contract_corrections"));
     db.sqlFile(migration("attribute_referral_signup"));
     db.sqlFile(migration("referral_attribution_and_pending_vouch_revoke"));
+    db.sqlFile(migration("provider_vouch_request_summaries"));
   });
 
   afterAll(() => db?.stop());
@@ -213,6 +214,23 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
       .toBe("revoked:true");
     expect(() => db.sql(`select public.revoke_vouch_request('${id}','${TARGET}');`))
       .toThrow(/vouch_request_not_pending/);
+  });
+
+  it("returns an owner-scoped lifecycle projection without invited PII", () => {
+    const requestId = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,invited_email)
+      values ('${TARGET}','client','private-client@example.test') returning id;`);
+
+    const projected = db.sql(`select id || ':' || voucher_kind || ':' || status
+      from public.provider_vouch_request_summaries('${TARGET}') where id='${requestId}';`);
+    expect(projected).toBe(`${requestId}:client:pending`);
+    expect(db.sql(`select count(*) from information_schema.routine_columns
+      where specific_schema='public'
+        and routine_name='provider_vouch_request_summaries'
+        and column_name in ('invited_email','voucher_profile_id','invite_token');`)).toBe("0");
+    expect(db.sql(`select has_function_privilege(
+      'authenticated','public.provider_vouch_request_summaries(uuid)','EXECUTE');`)).toBe("f");
+    expect(db.sql(`select has_function_privilege(
+      'service_role','public.provider_vouch_request_summaries(uuid)','EXECUTE');`)).toBe("t");
   });
 
   it("preserves evidence when a request is declined and an accepted vouch is revoked", () => {
