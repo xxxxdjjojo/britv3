@@ -84,7 +84,7 @@ describe("checkProviderCanTransact", () => {
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,
     });
-    expect(result).toMatchObject({ allowed: false, reason: "not_approved" });
+    expect(result).toMatchObject({ allowed: false, reason: "admin_unverified" });
   });
 
   it("blocks when subscription is not active", async () => {
@@ -127,7 +127,7 @@ describe("checkProviderCanTransact", () => {
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,
     });
-    expect(result).toMatchObject({ allowed: false, reason: "payout_not_connected" });
+    expect(result).toMatchObject({ allowed: false, reason: "stripe_connect_incomplete" });
   });
 
   it("treats a trialing subscription as active", async () => {
