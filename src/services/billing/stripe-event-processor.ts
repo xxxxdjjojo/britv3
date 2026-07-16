@@ -61,18 +61,23 @@ type ProviderReferral = Readonly<{
   provider_state: "gate_complete" | "converted" | "credited";
 }>;
 
+function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
+  const details = invoice.parent?.type === "subscription_details"
+    ? invoice.parent.subscription_details
+    : null;
+  const subscription = details?.subscription;
+  if (!subscription) return null;
+  return typeof subscription === "string" ? subscription : subscription.id;
+}
+
 async function requestProviderReferralCredit(
   supabase: SupabaseClient,
   invoice: Stripe.Invoice,
   customerId: string,
 ): Promise<void> {
   if (invoice.status !== "paid" || (invoice.amount_paid ?? 0) <= 0) return;
-  if (
-    invoice.parent?.type !== "subscription_details" ||
-    !invoice.parent.subscription_details?.subscription
-  ) {
-    return;
-  }
+  const paidSubscriptionId = invoiceSubscriptionId(invoice);
+  if (!paidSubscriptionId) return;
 
   const { data: subscription, error: subscriptionError } = await supabase
     .from("subscriptions")
@@ -97,11 +102,7 @@ async function requestProviderReferralCredit(
     return;
   }
 
-  const invoiceSubscription = invoice.parent.subscription_details.subscription;
-  const invoiceSubscriptionId = typeof invoiceSubscription === "string"
-    ? invoiceSubscription
-    : invoiceSubscription.id;
-  if (providerSubscription.stripe_subscription_id !== invoiceSubscriptionId) {
+  if (providerSubscription.stripe_subscription_id !== paidSubscriptionId) {
     return;
   }
 
@@ -413,12 +414,7 @@ export async function processStripeEvent(
         : (invoice.customer as Stripe.Customer)?.id ?? null;
 
       // Renew any boost placement billed by this invoice (no-op if none).
-      const invoiceSubscription = invoice.parent?.type === "subscription_details"
-        ? invoice.parent.subscription_details.subscription
-        : null;
-      const placementSubId = typeof invoiceSubscription === "string"
-        ? invoiceSubscription
-        : invoiceSubscription?.id ?? null;
+      const placementSubId = invoiceSubscriptionId(invoice);
       if (placementSubId) {
         const periodEnd = invoice.period_end ? new Date(invoice.period_end * 1000).toISOString() : null;
         await renewPlacementBySubscription(supabase, placementSubId, periodEnd);
