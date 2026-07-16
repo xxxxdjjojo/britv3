@@ -5,6 +5,11 @@ import { applyReferralCredit } from "../referral-credit-service";
 
 vi.mock("server-only", () => ({}));
 
+const { posthogCapture } = vi.hoisted(() => ({ posthogCapture: vi.fn() }));
+vi.mock("@/lib/analytics/posthog-server", () => ({
+  posthogServer: { capture: posthogCapture },
+}));
+
 function makeSupabaseClient() {
   const rpc = vi.fn().mockImplementation((name: string) => {
     if (name === "claim_referral_credit") {
@@ -14,6 +19,7 @@ function makeSupabaseClient() {
           referral_id: "referral_123",
           member_id: "referrer_123",
           credit_months: 1,
+          status: "applying",
           idempotency_key: "referral-credit:referral_123:referrer_123",
         },
         error: null,
@@ -64,6 +70,7 @@ describe("applyReferralCredit", () => {
 
     expect(rpc).toHaveBeenCalledWith("mark_referral_credit_failed", {
       p_credit_id: "credit_123",
+      p_application_token: expect.any(String),
       p_error_details: { message: "Stripe temporarily unavailable" },
     });
     expect(createBalanceTransaction).toHaveBeenCalledTimes(2);
@@ -75,7 +82,16 @@ describe("applyReferralCredit", () => {
     });
     expect(rpc).toHaveBeenCalledWith("mark_referral_credit_applied", {
       p_credit_id: "credit_123",
+      p_application_token: expect.any(String),
       p_stripe_balance_transaction_id: "cbtxn_123",
     });
+    expect(posthogCapture).toHaveBeenCalledWith(expect.objectContaining({
+      event: "credit_applied",
+      distinctId: "referrer_123",
+    }));
+    const appliedCallOrder = rpc.mock.invocationCallOrder.at(-1) ?? 0;
+    expect(posthogCapture.mock.invocationCallOrder[0]).toBeGreaterThan(
+      appliedCallOrder,
+    );
   });
 });

@@ -58,6 +58,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
     db.sqlFile(migration("vouch_referral_canonical_schema"));
     db.sqlFile(migration("referral_credit_transactions"));
     db.sqlFile(migration("vouch_referral_contract_corrections"));
+    db.sqlFile(migration("durable_referral_credit_application"));
   });
 
   afterAll(() => db?.stop());
@@ -131,5 +132,37 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
   it("keeps referral mutation RPCs service-only", () => {
     expect(db.sql(`select has_function_privilege('authenticated','public.advance_provider_referral(uuid,uuid,text)','EXECUTE');`)).toBe("f");
     expect(db.sql(`select has_function_privilege('service_role','public.issue_referral_credit(uuid,uuid,integer)','EXECUTE');`)).toBe("t");
+  });
+
+  it("persists retry attempts and a Stripe balance transaction atomically", () => {
+    const referralId = createReferral("converted");
+    const creditId = db.sql(`select public.issue_referral_credit('${referralId}','${REFERRER}',1);`);
+
+    const firstToken = "30000000-0000-4000-8000-000000000101";
+    const contenderToken = "30000000-0000-4000-8000-000000000102";
+    expect(db.sql(`select public.claim_referral_credit('${creditId}','${firstToken}')->>'status';`)).toBe("applying");
+    expect(db.sql(`select status || ':' || attempt_count from public.referral_credits where id='${creditId}';`))
+      .toBe("applying:1");
+    expect(db.sql(`select public.claim_referral_credit('${creditId}','${contenderToken}')->>'status';`)).toBe("busy");
+    expect(db.sql(`select attempt_count from public.referral_credits where id='${creditId}';`)).toBe("1");
+    expect(() => db.sql(`select public.mark_referral_credit_failed('${creditId}','${contenderToken}','{}'::jsonb);`))
+      .toThrow(/referral_credit_not_retryable/);
+
+    db.sql(`select public.mark_referral_credit_failed('${creditId}','${firstToken}','{"message":"temporary"}'::jsonb);`);
+    expect(db.sql(`select public.claim_referral_credit('${creditId}','${contenderToken}')->>'status';`)).toBe("applying");
+    expect(db.sql(`select status || ':' || attempt_count from public.referral_credits where id='${creditId}';`))
+      .toBe("applying:2");
+
+    db.sql(`select public.mark_referral_credit_applied('${creditId}','${contenderToken}','cbtxn_123');`);
+    expect(db.sql(`select status || ':' || stripe_balance_transaction_id from public.referral_credits where id='${creditId}';`))
+      .toBe("applied:cbtxn_123");
+    expect(db.sql(`select public.claim_referral_credit('${creditId}','${firstToken}')->>'status';`)).toBe("applied");
+    expect(db.sql(`select attempt_count from public.referral_credits where id='${creditId}';`)).toBe("2");
+  });
+
+  it("keeps credit application RPCs service-only", () => {
+    expect(db.sql(`select has_function_privilege('authenticated','public.claim_referral_credit(uuid,uuid)','EXECUTE');`)).toBe("f");
+    expect(db.sql(`select has_function_privilege('service_role','public.claim_referral_credit(uuid,uuid)','EXECUTE');`)).toBe("t");
+    expect(db.sql(`select has_function_privilege('anon','public.mark_referral_credit_applied(uuid,uuid,text)','EXECUTE');`)).toBe("f");
   });
 });

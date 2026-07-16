@@ -259,4 +259,29 @@ describe("processStripeEvent", () => {
       data: { creditId: "credit_123" },
     });
   });
+
+  it("does not convert a referral for a zero-value provider invoice", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_zero",
+      type: "invoice.payment_succeeded",
+      data: {
+        object: {
+          id: "in_provider_zero",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 0,
+          billing_reason: "subscription_create",
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(inngestSend).not.toHaveBeenCalled();
+  });
 });
