@@ -79,12 +79,24 @@ grant select, insert on public.referrals to authenticated;
 `;
 
 let db: DbHarness;
+const VERIFIED_AT_MIGRATION = "10000000-0000-4000-8000-000000000001";
+const PENDING_AT_MIGRATION = "10000000-0000-4000-8000-000000000002";
 
 describe.skipIf(!process.env.RUN_DB_TESTS)("canonical vouch and referral schema", () => {
   beforeAll(() => {
     db = startPostgres();
     applyPrerequisites(db);
     db.sql(PREREQUISITES_SQL);
+    for (const [id, status] of [
+      [VERIFIED_AT_MIGRATION, "verified"],
+      [PENDING_AT_MIGRATION, "pending"],
+    ]) {
+      db.sql(`insert into auth.users(id,email) values ('${id}','${id}@example.test');
+        insert into public.profiles(id,active_role,provider_verification_status)
+          values ('${id}','service_provider','${status}');
+        insert into public.service_provider_details(user_id,slug)
+          values ('${id}','provider-${id.slice(-1)}');`);
+    }
     db.sqlFile(migrationPath("vouch_referral_canonical_schema"));
   });
 
@@ -101,27 +113,10 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("canonical vouch and referral schema"
   });
 
   it("grandfathers only providers verified when the migration executes", () => {
-    const verified = "10000000-0000-4000-8000-000000000001";
-    const pending = "10000000-0000-4000-8000-000000000002";
-    for (const [id, status] of [[verified, "verified"], [pending, "pending"]]) {
-      db.sql(`insert into auth.users(id,email) values ('${id}','${id}@example.test');
-        insert into public.profiles(id,active_role,provider_verification_status)
-          values ('${id}','service_provider','${status}');
-        insert into public.service_provider_details(user_id,slug)
-          values ('${id}','provider-${id.slice(-1)}');`);
-    }
-
-    // Simulate the migration-time predicate for fixtures inserted after schema creation.
-    db.sql(`update public.service_provider_details spd
-      set vouch_gate_grandfathered_at = now()
-      from public.profiles p
-      where p.id = spd.user_id and p.provider_verification_status = 'verified'
-        and spd.vouch_gate_grandfathered_at is null;`);
-
     expect(db.sql(`select vouch_gate_grandfathered_at is not null
-      from public.service_provider_details where user_id = '${verified}';`)).toBe("t");
+      from public.service_provider_details where user_id = '${VERIFIED_AT_MIGRATION}';`)).toBe("t");
     expect(db.sql(`select vouch_gate_grandfathered_at is null
-      from public.service_provider_details where user_id = '${pending}';`)).toBe("t");
+      from public.service_provider_details where user_id = '${PENDING_AT_MIGRATION}';`)).toBe("t");
   });
 
   it("extends provider referrals without rewriting legacy states or tracks", () => {
@@ -149,6 +144,6 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("canonical vouch and referral schema"
       insert into public.service_provider_details(user_id,slug)
         values ('${provider}','progress-provider');`);
     expect(db.sql(`select peer_count || ':' || client_count || ':' || gate_complete
-      from public.vouch_gate_status('${provider}');`)).toBe("0:0:f");
+      from public.vouch_gate_status('${provider}');`)).toBe("0:0:false");
   });
 });
