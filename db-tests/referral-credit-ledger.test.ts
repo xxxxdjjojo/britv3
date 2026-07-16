@@ -57,6 +57,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("transactional provider referral cred
     }
     db.sqlFile(migration("vouch_referral_canonical_schema"));
     db.sqlFile(migration("referral_credit_transactions"));
+    db.sqlFile(migration("vouch_referral_contract_corrections"));
   });
 
   afterAll(() => db?.stop());

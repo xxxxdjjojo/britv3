@@ -98,6 +98,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("canonical vouch and referral schema"
           values ('${id}','provider-${id.slice(-1)}');`);
     }
     db.sqlFile(migrationPath("vouch_referral_canonical_schema"));
+    db.sqlFile(migrationPath("vouch_referral_contract_corrections"));
   });
 
   afterAll(() => db?.stop());
@@ -140,6 +141,16 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("canonical vouch and referral schema"
         and table_name='vouches'
         and column_name in ('voucher_trade','relationship_evidence');`))
       .toBe("relationship_evidence,voucher_trade");
+    const provider = "10000000-0000-4000-8000-000000000009";
+    db.sql(`insert into auth.users(id,email) values ('${provider}','channel@example.test');
+      insert into public.profiles(id,active_role) values ('${provider}','service_provider');`);
+    const requestId = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,invited_email,invite_channel)
+      values ('${provider}','client','client-channel@example.test','link') returning id;`);
+    expect(db.sql(`select invite_channel from public.vouch_requests where id='${requestId}';`)).toBe("link");
+    expect(() => db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,invited_email,invite_channel)
+      values ('${provider}','client','bad-channel@example.test','copy_link');`)).toThrow();
+    expect(() => db.sql(`insert into public.fraud_flags(subject_profile_id,vouch_request_id,flag_type)
+      values ('${provider}','${requestId}','arbitrary');`)).toThrow(/fraud_flags_type_check/);
   });
 
   it("exposes only owner reads and service writes", () => {

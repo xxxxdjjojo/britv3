@@ -53,7 +53,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
       [INELIGIBLE_PEER, "service_provider", "newpeer@example.test", "now() - interval '2 days'"],
       [CLIENT, "homebuyer", "client@example.test", "now()"],
     ]) {
-      db.sql(`insert into auth.users(id,email) values ('${id}','${email}');
+      db.sql(`insert into auth.users(id,email,email_confirmed_at) values ('${id}','${email}',now());
         insert into public.profiles(id,active_role,provider_verification_status,created_at)
         values ('${id}','${role}','verified',${created});`);
     }
@@ -61,6 +61,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
       ('${TARGET}','target'),('${ELIGIBLE_PEER}','eligible-peer'),('${INELIGIBLE_PEER}','new-peer');`);
     db.sqlFile(migration("vouch_referral_canonical_schema"));
     db.sqlFile(migration("vouch_acceptance_transitions"));
+    db.sqlFile(migration("vouch_referral_contract_corrections"));
   });
 
   afterAll(() => db?.stop());
@@ -85,11 +86,46 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
     const id = request("client", CLIENT, "client@example.test");
     expect(db.sql(`select outcome from public.accept_vouch_request('${id}','${CLIENT}',true);`)).toBe("accepted");
     const other = "20000000-0000-4000-8000-000000000005";
-    db.sql(`insert into auth.users(id,email) values ('${other}','other@example.test');
+    db.sql(`insert into auth.users(id,email,email_confirmed_at) values ('${other}','other@example.test',now());
       insert into public.profiles(id,active_role) values ('${other}','homebuyer');`);
     const mismatch = request("client", other, "invited@example.test");
     expect(() => db.sql(`select * from public.accept_vouch_request('${mismatch}','${other}',false);`))
       .toThrow(/invited_email_mismatch/);
+  });
+
+  it("atomically claims a client invite only after confirmed-email proof", () => {
+    const unconfirmed = "20000000-0000-4000-8000-000000000009";
+    db.sql(`insert into auth.users(id,email) values ('${unconfirmed}','claim@example.test');
+      insert into public.profiles(id,active_role) values ('${unconfirmed}','homebuyer');`);
+    const id = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,invited_email)
+      values ('${TARGET}','client','claim@example.test') returning id;`);
+    expect(() => db.sql(`select * from public.accept_vouch_request('${id}','${unconfirmed}',false);`))
+      .toThrow(/confirmed_email_required/);
+    expect(db.sql(`select voucher_profile_id is null from public.vouch_requests where id='${id}';`)).toBe("t");
+
+    db.sql(`update auth.users set email_confirmed_at=now() where id='${unconfirmed}';`);
+    expect(db.sql(`select outcome from public.accept_vouch_request('${id}','${unconfirmed}',false);`)).toBe("accepted");
+    expect(db.sql(`select voucher_profile_id='${unconfirmed}' from public.vouch_requests where id='${id}';`)).toBe("t");
+  });
+
+  it("persists expiry as a terminal transition", () => {
+    const id = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,voucher_profile_id,invited_email,expires_at)
+      values ('${TARGET}','client','${CLIENT}','client@example.test',now()-interval '1 second') returning id;`);
+    expect(db.sql(`select outcome from public.accept_vouch_request('${id}','${CLIENT}',false);`)).toBe("expired");
+    expect(db.sql(`select status from public.vouch_requests where id='${id}';`)).toBe("expired");
+    expect(db.sql(`select count(*) from public.vouches where request_id='${id}';`)).toBe("0");
+  });
+
+  it("binds a confirmed invited-email actor when declining", () => {
+    const actor = "20000000-0000-4000-8000-00000000000a";
+    db.sql(`insert into auth.users(id,email,email_confirmed_at)
+      values ('${actor}','decliner@example.test',now());
+      insert into public.profiles(id,active_role) values ('${actor}','homebuyer');`);
+    const id = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,invited_email)
+      values ('${TARGET}','client','decliner@example.test') returning id;`);
+    expect(db.sql(`select public.decline_vouch_request('${id}','${actor}');`)).toBe("t");
+    expect(db.sql(`select status || ':' || (voucher_profile_id='${actor}')::text
+      from public.vouch_requests where id='${id}';`)).toBe("declined:true");
   });
 
   it("flags a reciprocal peer vouch within 90 days without blocking it", () => {
@@ -107,7 +143,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
     const provider = "20000000-0000-4000-8000-000000000006";
     const peer = "20000000-0000-4000-8000-000000000007";
     for (const [id, email] of [[provider, "old-provider@example.test"], [peer, "old-peer@example.test"]]) {
-      db.sql(`insert into auth.users(id,email) values ('${id}','${email}');
+      db.sql(`insert into auth.users(id,email,email_confirmed_at) values ('${id}','${email}',now());
         insert into public.profiles(id,active_role,provider_verification_status,created_at)
           values ('${id}','service_provider','verified',now()-interval '30 days');
         insert into public.service_provider_details(user_id,slug,vouch_gate_grandfathered_at)
@@ -150,12 +186,15 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
   });
 
   it("preserves evidence when a request is declined and an accepted vouch is revoked", () => {
-    const declineId = request("client", CLIENT, "client@example.test");
-    expect(db.sql(`select public.decline_vouch_request('${declineId}','${CLIENT}');`)).toBe("t");
+    const revokingClient = "20000000-0000-4000-8000-000000000008";
+    db.sql(`insert into auth.users(id,email,email_confirmed_at) values ('${revokingClient}','revoker@example.test',now());
+      insert into public.profiles(id,active_role) values ('${revokingClient}','homebuyer');`);
+    const declineId = request("client", revokingClient, "revoker@example.test");
+    expect(db.sql(`select public.decline_vouch_request('${declineId}','${revokingClient}');`)).toBe("t");
     expect(db.sql(`select status from public.vouch_requests where id='${declineId}';`)).toBe("declined");
 
-    const acceptedId = request("client", CLIENT, "client@example.test");
-    const vouchId = db.sql(`select vouch_id from public.accept_vouch_request('${acceptedId}','${CLIENT}',false);`);
+    const acceptedId = request("client", revokingClient, "revoker@example.test");
+    const vouchId = db.sql(`select vouch_id from public.accept_vouch_request('${acceptedId}','${revokingClient}',false);`);
     expect(db.sql(`select public.revoke_vouch('${vouchId}','${TARGET}');`)).toBe("t");
     expect(db.sql(`select status from public.vouch_requests where id='${acceptedId}';`)).toBe("revoked");
     expect(db.sql(`select revoked_at is not null from public.vouches where id='${vouchId}';`)).toBe("t");
