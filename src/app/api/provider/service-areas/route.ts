@@ -17,11 +17,11 @@ export async function GET() {
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   const { data, error } = await supabase
     .from("provider_service_areas")
@@ -51,11 +51,11 @@ export async function POST(request: NextRequest) {
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   let body: {
     name?: string | null;
@@ -136,11 +136,11 @@ export async function DELETE(request: NextRequest) {
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   const { error } = await supabase
     .from("provider_service_areas")

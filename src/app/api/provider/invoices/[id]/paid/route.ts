@@ -30,11 +30,11 @@ export async function PATCH(
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = (providerProfile?.id as string | null | undefined) ?? user.id;
+  const providerId = (providerProfile?.user_id as string | null | undefined) ?? user.id;
 
   try {
     const invoice = await markInvoicePaid(supabase, providerId, invoiceId);

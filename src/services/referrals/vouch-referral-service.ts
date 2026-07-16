@@ -100,10 +100,13 @@ export async function respondToVouch(input: Readonly<{
   return { outcome: result?.outcome ?? input.decision, vouchId: result?.vouch_id };
 }
 
-export async function revokeVouchRequest(providerId: string, vouchId: string): Promise<void> {
+export async function revokeVouchRequest(providerId: string, requestId: string): Promise<void> {
   const admin = createAdminClient();
-  const { error } = await admin.rpc("revoke_vouch", { p_vouch_id: vouchId, p_provider_id: providerId });
-  if (error) throw new Error(`Vouch revocation failed: ${error.message}`);
+  const { error } = await admin.rpc("revoke_vouch_request", {
+    p_request_id: requestId,
+    p_provider_id: providerId,
+  });
+  if (error) throw new Error(`Vouch request revocation failed: ${error.message}`);
 }
 
 export async function getVouchGateStatus(profileId: string) {

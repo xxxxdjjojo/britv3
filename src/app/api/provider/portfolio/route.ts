@@ -27,10 +27,10 @@ const VALID_CATEGORIES = new Set([
 async function resolveProviderId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<string> {
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", userId)
     .maybeSingle();
-  return providerProfile?.id ?? userId;
+  return providerProfile?.user_id ?? userId;
 }
 
 /** GET /api/provider/portfolio — list portfolio items for authenticated provider */

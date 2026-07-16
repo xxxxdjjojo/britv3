@@ -144,6 +144,12 @@ export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(CORRELATION_ID_HEADER, correlationId);
   const { pathname } = request.nextUrl;
+  if (pathname.startsWith("/dashboard/provider")) {
+    requestHeaders.set(
+      "x-provider-access-requirement",
+      providerRequirementForPath(pathname),
+    );
+  }
 
   // ── Maintenance mode ────────────────────────────────────────────────────
   // Set NEXT_PUBLIC_MAINTENANCE_MODE=true in env to redirect all traffic to /maintenance.
@@ -186,8 +192,17 @@ export async function proxy(request: NextRequest) {
     response.cookies.set("truedeed_invite", inviteParam, ATTRIBUTION_COOKIE_OPTIONS);
   }
 
-  // Skip auth checks if Supabase is not configured
+  // Protected provider pages must never become public because configuration
+  // is missing. Public pages can still render a useful setup state.
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (pathname.startsWith("/dashboard/provider")) {
+      const unavailable = NextResponse.json(
+        { code: "provider_access_unavailable" },
+        { status: 503 },
+      );
+      setResponseHeaders(unavailable, nonce, correlationId);
+      return unavailable;
+    }
     setResponseHeaders(response, nonce, correlationId);
     return response;
   }

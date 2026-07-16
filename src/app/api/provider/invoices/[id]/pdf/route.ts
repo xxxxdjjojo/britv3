@@ -170,11 +170,11 @@ export async function GET(
   // Resolve provider
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id, business_name")
+    .select("user_id, business_name")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = (providerProfile?.id as string | null | undefined) ?? user.id;
+  const providerId = (providerProfile?.user_id as string | null | undefined) ?? user.id;
   const providerName =
     (providerProfile?.business_name as string | null | undefined) ??
     user.email ??

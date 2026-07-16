@@ -9,10 +9,10 @@ import {
 async function resolveProviderId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<string> {
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", userId)
     .maybeSingle();
-  return providerProfile?.id ?? userId;
+  return providerProfile?.user_id ?? userId;
 }
 
 /** PATCH /api/provider/portfolio/[id] — update a portfolio item */

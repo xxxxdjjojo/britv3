@@ -6,14 +6,15 @@ const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8"
 
 describe("vouch/referral security correction contracts", () => {
   it("makes referral attribution service-owned and preserves prior attribution", () => {
-    const sql = read("supabase/migrations/20260716184302_attribute_referral_signup.sql");
-    expect(sql).toMatch(/revoke\s+insert\s*,\s*update\s+on\s+public\.referrals\s+from\s+authenticated/i);
-    expect(sql).toMatch(/where\s+r\.referred_id\s*=\s*p_referred_profile_id[\s\S]*already_attributed/i);
-    expect(sql).toMatch(/grant execute on function public\.attribute_referral_signup[\s\S]*to service_role/i);
+    const sql = read("supabase/migrations/20260716203000_referral_attribution_and_pending_vouch_revoke.sql");
+    expect(sql).toMatch(/revoke\s+insert\s*,\s*update\s+on\s+(?:table\s+)?public\.referrals\s+from\s+authenticated/i);
+    const attribution = read("supabase/migrations/20260716184302_attribute_referral_signup.sql");
+    expect(attribution).toMatch(/where\s+r\.referred_id\s*=\s*p_referred_profile_id[\s\S]*already_attributed/i);
+    expect(attribution).toMatch(/grant execute on function public\.attribute_referral_signup[\s\S]*to service_role/i);
   });
 
   it("exposes a provider-owned pending-request revocation transition", () => {
-    const sql = read("supabase/migrations/20260716184302_attribute_referral_signup.sql");
+    const sql = read("supabase/migrations/20260716203000_referral_attribution_and_pending_vouch_revoke.sql");
     const service = read("src/services/referrals/vouch-referral-service.ts");
     expect(sql).toContain("revoke_vouch_request");
     expect(sql).toMatch(/status\s*=\s*'revoked'/);

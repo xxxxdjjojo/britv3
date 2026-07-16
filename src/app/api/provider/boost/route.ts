@@ -57,11 +57,11 @@ async function resolveProvider() {
 
   const { data: profile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId: string = profile?.id ?? user.id;
+  const providerId: string = profile?.user_id ?? user.id;
   return { supabase, user, providerId };
 }
 

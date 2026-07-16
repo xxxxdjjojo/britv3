@@ -265,6 +265,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
 
 /** Routes for unauthenticated users only (login, register, etc.) */
 export const AUTH_ROUTES: readonly string[] = [
+  "/auth/callback",
   "/login",
   "/register",
   "/forgot-password",

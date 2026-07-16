@@ -16,7 +16,7 @@ import { resolveProviderId } from "@/lib/provider/resolve-provider";
 import { confirmOnsitePayment } from "@/services/provider/provider-onsite-payment-service";
 
 export async function POST(request: Request) {
-  const providerAccess = await requireProviderAccess();
+  const providerAccess = await requireProviderAccess("transaction");
   if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 

@@ -1,10 +1,15 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { ProviderContextWrapper } from "@/components/dashboard/provider/ProviderContextWrapper";
 import { resolveProviderId } from "@/lib/provider/resolve-provider";
 import { dashboardPathForRole } from "@/lib/routes";
 import type { UserRole } from "@/types/auth";
-import { evaluateProviderAccess } from "@/services/provider/provider-access-policy";
+import {
+  evaluateProviderAccess,
+  isVouchGateBypassed,
+  type ProviderAccessRequirement,
+} from "@/services/provider/provider-access-policy";
 import { getProviderAccessState } from "@/services/provider/provider-access-state";
 
 export default async function ProviderLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -33,13 +38,20 @@ export default async function ProviderLayout({ children }: Readonly<{ children: 
       </section>
     );
   }
-  const layoutDecision = evaluateProviderAccess(accessState, "progress");
+  const headersList = await headers();
+  const requirementHeader = headersList.get("x-provider-access-requirement");
+  const requirement: ProviderAccessRequirement =
+    requirementHeader === "progress" ? "progress" : "business";
+  const layoutDecision = evaluateProviderAccess(accessState, requirement, {
+    vouchGateBypass: isVouchGateBypassed(),
+  });
 
   if (!layoutDecision.allowed) {
     const activeRole = accessState.role as UserRole | null | undefined;
-    redirect(
-      activeRole ? dashboardPathForRole(activeRole) : "/dashboard/homebuyer",
-    );
+    if (layoutDecision.reason === "wrong_role") {
+      redirect(activeRole ? dashboardPathForRole(activeRole) : "/dashboard/homebuyer");
+    }
+    redirect("/dashboard/provider/verification");
   }
 
   let providerIdentity: Awaited<ReturnType<typeof resolveProviderId>>;
