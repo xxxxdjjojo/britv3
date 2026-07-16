@@ -64,4 +64,10 @@ describe("reconcilePendingKyc", () => {
     fetchMock.mockRejectedValue(new Error("network"));
     await expect(reconcilePendingKyc("user-1")).resolves.toBeUndefined();
   });
+
+  it("swallows a rejecting profile read (never crashes the page render)", async () => {
+    maybeSingleMock.mockRejectedValue(new Error("db down"));
+    await expect(reconcilePendingKyc("user-1")).resolves.toBeUndefined();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

@@ -17,18 +17,21 @@ const DECISION_URL = (sessionId: string) =>
 export async function reconcilePendingKyc(userId: string): Promise<void> {
   if (env.KYC_PROVIDER !== "didit" || !env.KYC_API_KEY) return;
 
-  const admin = createAdminClient();
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("kyc_status, kyc_provider_ref")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (!profile || profile.kyc_status !== "pending" || !profile.kyc_provider_ref) {
-    return;
-  }
-
+  // The whole body is wrapped: this runs during a page render, so a rejecting
+  // DB read or fetch must never escape and crash the route. The webhook stays
+  // the authoritative writer if anything here fails.
   try {
+    const admin = createAdminClient();
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("kyc_status, kyc_provider_ref")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!profile || profile.kyc_status !== "pending" || !profile.kyc_provider_ref) {
+      return;
+    }
+
     const res = await fetch(DECISION_URL(profile.kyc_provider_ref), {
       headers: { "x-api-key": env.KYC_API_KEY },
     });
