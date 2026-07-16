@@ -26,7 +26,17 @@ type ProviderAccessFailure = {
 export async function requireProviderAccess(
   requirement: ProviderAccessRequirement = "business",
 ): Promise<ProviderAccessSuccess | ProviderAccessFailure> {
-  const supabase = await createClient();
+  let supabase: Awaited<ReturnType<typeof createClient>>;
+  try {
+    supabase = await createClient();
+  } catch {
+    return {
+      response: NextResponse.json(
+        { code: "provider_access_unavailable" },
+        { status: 503 },
+      ),
+    };
+  }
   const {
     data: { user },
     error,

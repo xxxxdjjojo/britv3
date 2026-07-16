@@ -248,6 +248,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/join",
   "/vouch",
   "/vouched",
+  "/auth/callback",
   // Pre-launch coming-soon splash + referral queue (public, unauthenticated)
   "/coming-soon",
   "/queue",
@@ -265,7 +266,6 @@ export const PUBLIC_ROUTES: readonly string[] = [
 
 /** Routes for unauthenticated users only (login, register, etc.) */
 export const AUTH_ROUTES: readonly string[] = [
-  "/auth/callback",
   "/login",
   "/register",
   "/forgot-password",

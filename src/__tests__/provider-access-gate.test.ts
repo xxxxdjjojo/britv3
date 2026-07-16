@@ -110,9 +110,8 @@ describe("provider dashboard access", () => {
     expect(response.status).toBe(503);
   });
 
-  it("keeps the authentication callback reachable without a session", async () => {
+  it("keeps the public authentication callback reachable even with a session", async () => {
     const supabase = providerSupabase();
-    supabase.auth.getUser.mockResolvedValue({ data: { user: null }, error: null });
     createServerClientMock.mockReturnValue(supabase);
     const { proxy } = await import("../proxy");
     const response = await proxy(

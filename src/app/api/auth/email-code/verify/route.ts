@@ -7,6 +7,7 @@ import { createAuthRateLimiter } from "@/lib/cache/redis";
 import { claimSessionToUser } from "@/services/valuation/session-repo";
 import { VALUATION_SESSION_COOKIE } from "@/lib/valuation/session-token";
 import { captureException } from "@/lib/observability/capture-exception";
+import { attributeReferralAfterAuthentication } from "@/services/referrals/vouch-referral-service";
 
 const verifyLimiter = createAuthRateLimiter(8, "10 m");
 
@@ -42,6 +43,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "That code is invalid or has expired." }, { status: 400 });
   }
   const user = data.user;
+  const cookieStore = await cookies();
+  let referralAttributionComplete = false;
 
   // Best-effort account seeding (non-fatal): give the new user a default role.
   try {
@@ -52,12 +55,31 @@ export async function POST(request: Request): Promise<NextResponse> {
     // ignore — the valuation does not depend on profile seeding
   }
 
-  // Attach the anonymous pending valuation to the now-verified user.
+  // OTP verification establishes the same authenticated boundary as the OAuth
+  // callback. Claim attribution here, and retain first-touch cookies on a
+  // transient failure so a later authenticated retry can complete it.
   try {
-    const cookieStore = await cookies();
+    const attribution = await attributeReferralAfterAuthentication({
+      userId: user.id,
+      referralCode: cookieStore.get("britestate_ref")?.value,
+      inviteToken: cookieStore.get("truedeed_invite")?.value,
+    });
+    referralAttributionComplete =
+      attribution.attributed || attribution.outcome === "already_attributed";
+  } catch (err) {
+    captureException(err, {
+      module: "referrals",
+      feature: "signup-attribution",
+      route: "/api/auth/email-code/verify",
+      operation: "otp-session",
+    });
+  }
+
+  // Attach the anonymous pending valuation to the now-verified user.
+  let resultId: string | null = null;
+  try {
     const vmpToken = cookieStore.get(VALUATION_SESSION_COOKIE)?.value;
-    const resultId = vmpToken ? await claimSessionToUser(vmpToken, user.id) : null;
-    return NextResponse.json({ ok: true, resultId });
+    resultId = vmpToken ? await claimSessionToUser(vmpToken, user.id) : null;
   } catch (err) {
     captureException(err, {
       module: "valuation",
@@ -65,7 +87,13 @@ export async function POST(request: Request): Promise<NextResponse> {
       route: "/api/auth/email-code/verify",
       operation: "claimSessionToUser",
     });
-    // The account is verified; surface success without a result link.
-    return NextResponse.json({ ok: true, resultId: null });
   }
+  // The account is verified even if valuation attachment or attribution is
+  // temporarily unavailable.
+  const response = NextResponse.json({ ok: true, resultId });
+  if (referralAttributionComplete) {
+    response.cookies.delete("britestate_ref");
+    response.cookies.delete("truedeed_invite");
+  }
+  return response;
 }
