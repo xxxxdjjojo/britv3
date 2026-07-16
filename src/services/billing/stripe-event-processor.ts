@@ -13,6 +13,7 @@ import { revalidateTag } from "next/cache";
 import { resolveInternalPlanId } from "@/lib/billing-config";
 import { captureException } from "@/lib/observability/capture-exception";
 import { appBaseUrl } from "@/config/brand";
+import { inngest } from "@/inngest/client";
 import {
   cancelPlacementBySubscription,
   fulfilPlacementCheckout,
@@ -52,6 +53,89 @@ async function lookupUserByCustomerId(
 
   if (!email) return null;
   return { userId, email, firstName };
+}
+
+type ProviderReferral = Readonly<{
+  id: string;
+  referrer_id: string;
+  provider_state: "gate_complete" | "converted" | "credited";
+}>;
+
+async function requestProviderReferralCredit(
+  supabase: SupabaseClient,
+  invoice: Stripe.Invoice,
+  customerId: string,
+): Promise<void> {
+  if (invoice.status !== "paid" || (invoice.amount_paid ?? 0) <= 0) return;
+
+  const { data: subscription, error: subscriptionError } = await supabase
+    .from("subscriptions")
+    .select("user_id, role")
+    .eq("stripe_customer_id", customerId)
+    .maybeSingle();
+  if (subscriptionError) {
+    throw new Error(
+      `Failed to identify paid provider subscription: ${subscriptionError.message}`,
+    );
+  }
+
+  const providerSubscription = subscription as {
+    user_id: string;
+    role: string | null;
+  } | null;
+  if (
+    !providerSubscription ||
+    !["provider", "service_provider"].includes(providerSubscription.role ?? "")
+  ) {
+    return;
+  }
+
+  const { data: referral, error: referralError } = await supabase
+    .from("referrals")
+    .select("id, referrer_id, provider_state")
+    .eq("referred_id", providerSubscription.user_id)
+    .in("provider_state", ["gate_complete", "converted", "credited"])
+    .maybeSingle();
+  if (referralError) {
+    throw new Error(`Failed to find provider referral: ${referralError.message}`);
+  }
+  if (!referral) return;
+
+  const providerReferral = referral as ProviderReferral;
+  if (providerReferral.provider_state === "gate_complete") {
+    const { error: transitionError } = await supabase.rpc(
+      "advance_provider_referral",
+      {
+        p_referral_id: providerReferral.id,
+        p_referred_profile_id: providerSubscription.user_id,
+        p_target_state: "converted",
+      },
+    );
+    if (transitionError) {
+      throw new Error(
+        `Failed to convert provider referral: ${transitionError.message}`,
+      );
+    }
+  }
+
+  const { data: creditId, error: creditError } = await supabase.rpc(
+    "issue_referral_credit",
+    {
+      p_referral_id: providerReferral.id,
+      p_member_id: providerReferral.referrer_id,
+      p_credit_months: 1,
+    },
+  );
+  if (creditError || !creditId) {
+    throw new Error(
+      `Failed to issue referral credit: ${creditError?.message ?? "no credit returned"}`,
+    );
+  }
+
+  await inngest.send({
+    name: "billing/referral.credit-requested",
+    data: { creditId: creditId as string },
+  });
 }
 
 /**
@@ -318,6 +402,8 @@ export async function processStripeEvent(
           .update({ status: "active", updated_at: new Date().toISOString() })
           .eq("stripe_customer_id", customerId)
           .eq("status", "past_due");
+
+        await requestProviderReferralCredit(supabase, invoice, customerId);
 
         const user = await lookupUserByCustomerId(supabase, customerId);
         userId = user?.userId ?? null;

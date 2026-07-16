@@ -67,6 +67,7 @@ function makeSupabaseMock(results: EqResult[] = []) {
       "upsert",
       "delete",
       "eq",
+      "in",
       "neq",
       "order",
       "range",
