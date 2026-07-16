@@ -51,7 +51,7 @@ beforeEach(() => {
 });
 
 describe("POST /api/provider/certificates", () => {
-  it("allows an incomplete provider to use the verification evidence flow", async () => {
+  it("blocks an incomplete provider from issuing a booking certificate", async () => {
     const { POST } = await import("./route");
     const response = await POST(
       new Request("https://truedeed.test/api/provider/certificates", {
@@ -61,9 +61,10 @@ describe("POST /api/provider/certificates", () => {
       }),
     );
 
-    expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toEqual({
-      error: "certificateType is required",
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toMatchObject({
+      code: "gate_incomplete",
+      reason: "email_unverified",
     });
   });
 });

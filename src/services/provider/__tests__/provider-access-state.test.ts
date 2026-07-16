@@ -43,4 +43,39 @@ describe("getProviderAccessState", () => {
 
     expect(state.role).toBe("homebuyer");
   });
+
+  it("does not accept another role's active subscription as provider billing", async () => {
+    const supabase = {
+      from: vi.fn((table: string) => {
+        if (table === "profiles") {
+          return query({
+            active_role: "service_provider",
+            provider_verification_status: "verified",
+          });
+        }
+        if (table === "subscriptions") {
+          return query({ status: "active", role: "agent" });
+        }
+        if (table === "stripe_connect_accounts") {
+          return query({ charges_enabled: true, payouts_enabled: true });
+        }
+        return query(null);
+      }),
+      rpc: vi.fn().mockResolvedValue({
+        data: [{
+          peer_count: 3,
+          client_count: 3,
+          grandfathered: true,
+          gate_complete: true,
+        }],
+        error: null,
+      }),
+    };
+
+    const state = await getProviderAccessState(supabase as never, "user-1", {
+      emailConfirmed: true,
+    });
+
+    expect(state.subscriptionActive).toBe(false);
+  });
 });
