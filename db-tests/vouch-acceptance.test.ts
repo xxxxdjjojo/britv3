@@ -223,10 +223,9 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
     const projected = db.sql(`select id || ':' || voucher_kind || ':' || status
       from public.provider_vouch_request_summaries('${TARGET}') where id='${requestId}';`);
     expect(projected).toBe(`${requestId}:client:pending`);
-    expect(db.sql(`select count(*) from information_schema.routine_columns
-      where specific_schema='public'
-        and routine_name='provider_vouch_request_summaries'
-        and column_name in ('invited_email','voucher_profile_id','invite_token');`)).toBe("0");
+    expect(db.sql(`select pg_get_function_result(
+      'public.provider_vouch_request_summaries(uuid)'::regprocedure);`))
+      .not.toMatch(/invited_email|voucher_profile_id|invite_token/);
     expect(db.sql(`select has_function_privilege(
       'authenticated','public.provider_vouch_request_summaries(uuid)','EXECUTE');`)).toBe("f");
     expect(db.sql(`select has_function_privilege(
