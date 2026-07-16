@@ -29,6 +29,7 @@ begin
     select count(*)
     from public.referrals r
     where r.referrer_id = new.referrer_id
+      and r.track = 'trade_to_trade'::public.referral_track
       and r.provider_state in (
         'converted'::public.referral_status,
         'credited'::public.referral_status
@@ -73,6 +74,7 @@ where r.provider_state in (
   'converted'::public.referral_status,
   'credited'::public.referral_status
 )
+  and r.track = 'trade_to_trade'::public.referral_track
 group by r.referrer_id
 having count(*) >= 3
 on conflict (provider_id, badge_type)

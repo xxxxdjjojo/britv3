@@ -11,7 +11,7 @@ export default async function ProviderReferralsPage() {
 
   if (!user) redirect("/login");
 
-  const stats = await getReferralDashboard(supabase, user.id);
+  const stats = await getReferralDashboard(supabase, user.id, { providerOnly: true });
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
@@ -22,7 +22,7 @@ export default async function ProviderReferralsPage() {
         </p>
       </div>
 
-      <ReferralDashboard stats={stats} />
+      <ReferralDashboard stats={stats} providerOnly />
     </div>
   );
 }

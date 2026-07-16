@@ -11,9 +11,10 @@ type Props = Readonly<{
   stats: ReferralStats;
   showCelebration?: boolean;
   celebrationTier?: string;
+  providerOnly?: boolean;
 }>;
 
-export function ReferralDashboard({ stats, showCelebration, celebrationTier }: Props) {
+export function ReferralDashboard({ stats, showCelebration, celebrationTier, providerOnly = false }: Props) {
   const [celebrating, setCelebrating] = useState(showCelebration ?? false);
   const [currentStats, setCurrentStats] = useState(stats);
   const [, setLoadingAll] = useState(false);
@@ -21,7 +22,9 @@ export function ReferralDashboard({ stats, showCelebration, celebrationTier }: P
   const handleShowAll = useCallback(async () => {
     setLoadingAll(true);
     try {
-      const res = await fetch("/api/referrals/v2?all=true");
+      const params = new URLSearchParams({ all: "true" });
+      if (providerOnly) params.set("provider", "true");
+      const res = await fetch(`/api/referrals/v2?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setCurrentStats(data);
@@ -29,7 +32,7 @@ export function ReferralDashboard({ stats, showCelebration, celebrationTier }: P
     } finally {
       setLoadingAll(false);
     }
-  }, []);
+  }, [providerOnly]);
 
   return (
     <div className="space-y-6">
