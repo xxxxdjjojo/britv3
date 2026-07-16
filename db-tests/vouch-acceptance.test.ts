@@ -93,8 +93,8 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
   });
 
   it("detects reciprocal peer vouches and records a durable fraud flag", () => {
-    const reverse = request("peer", ELIGIBLE_PEER, "peer@example.test");
-    db.sql(`select * from public.accept_vouch_request('${reverse}','${ELIGIBLE_PEER}',false);`);
+    expect(db.sql(`select count(*) from public.vouches
+      where provider_id='${TARGET}' and voucher_profile_id='${ELIGIBLE_PEER}' and revoked_at is null;`)).toBe("1");
     const reciprocalRequest = db.sql(`insert into public.vouch_requests(provider_id,voucher_kind,voucher_profile_id,invited_email)
       values ('${ELIGIBLE_PEER}','peer','${TARGET}','target@example.test') returning id;`);
     expect(db.sql(`select outcome from public.accept_vouch_request('${reciprocalRequest}','${TARGET}',false);`)).toBe("flagged");
@@ -106,5 +106,17 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("atomic vouch acceptance", () => {
     expect(db.sql(`select has_function_privilege('authenticated','public.accept_vouch_request(uuid,uuid,boolean)','EXECUTE');`)).toBe("f");
     expect(db.sql(`select has_function_privilege('service_role','public.accept_vouch_request(uuid,uuid,boolean)','EXECUTE');`)).toBe("t");
     expect(db.sql(`select has_function_privilege('anon','public.decline_vouch_request(uuid,uuid)','EXECUTE');`)).toBe("f");
+  });
+
+  it("preserves evidence when a request is declined and an accepted vouch is revoked", () => {
+    const declineId = request("client", CLIENT, "client@example.test");
+    expect(db.sql(`select public.decline_vouch_request('${declineId}','${CLIENT}');`)).toBe("t");
+    expect(db.sql(`select status from public.vouch_requests where id='${declineId}';`)).toBe("declined");
+
+    const acceptedId = request("client", CLIENT, "client@example.test");
+    const vouchId = db.sql(`select vouch_id from public.accept_vouch_request('${acceptedId}','${CLIENT}',false);`);
+    expect(db.sql(`select public.revoke_vouch('${vouchId}','${TARGET}');`)).toBe("t");
+    expect(db.sql(`select status from public.vouch_requests where id='${acceptedId}';`)).toBe("revoked");
+    expect(db.sql(`select revoked_at is not null from public.vouches where id='${vouchId}';`)).toBe("t");
   });
 });
