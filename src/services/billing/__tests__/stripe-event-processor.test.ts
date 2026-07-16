@@ -21,15 +21,6 @@ vi.mock("next/cache", () => ({
 }));
 
 // ---------------------------------------------------------------------------
-// referrals dependency — keep it inert; the unrelated branches don't touch
-// referrals at all.
-// ---------------------------------------------------------------------------
-
-vi.mock("@/services/referrals/unified-referral-service", () => ({
-  advanceReferralStatus: vi.fn().mockResolvedValue(null),
-}));
-
-// ---------------------------------------------------------------------------
 // SUT imported after mocks
 // ---------------------------------------------------------------------------
 
@@ -156,5 +147,49 @@ describe("processStripeEvent", () => {
     expect(result).toEqual({ userId: null });
     // No table accessed for unhandled types.
     expect(calls.length).toBe(0);
+  });
+
+  it("does not convert or credit a provider referral at checkout completion", async () => {
+    const { client, calls } = makeSupabaseMock([
+      { data: null, error: null },
+      { data: null, error: null },
+    ]);
+    const createBalanceTransaction = vi.fn();
+    const stripe = {
+      subscriptions: {
+        retrieve: vi.fn().mockResolvedValue({
+          id: "sub_provider_123",
+          customer: "cus_provider_123",
+          status: "active",
+          cancel_at_period_end: false,
+          items: {
+            data: [{
+              current_period_end: 1_800_000_000,
+              price: { id: "price_provider", unit_amount: 2_500, currency: "gbp" },
+            }],
+          },
+        }),
+      },
+      customers: { createBalanceTransaction },
+    } as unknown as Stripe;
+    const event = {
+      id: "evt_checkout_provider",
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_provider",
+          mode: "subscription",
+          subscription: "sub_provider_123",
+          customer: "cus_provider_123",
+          metadata: { user_id: "provider_123", role: "service_provider" },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripe, event);
+
+    expect(calls.map(({ table }) => table)).not.toContain("referrals");
+    expect(calls.map(({ table }) => table)).not.toContain("referral_rewards");
+    expect(createBalanceTransaction).not.toHaveBeenCalled();
   });
 });
