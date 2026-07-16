@@ -208,7 +208,9 @@ describe("processStripeEvent", () => {
     expect(createBalanceTransaction).not.toHaveBeenCalled();
   });
 
-  it("converts and records one referrer credit on the first positive paid provider invoice", async () => {
+  it.each(["invoice.payment_succeeded", "invoice.paid"] as const)(
+    "converts and records one referrer credit on the first positive paid provider %s event",
+    async (eventType) => {
     const { client, rpc } = makeSupabaseMock([
       { data: null, error: null },
       {
@@ -230,7 +232,7 @@ describe("processStripeEvent", () => {
     ]);
     const event = {
       id: "evt_invoice_provider_first_paid",
-      type: "invoice.payment_succeeded",
+      type: eventType,
       data: {
         object: {
           id: "in_provider_first_paid",
@@ -262,7 +264,8 @@ describe("processStripeEvent", () => {
       name: "billing/referral.credit-requested",
       data: { creditId: "credit_123" },
     });
-  });
+    },
+  );
 
   it("does not convert a referral for a zero-value provider invoice", async () => {
     const { client, rpc } = makeSupabaseMock([
