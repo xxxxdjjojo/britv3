@@ -24,6 +24,8 @@ export const env = createEnv({
     // ID verification / KYC (scaffolded; "stub" = no live vendor)
     KYC_PROVIDER: z.enum(["stub", "stripe", "didit"]).default("stub"),
     KYC_API_KEY: z.string().min(1).optional(),
+    DIDIT_WORKFLOW_ID: z.string().min(1).optional(),
+    DIDIT_WEBHOOK_SECRET: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -44,6 +46,8 @@ export const env = createEnv({
     REFERENCING_WEBHOOK_SECRET: process.env.REFERENCING_WEBHOOK_SECRET,
     KYC_PROVIDER: process.env.KYC_PROVIDER,
     KYC_API_KEY: process.env.KYC_API_KEY,
+    DIDIT_WORKFLOW_ID: process.env.DIDIT_WORKFLOW_ID,
+    DIDIT_WEBHOOK_SECRET: process.env.DIDIT_WEBHOOK_SECRET,
   },
   skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
 });
