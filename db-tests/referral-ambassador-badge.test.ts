@@ -52,6 +52,7 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("service-owned referral Ambassador ba
     db.sqlFile(migration("vouch_referral_canonical_schema"));
     db.sqlFile(migration("vouch_referral_contract_corrections"));
     db.sqlFile(migration("referral_ambassador_badge"));
+    db.sqlFile(migration("referral_badge_fk_guard_and_cleanup"));
   });
 
   afterAll(() => db?.stop());
@@ -70,6 +71,20 @@ describe.skipIf(!process.env.RUN_DB_TESTS)("service-owned referral Ambassador ba
   it("prevents authenticated providers from self-awarding the Ambassador badge", () => {
     expect(db.sql(`select has_table_privilege('authenticated','public.provider_badges','INSERT');`)).toBe("f");
     expect(db.sql(`select has_table_privilege('service_role','public.provider_badges','INSERT');`)).toBe("t");
+  });
+
+  it("lets a non-provider referrer's third conversion succeed without a badge", () => {
+    const nonProvider = "70000000-0000-4000-8000-000000000003";
+    db.sql(`insert into auth.users(id,email) values ('${nonProvider}','no-spd@example.test');
+      insert into public.profiles(id,active_role) values ('${nonProvider}','homebuyer');`);
+    for (let index = 0; index < 3; index += 1) {
+      db.sql(`insert into public.referrals(referrer_id,referral_code,provider_state)
+        values ('${nonProvider}','NOSPD-${index}','converted');`);
+    }
+    expect(db.sql(`select count(*) from public.referrals
+      where referrer_id='${nonProvider}' and provider_state='converted';`)).toBe("3");
+    expect(db.sql(`select count(*) from public.provider_badges
+      where provider_id='${nonProvider}';`)).toBe("0");
   });
 
   it("does not count legacy homeowner referrals toward provider Ambassador", () => {
