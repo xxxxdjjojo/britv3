@@ -1,7 +1,7 @@
 /**
  * provider-verification-service.ts
  *
- * Verification steps, reference requests, badges, and document uploads for
+ * Verification steps, canonical vouches, badges, and document uploads for
  * the provider dashboard. All functions accept a SupabaseClient as a parameter
  * so they work in both server and client contexts.
  */
@@ -69,7 +69,7 @@ export const VERIFICATION_STEPS = [
  * Reference statuses that count as still in flight for a verification step —
  * requested/awaiting-response, not yet a terminal (verified/failed) state.
  */
-const IN_FLIGHT = ["submitted", "sent", "pending"] as const;
+const IN_FLIGHT = ["pending"] as const;
 
 // ---------------------------------------------------------------------------
 // Return types
@@ -111,7 +111,7 @@ export type UpdateBadgeResult = Readonly<{
 /**
  * Returns an ordered array of 5 verification steps with their current status.
  * Status is derived by checking provider_documents (for id_check, insurance,
- * qualifications) and provider_references (for client_references, peer_references).
+ * qualifications) and canonical vouch_requests (for the 3+3 gate).
  *
  * Falls back to 'not_started' for every step on any database error.
  *
@@ -130,8 +130,8 @@ export async function getVerificationSteps(
         .eq("user_id", providerId),
 
       supabase
-        .from("provider_references")
-        .select("reference_type, status, requested_at")
+        .from("vouch_requests")
+        .select("voucher_kind, status, requested_at")
         .eq("provider_id", providerId),
     ]);
 
@@ -145,7 +145,7 @@ export async function getVerificationSteps(
         ? (docsResult.value.data ?? [])
         : [];
 
-    const refs: Array<{ reference_type: string; status: string; requested_at: string | null }> =
+    const refs: Array<{ voucher_kind: string; status: string; requested_at: string | null }> =
       refsResult.status === "fulfilled" && !refsResult.value.error
         ? (refsResult.value.data ?? [])
         : [];
@@ -191,21 +191,16 @@ export async function getVerificationSteps(
         }
       } else {
         // reference steps
-        const matchingRefs = refs.filter((r) => r.reference_type === step.reference_type);
+        const matchingRefs = refs.filter((r) => r.voucher_kind === step.reference_type);
 
         if (matchingRefs.length > 0) {
-          // Only 'verified' counts as done. 'submitted'/'sent'/'pending' are
-          // still in flight. Terminal-fail statuses ('rejected'/'declined'/
-          // 'expired'/'revoked'/'flagged') do not count toward either — a step
-          // with only failed refs reads as not_started (nothing usable), unless
-          // there is also an in-flight ref.
-          const hasVerified = matchingRefs.some((r) => r.status === "verified");
+          const acceptedCount = matchingRefs.filter((r) => r.status === "accepted").length;
           const hasInFlight = matchingRefs.some((r) =>
             (IN_FLIGHT as readonly string[]).includes(r.status),
           );
 
-          if (hasVerified) status = "approved";
-          else if (hasInFlight) status = "in_progress";
+          if (acceptedCount >= 3) status = "approved";
+          else if (acceptedCount > 0 || hasInFlight) status = "in_progress";
           else status = "not_started";
 
           const sorted = matchingRefs
