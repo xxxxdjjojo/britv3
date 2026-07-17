@@ -4,6 +4,8 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { UserDetailActions } from "@/components/admin/UserDetailActions";
+import { Tier1ActionsPanel } from "@/components/admin/Tier1ActionsPanel";
+import { actionsForTarget } from "@/services/admin/tier1-actions/registry";
 import { UserX } from "lucide-react";
 
 export default async function AdminUserDetailPage({
@@ -30,6 +32,14 @@ export default async function AdminUserDetailPage({
 
   const isBanned = Boolean(user.ban_reason || user.banned_at);
   const userStatus = isBanned ? "banned" : user.is_suspended ? "suspended" : "active";
+
+  const userTier1Actions = actionsForTarget("user").map((a) => ({
+    key: a.key,
+    label: a.label,
+    description: a.description,
+    risk: a.risk,
+    reversible: a.reversible,
+  }));
 
   return (
     <div>
@@ -122,6 +132,17 @@ export default async function AdminUserDetailPage({
               Actions
             </h2>
             <UserDetailActions userId={user.id} isSuspended={user.is_suspended ?? false} isBanned={isBanned} />
+          </div>
+
+          <div className="mt-6 rounded-xl border border-border bg-card p-6">
+            <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-1">
+              Tier-1 Actions
+            </h2>
+            <p className="mb-4 text-xs text-neutral-500">
+              Audited, permission-gated remediations. Preview before running; sensitive links are
+              emailed to the account, never shown here.
+            </p>
+            <Tier1ActionsPanel actions={userTier1Actions} targetId={user.id} />
           </div>
         </div>
       </div>

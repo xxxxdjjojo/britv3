@@ -295,6 +295,13 @@ export default async function OpenMetricsPage() {
           >
             our public pledges
           </Link>
+          . For live service health, see our{" "}
+          <Link
+            href="/status"
+            className="font-medium underline decoration-brand-primary/40 underline-offset-2 hover:text-brand-primary"
+          >
+            system status page
+          </Link>
           .
         </p>
       </footer>

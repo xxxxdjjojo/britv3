@@ -296,4 +296,51 @@ describe("Stripe webhook idempotency contract", () => {
     expect(mocks.subscriptionUpdate).not.toHaveBeenCalled();
     expect(mocks.revalidateTag).not.toHaveBeenCalled();
   });
+
+  it("rejects an invalid signature with 400 before touching the database", async () => {
+    // The security boundary: an attacker POSTing a forged event must be stopped
+    // by signature verification, before the service-role client or the
+    // idempotency claim ever run.
+    const event = makeUnhandledEvent("evt_sig_reject");
+    const { POST, mocks } = await importStripeWebhookRoute({
+      event,
+      claimResult: {
+        data: { status: "claimed", should_process: true },
+        error: null,
+      },
+    });
+    // Stripe's constructEvent throws on a bad/forged signature.
+    routeMocks.constructEvent.mockImplementation(() => {
+      throw new Error(
+        "No signatures found matching the expected signature for payload",
+      );
+    });
+
+    const response = await POST(makeStripeWebhookRequest());
+
+    expect(response.status).toBe(400);
+    expect(mocks.createClient).not.toHaveBeenCalled();
+    expect(mocks.markBillingEventProcessed).not.toHaveBeenCalled();
+    expect(mocks.subscriptionUpdate).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 when the stripe-signature header is missing", async () => {
+    const event = makeUnhandledEvent("evt_no_sig_header");
+    const { POST, mocks } = await importStripeWebhookRoute({
+      event,
+      claimResult: {
+        data: { status: "claimed", should_process: true },
+        error: null,
+      },
+    });
+
+    const request = new Request("https://britestate.test/api/webhooks/stripe", {
+      method: "POST",
+      body: "{}",
+    });
+    const response = await POST(request);
+
+    expect(response.status).toBe(400);
+    expect(mocks.createClient).not.toHaveBeenCalled();
+  });
 });

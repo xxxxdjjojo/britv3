@@ -41,6 +41,7 @@ import { referencingInitiate } from "@/inngest/functions/referencing-initiate";
 import { lifecycleDrip } from "@/inngest/functions/lifecycle-drip";
 import { truedeedReportSnapshots } from "@/inngest/functions/truedeed-report-snapshots";
 import { platformMetricsDaily } from "@/inngest/functions/platform-metrics-daily";
+import { alertEngineTick } from "@/inngest/functions/alert-engine-tick";
 import { landlordDeadlineDiary } from "@/inngest/functions/landlord-deadline-diary";
 import { boxingDayAnnualPush } from "@/inngest/functions/boxing-day-annual-push";
 import { referenceRequestEmail } from "@/inngest/functions/reference-request-email";
@@ -81,6 +82,7 @@ export const { GET, POST, PUT } = serve({
     lifecycleDrip,
     truedeedReportSnapshots,
     platformMetricsDaily,
+    alertEngineTick,
     landlordDeadlineDiary,
     boxingDayAnnualPush,
     referenceRequestEmail,

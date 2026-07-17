@@ -22,6 +22,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Probe /api/health and record result
+        id: probe
         env:
           # Supabase pooler connection string (postgres). Add via:
           #   gh secret set SUPABASE_DB_URL
@@ -41,6 +42,31 @@ jobs:
           else
             # curl itself failed (timeout / DNS / connect refused) → site down.
             echo "Probe: curl failed (timeout or connection error) ok=false"
+            ok=false
             psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
               "insert into public.uptime_checks (ok, latency_ms, source) values (false, null, 'github-actions');"
           fi
+          echo "site_down=$([ "$ok" = "false" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      # Dead-man switch: the in-app alert engine (alert-engine-tick) shares fate
+      # with Vercel/Inngest, so a full outage would silence it. This external
+      # step emails ops directly via the Resend HTTP API when the probe is down.
+      # Requires RESEND_API_KEY, OPS_ALERT_EMAIL, ALERT_FROM Actions secrets;
+      # skips quietly if any is unset so the probe itself never fails.
+      - name: Alert ops if the site is down
+        if: steps.probe.outputs.site_down == 'true'
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          OPS_ALERT_EMAIL: ${{ secrets.OPS_ALERT_EMAIL }}
+          ALERT_FROM: ${{ secrets.ALERT_FROM }}
+        run: |
+          set -u
+          if [ -z "${RESEND_API_KEY:-}" ] || [ -z "${OPS_ALERT_EMAIL:-}" ] || [ -z "${ALERT_FROM:-}" ]; then
+            echo "Dead-man switch not configured (missing secret) — skipping alert email."
+            exit 0
+          fi
+          curl -sS -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer ${RESEND_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{\"from\":\"${ALERT_FROM}\",\"to\":\"${OPS_ALERT_EMAIL}\",\"subject\":\"[TrueDeed CRITICAL] Uptime probe reports the site is DOWN\",\"html\":\"<p>The external uptime probe could not reach https://www.truedeed.co.uk/api/health. Investigate immediately — see docs/support/runbooks/site-down.md.</p>\"}" \
+            && echo "Dead-man alert email sent."

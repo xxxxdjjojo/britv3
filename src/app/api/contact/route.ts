@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Resend } from "resend";
 import { createRateLimiter } from "@/lib/cache/redis";
 import { escapeHtml } from "@/lib/escape-html";
+import { createTicket } from "@/services/support/ticket-service";
 
 // ---------------------------------------------------------------------------
 // Validation schema
@@ -76,6 +77,23 @@ export async function POST(request: Request): Promise<NextResponse> {
   // 3. Log submission (always -- useful for debugging even without email)
   console.info("[contact] Submission from", email, "|", subject);
 
+  // 3a. Persist as a support ticket (best-effort). If persistence fails we STILL
+  //     send the email below, so a support request is never lost.
+  let reference: string | undefined;
+  try {
+    const created = await createTicket({
+      email,
+      name,
+      subject,
+      body: message,
+      correlationId: request.headers.get("x-correlation-id"),
+      source: "contact_form",
+    });
+    reference = created.reference;
+  } catch (err) {
+    console.error("[contact] Ticket persistence failed (falling back to email-only):", err);
+  }
+
   // 4. Send email via Resend (graceful degradation if not configured)
   const resend = getResend();
   const supportEmail = process.env.SUPPORT_EMAIL ?? "support@truedeed.co.uk";
@@ -94,7 +112,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json(reference ? { success: true, reference } : { success: true });
 }
 
 // ---------------------------------------------------------------------------

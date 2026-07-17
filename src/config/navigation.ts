@@ -390,6 +390,7 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "Blog", href: "/blog" },
       { label: "Free Landlord Guide", href: "/guides/landlord-guide" },
       { label: "Help Centre", href: "/help" },
+      { label: "System Status", href: "/status" },
     ],
   },
   {

@@ -22,7 +22,10 @@ export type AdminPermission =
   | "view_api_usage"
   | "view_analytics"
   | "manage_team"
-  | "manage_roles";
+  | "manage_roles"
+  | "manage_status_page"
+  | "manage_support_tickets"
+  | "manage_credentials";
 
 export const ADMIN_ROLES: readonly AdminRole[] = [
   "super_admin",
@@ -39,22 +42,23 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     "manage_cms", "manage_seo",
     "send_campaigns", "manage_promo_codes", "view_revenue",
     "manage_feature_flags", "view_system_health", "view_api_usage", "view_analytics",
-    "manage_team", "manage_roles",
+    "manage_team", "manage_roles", "manage_status_page", "manage_support_tickets",
+    "manage_credentials",
   ],
   moderation_admin: [
     "manage_users", "suspend_users",
     "moderate_listings", "moderate_reviews", "moderate_content", "manage_verifications",
     "manage_cms", "manage_seo",
-    "view_audit_log",
+    "view_audit_log", "manage_support_tickets",
   ],
   ops_admin: [
     "manage_users", "ban_users", "suspend_users",
     "manage_gdpr", "manage_subscriptions", "manage_fraud", "view_audit_log",
-    "manage_verifications",
+    "manage_verifications", "manage_support_tickets",
   ],
   dev_admin: [
     "manage_feature_flags", "view_system_health", "view_api_usage", "view_analytics",
-    "view_audit_log",
+    "view_audit_log", "manage_status_page",
   ],
 };
 
@@ -94,6 +98,8 @@ export const ADMIN_ROUTE_PERMISSIONS: Record<string, AdminPermission> = {
   "/admin/team": "manage_team",
   "/admin/audit-log": "view_audit_log",
   "/admin/system-health": "view_system_health",
+  "/admin/status-incidents": "manage_status_page",
+  "/admin/support": "manage_support_tickets",
   "/admin/api-usage": "view_api_usage",
   "/admin/feature-flags": "manage_feature_flags",
   "/admin/gdpr": "manage_gdpr",

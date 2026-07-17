@@ -3,7 +3,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { Wrench, RefreshCw, Home, ExternalLink } from "lucide-react";
+import { Wrench, RefreshCw, Home, Activity } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import { captureException } from "@/lib/observability/capture-exception";
@@ -86,15 +86,13 @@ export default function ErrorPage({
 
           {/* Status link */}
           <div className="mt-8">
-            <a
-              href="https://status.truedeed.co.uk"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/status"
               className="inline-flex items-center gap-2 font-medium text-brand-primary underline-offset-4 hover:underline"
             >
-              <ExternalLink className="size-4" aria-hidden="true" />
+              <Activity className="size-4" aria-hidden="true" />
               Check our status page
-            </a>
+            </Link>
           </div>
         </div>
       </main>

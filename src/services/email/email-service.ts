@@ -24,6 +24,55 @@ function getResend(): Resend | null {
 const FROM = emailFromHeader();
 const BASE_URL = appUrl();
 
+/**
+ * Internal ops alert email (alert-engine-tick). Sent to OPS_ALERT_EMAIL — never
+ * to a customer, so it bypasses preference gating. No-ops (returns false) when
+ * OPS_ALERT_EMAIL or Resend is unconfigured; the alert_events row is still
+ * recorded regardless.
+ */
+/**
+ * Notify a customer that support has replied to their ticket. Points them at
+ * the portal rather than quoting the reply body (keeps PII out of email logs).
+ */
+export async function sendTicketReplyNotification(params: {
+  to: string;
+  reference: string;
+}): Promise<boolean> {
+  const resend = getResend();
+  if (!resend) return false;
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: params.to,
+      subject: `Re: your TrueDeed support request ${params.reference}`,
+      html: `<p>Our support team has replied to your request <strong>${params.reference}</strong>.</p><p>View the reply and respond at <a href="${BASE_URL}/settings/support">${BASE_URL}/settings/support</a>.</p>`,
+    });
+    return true;
+  } catch (e) {
+    console.error("[email-service] ticket reply notification failed", e);
+    return false;
+  }
+}
+
+export async function sendOpsAlertEmail(params: {
+  subject: string;
+  html: string;
+}): Promise<boolean> {
+  const to = process.env.OPS_ALERT_EMAIL;
+  const resend = getResend();
+  if (!to || !resend) {
+    console.warn("[email-service] OPS_ALERT_EMAIL or Resend not configured — alert email skipped");
+    return false;
+  }
+  try {
+    await resend.emails.send({ from: FROM, to, subject: params.subject, html: params.html });
+    return true;
+  } catch (e) {
+    console.error("[email-service] ops alert email failed", e);
+    return false;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------

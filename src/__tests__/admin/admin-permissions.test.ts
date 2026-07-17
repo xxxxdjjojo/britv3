@@ -49,6 +49,27 @@ describe("admin-permissions", () => {
       expect(hasPermission("dev_admin", "moderate_listings")).toBe(false);
     });
 
+    it("only super_admin and dev_admin can manage the status page", () => {
+      expect(hasPermission("super_admin", "manage_status_page")).toBe(true);
+      expect(hasPermission("dev_admin", "manage_status_page")).toBe(true);
+      expect(hasPermission("moderation_admin", "manage_status_page")).toBe(false);
+      expect(hasPermission("ops_admin", "manage_status_page")).toBe(false);
+    });
+
+    it("support staff (super/ops/moderation) can manage support tickets; dev_admin cannot", () => {
+      expect(hasPermission("super_admin", "manage_support_tickets")).toBe(true);
+      expect(hasPermission("ops_admin", "manage_support_tickets")).toBe(true);
+      expect(hasPermission("moderation_admin", "manage_support_tickets")).toBe(true);
+      expect(hasPermission("dev_admin", "manage_support_tickets")).toBe(false);
+    });
+
+    it("only super_admin can manage credentials (reset-link regeneration)", () => {
+      expect(hasPermission("super_admin", "manage_credentials")).toBe(true);
+      expect(hasPermission("ops_admin", "manage_credentials")).toBe(false);
+      expect(hasPermission("moderation_admin", "manage_credentials")).toBe(false);
+      expect(hasPermission("dev_admin", "manage_credentials")).toBe(false);
+    });
+
     it("returns false for unknown role", () => {
       expect(hasPermission("unknown" as AdminRole, "manage_users")).toBe(false);
     });
