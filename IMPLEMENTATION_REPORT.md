@@ -55,3 +55,51 @@ test results, Lighthouse medians, screenshot manifest, PostHog events, Stripe
 credit uniqueness, and Inngest retry status here. Configure the repository
 variable `VOUCH_PUBLIC_SLUG` to a genuine consented 3+3 production provider so
 the required post-deploy smoke cannot silently skip the public proof.
+
+## Integration addendum (2026-07-17)
+
+PRs 1–5 were integrated onto `codex/vouch-referral-integration` and hardened
+after a four-domain security review (access gate, Stripe credits, DB/RLS,
+routes/UI). Post-integration fixes applied on this branch:
+
+- **Security coverage restored** — `tests/security/rls-audit.test.ts` (whole-schema
+  RLS-enabled + policy-present audit) had been dropped by the test-collection-root
+  refactor. Relocated to `db-tests/rls-audit.test.ts` and extended `SENSITIVE_TABLES`
+  with `vouch_requests`, `vouches`, `referral_credits`, `fraud_flags`.
+- **Ambassador badge FK guard** (`20260717090000_referral_badge_fk_guard_and_cleanup.sql`)
+  — `provider_badges.provider_id` FK-references `service_provider_details(user_id)`;
+  a non-provider referrer reaching 3 conversions would violate the FK and roll back
+  the whole `advance_provider_referral`/credit transaction. The badge write is now
+  gated behind an existing provider row (trigger + backfill); non-provider conversions
+  succeed without a badge. Proven by a red-first DB test. Also dropped a now-inert
+  legacy `referrals` insert policy.
+- **Provider access dead-end fixed** — a `service_provider`-role user with no
+  `service_provider_details` row is now treated as onboarding-incomplete (allowed on
+  safe paths, denied business paths) instead of hard-503 on every route. Genuine DB
+  errors still surface as 503. Gate not weakened.
+- **Gate progress card surfaced** — the six-slot `VouchGateProgress` card is now
+  rendered first on `/dashboard/provider/verification` (the incomplete-provider
+  landing), fed by `getVouchGateStatus` + `listVouchRequests`.
+- **Guard/contract reconciliation** — 7 repo guards updated to the feature's
+  intended behavior (boost now gated not exempt; Stripe idempotency asserted at the
+  durable-worker layer; new public routes allow-listed off-nav; brand-green CTAs on
+  `/join` + `/vouch`).
+
+### Known limitation — refund clawback (deliberate deferral)
+
+`charge.refunded` does not transition a referral credit to `voided`. If a referred
+provider's first paid invoice is later refunded, the already-applied Stripe credit
+remains and continues to consume a slot in the rolling 12-per-12-month cap. This is
+a **deliberate product deferral** (reversing a granted credit moves real money and
+was outside PR4's scope) — not an oversight. Revisit as a follow-up if credit
+clawback-on-refund is desired.
+
+### Local verification (this branch)
+
+- `pnpm typecheck` → exit 0
+- `pnpm check:test-collection` → 868 files, one runner each
+- `pnpm exec vitest run` → 6187 passed / 28 skipped / 102 todo; **1 pre-existing
+  unrelated flake** (`src/services/truedeed/ppd-match-service.test.ts`, happy-dom
+  async-teardown timeout, byte-identical to `main`)
+- DB suite (Docker harness) → credit-ledger / badge / engine green
+- `next build` deferred to CI/Vercel preview.
