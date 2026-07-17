@@ -117,6 +117,38 @@ export async function getVouchGateStatus(profileId: string) {
   return row ?? { peer_count: 0, client_count: 0, grandfathered: false, gate_complete: false };
 }
 
+export type VouchRequestListItem = Readonly<{
+  id: string;
+  voucherKind: VoucherKind;
+  status: "pending" | "accepted" | "declined" | "expired" | "revoked";
+  requestedAt: string;
+  expiresAt: string;
+}>;
+
+export async function listVouchRequests(providerId: string): Promise<VouchRequestListItem[]> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("vouch_requests")
+    .select("id, voucher_kind, status, requested_at, expires_at")
+    .eq("provider_id", providerId)
+    .order("requested_at", { ascending: false });
+  if (error) throw new Error(`Vouch request list failed: ${error.message}`);
+  const rows = (data ?? []) as Array<{
+    id: string;
+    voucher_kind: VoucherKind;
+    status: VouchRequestListItem["status"];
+    requested_at: string;
+    expires_at: string;
+  }>;
+  return rows.map((row) => ({
+    id: row.id,
+    voucherKind: row.voucher_kind,
+    status: row.status,
+    requestedAt: row.requested_at,
+    expiresAt: row.expires_at,
+  }));
+}
+
 export async function createReferralInvite(input: Readonly<{
   referrerId: string;
   invitedEmail: string;
