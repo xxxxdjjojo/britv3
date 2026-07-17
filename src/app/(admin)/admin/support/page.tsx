@@ -39,7 +39,7 @@ export default async function AdminSupportPage() {
             <li key={ticket.id}>
               <Link
                 href={`/admin/support/${ticket.id}`}
-                className="flex flex-wrap items-center justify-between gap-3 p-4 hover:bg-neutral-50"
+                className="flex flex-wrap items-center justify-between gap-3 p-4 hover:bg-surface"
               >
                 <div>
                   <p className="font-medium text-neutral-900">{ticket.subject}</p>

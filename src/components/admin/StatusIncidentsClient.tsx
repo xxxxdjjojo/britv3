@@ -9,7 +9,7 @@ import {
   type IncidentSeverity,
   type IncidentStatus,
   type StatusIncident,
-} from "@/services/admin/status-incident-service";
+} from "@/services/admin/status-incident-constants";
 
 /**
  * Admin control surface for status incidents (PR 3). Create draft incidents,

@@ -113,12 +113,12 @@ export function Tier1ActionsPanel({
                 type="button"
                 onClick={() => handlePreview(action.key)}
                 disabled={busy}
-                className="mt-2 rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium hover:bg-neutral-50 disabled:opacity-50"
+                className="mt-2 rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium hover:bg-surface disabled:opacity-50"
               >
                 Preview
               </button>
             ) : (
-              <div className="mt-3 rounded-md bg-neutral-50 p-3">
+              <div className="mt-3 rounded-md bg-surface p-3">
                 {preview ? (
                   <>
                     <p className="text-xs font-medium text-neutral-800">{preview.summary}</p>

@@ -9,61 +9,20 @@ import { createClient } from "@/lib/supabase/server";
  * service-role client passed in from auditedAdminActionWithPermission).
  */
 
-export type IncidentSeverity = "minor" | "major" | "critical" | "maintenance";
-export type IncidentStatus =
-  | "investigating"
-  | "identified"
-  | "monitoring"
-  | "resolved"
-  | "scheduled";
-
-export const INCIDENT_SEVERITIES: readonly IncidentSeverity[] = [
-  "minor",
-  "major",
-  "critical",
-  "maintenance",
-];
-export const INCIDENT_STATUSES: readonly IncidentStatus[] = [
-  "investigating",
-  "identified",
-  "monitoring",
-  "resolved",
-  "scheduled",
-];
-
-/** How many days a resolved incident stays visible in the public history. */
-export const RESOLVED_HISTORY_DAYS = 7;
-
-export type StatusIncident = Readonly<{
-  id: string;
-  title: string;
-  severity: IncidentSeverity;
-  status: IncidentStatus;
-  affectedComponents: readonly string[];
-  startedAt: string;
-  resolvedAt: string | null;
-  scheduledFor: string | null;
-  scheduledUntil: string | null;
-  isPublished: boolean;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export type IncidentUpdate = Readonly<{
-  id: string;
-  incidentId: string;
-  status: string;
-  body: string;
-  createdAt: string;
-}>;
-
-export type IncidentBucket = "active" | "scheduled" | "resolved";
-
-export type PublicIncidents = Readonly<{
-  active: readonly StatusIncident[];
-  scheduled: readonly StatusIncident[];
-  recentResolved: readonly StatusIncident[];
-}>;
+// Domain constants + types live in a client-safe module (no server imports) so
+// Client Components can import the option arrays without dragging next/headers
+// into their bundle. Re-exported here so server-side consumers are unaffected.
+export * from "./status-incident-constants";
+import {
+  INCIDENT_SEVERITIES,
+  INCIDENT_STATUSES,
+  RESOLVED_HISTORY_DAYS,
+  type IncidentSeverity,
+  type IncidentStatus,
+  type IncidentBucket,
+  type StatusIncident,
+  type PublicIncidents,
+} from "./status-incident-constants";
 
 // ---- Pure helpers (unit-tested) -------------------------------------------
 

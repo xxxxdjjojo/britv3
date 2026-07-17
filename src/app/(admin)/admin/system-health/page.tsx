@@ -26,7 +26,7 @@ const DIAGNOSTIC_TONE: Record<DiagnosticLevel, string> = {
   ok: "bg-green-50 border-green-200 text-green-700",
   warn: "bg-yellow-50 border-yellow-200 text-yellow-700",
   critical: "bg-red-50 border-red-200 text-red-700",
-  unknown: "bg-neutral-50 border-neutral-200 text-neutral-500",
+  unknown: "bg-surface border-neutral-200 text-neutral-500",
 };
 
 function DiagnosticCard({ diagnostic }: { diagnostic: Diagnostic }) {

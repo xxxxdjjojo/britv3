@@ -46,13 +46,13 @@ export function TriagePacketButton({ ticketId }: Readonly<{ ticketId: string }>)
         type="button"
         onClick={handleGenerate}
         disabled={busy}
-        className="w-full rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium hover:bg-neutral-50 disabled:opacity-50"
+        className="w-full rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium hover:bg-surface disabled:opacity-50"
       >
         {busy ? "Generating…" : "Generate triage packet"}
       </button>
 
       {markdown !== null && (
-        <div className="rounded-md border border-neutral-200 bg-neutral-50">
+        <div className="rounded-md border border-neutral-200 bg-surface">
           <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-1.5">
             <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
               Redacted · Recommend mode

@@ -50,10 +50,10 @@ type ToneKey = "operational" | "degraded" | "outage";
 
 const TONE: Record<ToneKey, { text: string; bg: string; border: string; dot: string }> = {
   operational: {
-    text: "text-emerald-800",
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    dot: "bg-emerald-500",
+    text: "text-success",
+    bg: "bg-success/10",
+    border: "border-success/30",
+    dot: "bg-success",
   },
   degraded: {
     text: "text-amber-800",
