@@ -56,10 +56,23 @@ export async function getProviderAccessState(
       active_role: string | null;
       provider_verification_status: string | null;
     } | null;
-    if (!profile) throw new Error("Provider profile is missing");
 
-    const gate = ((gateResult.data as GateStatusRow[] | null)?.[0] ?? null);
-    if (!gate) throw new Error("Provider vouch status is missing");
+    // A provider mid-onboarding legitimately has no profile/vouch rows yet.
+    // "Row not found" is a normal incomplete state, not an outage — the query
+    // itself succeeded (firstError above already re-threw genuine DB errors as
+    // a 503). Fall back to the JWT role hint so a real service_provider stays
+    // allowed on the safe onboarding/progress paths while every unmet gate flag
+    // (admin verification, vouches, billing) defaults to false and keeps the
+    // business paths locked.
+    const role = profile?.active_role ?? options.roleHint ?? null;
+
+    const gate =
+      (gateResult.data as GateStatusRow[] | null)?.[0] ?? {
+        peer_count: 0,
+        client_count: 0,
+        grandfathered: false,
+        gate_complete: false,
+      };
 
     const subscription = subscriptionResult.data as {
       status: string;
@@ -71,11 +84,13 @@ export async function getProviderAccessState(
     } | null;
 
     return {
-      // The database role is authoritative. A JWT hint must never grant a
-      // provider capability after the user's active role changes.
-      role: profile.active_role,
+      // The database role is authoritative when a profile exists. A JWT hint
+      // must never grant a provider capability after the user's active role
+      // changes; it is used only as an onboarding fallback when no row exists
+      // yet, and it can only reach the safe progress paths (never business).
+      role,
       emailConfirmed: options.emailConfirmed,
-      adminVerified: profile.provider_verification_status === "verified",
+      adminVerified: profile?.provider_verification_status === "verified",
       peerVouchCount: gate.peer_count,
       clientVouchCount: gate.client_count,
       grandfathered: gate.grandfathered,
