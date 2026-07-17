@@ -18,6 +18,7 @@ const client = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 const PASSWORD = "VouchEvidence123!";
+const PRIMARY_REFERRAL_INVITE_TOKEN = "20000000-0000-4000-8000-000000000001";
 const NOW = "2026-07-16T12:00:00.000Z";
 const FUTURE = "2099-12-31T23:59:59.000Z";
 const PAST = "2026-01-01T00:00:00.000Z";
@@ -95,6 +96,40 @@ for (const provider of providers) ids[provider.key] = await ensureUser(provider,
 for (const peer of peers) ids[peer.key] = await ensureUser(peer, "service_provider");
 for (const customer of clients) ids[customer.key] = await ensureUser(customer, "homebuyer");
 for (const member of referred) ids[member.key] = await ensureUser(member, "service_provider");
+
+// Preserve the pre-existing authenticated dashboard-navigation suite in this
+// same serialized local run. Its provider accounts are created by the base
+// seed immediately before this script; make their canonical access state
+// complete without using the application bypass.
+const existingUsers = await authUsers();
+for (const email of [
+  "test-provider@truedeed.test",
+  "test-provider@britestate.test",
+]) {
+  const providerId = existingUsers.find((user) => user.email === email)?.id;
+  if (!providerId) throw new Error(`base provider fixture missing: ${email}`);
+  await requireSuccess(
+    `base provider verification ${email}`,
+    client
+      .from("profiles")
+      .update({ provider_verification_status: "verified" })
+      .eq("id", providerId),
+  );
+  await requireSuccess(
+    `base provider grandfathering ${email}`,
+    client
+      .from("service_provider_details")
+      .update({ vouch_gate_grandfathered_at: NOW })
+      .eq("user_id", providerId),
+  );
+  await requireSuccess(
+    `base provider subscription role ${email}`,
+    client
+      .from("subscriptions")
+      .update({ status: "active", role: "service_provider" })
+      .eq("user_id", providerId),
+  );
+}
 
 for (const provider of providers) {
   const id = ids[provider.key];
@@ -247,7 +282,7 @@ for (let index = 0; index < stages.length; index += 1) {
     track: "trade_to_trade",
     status: "pending",
     provider_state: state,
-    invite_token: uuid(32, index + 1),
+    invite_token: index === 0 ? PRIMARY_REFERRAL_INVITE_TOKEN : uuid(32, index + 1),
     invited_email: referred[index].email,
     signed_up_at: state === "invited" ? null : NOW,
     gate_completed_at: ["gate_complete", "converted"].includes(state) ? NOW : null,
@@ -306,6 +341,7 @@ const fixtureManifest = {
     validPeer: "10000000-0000-4000-8000-000000000002",
     expired: "10000000-0000-4000-8000-000000000003",
     revoked: "10000000-0000-4000-8000-000000000004",
+    providerReferralInvite: PRIMARY_REFERRAL_INVITE_TOKEN,
   },
 };
 mkdirSync("test-results/evidence/vouch-referral", { recursive: true });

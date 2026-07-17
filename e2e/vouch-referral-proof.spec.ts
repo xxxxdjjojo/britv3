@@ -24,8 +24,9 @@ test.describe("vouch gate evidence", () => {
       await captureVouchEvidence(page, testInfo, "blocked-provider-business-route", "gate_empty");
 
       await assertEvidencePage(page, "/dashboard/provider/billing");
+      await captureVouchEvidence(page, testInfo, "billing-exemption", "gate_empty");
       await assertEvidencePage(page, "/dashboard/provider/referrals");
-      await captureVouchEvidence(page, testInfo, "billing-referral-exemptions", "gate_empty");
+      await captureVouchEvidence(page, testInfo, "referral-exemption", "gate_empty");
     });
   });
 
@@ -101,17 +102,20 @@ test.describe("token-bound vouching", () => {
   test("renders explicit invalid and expired states", async ({ page }, testInfo) => {
     await assertEvidencePage(page, `/vouch/${fixture("invalid_token").token}`);
     await expect(page.getByText(/invalid|not found/i).first()).toBeVisible();
+    await captureVouchEvidence(page, testInfo, "invalid-token", "invalid_token");
 
     await assertEvidencePage(page, `/vouch/${fixture("expired_token").token}`);
     await expect(page.getByText(/expired/i).first()).toBeVisible();
-    await captureVouchEvidence(page, testInfo, "invalid-expired-token", "expired_token");
+    await captureVouchEvidence(page, testInfo, "expired-token", "expired_token");
   });
 });
 
 test("public vouched card is consent-safe", async ({ page }, testInfo) => {
   await assertEvidencePage(page, `/vouched/${fixture("gate_complete").slug}`);
-  await expect(page.getByText(/3 peer/i).first()).toBeVisible();
-  await expect(page.getByText(/3 client/i).first()).toBeVisible();
+  const card = page.locator("main");
+  await expect(card.getByRole("heading", { name: /vouched|verified/i }).first()).toBeVisible();
+  await expect(card).toContainText(/(?:3|three)\s+(?:trade\s+)?peer|peer[^\n]{0,20}(?:3|three)/i);
+  await expect(card).toContainText(/(?:3|three)\s+client|client[^\n]{0,20}(?:3|three)/i);
   await assertNoSensitiveVouchData(page);
   await captureVouchEvidence(page, testInfo, "public-vouched-card", "gate_complete");
 });

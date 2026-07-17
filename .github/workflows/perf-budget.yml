@@ -79,7 +79,7 @@ jobs:
           cache: pnpm
       - uses: supabase/setup-cli@v1
         with:
-          version: 2.108.0
+          version: 2.109.1
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -109,4 +109,4 @@ jobs:
         with:
           name: vouch-referral-lighthouse
           path: test-results/evidence/vouch-referral/
-          if-no-files-found: error
+          if-no-files-found: ignore

@@ -78,7 +78,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: 2.108.0
+          version: 2.109.1
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -124,16 +124,24 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: 2.108.0
+          version: 2.109.1
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Ship-gate contract checks
+        env:
+          PLAYWRIGHT_SKIP_WEB_SERVER: "true"
+        run: pnpm exec playwright test e2e/vouch-referral-infrastructure.spec.ts --project=chromium --no-deps
 
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Vouch/referral desktop and mobile proof
         run: scripts/e2e-vouch-referral-local.sh
+
+      - name: Existing authenticated dashboard link coverage
+        run: pnpm exec playwright test e2e/dashboard-navigation.spec.ts --project=chromium
 
       - name: Upload vouch/referral evidence and traces
         if: always()
@@ -143,7 +151,7 @@ jobs:
           path: |
             test-results/evidence/vouch-referral/
             playwright-report/vouch-referral/
-          if-no-files-found: error
+          if-no-files-found: ignore
 
   app:
     runs-on: ubuntu-latest

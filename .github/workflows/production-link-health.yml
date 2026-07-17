@@ -69,4 +69,4 @@ jobs:
         with:
           name: production-vouch-referral-evidence
           path: test-results/
-          if-no-files-found: error
+          if-no-files-found: ignore

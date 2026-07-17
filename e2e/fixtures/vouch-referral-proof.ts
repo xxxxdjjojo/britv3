@@ -111,13 +111,28 @@ async function assertPageQuality(page: Page): Promise<void> {
       .map((element) => Number(element.getAttribute("tabindex")))
       .filter((tabIndex) => tabIndex > 0);
 
-    return { overflow, unlabeled, smallActions, positiveTabIndexes };
+    const clippedText = [
+      ...document.querySelectorAll(
+        "h1, h2, h3, button, [data-vouch-slot], [data-referral-status]",
+      ),
+    ]
+      .filter(visible)
+      .filter((element) => element.textContent?.trim())
+      .filter(
+        (element) =>
+          element.scrollWidth - element.clientWidth > 1 ||
+          element.scrollHeight - element.clientHeight > 1,
+      )
+      .map((element) => element.textContent?.trim().slice(0, 80));
+
+    return { overflow, unlabeled, smallActions, positiveTabIndexes, clippedText };
   });
 
   expect(quality.overflow, "page should not overflow horizontally").toBeLessThanOrEqual(1);
   expect(quality.unlabeled, "every visible form field needs an accessible label").toEqual([]);
   expect(quality.smallActions, "vouch buttons need 44px minimum tap targets").toEqual([]);
   expect(quality.positiveTabIndexes, "focus order must follow DOM order").toEqual([]);
+  expect(quality.clippedText, "headings, statuses, and actions must not clip text").toEqual([]);
 }
 
 export async function assertNoSensitiveVouchData(page: Page): Promise<void> {
