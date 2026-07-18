@@ -248,4 +248,25 @@ describe("getUserEntityIds", () => {
     expect(entityIds).toContain("rfq-1");
     expect(entityIds).toContain("rfq-2");
   });
+
+  it("includes listing_ids from listing_agents so represented agents receive viewing events", async () => {
+    const emptyBuilder = makeTableBuilder({ then: mockListResult([]) });
+    const repBuilder = makeTableBuilder({
+      then: mockListResult([
+        { listing_id: "listing-represented-1" },
+        { listing_id: "listing-represented-2" },
+      ]),
+    });
+    const from = vi.fn().mockImplementation((table: string) =>
+      table === "listing_agents" ? repBuilder : emptyBuilder,
+    );
+
+    const entityIds = await getUserEntityIds({ from } as never, "agent-user-1");
+
+    expect(from).toHaveBeenCalledWith("listing_agents");
+    expect(repBuilder.eq).toHaveBeenCalledWith("agent_id", "agent-user-1");
+    expect(repBuilder.eq).toHaveBeenCalledWith("status", "active");
+    expect(entityIds).toContain("listing-represented-1");
+    expect(entityIds).toContain("listing-represented-2");
+  });
 });

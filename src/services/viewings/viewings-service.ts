@@ -7,6 +7,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ServiceError } from "@/types/service-error";
 import { isUuid } from "@/lib/validation/uuid";
+import { resolveAgentListingIds } from "@/services/listings/listing-agents-service";
 
 export type { ServiceError };
 
@@ -204,26 +205,28 @@ export type PendingViewingRequest = Readonly<{
 
 /**
  * Get pending (slot-less) viewing requests on the host's listings, newest first.
- * RLS lets the listing owner read viewings on their own listings.
+ * Scoped to listings owned by the host OR listings where the host is an active
+ * represented agent (parity with agent viewing slot scoping).
  */
 export async function getPendingViewingRequests(
   supabase: SupabaseClient,
   hostId: string,
 ): Promise<PendingViewingRequest[]> {
-  const { data: owned } = await supabase
-    .from("listings")
-    .select("id")
-    .eq("user_id", hostId);
-
-  const listingIds = ((owned as Array<{ id: string }> | null) ?? []).map((l) => l.id);
+  const listingIds = await resolveAgentListingIds(supabase, hostId);
   if (listingIds.length === 0) return [];
 
-  const { data: rows } = await supabase
+  const { data: rows, error: viewingsError } = await supabase
     .from("viewings")
     .select("id, listing_id, preferred_time, notes, created_at, user_id")
     .in("listing_id", listingIds)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
+
+  if (viewingsError) {
+    throw new Error(
+      `Failed to fetch pending viewing requests: ${viewingsError.message}`,
+    );
+  }
 
   const requests = (rows as Array<{
     id: string;

@@ -8,6 +8,8 @@ import { getTenancies } from "@/services/landlord/tenancy-service";
 import { getFinancialEntries } from "@/services/landlord/financial-service";
 import { getDocuments } from "@/services/landlord/document-service";
 import { getMaintenanceRequests } from "@/services/landlord/maintenance-service";
+import { getListingAgents } from "@/services/listings/listing-agents-service";
+import { AssignAgentManager } from "@/components/listings/AssignAgentManager";
 import { MaintenanceList } from "@/components/landlord/MaintenanceList";
 import DocumentList from "@/components/landlord/DocumentList";
 import { FinancialSummary } from "@/components/landlord/FinancialSummary";
@@ -38,6 +40,11 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
   if (!property) {
     notFound();
   }
+
+  // Fetch assigned agents only when a listing exists (agents key on listing_id).
+  const listingAgents = property.listing_id
+    ? await getListingAgents(supabase, property.listing_id).catch(() => [])
+    : [];
 
   const fullAddress = [
     property.address_line_1,
@@ -213,6 +220,18 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
                   </div>
                 )}
               </div>
+
+              {/* Estate agent assignment */}
+              {property.listing_id ? (
+                <AssignAgentManager
+                  listingId={property.listing_id}
+                  initialAgents={listingAgents}
+                />
+              ) : (
+                <div className="rounded-xl border p-4 text-sm text-muted-foreground">
+                  Create a listing to assign an estate agent.
+                </div>
+              )}
             </div>
           </div>
         </TabsContent>
