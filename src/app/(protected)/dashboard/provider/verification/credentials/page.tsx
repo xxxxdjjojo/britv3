@@ -15,7 +15,6 @@ type DocumentConfig = Readonly<{
 }>;
 
 const DOCUMENT_CONFIGS: DocumentConfig[] = [
-  { type: "identity_proof", label: "Identity Document" },
   { type: "public_liability_insurance", label: "Public Liability Insurance" },
   { type: "gas_safe_certificate", label: "Gas Safe Certificate" },
   { type: "niceic_registration", label: "NICEIC Registration" },

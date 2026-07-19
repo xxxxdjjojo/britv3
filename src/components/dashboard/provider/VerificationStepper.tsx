@@ -9,9 +9,9 @@ import {
   Star,
 } from "lucide-react";
 import type { VerificationStep } from "@/services/provider/provider-verification-service";
+import { StartIdCheckButton } from "./StartIdCheckButton";
 
 const STEP_LINKS: Record<string, string> = {
-  id_check: "/dashboard/provider/verification/credentials",
   insurance: "/dashboard/provider/verification/credentials",
   qualifications: "/dashboard/provider/verification/credentials",
   client_references: "/dashboard/provider/verification/client-references",
@@ -129,12 +129,16 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
             {/* Action links */}
             {actionLabel && (
               <div className="mt-auto flex items-center gap-3 pt-1">
-                <Link
-                  href={href}
-                  className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.08em] text-brand-primary transition-colors hover:text-brand-primary-dark"
-                >
-                  {actionLabel} &rarr;
-                </Link>
+                {step.stepId === "id_check" ? (
+                  <StartIdCheckButton label={actionLabel} />
+                ) : (
+                  <Link
+                    href={href}
+                    className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.08em] text-brand-primary transition-colors hover:text-brand-primary-dark"
+                  >
+                    {actionLabel} &rarr;
+                  </Link>
+                )}
                 {step.status === "rejected" && (
                   <Link
                     href="/help?topic=verification"

@@ -51,8 +51,14 @@ describe("VerificationStepper", () => {
   });
 
   it("shows 'Get started' action for not_started steps", () => {
-    render(<VerificationStepper steps={[makeStep()]} />);
+    render(<VerificationStepper steps={[makeStep({ stepId: "insurance" })]} />);
     expect(screen.getByRole("link", { name: /get started/i })).toBeInTheDocument();
+  });
+
+  it("renders a session-start button (not a link) for the id_check step", () => {
+    render(<VerificationStepper steps={[makeStep({ stepId: "id_check" })]} />);
+    expect(screen.getByRole("button", { name: /get started/i })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /get started/i })).not.toBeInTheDocument();
   });
 
   it("hides action link for approved steps", () => {
@@ -70,6 +76,7 @@ describe("VerificationStepper", () => {
       <VerificationStepper
         steps={[
           makeStep({
+            stepId: "insurance",
             status: "rejected",
             rejectionReason: "Document expired.",
           }),
