@@ -14,10 +14,12 @@ export async function GET(request: Request) {
   // ENG REVIEW 16A: Support ?all=true to fetch all referrals beyond default limit
   const url = new URL(request.url);
   const showAll = url.searchParams.get("all") === "true";
+  const providerOnly = url.searchParams.get("provider") === "true";
 
   try {
     const dashboard = await getReferralDashboard(supabase, user.id, {
       limit: showAll ? 1000 : undefined,
+      providerOnly,
     });
     return NextResponse.json(dashboard);
   } catch (err) {

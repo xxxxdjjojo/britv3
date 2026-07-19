@@ -39,6 +39,7 @@ vi.mock("@/services/referrals/unified-referral-service", () => ({
 const ROOT = process.cwd();
 const STRIPE_WEBHOOK_ROUTE = join(ROOT, "src/app/api/webhooks/stripe/route.ts");
 const STRIPE_EVENT_PROCESSOR = join(ROOT, "src/services/billing/stripe-event-processor.ts");
+const REFERRAL_CREDIT_SERVICE = join(ROOT, "src/services/billing/referral-credit-service.ts");
 const BILLING_EVENTS_HELPER = join(ROOT, "src/services/billing/billing-events.ts");
 const MIGRATIONS_DIR = join(ROOT, "supabase/migrations");
 
@@ -227,12 +228,25 @@ describe("Stripe webhook idempotency contract", () => {
   });
 
   it("uses deterministic Stripe idempotency keys for referral balance credits", () => {
-    // Referral credit dispatch lives in the shared event processor so the DLQ
-    // replay path uses the same idempotency keys as the live webhook.
-    const source = readFileSync(STRIPE_EVENT_PROCESSOR, "utf8");
+    // PR4 moved the Stripe balance-transaction call into a durable Inngest
+    // worker. The processor no longer performs the credit inline — it dispatches
+    // a durable event so the live webhook and the DLQ replay path converge on
+    // the same worker, which applies the credit with a stable idempotency key.
+    const processorSource = readFileSync(STRIPE_EVENT_PROCESSOR, "utf8");
+    const creditServiceSource = readFileSync(REFERRAL_CREDIT_SERVICE, "utf8");
 
-    expect(source).toContain("idempotencyKey");
-    expect(source).toContain("referral-credit");
+    // Processor dispatches the durable event instead of calling Stripe inline.
+    expect(processorSource).toContain("billing/referral.credit-requested");
+
+    // The durable worker service builds/uses the deterministic idempotency key
+    // (persisted on the credit row so DLQ replay reuses the SAME key — no
+    // double-apply). The stable key is "referral-credit:<referralId>:<referrerId>".
+    expect(creditServiceSource).toContain("idempotencyKey");
+    expect(creditServiceSource).toContain("idempotency_key");
+
+    // The stable key format itself is defined in the DB function that mints it.
+    const migration = readMigrationSources();
+    expect(migration).toContain("'referral-credit:'");
   });
 
   it("does not dispatch a duplicate event that was already processed", async () => {

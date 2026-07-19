@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { callClaude } from "@/services/ai/claude-service";
 
 // ---------------------------------------------------------------------------
@@ -75,6 +76,8 @@ Use sensible UK market rates. Apply VAT rate 20 for most labour/materials, 5 for
 // ---------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {

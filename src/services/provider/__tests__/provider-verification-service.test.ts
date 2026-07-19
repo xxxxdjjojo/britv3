@@ -16,6 +16,7 @@ vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
 
 import {
   getVerificationSteps,
+  uploadVerificationDocument,
   updateBadgeStatus,
 } from "../provider-verification-service";
 
@@ -59,6 +60,64 @@ const emptyClient = makeQueryMock({ data: null, error: null });
 // ---------------------------------------------------------------------------
 
 describe("getVerificationSteps", () => {
+  it("derives document progress from the canonical provider document schema", async () => {
+    let selectedColumns = "";
+    let ownerColumn = "";
+    const documents = [
+      {
+        document_type: "identity_proof",
+        verification_status: "approved",
+        updated_at: "2026-07-15T09:00:00Z",
+        reviewer_notes: null,
+      },
+      {
+        document_type: "insurance_certificate",
+        verification_status: "rejected",
+        updated_at: "2026-07-15T10:00:00Z",
+        reviewer_notes: "Policy has expired",
+      },
+    ];
+    const documentQuery: Record<string, unknown> = {};
+    documentQuery.select = vi.fn((columns: string) => {
+      selectedColumns = columns;
+      return documentQuery;
+    });
+    documentQuery.eq = vi.fn((column: string) => {
+      ownerColumn = column;
+      return documentQuery;
+    });
+    documentQuery.then = (
+      resolve: (value: unknown) => unknown,
+      reject: (reason: unknown) => unknown,
+    ) =>
+      Promise.resolve(
+        selectedColumns ===
+          "document_type, verification_status, updated_at, reviewer_notes" &&
+          ownerColumn === "user_id"
+          ? { data: documents, error: null }
+          : { data: null, error: { message: "provider_documents column does not exist" } },
+      ).then(resolve, reject);
+
+    const references = makeQueryMock({ data: [], error: null });
+    const client = {
+      from: vi.fn((table: string) =>
+        table === "provider_documents" ? documentQuery : references,
+      ),
+    } as unknown as typeof emptyClient;
+
+    const result = await getVerificationSteps("provider-uuid-1", client);
+
+    expect(result.find((step) => step.stepId === "id_check")?.status).toBe(
+      "approved",
+    );
+    expect(result.find((step) => step.stepId === "insurance")).toEqual(
+      expect.objectContaining({
+        status: "rejected",
+        rejectionReason: "Policy has expired",
+      }),
+    );
+  });
+
   it("returns an array of verification steps with the correct shape", async () => {
     const result = await getVerificationSteps("provider-uuid-1", emptyClient);
 
@@ -102,51 +161,100 @@ describe("getVerificationSteps", () => {
     expect(result.length).toBeGreaterThan(0);
   });
 
-  // -- corrected verified-only reference counting ---------------------------
+  // -- canonical vouch gate counting -----------------------------------------
 
   /**
    * Builds a client where provider_documents resolves to [] and
-   * provider_references resolves to the supplied rows.
+   * vouch_requests resolves to the supplied canonical lifecycle rows.
    */
-  function makeRefsClient(refs: Array<{ reference_type: string; status: string; requested_at: string | null }>) {
+  function makeRefsClient(refs: Array<{ voucher_kind: string; status: string; requested_at: string | null }>) {
     const refChain = makeQueryMock({ data: refs, error: null }) as unknown as Record<string, unknown>;
     const docChain = makeQueryMock({ data: [], error: null }) as unknown as Record<string, unknown>;
     return {
       from: vi.fn((table: string) =>
-        table === "provider_references" ? refChain : docChain,
+        table === "vouch_requests" ? refChain : docChain,
       ),
     } as unknown as typeof emptyClient;
   }
 
-  it("marks a reference step 'approved' only when a ref is verified", async () => {
+  it("marks a vouch step approved only after all three canonical vouches are accepted", async () => {
     const client = makeRefsClient([
-      { reference_type: "client", status: "verified", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "client", status: "accepted", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "client", status: "accepted", requested_at: "2026-07-02T00:00:00Z" },
+      { voucher_kind: "client", status: "accepted", requested_at: "2026-07-03T00:00:00Z" },
     ]);
     const result = await getVerificationSteps("provider-uuid-1", client);
     const step = result.find((s) => s.stepId === "client_references");
     expect(step?.status).toBe("approved");
   });
 
-  it("marks a reference step 'in_progress' for submitted/sent/pending refs", async () => {
+  it("marks a vouch step in progress for partial acceptance or a pending invite", async () => {
     const client = makeRefsClient([
-      { reference_type: "peer", status: "submitted", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "peer", status: "accepted", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "peer", status: "pending", requested_at: "2026-07-02T00:00:00Z" },
     ]);
     const result = await getVerificationSteps("provider-uuid-1", client);
     const step = result.find((s) => s.stepId === "peer_references");
-    // Corrected behavior: 'submitted' is in-flight, NOT done — only 'verified'
-    // counts as approved.
     expect(step?.status).toBe("in_progress");
   });
 
   it("does NOT count terminal-fail refs (rejected/declined/expired/revoked/flagged) as done", async () => {
     const client = makeRefsClient([
-      { reference_type: "client", status: "rejected", requested_at: "2026-07-01T00:00:00Z" },
-      { reference_type: "client", status: "flagged", requested_at: "2026-07-02T00:00:00Z" },
+      { voucher_kind: "client", status: "declined", requested_at: "2026-07-01T00:00:00Z" },
+      { voucher_kind: "client", status: "revoked", requested_at: "2026-07-02T00:00:00Z" },
     ]);
     const result = await getVerificationSteps("provider-uuid-1", client);
     const step = result.find((s) => s.stepId === "client_references");
     // No verified and no in-flight refs -> nothing usable -> not_started.
     expect(step?.status).toBe("not_started");
+  });
+});
+
+describe("uploadVerificationDocument", () => {
+  it("persists the uploaded file metadata using the canonical document columns", async () => {
+    const insert = vi.fn((payload: Record<string, unknown>) => {
+      const requiredKeys = [
+        "user_id",
+        "document_type",
+        "file_name",
+        "file_url",
+        "file_size",
+        "mime_type",
+        "verification_status",
+      ];
+      const valid = requiredKeys.every((key) => key in payload);
+      const terminal = {
+        single: vi.fn().mockResolvedValue(
+          valid
+            ? { data: { id: "document-1" }, error: null }
+            : { data: null, error: { message: "missing document metadata" } },
+        ),
+      };
+      return { select: vi.fn(() => terminal) };
+    });
+    const upload = vi.fn().mockResolvedValue({ error: null });
+    const client = {
+      storage: {
+        from: vi.fn((bucket: string) => ({
+          upload: bucket === "provider-docs"
+            ? upload
+            : vi.fn().mockResolvedValue({ error: { message: "unknown bucket" } }),
+          getPublicUrl: vi.fn(() => ({
+            data: { publicUrl: "https://files.example/identity.pdf" },
+          })),
+        })),
+      },
+      from: vi.fn(() => ({ insert })),
+    } as unknown as typeof emptyClient;
+    const file = new File(["identity"], "identity.pdf", {
+      type: "application/pdf",
+    });
+
+    await expect(
+      uploadVerificationDocument(client, "provider-uuid-1", "identity_proof", file),
+    ).resolves.toEqual(
+      expect.objectContaining({ document_id: "document-1" }),
+    );
   });
 });
 

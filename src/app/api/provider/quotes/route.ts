@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import {
   createQuote,
   getQuotesByProvider,
@@ -37,22 +37,17 @@ const createQuoteSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export async function GET(request: NextRequest) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
-  }
+  const access = await requireProviderAccess();
+  if (access.response) return access.response;
+  const { supabase, user } = access;
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   const { searchParams } = new URL(request.url);
   const rawStatus = searchParams.get("status");
@@ -72,22 +67,17 @@ export async function GET(request: NextRequest) {
 // ---------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
-  }
+  const access = await requireProviderAccess();
+  if (access.response) return access.response;
+  const { supabase, user } = access;
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   let rawBody: unknown;
   try {

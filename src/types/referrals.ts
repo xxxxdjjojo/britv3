@@ -14,6 +14,16 @@ export const REFERRAL_STATUSES = [
 
 export type ReferralStatus = (typeof REFERRAL_STATUSES)[number];
 
+export const PROVIDER_REFERRAL_STATES = [
+  "invited",
+  "signed_up",
+  "gate_complete",
+  "converted",
+  "credited",
+] as const;
+
+export type ProviderReferralState = (typeof PROVIDER_REFERRAL_STATES)[number];
+
 export const REFERRAL_TRACKS = [
   "trade_to_trade",
   "trade_to_homeowner",
@@ -47,6 +57,7 @@ export type Referral = Readonly<{
   referral_code: string;
   track: ReferralTrack;
   status: ReferralStatus;
+  provider_state: ProviderReferralState | null;
   referred_name: string | null;
   created_at: string;
   converted_at: string | null;
@@ -71,6 +82,9 @@ export type ReferralStats = Readonly<{
   successful_referrals: number;
   pending_referrals: number;
   total_rewards_pence: number;
+  credited_months: number;
+  credit_cap_used: number;
+  credit_cap_limit: 12;
   next_tier_threshold: number | null;
   referrals: readonly Referral[];
 }>;

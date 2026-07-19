@@ -82,19 +82,27 @@ describe("proxy redirect-target integrity", () => {
     ).toEqual([]);
   });
 
-  it("every verification-gated prefix has a /verification landing page", () => {
-    const prefixes = gatePrefixes(PROXY_SRC, "VERIFICATION_GATED_PREFIXES");
-    expect(prefixes.length).toBeGreaterThan(0);
+  it("the provider verification gate redirects to a real /verification landing page", () => {
+    // PR3 (vouch-gate) refactored the old `VERIFICATION_GATED_PREFIXES` array
+    // into `evaluateProviderAccess` (provider-access-policy.ts), which the proxy
+    // consults for every `/dashboard/provider` route. A denied provider is now
+    // redirected to the LITERAL `/dashboard/provider/verification` target.
+    //
+    // The invariant is unchanged: whatever landing page the verification gate
+    // sends a stranded provider to MUST exist (this is the same class of bug as
+    // the phantom `/dashboard/agent/verification`). Assert the gate is wired to
+    // `/dashboard/provider` and that its verification landing page resolves.
+    expect(PROXY_SRC).toContain('pathname.startsWith("/dashboard/provider")');
 
-    const broken = prefixes.filter(
-      (prefix) => resolveAppRoute(`${prefix}/verification`) === null,
-    );
+    const verificationLanding = "/dashboard/provider/verification";
+    // The proxy must actually redirect denied providers to this landing page…
+    expect(PROXY_SRC).toContain(verificationLanding);
+    // …and the landing page must exist (else providers 404 silently).
     expect(
-      broken,
-      `These verification-gated prefixes redirect to a missing landing page ` +
-        `(${broken.map((p) => `${p}/verification`).join(", ")}). Either the ` +
-        `gate must not cover this role or the landing page must be created.`,
-    ).toEqual([]);
+      resolveAppRoute(verificationLanding),
+      `The provider verification gate redirects to ${verificationLanding} but ` +
+        `no matching page.tsx exists — denied providers would 404.`,
+    ).not.toBeNull();
   });
 
   it("every subscription-gated prefix has a billing checkout landing page", () => {

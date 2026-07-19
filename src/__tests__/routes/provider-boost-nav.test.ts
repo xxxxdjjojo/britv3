@@ -18,10 +18,28 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { ROLE_NAV_ITEMS } from "@/config/navigation";
+import {
+  evaluateProviderAccess,
+  providerRequirementForPath,
+  type ProviderAccessState,
+} from "@/services/provider/provider-access-policy";
 
 import { KNOWN_OFFNAV_ROUTES, resolveAppRoute } from "./route-manifest";
 
 const BOOST_ROUTE = "/dashboard/provider/boost";
+
+/** A fully complete/verified provider — all gate requirements satisfied. */
+const COMPLETE_PROVIDER: ProviderAccessState = {
+  role: "service_provider",
+  emailConfirmed: true,
+  adminVerified: true,
+  peerVouchCount: 3,
+  clientVouchCount: 3,
+  grandfathered: false,
+  vouchComplete: true,
+  subscriptionActive: true,
+  stripeConnectReady: true,
+};
 
 describe("provider Boost My Profile is reachable from the live dashboard", () => {
   it("appears in the live provider sidebar nav (ROLE_NAV_ITEMS.service_provider)", () => {
@@ -45,13 +63,33 @@ describe("provider Boost My Profile is reachable from the live dashboard", () =>
     expect([...KNOWN_OFFNAV_ROUTES]).not.toContain(BOOST_ROUTE);
   });
 
-  it("is exempt from the provider verification/subscription proxy gates (page stays reachable)", () => {
-    const proxy = readFileSync(path.join(process.cwd(), "src/proxy.ts"), "utf8");
-    const start = proxy.indexOf("PROVIDER_OPEN_PREFIXES");
-    const openPrefixesBlock = proxy.slice(start, proxy.indexOf("isProviderOpenPage", start));
-    // Boost is a sales/eligibility page; it must be reachable so a provider can
-    // see what they'd get and the in-page eligibility banner. Purchase is gated
-    // server-side, not by hiding the page.
-    expect(openPrefixesBlock).toContain(BOOST_ROUTE);
+  it("is GATED behind the provider verification/vouch gate for incomplete providers", () => {
+    // PR3 removed the boost exemption: boost is a "business" surface, so an
+    // incomplete provider is redirected to /dashboard/provider/verification
+    // (the proxy maps every non-subscription denial to that landing page).
+    const requirement = providerRequirementForPath(BOOST_ROUTE);
+    expect(requirement).toBe("business");
+
+    const vouchIncomplete = evaluateProviderAccess(
+      { ...COMPLETE_PROVIDER, vouchComplete: false },
+      requirement,
+    );
+    expect(vouchIncomplete).toEqual({
+      allowed: false,
+      reason: "vouch_incomplete",
+    });
+
+    const adminUnverified = evaluateProviderAccess(
+      { ...COMPLETE_PROVIDER, adminVerified: false },
+      requirement,
+    );
+    expect(adminUnverified.allowed).toBe(false);
+  });
+
+  it("stays reachable for a complete/verified provider", () => {
+    const requirement = providerRequirementForPath(BOOST_ROUTE);
+    expect(evaluateProviderAccess(COMPLETE_PROVIDER, requirement)).toEqual({
+      allowed: true,
+    });
   });
 });

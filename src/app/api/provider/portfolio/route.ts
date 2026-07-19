@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import {
   getPortfolioItems,
   addPortfolioItem,
@@ -26,14 +27,16 @@ const VALID_CATEGORIES = new Set([
 async function resolveProviderId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<string> {
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", userId)
     .maybeSingle();
-  return providerProfile?.id ?? userId;
+  return providerProfile?.user_id ?? userId;
 }
 
 /** GET /api/provider/portfolio — list portfolio items for authenticated provider */
 export async function GET() {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {
@@ -56,6 +59,8 @@ export async function GET() {
 
 /** POST /api/provider/portfolio — add a portfolio item */
 export async function POST(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {

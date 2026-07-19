@@ -7,6 +7,11 @@ import {
 } from "@/services/provider/provider-verification-service";
 import { VerificationStepper } from "@/components/dashboard/provider/VerificationStepper";
 import { TrustScoreGauge } from "@/components/dashboard/provider/TrustScoreGauge";
+import { VouchGateProgress } from "@/components/vouch/VouchGateProgress";
+import {
+  getVouchGateStatus,
+  listVouchRequests,
+} from "@/services/referrals/vouch-referral-service";
 
 export const metadata = {
   title: "Verification & Trust Centre | Provider Dashboard",
@@ -64,10 +69,16 @@ export default async function VerificationOverviewPage() {
 
   const providerId = providerProfile?.id ?? user.id;
 
-  const [steps, badges] = await Promise.all([
+  const [steps, badges, gate, vouchRequests] = await Promise.all([
     getVerificationSteps(providerId, supabase),
     getProviderBadges(supabase, providerId).catch(() => []),
+    getVouchGateStatus(user.id),
+    listVouchRequests(user.id),
   ]);
+
+  // Show the 3-peer / 3-client gate card only while the trusted six is
+  // genuinely incomplete. A fully-vouched provider does not need the composer.
+  const showVouchGate = gate.peer_count < 3 || gate.client_count < 3;
 
   const trustScore = computeTrustScore(steps);
   const tierLabel = computeTierLabel(trustScore);
@@ -81,6 +92,18 @@ export default async function VerificationOverviewPage() {
 
   return (
     <div className="space-y-8 p-6 max-w-5xl">
+      {/* Vouch gate — the trusted-six progress card leads the incomplete-provider
+          surface so the 3-peer / 3-client requirement is the first thing seen. */}
+      {showVouchGate && (
+        <VouchGateProgress
+          peerCount={gate.peer_count}
+          clientCount={gate.client_count}
+          grandfathered={gate.grandfathered}
+          gateComplete={gate.gate_complete}
+          requests={vouchRequests}
+        />
+      )}
+
       {/* Page heading */}
       <div>
         <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">

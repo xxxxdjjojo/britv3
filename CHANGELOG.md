@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — Vouch Gate + Referral Engine
+
+### Added
+
+- Canonical, service-owned 3-peer/3-client vouch records, provider referral
+  states, and a durable Stripe credit ledger with locked database transitions.
+- A single database-backed provider access policy shared by routing, layouts,
+  APIs, and transaction guards.
+- Token-bound `/vouch/[token]`, `/join`, and consent-safe `/vouched/[slug]`
+  routes, plus authenticated referral attribution.
+- Deterministic localhost-only vouch/referral fixtures, Desktop Chrome and
+  iPhone 14 evidence tests, hard Lighthouse budgets, and production smoke
+  coverage.
+
+### Changed
+
+- Provider referral conversion occurs on the first positive paid subscription
+  invoice, never on Checkout completion, and credits only the referrer.
+- Provider jobs, quotes, reviews, payments, and boosts require the canonical
+  trust gate; progress, referrals, billing, account/settings, and help remain
+  available while incomplete.
+
 ## [Unreleased] — Message notifications & messaging hardening
 
 Makes the secure in-app messaging system notify recipients reliably before users

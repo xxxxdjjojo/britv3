@@ -11,11 +11,9 @@ import type Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidateTag } from "next/cache";
 import { resolveInternalPlanId } from "@/lib/billing-config";
-import { advanceReferralStatus } from "@/services/referrals/unified-referral-service";
-import { TIER_CONFIGS } from "@/lib/referral-tiers";
-import type { ReferralTier } from "@/types/referrals";
 import { captureException } from "@/lib/observability/capture-exception";
 import { appBaseUrl } from "@/config/brand";
+import { inngest } from "@/inngest/client";
 import {
   cancelPlacementBySubscription,
   fulfilPlacementCheckout,
@@ -55,6 +53,105 @@ async function lookupUserByCustomerId(
 
   if (!email) return null;
   return { userId, email, firstName };
+}
+
+type ProviderReferral = Readonly<{
+  id: string;
+  referrer_id: string;
+  provider_state: "gate_complete" | "converted" | "credited";
+}>;
+
+function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
+  const details = invoice.parent?.type === "subscription_details"
+    ? invoice.parent.subscription_details
+    : null;
+  const subscription = details?.subscription;
+  if (!subscription) return null;
+  return typeof subscription === "string" ? subscription : subscription.id;
+}
+
+async function requestProviderReferralCredit(
+  supabase: SupabaseClient,
+  invoice: Stripe.Invoice,
+  customerId: string,
+): Promise<void> {
+  if (invoice.status !== "paid" || (invoice.amount_paid ?? 0) <= 0) return;
+  const paidSubscriptionId = invoiceSubscriptionId(invoice);
+  if (!paidSubscriptionId) return;
+
+  const { data: subscription, error: subscriptionError } = await supabase
+    .from("subscriptions")
+    .select("user_id, role, stripe_subscription_id")
+    .eq("stripe_customer_id", customerId)
+    .maybeSingle();
+  if (subscriptionError) {
+    throw new Error(
+      `Failed to identify paid provider subscription: ${subscriptionError.message}`,
+    );
+  }
+
+  const providerSubscription = subscription as {
+    user_id: string;
+    role: string | null;
+    stripe_subscription_id: string | null;
+  } | null;
+  if (
+    !providerSubscription ||
+    !["provider", "service_provider"].includes(providerSubscription.role ?? "")
+  ) {
+    return;
+  }
+
+  if (providerSubscription.stripe_subscription_id !== paidSubscriptionId) {
+    return;
+  }
+
+  const { data: referral, error: referralError } = await supabase
+    .from("referrals")
+    .select("id, referrer_id, provider_state")
+    .eq("referred_id", providerSubscription.user_id)
+    .in("provider_state", ["gate_complete", "converted", "credited"])
+    .maybeSingle();
+  if (referralError) {
+    throw new Error(`Failed to find provider referral: ${referralError.message}`);
+  }
+  if (!referral) return;
+
+  const providerReferral = referral as ProviderReferral;
+  if (providerReferral.provider_state === "gate_complete") {
+    const { error: transitionError } = await supabase.rpc(
+      "advance_provider_referral",
+      {
+        p_referral_id: providerReferral.id,
+        p_referred_profile_id: providerSubscription.user_id,
+        p_target_state: "converted",
+      },
+    );
+    if (transitionError) {
+      throw new Error(
+        `Failed to convert provider referral: ${transitionError.message}`,
+      );
+    }
+  }
+
+  const { data: creditId, error: creditError } = await supabase.rpc(
+    "issue_referral_credit",
+    {
+      p_referral_id: providerReferral.id,
+      p_member_id: providerReferral.referrer_id,
+      p_credit_months: 1,
+    },
+  );
+  if (creditError || !creditId) {
+    throw new Error(
+      `Failed to issue referral credit: ${creditError?.message ?? "no credit returned"}`,
+    );
+  }
+
+  await inngest.send({
+    name: "billing/referral.credit-requested",
+    data: { creditId: creditId as string },
+  });
 }
 
 /**
@@ -103,6 +200,8 @@ export async function processStripeEvent(
             plan_name: resolveInternalPlanId(plan?.id, plan?.nickname ?? null),
             price_amount: item?.price.unit_amount ?? null,
             currency: plan?.currency ?? "gbp",
+            billing_interval: plan?.recurring?.interval ?? null,
+            billing_interval_count: plan?.recurring?.interval_count ?? null,
             current_period_end: item?.current_period_end
               ? new Date(item.current_period_end * 1000).toISOString()
               : null,
@@ -146,175 +245,6 @@ export async function processStripeEvent(
           });
         }
 
-        // ── Referral conversion ────────────────────────────────
-        // If this user was referred, advance their referral to "rewarded"
-        // and trigger reward calculation + credit application.
-        try {
-          const result = await advanceReferralStatus(supabase, userId, "rewarded");
-          if (result) {
-
-            // Find the referral to get the ID
-            const { data: referral } = await supabase
-              .from("referrals")
-              .select("id, referrer_id")
-              .eq("referred_id", userId)
-              .eq("status", "rewarded")
-              .maybeSingle();
-
-            if (referral) {
-              const ref = referral as { id: string; referrer_id: string };
-
-              // ENG REVIEW 5A: Get actual subscription price, don't hardcode
-              let planPrice = item?.price?.unit_amount;
-              if (!planPrice && session.subscription) {
-                // Fetch from Stripe subscription if line item price unavailable
-                const sub = await stripe.subscriptions.retrieve(session.subscription as string);
-                planPrice = sub.items.data[0]?.price?.unit_amount ?? null;
-              }
-              if (!planPrice) {
-                console.warn("[stripe-event-processor] Could not determine plan price for referral reward, skipping credit");
-                // Still create reward rows but with status 'failed'
-                await supabase.from("referral_rewards").upsert([
-                  { referral_id: ref.id, recipient_id: ref.referrer_id, reward_type: "subscription_credit", amount_pence: 0, status: "failed" },
-                  { referral_id: ref.id, recipient_id: userId, reward_type: "subscription_credit", amount_pence: 0, status: "failed" },
-                ], { onConflict: "referral_id,recipient_id,reward_type" });
-              } else {
-                // Create reward records for both parties
-                // Reward referrer: 1 month subscription credit
-                await supabase.from("referral_rewards").upsert({
-                  referral_id: ref.id,
-                  recipient_id: ref.referrer_id,
-                  reward_type: "subscription_credit",
-                  amount_pence: planPrice,
-                  status: "earned",
-                }, { onConflict: "referral_id,recipient_id,reward_type" });
-
-                // Reward referee: 1 month credit (applied to month 2)
-                await supabase.from("referral_rewards").upsert({
-                  referral_id: ref.id,
-                  recipient_id: userId,
-                  reward_type: "subscription_credit",
-                  amount_pence: planPrice,
-                  status: "earned",
-                }, { onConflict: "referral_id,recipient_id,reward_type" });
-
-                // ENG REVIEW 7C: Apply credits via Stripe customer balance
-                try {
-                  // Get referrer's Stripe customer ID
-                  const { data: referrerSub } = await supabase
-                    .from("subscriptions")
-                    .select("stripe_customer_id")
-                    .eq("user_id", ref.referrer_id)
-                    .maybeSingle();
-
-                  if (referrerSub) {
-                    const referrerCustomerId = (referrerSub as { stripe_customer_id: string }).stripe_customer_id;
-                    // Negative amount = credit on Stripe balance
-                    await stripe.customers.createBalanceTransaction(referrerCustomerId, {
-                      amount: -planPrice, // negative = credit
-                      currency: "gbp",
-                      description: `Referral reward: 1 month free (referral ${ref.id})`,
-                    }, {
-                      idempotencyKey: `referral-credit-${ref.id}-${ref.referrer_id}`,
-                    });
-
-                    // Update reward status to applied
-                    await supabase.from("referral_rewards")
-                      .update({ status: "applied", applied_at: new Date().toISOString() })
-                      .eq("referral_id", ref.id)
-                      .eq("recipient_id", ref.referrer_id);
-                  }
-
-                  // Apply credit to referee's account
-                  const refereeCustomerId = session.customer as string;
-                  if (refereeCustomerId) {
-                    await stripe.customers.createBalanceTransaction(refereeCustomerId, {
-                      amount: -planPrice,
-                      currency: "gbp",
-                      description: `Referral welcome credit: 1 month free (referral ${ref.id})`,
-                    }, {
-                      idempotencyKey: `referral-credit-${ref.id}-${userId}`,
-                    });
-
-                    await supabase.from("referral_rewards")
-                      .update({ status: "applied", applied_at: new Date().toISOString() })
-                      .eq("referral_id", ref.id)
-                      .eq("recipient_id", userId);
-                  }
-                } catch (creditErr) {
-                  // Set reward status to 'failed' for retry mechanism (see TODOS)
-                  captureException(creditErr, {
-                    module: "billing",
-                    feature: "stripe-event",
-                    operation: "applyReferralBalanceCredit",
-                    extra: { userId, referralId: ref.id },
-                  });
-                  await supabase.from("referral_rewards")
-                    .update({ status: "failed" })
-                    .eq("referral_id", ref.id)
-                    .eq("status", "earned");
-                }
-
-                // Send conversion email to referrer via Resend
-                try {
-                  const { data: referrerProfile } = await supabase
-                    .from("profiles")
-                    .select("first_name, email")
-                    .eq("id", ref.referrer_id)
-                    .single();
-                  const { data: refereeProfile } = await supabase
-                    .from("profiles")
-                    .select("first_name")
-                    .eq("id", userId)
-                    .single();
-
-                  if (referrerProfile && refereeProfile) {
-                    void (referrerProfile as { first_name: string; email: string });
-                    void (refereeProfile as { first_name: string });
-                    // TODO: Import and call Resend send with ReferralConvertedEmail template
-                    // await resend.emails.send({
-                    //   to: rp.email,
-                    //   subject: `You earned £${Math.floor(planPrice / 100)} free — ${re.first_name} just joined!`,
-                    //   react: ReferralConvertedEmail({ ... }),
-                    // });
-                  }
-                } catch (emailErr) {
-                  captureException(emailErr, {
-                    module: "billing",
-                    feature: "stripe-event",
-                    operation: "sendReferralConversionEmail",
-                    extra: { userId, referralId: ref.id },
-                  });
-                }
-
-                // Send tier upgrade email if tier changed
-                if (result.tierChanged && result.newTier !== "none") {
-                  try {
-                    const tierConfig = TIER_CONFIGS[result.newTier as Exclude<ReferralTier, "none">];
-                    void tierConfig; // Referenced for future email template
-                    // TODO: Import and call Resend send with ReferralTierUpgradeEmail template
-                    // await resend.emails.send({ ... });
-                  } catch (tierEmailErr) {
-                    captureException(tierEmailErr, {
-                      module: "billing",
-                      feature: "stripe-event",
-                      operation: "sendTierUpgradeEmail",
-                      extra: { userId, referralId: ref.id, newTier: result.newTier },
-                    });
-                  }
-                }
-              }
-            }
-          }
-        } catch (refErr) {
-          // Non-critical: log but don't fail the webhook
-          captureException(refErr, {
-            module: "billing",
-            feature: "stripe-event",
-            operation: "referralConversion",
-            extra: { userId, eventType: event.type },
-          });
-        }
       }
       break;
     }
@@ -346,6 +276,8 @@ export async function processStripeEvent(
             plan_name: resolveInternalPlanId(plan?.id, plan?.nickname ?? null),
             price_amount: item?.price.unit_amount ?? null,
             currency: plan?.currency ?? "gbp",
+            billing_interval: plan?.recurring?.interval ?? null,
+            billing_interval_count: plan?.recurring?.interval_count ?? null,
             current_period_end: item?.current_period_end
               ? new Date(item.current_period_end * 1000).toISOString()
               : null,
@@ -470,15 +402,19 @@ export async function processStripeEvent(
       break;
     }
 
-    case "invoice.payment_succeeded": {
+    case "invoice.payment_succeeded":
+      // `invoice.paid` is the canonical paid-invoice signal. Stripe may emit
+      // both for one invoice; handling only one prevents duplicate emails/jobs.
+      break;
+
+    case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = typeof invoice.customer === "string"
         ? invoice.customer
         : (invoice.customer as Stripe.Customer)?.id ?? null;
 
       // Renew any boost placement billed by this invoice (no-op if none).
-      const invoiceSubId = (invoice as unknown as { subscription?: string | { id: string } }).subscription;
-      const placementSubId = typeof invoiceSubId === "string" ? invoiceSubId : invoiceSubId?.id ?? null;
+      const placementSubId = invoiceSubscriptionId(invoice);
       if (placementSubId) {
         const periodEnd = invoice.period_end ? new Date(invoice.period_end * 1000).toISOString() : null;
         await renewPlacementBySubscription(supabase, placementSubId, periodEnd);
@@ -490,6 +426,8 @@ export async function processStripeEvent(
           .update({ status: "active", updated_at: new Date().toISOString() })
           .eq("stripe_customer_id", customerId)
           .eq("status", "past_due");
+
+        await requestProviderReferralCredit(supabase, invoice, customerId);
 
         const user = await lookupUserByCustomerId(supabase, customerId);
         userId = user?.userId ?? null;

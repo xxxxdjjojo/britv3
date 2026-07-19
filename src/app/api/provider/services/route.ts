@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import type { PricingType } from "@/types/provider-dashboard";
 
 const VALID_CATEGORIES = new Set([
@@ -28,6 +29,8 @@ const VALID_PRICING_TYPES = new Set<PricingType>([
 
 /** GET /api/provider/services — list services for authenticated provider */
 export async function GET() {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {
@@ -39,11 +42,11 @@ export async function GET() {
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   const { data, error } = await supabase
     .from("provider_services")
@@ -60,6 +63,8 @@ export async function GET() {
 
 /** POST /api/provider/services — create a new service */
 export async function POST(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   const {
@@ -71,11 +76,11 @@ export async function POST(request: NextRequest) {
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   let body: {
     name?: string;

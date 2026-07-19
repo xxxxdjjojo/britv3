@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import {
   PlacementPurchaseError,
   createPlacementCheckout,
@@ -27,6 +28,8 @@ async function resolveProvider() {
 }
 
 export async function GET() {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { supabase, user } = await resolveProvider();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -46,6 +49,8 @@ export async function GET() {
 const postSchema = z.object({ productId: z.string().uuid() });
 
 export async function POST(request: NextRequest) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { supabase, user } = await resolveProvider();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

@@ -72,6 +72,10 @@ const ORPHAN_ALLOWLIST = new Set<string>([
   "/services/mortgage-brokers",
   "/services/surveyors",
   "/services/tradespeople",
+  // Referral / waitlist landing page — reached via referral & vouch links and
+  // direct entry, not the global nav (the /vouch/[token] + /vouched/[slug]
+  // token/slug landing pages are dynamic and filtered out above).
+  "/join",
   // Utility / SEO pages reached via footer, sitemap, or direct entry.
   "/sitemap-page",
   "/post-a-job",

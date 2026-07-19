@@ -210,32 +210,56 @@ export async function advanceReferralStatus(
 export async function getReferralDashboard(
   supabase: SupabaseClient,
   userId: string,
-  options: { limit?: number } = {},
+  options: { limit?: number; providerOnly?: boolean } = {},
 ): Promise<ReferralStats> {
   const code = await getOrCreateReferralCode(supabase, userId);
   const limit = options.limit ?? DEFAULT_REFERRAL_LIMIT;
+  let referralsQuery = supabase
+    .from("referrals")
+    .select("id, referrer_id, referred_id, referral_code, track, status, provider_state, referred_name, created_at, converted_at")
+    .eq("referrer_id", userId);
+  if (options.providerOnly) {
+    referralsQuery = referralsQuery
+      .eq("track", "trade_to_trade")
+      .not("provider_state", "is", null);
+  }
 
   // ENG REVIEW 15A: Parallelize independent queries
-  const [referralsResult, rewardResult] = await Promise.all([
-    supabase
-      .from("referrals")
-      .select("id, referrer_id, referred_id, referral_code, track, status, referred_name, created_at, converted_at")
-      .eq("referrer_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(limit),
+  const [referralsResult, rewardResult, creditResult] = await Promise.all([
+    referralsQuery.order("created_at", { ascending: false }).limit(limit),
     supabase
       .from("referral_rewards")
       .select("amount_pence")
       .eq("recipient_id", userId)
       .in("status", ["earned", "applied"]),
+    supabase
+      .from("referral_credits")
+      .select("credit_months, status, created_at")
+      .eq("member_id", userId)
+      .neq("status", "voided")
+      .gte("created_at", new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()),
   ]);
 
-  const refs = (referralsResult.data ?? []) as Referral[];
-  const successful = refs.filter((r) => r.status === "rewarded").length;
-  const pending = refs.filter((r) => r.status !== "rewarded").length;
+  const allRefs = (referralsResult.data ?? []) as Referral[];
+  const refs = options.providerOnly
+    ? allRefs.filter((referral) => referral.track === "trade_to_trade" && referral.provider_state !== null)
+    : allRefs;
+  const successful = refs.filter((referral) => options.providerOnly
+    ? referral.provider_state === "converted" || referral.provider_state === "credited"
+    : referral.status === "rewarded"
+  ).length;
+  const pending = refs.length - successful;
 
   const totalRewards = ((rewardResult.data ?? []) as { amount_pence: number }[])
     .reduce((sum, r) => sum + r.amount_pence, 0);
+  const credits = (creditResult.data ?? []) as Array<{
+    credit_months: number;
+    status: string;
+  }>;
+  const creditedMonths = credits
+    .filter((credit) => credit.status === "applied")
+    .reduce((sum, credit) => sum + credit.credit_months, 0);
+  const capUsed = credits.reduce((sum, credit) => sum + credit.credit_months, 0);
 
   const tier = getTierForCount(successful);
   const next = getNextTier(tier);
@@ -247,6 +271,9 @@ export async function getReferralDashboard(
     successful_referrals: successful,
     pending_referrals: pending,
     total_rewards_pence: totalRewards,
+    credited_months: creditedMonths,
+    credit_cap_used: capUsed,
+    credit_cap_limit: 12,
     next_tier_threshold: next?.threshold ?? null,
     referrals: refs,
   };

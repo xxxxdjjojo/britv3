@@ -8,7 +8,9 @@
  * key (bypasses RLS) to inspect pg_catalog metadata.
  *
  * IMPORTANT: Tests are skipped gracefully when DB credentials are unavailable
- * so they do not block CI runs without a database connection.
+ * so they do not block CI runs without a database connection. In addition, the
+ * whole suite is gated behind `RUN_DB_TESTS` to match the db-tests/ collection
+ * convention, so the default `pnpm test` (src/** only) never runs it.
  */
 import { createClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -39,9 +41,14 @@ const SENSITIVE_TABLES = [
   "rfqs",
   "rfq_responses",
   "maintenance_requests",
+  // Vouch / referral integration (20260716181259_vouch_referral_canonical_schema.sql)
+  "vouch_requests",
+  "vouches",
+  "referral_credits",
+  "fraud_flags",
 ] as const;
 
-describe("RLS Policy Audit", () => {
+describe.skipIf(!process.env.RUN_DB_TESTS)("RLS Policy Audit", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let supabase: ReturnType<typeof createClient<any>>;
 

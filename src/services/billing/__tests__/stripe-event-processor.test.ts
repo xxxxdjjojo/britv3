@@ -20,13 +20,12 @@ vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
 }));
 
-// ---------------------------------------------------------------------------
-// referrals dependency — keep it inert; the unrelated branches don't touch
-// referrals at all.
-// ---------------------------------------------------------------------------
+const { inngestSend } = vi.hoisted(() => ({
+  inngestSend: vi.fn().mockResolvedValue({ ids: ["inngest-referral-credit"] }),
+}));
 
-vi.mock("@/services/referrals/unified-referral-service", () => ({
-  advanceReferralStatus: vi.fn().mockResolvedValue(null),
+vi.mock("@/inngest/client", () => ({
+  inngest: { send: inngestSend },
 }));
 
 // ---------------------------------------------------------------------------
@@ -50,6 +49,7 @@ type EqResult = { data: unknown; error: { message: string } | null };
  */
 function makeSupabaseMock(results: EqResult[] = []) {
   const calls: { table: string }[] = [];
+  const rpc = vi.fn().mockImplementation(() => Promise.resolve(nextResult()));
   let cursor = 0;
 
   function nextResult(): EqResult {
@@ -67,6 +67,7 @@ function makeSupabaseMock(results: EqResult[] = []) {
       "upsert",
       "delete",
       "eq",
+      "in",
       "neq",
       "order",
       "range",
@@ -88,8 +89,13 @@ function makeSupabaseMock(results: EqResult[] = []) {
   });
 
   return {
-    client: { from, auth: { admin: { updateUserById: vi.fn().mockResolvedValue({}) } } } as unknown as SupabaseClient,
+    client: {
+      from,
+      rpc,
+      auth: { admin: { updateUserById: vi.fn().mockResolvedValue({}) } },
+    } as unknown as SupabaseClient,
     calls,
+    rpc,
   };
 }
 
@@ -156,5 +162,293 @@ describe("processStripeEvent", () => {
     expect(result).toEqual({ userId: null });
     // No table accessed for unhandled types.
     expect(calls.length).toBe(0);
+  });
+
+  it("does not convert or credit a provider referral at checkout completion", async () => {
+    const { client, calls } = makeSupabaseMock([
+      { data: null, error: null },
+      { data: null, error: null },
+    ]);
+    const createBalanceTransaction = vi.fn();
+    const stripe = {
+      subscriptions: {
+        retrieve: vi.fn().mockResolvedValue({
+          id: "sub_provider_123",
+          customer: "cus_provider_123",
+          status: "active",
+          cancel_at_period_end: false,
+          items: {
+            data: [{
+              current_period_end: 1_800_000_000,
+              price: { id: "price_provider", unit_amount: 2_500, currency: "gbp" },
+            }],
+          },
+        }),
+      },
+      customers: { createBalanceTransaction },
+    } as unknown as Stripe;
+    const event = {
+      id: "evt_checkout_provider",
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_provider",
+          mode: "subscription",
+          subscription: "sub_provider_123",
+          customer: "cus_provider_123",
+          metadata: { user_id: "provider_123", role: "service_provider" },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripe, event);
+
+    expect(calls.map(({ table }) => table)).not.toContain("referrals");
+    expect(calls.map(({ table }) => table)).not.toContain("referral_rewards");
+    expect(createBalanceTransaction).not.toHaveBeenCalled();
+  });
+
+  it(
+    "converts and records one referrer credit on the first positive paid provider invoice.paid event",
+    async () => {
+      const { client, rpc } = makeSupabaseMock([
+        { data: null, error: null },
+        { data: null, error: null },
+      {
+        data: {
+          user_id: "provider_123",
+          role: "service_provider",
+          stripe_subscription_id: "sub_provider_123",
+        },
+        error: null,
+      },
+      {
+        data: {
+          id: "referral_123",
+          referrer_id: "referrer_123",
+          provider_state: "gate_complete",
+        },
+        error: null,
+      },
+      { data: "converted", error: null },
+      { data: "credit_123", error: null },
+      { data: { user_id: "provider_123" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_first_paid",
+      type: "invoice.paid",
+      data: {
+        object: {
+          id: "in_provider_first_paid",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 2_500,
+          billing_reason: "subscription_create",
+          parent: {
+            type: "subscription_details",
+            subscription_details: { subscription: "sub_provider_123" },
+          },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).toHaveBeenNthCalledWith(1, "advance_provider_referral", {
+      p_referral_id: "referral_123",
+      p_referred_profile_id: "provider_123",
+      p_target_state: "converted",
+    });
+    expect(rpc).toHaveBeenNthCalledWith(2, "issue_referral_credit", {
+      p_referral_id: "referral_123",
+      p_member_id: "referrer_123",
+      p_credit_months: 1,
+    });
+    expect(inngestSend).toHaveBeenCalledWith({
+      name: "billing/referral.credit-requested",
+      data: { creditId: "credit_123" },
+    });
+    },
+  );
+
+  it("does not convert a referral for a zero-value provider invoice", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_zero",
+      type: "invoice.payment_succeeded",
+      data: {
+        object: {
+          id: "in_provider_zero",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 0,
+          billing_reason: "subscription_create",
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(inngestSend).not.toHaveBeenCalled();
+  });
+
+  it("does not convert a one-off invoice for a customer who also has a provider subscription", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      {
+        data: { user_id: "provider_123", role: "service_provider" },
+        error: null,
+      },
+      {
+        data: {
+          id: "referral_123",
+          referrer_id: "referrer_123",
+          provider_state: "gate_complete",
+        },
+        error: null,
+      },
+      { data: "converted", error: null },
+      { data: "credit_123", error: null },
+      { data: { user_id: "provider_123" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_one_off",
+      type: "invoice.payment_succeeded",
+      data: {
+        object: {
+          id: "in_provider_one_off",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 2_500,
+          billing_reason: "manual",
+          parent: null,
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(inngestSend).not.toHaveBeenCalled();
+  });
+
+  it("does not convert a boost subscription invoice on the provider customer", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      {
+        data: {
+          user_id: "provider_123",
+          role: "service_provider",
+          stripe_subscription_id: "sub_provider_plan",
+        },
+        error: null,
+      },
+      { data: { user_id: "provider_123" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_boost",
+      type: "invoice.paid",
+      data: {
+        object: {
+          id: "in_provider_boost",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 1_500,
+          parent: {
+            type: "subscription_details",
+            subscription_details: { subscription: "sub_provider_boost" },
+          },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(inngestSend).not.toHaveBeenCalled();
+  });
+
+  it("does not enqueue a second conversion for invoice.payment_succeeded", async () => {
+    const { client, rpc } = makeSupabaseMock([
+      { data: null, error: null },
+      {
+        data: {
+          user_id: "provider_123",
+          role: "service_provider",
+          stripe_subscription_id: "sub_provider_123",
+        },
+        error: null,
+      },
+      {
+        data: {
+          id: "referral_123",
+          referrer_id: "referrer_123",
+          provider_state: "gate_complete",
+        },
+        error: null,
+      },
+      { data: "converted", error: null },
+      { data: "credit_123", error: null },
+      { data: { user_id: "provider_123" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_provider_payment_succeeded",
+      type: "invoice.payment_succeeded",
+      data: {
+        object: {
+          id: "in_provider_first_paid",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 2_500,
+          parent: {
+            type: "subscription_details",
+            subscription_details: { subscription: "sub_provider_123" },
+          },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(inngestSend).not.toHaveBeenCalled();
+  });
+
+  it("renews a boost from the Stripe v20 subscription_details parent", async () => {
+    const { client, calls } = makeSupabaseMock([
+      { data: null, error: null },
+      { data: null, error: null },
+      { data: { user_id: "provider_123", role: "agent" }, error: null },
+      { data: null, error: null },
+    ]);
+    const event = {
+      id: "evt_invoice_boost_renewal",
+      type: "invoice.paid",
+      data: {
+        object: {
+          id: "in_boost_renewal",
+          customer: "cus_provider_123",
+          status: "paid",
+          amount_paid: 1_500,
+          period_end: 1_800_000_000,
+          parent: {
+            type: "subscription_details",
+            subscription_details: { subscription: "sub_provider_boost" },
+          },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(client, stripeStub, event);
+
+    expect(calls.map(({ table }) => table)).toContain("sponsored_placements");
   });
 });

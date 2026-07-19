@@ -29,8 +29,36 @@ function makeRequest(): Request {
 }
 
 function authAs(user: { id: string } | null) {
+  const accessUser = user
+    ? {
+        ...user,
+        email_confirmed_at: "2026-07-01T00:00:00Z",
+        app_metadata: { role: "service_provider" },
+      }
+    : null;
+  const row = (data: unknown) => ({
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    maybeSingle: vi.fn().mockResolvedValue({ data, error: null }),
+  });
   mockCreateClient.mockResolvedValue({
-    auth: { getUser: vi.fn().mockResolvedValue({ data: { user }, error: null }) },
+    auth: { getUser: vi.fn().mockResolvedValue({ data: { user: accessUser }, error: null }) },
+    from: vi.fn((table: string) => {
+      if (table === "profiles") {
+        return row({ active_role: "service_provider", provider_verification_status: "verified" });
+      }
+      if (table === "subscriptions") {
+        return row({ status: "active", role: "provider" });
+      }
+      if (table === "stripe_connect_accounts") {
+        return row({ charges_enabled: true, payouts_enabled: true });
+      }
+      return row(null);
+    }),
+    rpc: vi.fn().mockResolvedValue({
+      data: [{ peer_count: 3, client_count: 3, grandfathered: false, gate_complete: true }],
+      error: null,
+    }),
   });
 }
 

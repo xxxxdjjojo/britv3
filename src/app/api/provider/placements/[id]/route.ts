@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import {
   cancelProviderPlacement,
   setProviderPlacementPaused,
@@ -17,6 +18,8 @@ import {
 const patchSchema = z.object({ action: z.enum(["pause", "resume", "cancel"]) });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id } = await params;
   const supabase = await createClient();
   const {

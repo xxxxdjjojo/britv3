@@ -4,6 +4,8 @@ import { sendWelcome } from "@/services/email/email-service";
 import { inngest } from "@/inngest/client";
 import { resolveSafeNext } from "@/lib/auth/safe-redirect";
 import type { UserRole } from "@/types/auth";
+import { attributeReferralAfterAuthentication } from "@/services/referrals/vouch-referral-service";
+import { captureException } from "@/lib/observability/capture-exception";
 
 // Professional roles that can be set via the OAuth intent cookie
 const VALID_PROFESSIONAL_ROLES: Record<string, UserRole> = {
@@ -55,8 +57,24 @@ export async function GET(request: NextRequest) {
   // Check if user already has roles assigned
   const { data: { user } } = await supabase.auth.getUser();
   let redirectPath = next;
+  let referralAttributionComplete = false;
 
   if (user) {
+    try {
+      const attribution = await attributeReferralAfterAuthentication({
+        userId: user.id,
+        referralCode: request.cookies.get("britestate_ref")?.value,
+        inviteToken: request.cookies.get("truedeed_invite")?.value,
+      });
+      referralAttributionComplete =
+        attribution.attributed || attribution.outcome === "already_attributed";
+    } catch (attributionError) {
+      captureException(attributionError, {
+        module: "referrals",
+        feature: "signup-attribution",
+        operation: "auth-callback",
+      });
+    }
     const signupRoleIntent = safeRoleIntent(user.user_metadata?.role_intent);
     const { data: roles } = await supabase
       .from("user_roles")
@@ -120,13 +138,19 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Clear the intent cookie
+  // Clear one-time attribution cookies only after a durable DB outcome. On a
+  // transient failure they remain available for the authenticated retry API.
   const response = NextResponse.redirect(`${origin}${redirectPath}`);
   if (professionalRoleCookie) {
     response.cookies.set("britestate_professional_role", "", {
       path: "/",
       maxAge: 0,
     });
+  }
+
+  if (referralAttributionComplete) {
+    response.cookies.delete("britestate_ref");
+    response.cookies.delete("truedeed_invite");
   }
 
   return response;

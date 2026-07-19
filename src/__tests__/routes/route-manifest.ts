@@ -374,6 +374,8 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/provider/ai-match",
   "/dashboard/provider/analytics",
   "/dashboard/provider/applications",
+  // Availability calendar — linked from an in-page dashboard CTA, not the sidebar.
+  "/dashboard/provider/availability",
   "/dashboard/provider/billing",
   "/dashboard/provider/billing/checkout/one-time",
   "/dashboard/provider/billing/checkout/subscription",
@@ -397,7 +399,8 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/provider/portfolio",
   "/dashboard/provider/profile",
   "/dashboard/provider/quotes",
-  "/dashboard/provider/referrals",
+  // /dashboard/provider/referrals is now wired into provider nav (Referral
+  // Engine) — no longer off-nav.
   "/dashboard/provider/saved",
   "/dashboard/provider/searches",
   "/dashboard/provider/services",

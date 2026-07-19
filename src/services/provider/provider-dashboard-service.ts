@@ -138,8 +138,8 @@ export async function getProviderDashboardStats(
       // Verification documents
       supabase
         .from("provider_documents")
-        .select("status")
-        .eq("provider_id", providerId),
+        .select("verification_status")
+        .eq("user_id", providerId),
     ]);
 
     // Total leads
@@ -188,8 +188,14 @@ export async function getProviderDashboardStats(
     let verificationStatus = "unverified";
     if (verificationResult.status === "fulfilled" && !verificationResult.value.error) {
       const docs = verificationResult.value.data ?? [];
-      const hasApproved = docs.some((d: { status: string }) => d.status === "approved");
-      const hasPending = docs.some((d: { status: string }) => d.status === "pending");
+      const hasApproved = docs.some(
+        (d: { verification_status: string }) =>
+          d.verification_status === "approved",
+      );
+      const hasPending = docs.some(
+        (d: { verification_status: string }) =>
+          d.verification_status === "pending",
+      );
       if (hasApproved) verificationStatus = "verified";
       else if (hasPending) verificationStatus = "pending";
     }

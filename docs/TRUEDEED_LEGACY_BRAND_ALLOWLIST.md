@@ -55,6 +55,9 @@ scripts/stripe-setup/verify-pricing-v2.ts
 # users (same convention as supabase/seed/seed-test-users.ts and e2e/auth.setup.ts).
 scripts/e2e-onboarding-local.sh
 scripts/seed-onboarding-fixture.mjs
+# Vouch/referral E2E seed — seeds the existing @britestate.test provider fixture
+# alongside the @truedeed.test one (same fixture convention as above).
+scripts/e2e-vouch-referral-seed.mjs
 
 # Existing E2E/test fixtures with legacy cookies, users, or expected copy.
 e2e/auth.setup.ts
@@ -112,6 +115,9 @@ src/app/(main)/legal/review-policy/page.tsx
 src/app/(main)/legal/terms/page.tsx
 src/app/(main)/legal/third-party-services/page.tsx
 src/app/(protected)/settings/security/page.tsx
+# Reads/clears the legacy britestate_ref referral cookie (same legacy cookie
+# contract as src/proxy.ts and src/app/auth/callback/route.ts).
+src/app/api/auth/email-code/verify/route.ts
 src/app/api/gdpr/export/route.ts
 src/app/api/legal/gdpr-request/route.ts
 src/app/api/offers/[id]/route.test.ts

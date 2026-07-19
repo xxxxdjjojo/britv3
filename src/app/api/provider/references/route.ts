@@ -19,6 +19,7 @@ import { z } from "zod";
 
 import { createRateLimiter } from "@/lib/cache/redis";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createReferenceInvitation } from "@/services/provider/reference-invitation-service";
 
@@ -35,6 +36,8 @@ const bodySchema = z.object({
 const createLimiter = createRateLimiter(5, "1 h");
 
 export async function POST(req: Request): Promise<NextResponse> {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
   const {
     data: { user },

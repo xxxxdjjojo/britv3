@@ -15,19 +15,37 @@ import { describe, expect, it, vi } from "vitest";
 
 import { checkProviderCanTransact } from "../provider-transaction-gate";
 
-type ProfileRow = { provider_verification_status: string | null } | null;
-type SubRow = { status: string } | null;
+type ProfileRow = {
+  active_role: string;
+  provider_verification_status: string | null;
+} | null;
+type SubRow = { status: string; role: string } | null;
 type ConnectRow = { charges_enabled: boolean; payouts_enabled: boolean } | null;
 
 function makeSupabaseMock(opts: {
   profile?: ProfileRow;
   subscription?: SubRow;
   connect?: ConnectRow;
+  gate?: {
+    peer_count: number;
+    client_count: number;
+    grandfathered: boolean;
+    gate_complete: boolean;
+  };
 }) {
   const {
-    profile = { provider_verification_status: "verified" },
-    subscription = { status: "active" },
+    profile = {
+      active_role: "service_provider",
+      provider_verification_status: "verified",
+    },
+    subscription = { status: "active", role: "provider" },
     connect = { charges_enabled: true, payouts_enabled: true },
+    gate = {
+      peer_count: 3,
+      client_count: 3,
+      grandfathered: false,
+      gate_complete: true,
+    },
   } = opts;
 
   const single = (data: unknown) => ({
@@ -44,6 +62,7 @@ function makeSupabaseMock(opts: {
       if (table === "stripe_connect_accounts") return { select: vi.fn().mockReturnValue(single(connect)) };
       return { select: vi.fn().mockReturnValue(single(null)) };
     }),
+    rpc: vi.fn().mockResolvedValue({ data: [gate], error: null }),
   };
 }
 
@@ -66,20 +85,42 @@ describe("checkProviderCanTransact", () => {
 
   it("blocks when not admin-approved (pending_review)", async () => {
     const supabase = makeSupabaseMock({
-      profile: { provider_verification_status: "pending_review" },
+      profile: {
+        active_role: "service_provider",
+        provider_verification_status: "pending_review",
+      },
     });
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,
     });
-    expect(result).toMatchObject({ allowed: false, reason: "not_approved" });
+    expect(result).toMatchObject({ allowed: false, reason: "admin_unverified" });
   });
 
   it("blocks when subscription is not active", async () => {
-    const supabase = makeSupabaseMock({ subscription: { status: "canceled" } });
+    const supabase = makeSupabaseMock({
+      subscription: { status: "canceled", role: "provider" },
+    });
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,
     });
     expect(result).toMatchObject({ allowed: false, reason: "subscription_inactive" });
+  });
+
+  it("blocks transactions when the provider has not completed the vouch gate", async () => {
+    const supabase = makeSupabaseMock({
+      gate: {
+        peer_count: 3,
+        client_count: 2,
+        grandfathered: false,
+        gate_complete: false,
+      },
+    });
+
+    const result = await checkProviderCanTransact(supabase as never, "user-1", {
+      emailConfirmed: true,
+    });
+
+    expect(result).toMatchObject({ allowed: false, reason: "vouch_incomplete" });
   });
 
   it("blocks when no subscription row exists", async () => {
@@ -97,11 +138,13 @@ describe("checkProviderCanTransact", () => {
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,
     });
-    expect(result).toMatchObject({ allowed: false, reason: "payout_not_connected" });
+    expect(result).toMatchObject({ allowed: false, reason: "stripe_connect_incomplete" });
   });
 
   it("treats a trialing subscription as active", async () => {
-    const supabase = makeSupabaseMock({ subscription: { status: "trialing" } });
+    const supabase = makeSupabaseMock({
+      subscription: { status: "trialing", role: "provider" },
+    });
     const result = await checkProviderCanTransact(supabase as never, "user-1", {
       emailConfirmed: true,
     });

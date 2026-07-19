@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import {
   updatePortfolioItem,
   deletePortfolioItem,
@@ -8,10 +9,10 @@ import {
 async function resolveProviderId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<string> {
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", userId)
     .maybeSingle();
-  return providerProfile?.id ?? userId;
+  return providerProfile?.user_id ?? userId;
 }
 
 /** PATCH /api/provider/portfolio/[id] — update a portfolio item */
@@ -19,6 +20,8 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
   const { id } = await params;
 
@@ -61,6 +64,8 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
   const { id } = await params;
 

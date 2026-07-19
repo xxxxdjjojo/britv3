@@ -11,6 +11,7 @@
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { resolveProviderId } from "@/lib/provider/resolve-provider";
 import { initiateJobCompletion } from "@/services/provider/provider-job-completion-service";
 
@@ -31,6 +32,8 @@ const TRANSITIONS: Record<string, string[]> = {
 };
 
 export async function PATCH(request: Request, { params }: Params) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id: jobId } = await params;
 
   // Auth

@@ -1,26 +1,57 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { ProviderContextWrapper } from "@/components/dashboard/provider/ProviderContextWrapper";
 import { resolveProviderId } from "@/lib/provider/resolve-provider";
 import { dashboardPathForRole } from "@/lib/routes";
 import type { UserRole } from "@/types/auth";
+import {
+  evaluateProviderAccess,
+  isVouchGateBypassed,
+  type ProviderAccessRequirement,
+} from "@/services/provider/provider-access-policy";
+import { getProviderAccessState } from "@/services/provider/provider-access-state";
 
 export default async function ProviderLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("active_role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.active_role !== "service_provider") {
-    const activeRole = profile?.active_role as UserRole | null | undefined;
-    redirect(
-      activeRole ? dashboardPathForRole(activeRole) : "/dashboard/homebuyer",
+  let accessState: Awaited<ReturnType<typeof getProviderAccessState>>;
+  try {
+    accessState = await getProviderAccessState(supabase, user.id, {
+      emailConfirmed: !!user.email_confirmed_at,
+    });
+  } catch {
+    return (
+      <section
+        role="alert"
+        className="mx-auto max-w-2xl rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-950"
+      >
+        <h1 className="text-lg font-semibold">
+          We can’t verify your provider access right now
+        </h1>
+        <p className="mt-2 text-sm">
+          Your provider tools remain locked. Refresh the page in a moment or
+          contact support if the problem continues.
+        </p>
+      </section>
     );
+  }
+  const headersList = await headers();
+  const requirementHeader = headersList.get("x-provider-access-requirement");
+  const requirement: ProviderAccessRequirement =
+    requirementHeader === "progress" ? "progress" : "business";
+  const layoutDecision = evaluateProviderAccess(accessState, requirement, {
+    vouchGateBypass: isVouchGateBypassed(),
+  });
+
+  if (!layoutDecision.allowed) {
+    const activeRole = accessState.role as UserRole | null | undefined;
+    if (layoutDecision.reason === "wrong_role") {
+      redirect(activeRole ? dashboardPathForRole(activeRole) : "/dashboard/homebuyer");
+    }
+    redirect("/dashboard/provider/verification");
   }
 
   let providerIdentity: Awaited<ReturnType<typeof resolveProviderId>>;

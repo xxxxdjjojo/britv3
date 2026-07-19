@@ -23,6 +23,9 @@ function createMockSupabase(overrides: Record<string, unknown> = {}) {
     update: vi.fn().mockReturnThis(),
     upsert: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
+    neq: vi.fn().mockReturnThis(),
+    gte: vi.fn().mockReturnThis(),
+    not: vi.fn().mockReturnThis(),
     in: vi.fn().mockReturnThis(),
     order: vi.fn().mockReturnThis(),
     limit: vi.fn().mockReturnThis(),
@@ -138,14 +141,15 @@ describe("getReferralDashboard", () => {
     // .order().limit() chain — limit() is the final awaitable
     chain.limit.mockResolvedValueOnce({
       data: [
-        { id: "1", status: "rewarded", referral_code: "ABC12345", referred_name: "Dave", created_at: "2026-01-01", converted_at: "2026-01-15", referrer_id: "user-1", referred_id: "user-2", track: "trade_to_trade" },
-        { id: "2", status: "rewarded", referral_code: "ABC12345", referred_name: "Sarah", created_at: "2026-01-10", converted_at: "2026-01-25", referrer_id: "user-1", referred_id: "user-3", track: "trade_to_trade" },
-        { id: "3", status: "rewarded", referral_code: "ABC12345", referred_name: "Mike", created_at: "2026-02-01", converted_at: "2026-02-15", referrer_id: "user-1", referred_id: "user-4", track: "trade_to_trade" },
+        { id: "1", status: "rewarded", provider_state: "credited", referral_code: "ABC12345", referred_name: "Dave", created_at: "2026-01-01", converted_at: "2026-01-15", referrer_id: "user-1", referred_id: "user-2", track: "trade_to_trade" },
+        { id: "2", status: "rewarded", provider_state: "credited", referral_code: "ABC12345", referred_name: "Sarah", created_at: "2026-01-10", converted_at: "2026-01-25", referrer_id: "user-1", referred_id: "user-3", track: "trade_to_trade" },
+        { id: "3", status: "rewarded", provider_state: "credited", referral_code: "ABC12345", referred_name: "Mike", created_at: "2026-02-01", converted_at: "2026-02-15", referrer_id: "user-1", referred_id: "user-4", track: "trade_to_trade" },
+        { id: "4", status: "rewarded", provider_state: null, referral_code: "ABC12345", referred_name: "Legacy homeowner", created_at: "2025-02-01", converted_at: "2025-02-15", referrer_id: "user-1", referred_id: "user-5", track: "trade_to_homeowner" },
       ],
       error: null,
     });
 
-    const stats = await getReferralDashboard(supabase, "user-1");
+    const stats = await getReferralDashboard(supabase, "user-1", { providerOnly: true });
     expect(stats.tier).toBe("ambassador");
     expect(stats.successful_referrals).toBe(3);
     expect(stats.referral_code).toBe("ABC12345");

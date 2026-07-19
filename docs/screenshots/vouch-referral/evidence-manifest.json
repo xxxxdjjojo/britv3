@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "status": "pending-final-integrated-browser-run",
+  "blockers": [
+    "Final UI branches are not yet integrated into this isolated CI worktree.",
+    "The in-app browser runtime is unavailable in this task environment.",
+    "No linked TrueDeed Supabase branch or Vercel project is available for remote proof."
+  ],
+  "captures": []
+}

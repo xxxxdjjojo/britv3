@@ -11,10 +11,13 @@
 import { NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { resolveProviderId } from "@/lib/provider/resolve-provider";
 import { createOnsitePaymentIntent } from "@/services/provider/provider-onsite-payment-service";
 
 export async function POST(request: Request) {
+  const providerAccess = await requireProviderAccess("transaction");
+  if (providerAccess.response) return providerAccess.response;
   const supabase = await createClient();
 
   try {

@@ -610,6 +610,7 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
     { href: "/dashboard/provider/quotes/builder", label: "Quotes", icon: MessagesSquare },
     { href: "/dashboard/provider/reviews", label: "Reviews", icon: Star },
     { href: "/dashboard/provider/verification", label: "Verification", icon: BadgeCheck },
+    { href: "/dashboard/provider/referrals", label: "Referrals", icon: UserPlus },
     { href: "/dashboard/provider/payments", label: "Earnings", icon: PoundSterling },
     { href: "/dashboard/provider/boost", label: "Boost My Profile", icon: Sparkles },
   ],
@@ -688,7 +689,7 @@ export const TAB_CONFIG: Record<UserRole, TabItem[]> = {
   service_provider: [
     { label: "Jobs", href: "/dashboard/provider/jobs/leads", icon: Briefcase },
     { label: "Quotes", href: "/dashboard/provider/quotes/builder", icon: ClipboardList },
-    { label: "Calendar", href: "/dashboard/provider/availability", icon: Calendar },
+    { label: "Referrals", href: "/dashboard/provider/referrals", icon: UserPlus },
     { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
@@ -823,6 +824,7 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   { label: "Quotes", href: "/dashboard/provider/quotes/builder", section: "Dashboard", keywords: ["quotes", "estimates", "pricing"], roles: ["service_provider"] },
   { label: "Reviews (Provider)", href: "/dashboard/provider/reviews", section: "Dashboard", keywords: ["reviews", "ratings", "feedback"], roles: ["service_provider"] },
   { label: "Verification (Provider)", href: "/dashboard/provider/verification", section: "Dashboard", keywords: ["verification", "identity", "documents"], roles: ["service_provider"] },
+  { label: "Referrals (Provider)", href: "/dashboard/provider/referrals", section: "Dashboard", keywords: ["referrals", "crew", "ambassador"], roles: ["service_provider"] },
   { label: "Earnings", href: "/dashboard/provider/payments", section: "Dashboard", keywords: ["earnings", "income", "payments"], roles: ["service_provider"] },
 
   // Dashboard — Mortgage Broker

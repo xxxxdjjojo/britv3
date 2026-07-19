@@ -12,6 +12,7 @@ import { z } from "zod";
 
 import { createRateLimiter } from "@/lib/cache/redis";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cancelReferenceInvitation } from "@/services/provider/reference-invitation-service";
 
@@ -24,6 +25,8 @@ export async function POST(
   _req: Request,
   { params }: { params: Params },
 ): Promise<NextResponse> {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id } = await params;
   const supabase = await createClient();
   const {

@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireProviderAccess } from "@/lib/api/provider-access";
 import { sendQuote } from "@/services/provider/provider-quote-service";
 import { checkProviderCanTransact } from "@/services/provider/provider-transaction-gate";
 
@@ -15,6 +16,8 @@ export async function POST(
   _request: NextRequest,
   { params }: { params: Params },
 ) {
+  const providerAccess = await requireProviderAccess();
+  if (providerAccess.response) return providerAccess.response;
   const { id } = await params;
   const supabase = await createClient();
 

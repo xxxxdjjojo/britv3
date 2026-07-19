@@ -1,8 +1,6 @@
 # Type check, Lint, Unit tests, and Build are GATING (a failure fails the PR).
 # Lint became gating once main reached 0 ESLint errors (PR #83) — see the Lint step.
-# The Link E2E step stays continue-on-error (flaky env deps); the real end-to-end
-# ship gate is the post-deploy Playwright smoke test against the live Vercel URL
-# (see e2e/production-smoke.spec.ts).
+# Link integrity and the isolated vouch/referral browser suite are hard gates.
 name: App CI
 
 on:
@@ -13,6 +11,28 @@ on:
   workflow_dispatch:
 
 jobs:
+  db-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Real PostgreSQL contract tests
+        run: pnpm test:db
+
   route-integrity:
     runs-on: ubuntu-latest
     steps:
@@ -58,7 +78,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: 2.108.0
+          version: 2.109.1
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -83,6 +103,54 @@ jobs:
         with:
           name: landlord-smoke-test-results
           path: test-results/
+          if-no-files-found: ignore
+
+  vouch-referral-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.109.1
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Ship-gate contract checks
+        env:
+          PLAYWRIGHT_SKIP_WEB_SERVER: "true"
+        run: pnpm exec playwright test e2e/vouch-referral-infrastructure.spec.ts --project=chromium --no-deps
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Vouch/referral desktop and mobile proof
+        run: scripts/e2e-vouch-referral-local.sh
+
+      - name: Existing authenticated dashboard link coverage
+        run: pnpm exec playwright test e2e/dashboard-navigation.spec.ts --project=chromium
+
+      - name: Upload vouch/referral evidence and traces
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vouch-referral-evidence
+          path: |
+            test-results/evidence/vouch-referral/
+            playwright-report/vouch-referral/
           if-no-files-found: ignore
 
   app:
@@ -114,6 +182,9 @@ jobs:
       - name: Check brand references
         run: pnpm check:brand
 
+      - name: Check test collection
+        run: pnpm check:test-collection
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -136,8 +207,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Link E2E
-        run: pnpm exec playwright test e2e/link-health.spec.ts e2e/homepage-link-audit.spec.ts e2e/navigation.spec.ts e2e/dashboard-navigation.spec.ts --project=chromium
-        continue-on-error: true
+        run: pnpm exec playwright test e2e/link-health.spec.ts e2e/homepage-link-audit.spec.ts e2e/navigation.spec.ts --project=chromium --no-deps
 
       - name: Upload Playwright report
         if: always()

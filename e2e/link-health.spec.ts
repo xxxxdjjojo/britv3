@@ -25,6 +25,8 @@ const PUBLIC_RENTAL_ROUTES = [
 
 const ALL_ROUTES_TO_VERIFY = [
   "/",
+  "/join",
+  "/vouch/not-a-valid-token",
   "/search",
   "/search?type=buy",
   "/search?type=rent",
@@ -108,7 +110,16 @@ test.describe("link health", () => {
       expect(
         response.status(),
         `${BASE_URL}${route} should be reachable but got ${response.status()}`,
-      ).not.toBe(404);
+      ).toBeLessThan(400);
+    }
+  });
+
+  test("join and invalid-vouch routes render an error-safe document", async ({ page }) => {
+    for (const route of ["/join", "/vouch/not-a-valid-token"]) {
+      const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+      expect(response?.status(), `${route} must render below HTTP 400`).toBeLessThan(400);
+      await expect(page.locator("body")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText(/application error/i);
     }
   });
 

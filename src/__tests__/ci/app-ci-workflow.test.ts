@@ -51,7 +51,10 @@ describe("app CI workflow contract", () => {
     expect(appCiWorkflow, "missing app CI workflow").toBeDefined();
     expect(appCiWorkflow).toContain("landlord-smoke:");
     expect(appCiWorkflow).toContain("supabase/setup-cli@v1");
-    expect(appCiWorkflow).toContain("version: 2.108.0");
+    // The Supabase CLI must stay PINNED (never floating `latest`, which was a
+    // past reproducibility bug). The vouch/referral CI slice advanced the pin
+    // to 2.109.1 across every job that installs the CLI.
+    expect(appCiWorkflow).toContain("version: 2.109.1");
     expect(appCiWorkflow).not.toContain("version: latest");
     expect(appCiWorkflow).toContain(
       "scripts/e2e-local.sh landlord-maintenance-compliance-smoke",

@@ -1,7 +1,7 @@
 /**
  * provider-verification-service.ts
  *
- * Verification steps, reference requests, badges, and document uploads for
+ * Verification steps, canonical vouches, badges, and document uploads for
  * the provider dashboard. All functions accept a SupabaseClient as a parameter
  * so they work in both server and client contexts.
  */
@@ -69,7 +69,7 @@ export const VERIFICATION_STEPS = [
  * Reference statuses that count as still in flight for a verification step —
  * requested/awaiting-response, not yet a terminal (verified/failed) state.
  */
-const IN_FLIGHT = ["submitted", "sent", "pending"] as const;
+const IN_FLIGHT = ["pending"] as const;
 
 // ---------------------------------------------------------------------------
 // Return types
@@ -111,7 +111,7 @@ export type UpdateBadgeResult = Readonly<{
 /**
  * Returns an ordered array of 5 verification steps with their current status.
  * Status is derived by checking provider_documents (for id_check, insurance,
- * qualifications) and provider_references (for client_references, peer_references).
+ * qualifications) and canonical vouch_requests (for the 3+3 gate).
  *
  * Falls back to 'not_started' for every step on any database error.
  *
@@ -126,21 +126,26 @@ export async function getVerificationSteps(
     const [docsResult, refsResult] = await Promise.allSettled([
       supabase
         .from("provider_documents")
-        .select("document_type, status, updated_at, rejection_reason")
-        .eq("provider_id", providerId),
+        .select("document_type, verification_status, updated_at, reviewer_notes")
+        .eq("user_id", providerId),
 
       supabase
-        .from("provider_references")
-        .select("reference_type, status, requested_at")
+        .from("vouch_requests")
+        .select("voucher_kind, status, requested_at")
         .eq("provider_id", providerId),
     ]);
 
-    const docs: Array<{ document_type: string; status: string; updated_at: string | null; rejection_reason?: string | null }> =
+    const docs: Array<{
+      document_type: string;
+      verification_status: string;
+      updated_at: string | null;
+      reviewer_notes: string | null;
+    }> =
       docsResult.status === "fulfilled" && !docsResult.value.error
         ? (docsResult.value.data ?? [])
         : [];
 
-    const refs: Array<{ reference_type: string; status: string; requested_at: string | null }> =
+    const refs: Array<{ voucher_kind: string; status: string; requested_at: string | null }> =
       refsResult.status === "fulfilled" && !refsResult.value.error
         ? (refsResult.value.data ?? [])
         : [];
@@ -156,15 +161,23 @@ export async function getVerificationSteps(
         );
 
         if (matchingDocs.length > 0) {
-          const hasApproved = matchingDocs.some((d) => d.status === "approved");
-          const hasRejected = matchingDocs.some((d) => d.status === "rejected");
-          const hasPending = matchingDocs.some((d) => d.status === "pending");
+          const hasApproved = matchingDocs.some(
+            (d) => d.verification_status === "approved",
+          );
+          const hasRejected = matchingDocs.some(
+            (d) => d.verification_status === "rejected",
+          );
+          const hasPending = matchingDocs.some(
+            (d) => d.verification_status === "pending",
+          );
 
           if (hasApproved) status = "approved";
           else if (hasRejected) {
             status = "rejected";
-            const rejectedDoc = matchingDocs.find((d) => d.status === "rejected");
-            rejectionReason = rejectedDoc?.rejection_reason ?? null;
+            const rejectedDoc = matchingDocs.find(
+              (d) => d.verification_status === "rejected",
+            );
+            rejectionReason = rejectedDoc?.reviewer_notes ?? null;
           }
           else if (hasPending) status = "submitted";
           else status = "in_progress";
@@ -178,21 +191,16 @@ export async function getVerificationSteps(
         }
       } else {
         // reference steps
-        const matchingRefs = refs.filter((r) => r.reference_type === step.reference_type);
+        const matchingRefs = refs.filter((r) => r.voucher_kind === step.reference_type);
 
         if (matchingRefs.length > 0) {
-          // Only 'verified' counts as done. 'submitted'/'sent'/'pending' are
-          // still in flight. Terminal-fail statuses ('rejected'/'declined'/
-          // 'expired'/'revoked'/'flagged') do not count toward either — a step
-          // with only failed refs reads as not_started (nothing usable), unless
-          // there is also an in-flight ref.
-          const hasVerified = matchingRefs.some((r) => r.status === "verified");
+          const acceptedCount = matchingRefs.filter((r) => r.status === "accepted").length;
           const hasInFlight = matchingRefs.some((r) =>
             (IN_FLIGHT as readonly string[]).includes(r.status),
           );
 
-          if (hasVerified) status = "approved";
-          else if (hasInFlight) status = "in_progress";
+          if (acceptedCount >= 3) status = "approved";
+          else if (acceptedCount > 0 || hasInFlight) status = "in_progress";
           else status = "not_started";
 
           const sorted = matchingRefs
@@ -350,32 +358,36 @@ export async function uploadVerificationDocument(
   }
 
   const ext = file.name.split(".").pop() ?? "bin";
-  const storagePath = `${providerId}/${documentType}/${Date.now()}.${ext}`;
+  const storagePath = `provider-documents/${providerId}/${documentType}/${Date.now()}.${ext}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("provider-documents")
+  const storageBucket = supabase.storage.from("provider-docs");
+  const { error: uploadError } = await storageBucket
     .upload(storagePath, file, { upsert: true });
 
   if (uploadError) throw new Error(`Storage upload failed: ${uploadError.message}`);
 
-  const { data: upsertData, error: upsertError } = await supabase
+  const { data: urlData } = storageBucket.getPublicUrl(storagePath);
+
+  const { data: document, error: insertError } = await supabase
     .from("provider_documents")
-    .upsert(
-      {
-        provider_id: providerId,
-        document_type: documentType,
-        storage_path: storagePath,
-        status: "pending",
-      },
-      { onConflict: "provider_id,document_type" },
-    )
+    .insert({
+      user_id: providerId,
+      document_type: documentType,
+      file_name: file.name,
+      file_url: urlData.publicUrl,
+      file_size: file.size,
+      mime_type: file.type,
+      verification_status: "pending",
+    })
     .select("id")
     .single();
 
-  if (upsertError) throw new Error(`Document record upsert failed: ${upsertError.message}`);
+  if (insertError) {
+    throw new Error(`Document record insert failed: ${insertError.message}`);
+  }
 
   return {
     storage_path: storagePath,
-    document_id: (upsertData as { id: string }).id,
+    document_id: (document as { id: string }).id,
   };
 }
