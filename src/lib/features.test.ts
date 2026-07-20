@@ -48,7 +48,6 @@ describe("isFeatureEnabled", () => {
     "offline_mode",
     "jwt_claims_middleware",
     "search_live_data",
-    "local_area_intelligence",
     "search_rental_filters",
     "search_mock_data",
   ];
